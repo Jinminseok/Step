@@ -11,6 +11,6 @@ public class Log_LoginFormAction implements Action{
 
 		
 		//jsp 경로 반환
-		return "logistics/log_loginForm.jsp";
+		return "logistics/log_login/log_loginForm.jsp";
 	}
 }
