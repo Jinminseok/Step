@@ -252,3 +252,4 @@ html, body {
 .log-footer-links { display: flex; gap: 20px; }
 .log-footer-links a { font-size: 11px; color: rgba(255,255,255,.3); cursor: pointer; text-decoration: none; }
 .log-footer-links a:hover { color: rgba(255,255,255,.6); }
+
