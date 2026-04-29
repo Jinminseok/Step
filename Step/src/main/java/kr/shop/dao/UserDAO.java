@@ -17,7 +17,7 @@ public class UserDAO {
 	private UserDAO() {}
 	
 	// 회원가입
-	public void insertMember(UserVO user) throws Exception{
+	public void insertUser(UserVO user) throws Exception{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;

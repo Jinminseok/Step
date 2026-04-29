@@ -6,9 +6,10 @@ import kr.controller.Action;
 
 public class LoginFormAction implements Action {
 
-    @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // 로그인 폼 JSP 경로 반환
-        return "/shop/user/KM_login.jsp";
-    }
+	@Override
+	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		// 로그인 폼 JSP 경로 반환
+		return "shop/user/login.jsp"; 
+	}
 }

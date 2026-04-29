@@ -28,7 +28,7 @@ public class LoginAction implements Action {
             if (user.getAuth() == 9) {
                 return "redirect:/shop/admin/main.do"; 
             } else {
-                return "redirect:/main/main.do";
+                return "redirect:/shop/user/main.do";
             }
         } else {
             // 로그인 실패 시 (비밀번호 불일치 혹은 없는 아이디)

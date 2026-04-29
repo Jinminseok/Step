@@ -3,7 +3,7 @@
 
 <header>
   <div class="hdr-top">
-    <div class="logo" onclick="location.href='${pageContext.request.contextPath}/main/main.do'">Shoe<span>Mall</span></div>
+    <div class="logo" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">Shoe<span>Mall</span></div>
     <div class="hdr-search">
       <input type="text" placeholder="브랜드, 상품, 카테고리 검색">
       <button class="hdr-search-btn">🔍</button>
@@ -12,10 +12,54 @@
       <c:choose>
         <%-- 1. 로그인 상태일 때 (세션에 user_num이 있을 때) --%>
         <c:when test="${!empty sessionScope.user_num}">
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/notice/list.do'">
-            <span class="hdr-btn-icon">🔔</span><span class="hdr-btn-label">알림</span>
-            <span class="hdr-badge" style="background:var(--blue)">1</span>
-          </button>
+          
+          <div class="noti-wrap">
+            <button class="hdr-btn" onclick="toggleNoti(event)">
+              <span class="hdr-btn-icon">🔔</span><span class="hdr-btn-label">알림</span>
+              <span class="hdr-badge" style="background:var(--blue)">1</span>
+            </button>
+            
+            <div class="noti-modal" id="notiModal" onclick="event.stopPropagation()">
+              <div class="noti-m-hdr">
+                <div class="noti-m-title">알림센터</div>
+                <div style="cursor:pointer;color:var(--gray4);font-size:16px;">⚙️</div>
+              </div>
+              <div class="noti-m-tabs">
+                <div class="noti-m-tab on">알림</div>
+                <div class="noti-m-tab">대화</div>
+              </div>
+              <div class="noti-m-body">
+                <div class="noti-sec-title">오늘 받은 알림</div>
+                <div class="noti-item unread">
+                  <div class="noti-i-icon img">🎁</div>
+                  <div class="noti-i-txt">
+                    <div class="noti-i-top">
+                      <span class="noti-i-shop" style="font-size:13px;font-weight:700">[5% 할인 쿠폰] 도착!</span>
+                      <span class="noti-i-time">방금 전</span>
+                    </div>
+                    <div class="noti-i-desc">케익팩토리 딜리버리의 혜택을 확인해보세요!</div>
+                  </div>
+                </div>
+
+                <div class="noti-sec-title" style="margin-top:20px;">이전 알림</div>
+                <div class="noti-chips">
+                  <div class="noti-chip on">전체</div>
+                  <div class="noti-chip">혜택·이벤트</div>
+                  <div class="noti-chip">회원·인증</div>
+                </div>
+                <div class="noti-item">
+                  <div class="noti-i-icon">📦</div>
+                  <div class="noti-i-txt">
+                    <div class="noti-i-top">
+                      <span class="noti-i-shop" style="font-size:13px;font-weight:700">배송 출발 안내</span>
+                      <span class="noti-i-time">4월 24일</span>
+                    </div>
+                    <div class="noti-i-desc">주문하신 상품의 배송이 시작되었습니다.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
             <span class="hdr-btn-icon">🛒</span><span class="hdr-btn-label">장바구니</span>
           </button>
@@ -44,7 +88,7 @@
 
 <div class="cat-nav">
   <div class="cat-nav-inner">
-    <div class="cat-item active" onclick="location.href='${pageContext.request.contextPath}/main/main.do'">전체</div>
+    <div class="cat-item active" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
     <div class="cat-item">👟 운동화</div>
     <div class="cat-item">👡 샌들</div>
     <div class="cat-item">👞 구두</div>
@@ -53,3 +97,22 @@
     <div class="cat-item">🗺️ 매장찾기</div>
   </div>
 </div>
+
+<script>
+// 종 모양 버튼 클릭 시 알림창 열기/닫기
+function toggleNoti(e) {
+  e.stopPropagation();
+  const modal = document.getElementById('notiModal');
+  if(modal) {
+      modal.classList.toggle('show');
+  }
+}
+
+// 화면 빈 곳 클릭 시 알림창 닫기
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('notiModal');
+  if (modal && modal.classList.contains('show') && !e.target.closest('.noti-wrap')) {
+    modal.classList.remove('show');
+  }
+});
+</script>
