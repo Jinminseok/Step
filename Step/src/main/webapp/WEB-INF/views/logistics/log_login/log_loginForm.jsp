@@ -203,12 +203,7 @@
 <!-- ══ 푸터 ══════════════════════════════════════════ -->
 <footer class="log-footer">
     <div class="log-footer-txt">
-        © 2025 Step WMS — Warehouse Management System. 물류 담당자 전용 시스템
-    </div>
-    <div class="log-footer-links">
-        <a href="#">관리자 문의</a>
-        <a href="#">시스템 매뉴얼</a>
-        <a href="#">개인정보처리방침</a>
+        © 2026 Step WMS — Warehouse Management System. 물류 담당자 전용 시스템
     </div>
 </footer>
 
