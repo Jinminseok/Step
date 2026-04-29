@@ -19,11 +19,11 @@
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
             <span class="hdr-btn-icon">🛒</span><span class="hdr-btn-label">장바구니</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/user/myPage.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPage.do'">
             <span class="hdr-btn-icon" style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">김</span>
             <span class="hdr-btn-label" style="color:#fff">마이페이지</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/user/logout.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/logout.do'">
             <span class="hdr-btn-label" style="font-size:12px;font-weight:700">로그아웃</span>
           </button>
         </c:when>
@@ -33,7 +33,7 @@
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'" style="color:#fff;background:rgba(255,255,255,.08);border-radius:3px;padding:6px 14px;">
             <span class="hdr-btn-label" style="font-size:12px;font-weight:700">로그인</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/user/registerForm.do'" style="color:#000;background:#fff;border-radius:3px;padding:6px 14px;">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/registerForm.do'" style="color:#000;background:#fff;border-radius:3px;padding:6px 14px;">
             <span class="hdr-btn-label" style="font-size:12px;font-weight:700">회원가입</span>
           </button>
         </c:otherwise>

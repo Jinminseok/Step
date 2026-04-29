@@ -7,7 +7,7 @@
   	<servlet-class>kr.controller.DispatcherServlet</servlet-class>
   	<init-param>
   		<param-name>propertiesPath</param-name>
-  		<param-value>/WEB-INF/KM.properties,/WEB-INF/KR.properties,/WEB-INF/MS.properties,/WEB-INF/YH.properties</param-value>
+  		<param-value>/WEB-INF/KM.properties,/WEB-INF/KR.properties,/WEB-INF/MS.properties,/WEB-INF/YH.properties,/WEB-INF/user.properties</param-value>
   	</init-param>
   	<!-- 기본 뷰 경로 지정 시작 -->
   	<init-param>
