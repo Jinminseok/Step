@@ -11,7 +11,7 @@ public class MainAction implements Action{
 
 		
 		//jsp 경로 반환
-		return "main/main.jsp";
+		return "shop/user/main.jsp";
 	}
 	
 }
