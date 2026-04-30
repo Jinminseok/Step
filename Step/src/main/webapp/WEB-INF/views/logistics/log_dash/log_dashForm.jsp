@@ -19,8 +19,8 @@
       <span class="breadcrumb-cur" id="pg-title">물류 대시보드</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date">2025-04-24 &nbsp;09:14</div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date">2025-04-24 &nbsp;09:14</div>	<!-- 실시간 시간 보여주기 (추가) -->
+      <div class="tb-btn">🔔<div class="notif-dot"></div></div>	<!-- 알림창 보여주기 (추가) -->
       <div class="tb-btn">⚙️</div>
     </div>
   </div>
