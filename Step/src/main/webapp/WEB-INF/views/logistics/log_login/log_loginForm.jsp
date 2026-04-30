@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- 물류 전용 CSS -->
-    <link rel="stylesheet" href="<%= contextPath %>/css/MS_style.css">
+    <link rel="stylesheet" href="<%= contextPath %>/css/login.css">
 </head>
 <body>
 

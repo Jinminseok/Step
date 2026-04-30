@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>상품 마스터 관리</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath }/css/YH_style.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath }/css/MS_style.css" type="text/css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
@@ -23,6 +23,9 @@
       <div class="tb-btn">🔔<div class="notif-dot"></div></div>
       <div class="tb-btn">⚙️</div>
     </div>
+  </div>
+  <div class="prod_form">
+  	<span>품번·상품명·브랜드 검색</span>
   </div>
 </body>
 </html>
