@@ -20,7 +20,7 @@
                 <div class="form-group">
                     <label class="form-label">아이디</label>
                     <div class="input-with-btn">
-                        <input class="form-input" type="text" name="id" id="id" placeholder="아이디" required>
+                        <input class="form-input" type="text" name="user_id" id="user_id" placeholder="아이디" required>
                         <button type="button" class="btn btn-outline btn-sm">중복확인</button>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input class="form-input" type="text" name="name" id="name" placeholder="이름" required>
+                        <input class="form-input" type="text" name="user_name" id="user_name" placeholder="이름" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">연락처</label>

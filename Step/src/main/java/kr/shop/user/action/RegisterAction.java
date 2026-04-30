@@ -20,9 +20,6 @@ public class RegisterAction implements Action {
 		String hashedPassword = BCrypt.hashpw(request.getParameter("pwd"), BCrypt.gensalt());
 		user.setPwd(hashedPassword);
 		
-		user.setUser_id(request.getParameter("id"));
-		user.setPwd(request.getParameter("pwd"));
-		user.setUser_name(request.getParameter("name"));
 		user.setPhone(request.getParameter("phone"));
 		user.setEmail(request.getParameter("email"));
 		user.setZipcode(request.getParameter("zipcode"));
@@ -36,6 +33,7 @@ public class RegisterAction implements Action {
 		request.setAttribute("result_msg", "회원 가입이 완료되었습니다.");
 		request.setAttribute("result_url", request.getContextPath()+"/shop/user/main.do");
 		
+
 		return "common/result_view.jsp";
 	}
 }
