@@ -38,7 +38,7 @@ public class UserDAO {
 				user_num = rs.getLong(1);
 			}
 			
-			sql = "INSERT INTO users (users_num, user_id) VALUES (?,?)";
+			sql = "INSERT INTO users (user_num, user_id) VALUES (?,?)";
 			pstmt2 = conn.prepareStatement(sql);
 			pstmt2.setLong(1, user_num);
 			pstmt2.setString(2, user.getUser_id());

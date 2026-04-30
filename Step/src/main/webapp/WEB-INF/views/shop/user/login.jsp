@@ -29,7 +29,7 @@
                 <button type="submit" class="btn btn-black btn-full" style="margin-top:4px">로그인</button>
                 
                 <div class="auth-divider"></div>
-                <div style="text-align:center;font-size:13px;color:var(--gray4)">
+                <div style="text-align:center; font-size:13px; color:var(--gray4)">
                     아직 회원이 아니신가요? 
                     <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" class="auth-link" style="text-decoration:none;">회원가입</a>
                 </div>

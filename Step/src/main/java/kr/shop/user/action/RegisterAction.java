@@ -1,5 +1,7 @@
 package kr.shop.user.action;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -11,14 +13,15 @@ public class RegisterAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		// 1. POST 한글 인코딩
-		request.setCharacterEncoding("utf-8");
-		
-		// 2. 파라미터 받아서 VO에 담기
 		UserVO user = new UserVO();
+		user.setUser_id(request.getParameter("user_id"));
+		user.setUser_name(request.getParameter("user_name"));
+		
+		String hashedPassword = BCrypt.hashpw(request.getParameter("pwd"), BCrypt.gensalt());
+		user.setPwd(hashedPassword);
+		
 		user.setUser_id(request.getParameter("id"));
-		user.setPwd(request.getParameter("passwd"));
+		user.setPwd(request.getParameter("pwd"));
 		user.setUser_name(request.getParameter("name"));
 		user.setPhone(request.getParameter("phone"));
 		user.setEmail(request.getParameter("email"));
@@ -26,11 +29,13 @@ public class RegisterAction implements Action {
 		user.setAddr1(request.getParameter("addr1"));
 		user.setAddr2(request.getParameter("addr2"));
 		
-		// 3. DAO 호출해서 DB에 넣기
 		UserDAO dao = UserDAO.getInstance();
 		dao.insertUser(user);
 		
-		// 4. 완료 후 로그인 페이지로 이동 (user.properties에 설정한 주소)
-		return "shop/user/loginForm.do";
+		request.setAttribute("result_title", "회원 가입 완료");
+		request.setAttribute("result_msg", "회원 가입이 완료되었습니다.");
+		request.setAttribute("result_url", request.getContextPath()+"/shop/user/main.do");
+		
+		return "common/result_view.jsp";
 	}
 }
