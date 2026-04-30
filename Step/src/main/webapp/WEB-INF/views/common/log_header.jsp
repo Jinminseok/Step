@@ -46,41 +46,34 @@
     <nav class="nav">
 
         <div class="nav-section">대시보드</div>
-        <div class="nav-item <%= "dash".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">📊</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_dash/log_dashForm.do">물류 대시보드</a>
+        <div class="nav-item <%= "dash".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_dash/log_dashForm.do'">
+            <span class="nav-ico">📊</span>물류 대시보드
         </div>
 
         <div class="nav-section">재고 관리</div>
-        <div class="nav-item <%= "stk".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">🗃️</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_stk/log_stkForm.do">재고현황 조회</a>
+        <div class="nav-item <%= "stk".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_stk/log_stkForm.do'">
+            <span class="nav-ico">🗃️</span>재고현황 조회
         </div>
-        <div class="nav-item <%= "prod".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">📑</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_prod/log_prodForm.do">상품 마스터 관리</a>
+        <div class="nav-item <%= "prod".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_prod/log_prodForm.do'">
+            <span class="nav-ico">📑</span>상품 마스터 관리
         </div>
 
         <div class="nav-section">입출고</div>
-        <div class="nav-item <%= "in".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">📥</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_in/log_inForm.do">입고 관리</a>
+        <div class="nav-item <%= "in".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_in/log_inForm.do'">
+            <span class="nav-ico">📥</span>입고 관리
         </div>
-        <div class="nav-item <%= "out".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">📤</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_out/log_outForm.do">출고 관리</a>
+        <div class="nav-item <%= "out".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_out/log_outForm.do'">
+            <span class="nav-ico">📤</span>출고 관리
         </div>
 
         <div class="nav-section">반품 / 교환 재고반영</div>
-        <div class="nav-item <%= "ret".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">↩️</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_return/log_returnForm.do">반품/교환 재고 반영</a>
+        <div class="nav-item <%= "ret".equals(currentMenu) ? "active" : "" %>"onclick="location.href='${pageContext.request.contextPath }/logistics/log_return/log_returnForm.do'">
+            <span class="nav-ico">↩️</span>반품/교환 재고 반영
         </div>
 
         <div class="nav-section">리포트</div>
-        <div class="nav-item <%= "rep".equals(currentMenu) ? "active" : "" %>">
-            <span class="nav-ico">📋</span>
-            <a href="${pageContext.request.contextPath }/logistics/log_report/log_reportForm.do">물류 리포트</a>
+        <div class="nav-item <%= "rep".equals(currentMenu) ? "active" : "" %>" onclick="location.href='${pageContext.request.contextPath }/logistics/log_report/log_reportForm.do'">
+            <span class="nav-ico">📋</span>물류 리포트
         </div>
 
     </nav>
