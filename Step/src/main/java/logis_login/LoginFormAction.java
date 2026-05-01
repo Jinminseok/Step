@@ -1,7 +1,17 @@
 package logis_login;
 
-public class LoginFormAction {
-	/* 2026. 4. 29. {쌍용강북교육센터}
-	 *  
-	 */
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.controller.Action;
+
+public class LoginFormAction implements Action{
+
+	@Override
+	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+
+		// 로그인 폼 JSP 경로 반환
+		
+		return "logistics/log_login/log_loginForm.jsp";
+	}
 }

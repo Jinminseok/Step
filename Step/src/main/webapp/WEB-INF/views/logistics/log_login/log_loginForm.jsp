@@ -1,13 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    /*
-     * 파일명 : logis_main.jsp
-     * 경로   : src/main/webapp/WEB-INF/views/main/logis_main.jsp
-     * 역할   : 물류 담당자 로그인 화면
-     * 호출   : Log_LoginAction.java (GET /logis/login)
-     */
-    String contextPath = request.getContextPath();
-    String loginError  = (String) request.getAttribute("loginError");
+    // 로그인 에러 메시지 처리용 변수
+    String loginError = (String) request.getAttribute("loginError");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -19,8 +13,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- 물류 전용 CSS -->
-    <link rel="stylesheet" href="<%= contextPath %>/css/login.css">
+    <!-- 물류 전용 CSS (피그마 디자인 스타일) -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
 </head>
 <body>
 
@@ -36,19 +30,17 @@
 <!-- ══ 메인 영역 ═════════════════════════════════════ -->
 <div class="log-main">
 
-    <!-- ─── 왼쪽 소개 패널 ──────────────────────── -->
+    <!-- ─── 왼쪽 소개 패널 (피그마 디자인 유지) ────────────── -->
     <div class="log-left">
         <div class="log-left-bg"></div>
         <div class="log-left-grid"></div>
         <div class="log-left-content">
 
-            <!-- 운영 뱃지 -->
             <div class="log-sys-badge">
                 <div class="log-badge-pulse"></div>
                 <div class="log-badge-txt">실시간 운영 중</div>
             </div>
 
-            <!-- 타이틀 -->
             <h1 class="log-left-title">
                 신발 물류<br>
                 <span class="log-accent">통합 관리 시스템</span>
@@ -58,7 +50,6 @@
                 신발 물류 전 과정을 하나의 플랫폼에서.
             </p>
 
-            <!-- 기능 목록 -->
             <div class="log-feat-list">
                 <div class="log-feat-item">
                     <div class="log-feat-ico">📥</div>
@@ -90,24 +81,8 @@
                 </div>
             </div>
 
-            <!-- 하단 통계 -->
-            <div class="log-left-stats">
-                <div>
-                    <div class="log-stat-num">4,821</div>
-                    <div class="log-stat-lbl">총 재고 (켤레)</div>
-                </div>
-                <div>
-                    <div class="log-stat-num">127</div>
-                    <div class="log-stat-lbl">오늘 입고</div>
-                </div>
-                <div>
-                    <div class="log-stat-num">84</div>
-                    <div class="log-stat-lbl">오늘 출고</div>
-                </div>
-            </div>
-
         </div>
-    </div><!-- /log-left -->
+    </div>
 
     <!-- ─── 오른쪽 로그인 폼 ─────────────────────── -->
     <div class="log-right">
@@ -123,49 +98,28 @@
                 쇼핑몰 관리자·사용자 계정과 별도로 운영됩니다.
             </div>
 
-            <%-- 로그인 실패 오류 메시지 --%>
             <% if (loginError != null) { %>
                 <div class="log-error-msg">⚠ <%= loginError %></div>
             <% } %>
 
-            <%-- 로그인 폼 --%>
-            <form id="logLoginForm"
-                  action="<%= contextPath %>/logis/login"
-                  method="POST">
-
-                <%-- CSRF 방지 토큰 (Spring Security 미사용 시 직접 구현) --%>
-                <%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"> --%>
+           
+            <form action="${pageContext.request.contextPath}/logistics/log_login/log_login.do" method="post" id="login_form">
 
                 <div class="log-field">
-                    <label class="log-field-label" for="logId">
-                        담당자 아이디
-                    </label>
+                    <label class="log-field-label" for="id">담당자 아이디</label>
                     <div class="log-field-wrap">
                         <span class="log-field-ico">👤</span>
-                        <input class="log-field-input"
-                               type="text"
-                               id="logId"
-                               name="loginId"
-                               placeholder="아이디를 입력하세요"
-                               autocomplete="username"
-                               required>
+                        <!-- 기능 유지: name="id", id="id" -->
+                        <input class="log-field-input" type="text" name="id" id="id" placeholder="아이디를 입력하세요" required>
                     </div>
                 </div>
 
                 <div class="log-field">
-                    <label class="log-field-label" for="logPwd">
-                        비밀번호
-                    </label>
+                    <label class="log-field-label" for="passwd">비밀번호</label>
                     <div class="log-field-wrap">
-                        <span class="log-field-ico" id="logPwdToggle"
-                              style="cursor:pointer" title="비밀번호 표시">🔑</span>
-                        <input class="log-field-input"
-                               type="password"
-                               id="logPwd"
-                               name="pwd"
-                               placeholder="비밀번호를 입력하세요"
-                               autocomplete="current-password"
-                               required>
+                        <span class="log-field-ico" id="logPwdToggle" style="cursor:pointer" title="비밀번호 표시">🔑</span>
+                        <!-- 기능 유지: name="passwd", id="passwd" -->
+                        <input class="log-field-input" type="password" name="passwd" id="passwd" placeholder="비밀번호를 입력하세요" required>
                     </div>
                 </div>
 
@@ -176,39 +130,24 @@
                     <span class="log-forgot">비밀번호 찾기</span>
                 </div>
 
+                <!-- 기능 유지: type="submit" -->
                 <button type="submit" class="log-btn-login">로그인</button>
-            </form>
-
-            <!-- 보안 안내 -->
-            <div class="log-warn-box">
-                <div class="log-warn-box-title">⚠ 보안 안내</div>
-                <ul>
-                    <li>물류 시스템은 허가된 담당자만 접근 가능합니다.</li>
-                </ul>
-            </div>
-
-            <!-- 시스템 상태 -->
-            <div class="log-sys-indicators">
-                <div class="log-ind-row">
-                    <span class="log-ind-lbl">마지막 업데이트</span>
-                    <span class="log-ind-date" id="logCurrentTime">수정일 삽입</span>
+                
+                <!-- 기능 유지: 회원가입 링크 연동 -->
+                <div style="text-align:center; font-size:13px; color:#94A3B8; margin-top: 15px;">
+                    아직 회원이 아니신가요? 
+                    <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" style="color: #1D6FE4; text-decoration:none; font-weight: 600;">회원가입</a>
                 </div>
-            </div>
 
-        </div><!-- /log-form-wrap -->
-    </div><!-- /log-right -->
+            </form>
+            
 
-</div><!-- /log-main -->
-
-<!-- ══ 푸터 ══════════════════════════════════════════ -->
-<footer class="log-footer">
-    <div class="log-footer-txt">
-        © 2026 Step WMS — Warehouse Management System. 물류 담당자 전용 시스템
+        </div>
     </div>
-</footer>
+</div>
 
 <!-- JS -->
-<script src="<%= contextPath %>/js/logis_login.js"></script>
+<script src="${pageContext.request.contextPath}/js/logis_login.js"></script>
 
 </body>
 </html>
