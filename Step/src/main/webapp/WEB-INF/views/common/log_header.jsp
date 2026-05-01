@@ -87,7 +87,7 @@
                 <div class="user-role">물류 담당자</div>
             </div>
             <div class="logout-btn"
-                 onclick="window.location.href='<%= cp %>/logis/logout'">
+                 onclick="window.location.href='${pageContext.request.contextPath}/logistics/log_login/logout.do'">
                 로그아웃
             </div>
         </div>
