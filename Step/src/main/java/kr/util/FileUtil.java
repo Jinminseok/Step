@@ -30,6 +30,15 @@ public class FileUtil {
 			upload = request.getServletContext()
 					        .getRealPath(UPLOAD_PATH);
 		}
+		
+		// -규민- 폴더가 없을 경우 자동 생성 로직 추가 시작
+		File saveDir = new File(upload);
+		if (!saveDir.exists()) {
+			saveDir.mkdirs();
+			System.out.println(">>> upload 폴더가 존재하지 않아 새로 생성함: " + upload);
+		}
+		// -규민- 추가 끝
+		
 		Part part = request.getPart(param);
 		String filename = part.getSubmittedFileName();
 		if(!filename.isEmpty()) {
