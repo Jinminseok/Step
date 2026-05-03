@@ -32,9 +32,8 @@
       <span class="breadcrumb-cur" id="pg-title">물류 리포트</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date">2025-04-24 &nbsp;09:14</div>
+      <div class="tb-date" id="realTimeClock"></div>
       <div class="tb-btn">🔔<div class="notif-dot"></div></div>
-      <div class="tb-btn">⚙️</div>
     </div>
   </div>
   
@@ -152,6 +151,31 @@
         </div>
       </div>
     </div>
-  
+  <script>
+function updateClock() {
+    const now = new Date();
+    
+    // 년, 월, 일 구하기
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    
+    // 시, 분 구하기
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    // 🚨 수정한 부분: JSP가 가로채지 못하게 + 기호로 안전하게 문자열 연결!
+    const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
+    
+    // 화면에 밀어넣기
+    document.getElementById("realTimeClock").innerText = timeString;
+}
+
+// 화면이 켜지자마자 바로 시계 표시
+updateClock();
+
+// 1분(60000ms)마다 갱신
+setInterval(updateClock, 60000);
+</script>
 </body>
 </html>
