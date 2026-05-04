@@ -81,9 +81,11 @@
     <!-- 하단 사용자 -->
     <div class="sb-footer">
         <div class="user-card">
-            <div class="user-av">이</div>
+            <!-- 아바타: 아이디의 첫 글자를 대문자로 추출해서 표시 -->
+            <div class="user-av">${not empty user_id ? user_id.substring(0, 1).toUpperCase() : 'U'}</div>
             <div>
-                <div class="user-name">이지훈</div>
+                <!-- 이름: 세션에 저장된 user_id 값을 동적으로 출력 -->
+                <div class="user-name">${not empty user_id ? user_id : '로그인 필요'}</div>
                 <div class="user-role">물류 담당자</div>
             </div>
             <div class="logout-btn"

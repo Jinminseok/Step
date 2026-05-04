@@ -47,32 +47,34 @@
       <div class="kpi-row">
         <div class="kpi blue" onclick="location.href='${ pageContext.request.contextPath }/logistics/log_in/log_inForm.do'">
           <div class="kpi-label">오늘 입고</div>
-          <div class="kpi-val colored-blue">127</div>
+          <div class="kpi-val colored-blue">127</div> <!-- 입고 테이블에서 수량정보 가져오기 -->
+          <!-- 입고테이블에서 날짜를 기준으로 비교해서 수량 정보 가죠오기 -->
           <div class="kpi-change up">▲ 23 &nbsp;<span class="neutral">어제 대비</span></div>
         </div>
         <div class="kpi green" onclick="location.href='${ pageContext.request.contextPath }/logistics/log_out/log_outForm.do'">
-          <div class="kpi-label">오늘 출고</div>	
+          <div class="kpi-label">오늘 출고</div>	<!-- 출고 테이블에서 수량정보 가져오기 -->
           <div class="kpi-val colored-green">84</div>
+          <!-- 출고테이블에서 날짜를 기준으로 비교해서 수량 정보 가져오기 -->
           <div class="kpi-change up">▲ 11 &nbsp;<span class="neutral">어제 대비</span></div>
         </div>
         <div class="kpi teal" onclick="location.href='${pageContext.request.contextPath }/logistics/log_stk/log_stkForm.do'">
           <div class="kpi-label">전체 재고</div>
-          <div class="kpi-val">4,821</div>
+          <div class="kpi-val">4,821</div><!-- 재고 테이블의 총 수량 정보 가져오기 -->
           <div class="kpi-change neutral">켤레 보유</div>
         </div>
         <div class="kpi amber" onclick="location.href='${pageContext.request.contextPath }/logistics/log_stk/log_stkForm.do'">
-          <div class="kpi-label">재고 부족 상품</div>
+          <div class="kpi-label">재고 부족 상품</div> <!-- 재고테이블에서 기준수량보다 적은 상품 정보 가져오기 -->
           <div class="kpi-val colored-amber">7</div>
           <div class="kpi-change dn">재고 10개 미만</div>
         </div>
         <div class="kpi red" onclick="location.href='${pageContext.request.contextPath }/logistics/log_return/log_returnForm.do'">
           <div class="kpi-label">미처리 반품</div>
-          <div class="kpi-val colored-red">3</div>
+          <div class="kpi-val colored-red">3</div> <!-- 반품/교환 테이블의 정보 가져오기 -->
           <div class="kpi-change dn">처리 대기 중</div>
         </div>
       </div>
 
-      <!-- 알림 -->
+      <!-- 알림 -->    <!-- 이 부분은 뺄지 아리면 넣을지 생각 넣을 시 재고 테이블에서 if문을 걸어서 부족한거 있으면 알림보내게끔 구현	 -->
       <div class="alert alert-amber">
         <span class="alert-ico">⚠</span>
         <div><strong>재고 부족 경고</strong> — 나이키 에어맥스 270 (240·245mm), 아디다스 울트라부스트 (260mm) 등 7개 사이즈 재고 10개 미만입니다. 입고 등록을 검토하세요.</div>
@@ -95,6 +97,7 @@
                 <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--gray3)"><span style="width:10px;height:10px;border-radius:2px;background:var(--blue);display:inline-block"></span>입고</span>
                 <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--gray3)"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>출고</span>
               </div>
+              <!-- 입고테이블과 출고테이블의 수량들을 뽑아서 정보 나타내기 -->
               <div class="bar-row"><div class="bar-lbl">월</div><div class="bar-track"><div class="bar-fill bar-in" style="width:55%">98</div></div></div>
               <div class="bar-row" style="margin-bottom:6px"><div class="bar-lbl"></div><div class="bar-track"><div class="bar-fill bar-out" style="width:42%">75</div></div></div>
               <div class="bar-row"><div class="bar-lbl">화</div><div class="bar-track"><div class="bar-fill bar-in" style="width:48%">86</div></div></div>
@@ -116,6 +119,7 @@
             <table>
               <thead><tr><th>상품명</th><th>사이즈</th><th>재고</th></tr></thead>
               <tbody>
+              <!-- 재고테이블에서 수량이 제일 부족한상품들을 rank로 뽑아서 정보 가져오기 -->
                 <tr><td>나이키 에어맥스 270</td><td>240mm</td><td><span class="bdg bdg-red">3개</span></td></tr>
                 <tr><td>나이키 에어맥스 270</td><td>245mm</td><td><span class="bdg bdg-red">2개</span></td></tr>
                 <tr><td>아디다스 울트라부스트</td><td>260mm</td><td><span class="bdg bdg-amber">7개</span></td></tr>
@@ -138,6 +142,7 @@
             <table>
               <thead><tr><th>입고일시</th><th>상품명</th><th>사이즈/컬러</th><th>수량</th><th>담당자</th></tr></thead>
               <tbody>
+              <!-- 입고테이블에서 가장 최근에 입고된 상품들을 순서대로 정렬해서 정보 가져오기(날짜를 기준으로 오름차순 -->
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">09:14</td><td>나이키 에어포스1</td><td><span class="bdg bdg-gray">265 / 화이트</span></td><td><span class="bdg bdg-blue">30개</span></td><td>이지훈</td></tr>
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">09:02</td><td>아디다스 삼바</td><td><span class="bdg bdg-gray">270 / 블랙</span></td><td><span class="bdg bdg-blue">24개</span></td><td>이지훈</td></tr>
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">어제 17:30</td><td>뉴발란스 327</td><td><span class="bdg bdg-gray">255 / 그레이</span></td><td><span class="bdg bdg-blue">18개</span></td><td>박수진</td></tr>
@@ -156,6 +161,7 @@
             <table>
               <thead><tr><th>주문번호</th><th>상품명</th><th>수량</th><th>상태</th></tr></thead>
               <tbody>
+              <!--  주문이 들어온 상품에 관해서 출고전에 출고대기를 표시 -->
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px">#0082</td><td>나이키 에어맥스</td><td>1</td><td><span class="bdg bdg-amber">출고 대기</span></td></tr>
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px">#0081</td><td>아디다스 울트라부스트</td><td>1</td><td><span class="bdg bdg-amber">출고 대기</span></td></tr>
                 <tr><td style="font-family:'DM Mono',monospace;font-size:11px">#0079</td><td>나이키 조던 1</td><td>2</td><td><span class="bdg bdg-amber">출고 대기</span></td></tr>

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +11,6 @@
 
 /* ═══ MAIN ═════════════════════════════════════ */
 .main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
-
 
 /* ═══ BODY LAYOUT ═══════════════════════════════ */
 .body-wrap{flex:1;display:flex;overflow:hidden;position:relative}
@@ -317,6 +316,10 @@ textarea.fi{resize:vertical;min-height:72px}
 .content::-webkit-scrollbar{width:5px}
 .content::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:3px}
 
+/* 🚨 추가된 TOAST 알림 스타일 🚨 */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 </style>
 </head>
 <body>
@@ -326,7 +329,7 @@ textarea.fi{resize:vertical;min-height:72px}
 	<!-- ═══ MAIN ═══ -->
 <main class="main">
 
-		<!-- TOPBAR -->
+  <!-- TOPBAR -->
   <div class="topbar">
     <div class="breadcrumb">
       <span class="breadcrumb-root">Step WMS</span>
@@ -335,15 +338,16 @@ textarea.fi{resize:vertical;min-height:72px}
     </div>
     <div class="topbar-right">
       <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>	<!-- 알림창 보여주기 (추가) -->      
+      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
     </div>
   </div>
 
-<!-- BODY -->
+  <!-- BODY -->
   <div class="body-wrap">
 
     <!-- ─── LIST PANEL ─── -->
     <div class="list-panel" id="listPanel">
+      
       <!-- TOOLBAR -->
       <div class="list-toolbar">
         <div class="search-wrap">
@@ -365,9 +369,17 @@ textarea.fi{resize:vertical;min-height:72px}
           <option>품절</option>
           <option>숨김</option>
         </select>
-        <div style="margin-left:auto;display:flex;gap:7px">
-          <button class="btn btn-outline btn-sm">엑셀 다운로드</button>
-          <button class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
+        
+        <!-- 오른쪽 버튼 영역 및 동기화 시간 -->
+        <div style="margin-left:auto; display:flex; align-items:center; gap:12px;">
+          <!-- 동기화 시간 표시 영역 -->
+          <div id="syncTime" style="font-size:11px; color:var(--gray4); font-family:'DM Mono',monospace;">최종 동기화: -</div>
+          
+          <!-- 버튼 그룹 -->
+          <div style="display:flex; gap:7px;">
+            <button class="btn btn-outline btn-sm" onclick="updateSyncTime()">🔄 상품 동기화</button>
+            <button class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
+          </div>
         </div>
       </div>
 
@@ -451,10 +463,16 @@ textarea.fi{resize:vertical;min-height:72px}
           <div class="dp-section">
             <div class="dp-section-title">기본 정보</div>
             <div class="fg-grid">
+              
+              <!-- 🚨 변경된 부분: 상품 고유코드(SKU) 자동 생성 버튼 추가 🚨 -->
               <div class="fg">
                 <label>상품 고유코드 (SKU) <span style="color:var(--red)">*</span></label>
-                <input class="fi" id="fi-sku" placeholder="예: NK-AM270-GRY">
+                <div style="display:flex; gap:6px;">
+                  <input class="fi" id="fi-sku" placeholder="예: NK-AM270-GRY">
+                  <button type="button" class="btn btn-outline" style="flex-shrink:0; padding:9px 12px;" onclick="generateSKU()">자동 생성</button>
+                </div>
               </div>
+
               <div class="fg">
                 <label>품번 등록일</label>
                 <input class="fi" id="fi-regdate" value="" readonly style="background:var(--gray7);color:var(--gray3)">
@@ -467,11 +485,11 @@ textarea.fi{resize:vertical;min-height:72px}
                 <label>브랜드 <span style="color:var(--red)">*</span></label>
                 <select class="fi" id="fi-brand">
                   <option value="">브랜드 선택</option>
-                  <option>나이키</option>
-                  <option>아디다스</option>
-                  <option>뉴발란스</option>
-                  <option>호카</option>
-                  <option>버켄스탁</option>
+                  <option value="나이키">나이키</option>
+                  <option value="아디다스">아디다스</option>
+                  <option value="뉴발란스">뉴발란스</option>
+                  <option value="호카">호카</option>
+                  <option value="버켄스탁">버켄스탁</option>
                 </select>
               </div>
               <div class="fg">
@@ -638,31 +656,96 @@ textarea.fi{resize:vertical;min-height:72px}
   </div><!-- /body-wrap -->
 </main>
 
+<!-- 🚨 TOAST 영역 (Body 안쪽 하단) 🚨 -->
+<div class="toast" id="toast"></div>
+
 <script>
+// ── 시간 관련 함수 ────────────────────────────────
 function updateClock() {
     const now = new Date();
-    
-    // 년, 월, 일 구하기
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    
-    // 시, 분 구하기
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    
-    // 🚨 수정한 부분: JSP가 가로채지 못하게 + 기호로 안전하게 문자열 연결!
     const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
     
-    // 화면에 밀어넣기
-    document.getElementById("realTimeClock").innerText = timeString;
+    const clockEl = document.getElementById("realTimeClock");
+    if(clockEl) clockEl.innerText = timeString;
 }
 
-// 화면이 켜지자마자 바로 시계 표시
 updateClock();
-
-// 1분(60000ms)마다 갱신
 setInterval(updateClock, 60000);
+
+// ── TOAST 알림 함수 ───────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// ── 동기화 함수 ───────────────────────────────────
+function updateSyncTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    // 포맷 맞춤 (yyyy-mm-dd hh:mm:ss)
+    const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+    
+    // 시간 표시 텍스트 변경
+    const syncEl = document.getElementById("syncTime");
+    if(syncEl) syncEl.innerText = "최종 동기화: " + timeString;
+    
+    // 알림 띄우기
+    showToast('상품 동기화 완료');
+    
+    // 리스트도 검색창 초기화하며 다시 렌더링되게 처리
+    document.querySelector('.search-wrap input').value = '';
+    renderTable(products);
+}
+
+
+function generateSKU() {
+    const brandSelect = document.getElementById('fi-brand').value;
+    
+    // 브랜드를 선택하지 않았을 경우 얼럿을 띄우고 함수 종료
+    if (!brandSelect) {
+        alert("브랜드를 먼저 선택해 주세요.");
+        return;
+    }
+
+    let prefix = "PRD"; // 기본값
+    if (brandSelect === "나이키") prefix = "NK";
+    else if (brandSelect === "아디다스") prefix = "AD";
+    else if (brandSelect === "뉴발란스") prefix = "NB";
+    else if (brandSelect === "호카") prefix = "HK";
+    else if (brandSelect === "버켄스탁") prefix = "BK";
+
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    
+    // 영문 대문자 + 숫자 조합 4자리 난수 생성
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let randomStr = '';
+    for (let i = 0; i < 4; i++) {
+        randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    // 조합: 브랜드접두사 - 년월일 - 난수
+    const autoSku = prefix + "-" + yy + mm + dd + "-" + randomStr;
+    document.getElementById('fi-sku').value = autoSku;
+    
+    showToast('상품 고유코드가 자동 생성되었습니다.');
+}
 
 //─── 상품 데이터 ────────────────────────────────────
 const products = [

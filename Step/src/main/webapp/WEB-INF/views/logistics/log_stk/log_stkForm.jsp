@@ -167,19 +167,19 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
       <div class="sum-card blue active-card" id="card-all" onclick="switchTab('all')">
         <div class="sum-icon">📦</div>
         <div class="sum-label">전체 재고</div>
-        <div class="sum-val c-blue">4,821</div>
+        <div class="sum-val c-blue">4,821</div> <!-- 재고테이블의 정보 가져오기 -->
         <div class="sum-sub">켤레 보유 중</div>
       </div>
       <div class="sum-card amber" id="card-low" onclick="switchTab('low')">
         <div class="sum-icon">⚠️</div>
         <div class="sum-label">재고 부족 옵션</div>
-        <div class="sum-val c-amber">26</div>
+        <div class="sum-val c-amber">26</div>  <!-- 재고부족한 상품의 개수 가져오기 -->
         <div class="sum-sub">기준 수량(10개) 미만</div>
       </div>
       <div class="sum-card red" id="card-zero" onclick="switchTab('zero')">
         <div class="sum-icon">🚫</div>
         <div class="sum-label">품절 상품</div>
-        <div class="sum-val c-red">8</div>
+        <div class="sum-val c-red">8</div> <!-- 품절된 상품정보 가져오기 -->
         <div class="sum-sub">재고 0개 옵션</div>
       </div>
       <div class="sum-card green" id="card-ok" onclick="switchTab('all')">
@@ -193,7 +193,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     <!-- TAB BAR -->
     <div class="tab-bar">
       <div class="tab-btn on" id="tab-all" onclick="switchTab('all')">
-        🗃️ 전체 재고 <span class="tab-cnt" style="background:var(--blue)">346</span>
+        🗃️ 전체 재고 <span class="tab-cnt" style="background:var(--blue)">346</span> <!-- 쟈고 테이블에서 정보 가져오기 -->
       </div>
       <div class="tab-btn" id="tab-low" onclick="switchTab('low')">
         ⚠️ 재고 부족 <span class="tab-cnt" style="background:var(--amber)">26</span>
@@ -220,15 +220,16 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
           <option>정상</option><option>주의</option><option>부족</option><option>품절</option>
         </select>
         <div style="margin-left:auto;display:flex;gap:7px">
-          <button class="btn btn-ghost btn-sm">📥 엑셀 다운로드</button>
-          <button class="btn btn-blue btn-sm" onclick="showToast('재고 동기화 완료')">🔄 재고 동기화</button>
+          <!-- 버튼에 함수 연결 -->
+          <button class="btn btn-blue btn-sm" onclick="updateSyncTime()">🔄 재고 동기화</button>
         </div>
       </div>
 
       <div class="tbl-card">
         <div class="tbl-top">
           <div class="tbl-info">전체 상품 <strong id="allCount">12</strong>개 · 옵션(사이즈×컬러) <strong>346</strong>개</div>
-          <div style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace">최종 동기화: 09:14:32</div>
+          <!-- ID 부여된 동기화 날짜 영역 -->
+          <div id="syncTime" style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace">최종 동기화: 09:14:32</div>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -252,6 +253,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     <div id="sec-low" style="display:none">
       <div class="alert alert-amber">
         <span class="alert-ico">⚠</span>
+        <!--  수량나오는 부분 테이블에서 정보가져오기  -->
         <div>재고 기준 수량(10개) 미만 옵션이 <strong>26개</strong>입니다. 입고 등록을 통해 재고를 보충하세요.</div>
       </div>
       <div class="mini-kpi-row">
@@ -275,7 +277,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
         <div class="sw"><span class="sw-ico">🔍</span><input type="text" placeholder="상품명·품번 검색"></div>
         <select class="sel"><option>전체 브랜드</option><option>나이키</option><option>아디다스</option><option>뉴발란스</option></select>
         <div style="margin-left:auto;display:flex;gap:7px">
-          <button class="btn btn-ghost btn-sm">📥 엑셀</button>
+          
           <button class="btn btn-amber btn-sm" onclick="showToast('입고 관리 페이지로 이동합니다')">📥 입고 등록</button>
         </div>
       </div>
@@ -311,7 +313,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
         <div class="sw"><span class="sw-ico">🔍</span><input type="text" placeholder="상품명·품번 검색"></div>
         <select class="sel"><option>전체 브랜드</option><option>나이키</option><option>아디다스</option><option>버켄스탁</option></select>
         <div style="margin-left:auto;display:flex;gap:7px">
-          <button class="btn btn-ghost btn-sm">📥 엑셀</button>
+          
           <button class="btn btn-blue btn-sm" onclick="showToast('입고 등록으로 이동')">📥 즉시 입고 등록</button>
         </div>
       </div>
@@ -382,6 +384,21 @@ updateClock();
 
 // 1분(60000ms)마다 갱신
 setInterval(updateClock, 60000);
+
+// ── 동기화 버튼 클릭 시 시간 업데이트 및 토스트 알림 ──
+function updateSyncTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+    
+    document.getElementById("syncTime").innerText = "최종 동기화: " + timeString;
+    showToast('재고 동기화 완료');
+}
 
 // ── 데이터 ─────────────────────────────────────────
 const allProds = [

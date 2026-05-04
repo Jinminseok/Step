@@ -88,6 +88,9 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.6}
 .btn-xs{padding:3px 9px;font-size:11px}
 .btn-ghost{background:transparent;color:var(--gray3);border:1.5px solid var(--gray5)}
 .btn-ghost:hover{color:var(--gray1);border-color:var(--gray3)}
+/* 추가된 삭제버튼 스타일 */
+.btn-danger{background:var(--red-lt);color:var(--red);border:1.5px solid #FECACA}
+.btn-danger:hover{background:var(--red);color:#fff}
 
 /* ─── ALERT BOX ───────────────────── */
 .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:7px;font-size:12.5px;line-height:1.6;border:1px solid;margin-bottom:14px}
@@ -151,7 +154,6 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.6}
 .tbl-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray6);background:var(--bg2)}
 .tbl-top-info{font-size:12px;color:var(--gray3)}
 .tbl-top-info strong{color:var(--gray1)}
-.tbl-top-actions{display:flex;gap:6px}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;z-index:5}
@@ -160,8 +162,8 @@ td{padding:13px 14px;border-bottom:1px solid var(--gray7);font-size:12.5px;color
 tr:last-child td{border-bottom:none}
 .tbl-row{cursor:pointer;transition:background .12s}
 .tbl-row:hover td{background:var(--blue-lt)}
-.tbl-row:hover td:first-child{border-left:3px solid var(--blue);padding-left:11px}
-td:first-child{border-left:3px solid transparent;padding-left:11px}
+.tbl-row:hover td:first-child{border-left:3px solid var(--blue);padding-left:14px}
+td:first-child{border-left:3px solid transparent;padding-left:14px}
 
 /* BADGE */
 .bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10.5px;font-weight:700;white-space:nowrap;gap:4px}
@@ -221,7 +223,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     </div>
     <div class="topbar-right">
       <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>	<!-- 알림창 보여주기 (추가) -->      
+      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
     </div>
   </div>
  
@@ -247,16 +249,17 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
           <div class="card-hdr">
             <div class="card-title">
               <div class="card-title-ico">📥</div>
-              입고 등록
+              입고 대상 정보
             </div>
             <button class="btn btn-ghost btn-sm" onclick="resetForm()">초기화</button>
           </div>
           <div class="card-body">
 
             <div class="fg-grid">
-              <!-- 상품 검색 -->
-              <div class="fg fg-full">
-                <label>상품 검색 <span class="req">*</span></label>
+              
+              <!-- 상품 검색 영역 -->
+              <div class="fg fg-full" id="searchWrapDiv">
+                <label>마스터 상품 검색 <span class="req">*</span></label>
                 <div class="search-wrap" style="min-width:unset">
                   <span class="search-ico">🔍</span>
                   <input type="text" id="prodSearch" placeholder="품번(SKU) 또는 상품명 입력" oninput="searchProd(this.value)">
@@ -266,31 +269,30 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
                 </div>
               </div>
 
-              <!-- 선택된 상품 표시 -->
-              <div class="fg fg-full" id="selectedProdWrap" style="display:none">
-                <div id="selectedProdBox" style="background:var(--blue-lt);border:1.5px solid var(--blue);border-radius:7px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-                  <div style="font-size:22px">👟</div>
-                  <div style="flex:1">
-                    <div style="font-size:13px;font-weight:700;color:var(--blue)" id="selProdName"></div>
-                    <div style="font-size:11px;color:var(--gray3);margin-top:2px;font-family:'DM Mono',monospace" id="selProdSku"></div>
+              <!-- 상품 선택 시 나타나는 프로필 카드 -->
+              <div class="fg fg-full" id="selectedProdWrap" style="display:none; margin-bottom: 8px;">
+                <label>선택된 상품 <span class="req">*</span></label>
+                <div style="border:1.5px solid var(--blue); background:var(--blue-lt); border-radius:8px; padding:16px; position:relative;">
+                  <button class="btn btn-xs btn-outline" onclick="clearProd()" style="position:absolute; top:16px; right:16px; background:#fff;">🔄 변경</button>
+                  <div style="display:flex; gap:14px; align-items:center;">
+                    <div style="width:54px; height:54px; background:#fff; border:1px solid #93C5FD; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:24px;">👟</div>
+                    <div>
+                      <div style="font-size:11.5px; color:var(--blue); font-family:'DM Mono',monospace; font-weight:700; margin-bottom:3px;" id="selProdSku"></div>
+                      <div style="font-size:14px; font-weight:700; color:var(--gray1); margin-bottom:6px;" id="selProdName"></div>
+                      <div style="display:flex; gap:6px;">
+                        <span class="bdg bdg-gray" id="selProdBrand"></span>
+                        <span class="bdg bdg-gray" id="selProdCat"></span>
+                      </div>
+                    </div>
                   </div>
-                  <button class="btn btn-xs btn-ghost" onclick="clearProd()" style="flex-shrink:0">변경</button>
                 </div>
               </div>
-
-              <!-- 브랜드 / 카테고리 (자동완성) -->
-              <div class="fg">
-                <label>브랜드</label>
-                <input class="fi" id="fi-brand" placeholder="브랜드" readonly>
-              </div>
-              <div class="fg">
-                <label>카테고리</label>
-                <input class="fi" id="fi-cat" placeholder="카테고리" readonly>
-              </div>
+              
+              <div class="fg-full" style="height:1px; background:var(--gray6); margin: 6px 0;"></div>
 
               <!-- 컬러 -->
               <div class="fg fg-full">
-                <label>컬러 <span class="req">*</span></label>
+                <label>입고 컬러 <span class="req">*</span></label>
                 <select class="fi" id="fi-color">
                   <option value="">컬러 선택</option>
                   <option>화이트</option><option>블랙</option><option>그레이</option>
@@ -300,7 +302,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 
               <!-- 사이즈 -->
               <div class="fg fg-full">
-                <label>사이즈 (mm) <span class="req">*</span></label>
+                <label>입고 사이즈 (mm) <span class="req">*</span></label>
                 <div class="chip-wrap" id="sizeChips">
                   <div class="chip" onclick="selSize(this)">225</div>
                   <div class="chip" onclick="selSize(this)">230</div>
@@ -324,7 +326,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
                 <div class="fi-prefix-wrap">
                   <input class="fi" id="fi-qty" type="number" placeholder="0" min="1" style="padding-left:14px">
                 </div>
-                <div class="fi-hint">개 단위 입력</div>
+                <div class="fi-hint">사이즈별 개 단위 입력</div>
               </div>
 
               <!-- 입고일 -->
@@ -353,9 +355,9 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
               </div>
 
               <!-- 버튼 -->
-              <div class="fg fg-full" style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+              <div class="fg fg-full" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
                 <button class="btn btn-outline" onclick="resetForm()">취소</button>
-                <button class="btn btn-blue" onclick="submitInbound()">📥 입고 처리</button>
+                <button class="btn btn-blue" onclick="submitInbound()">📥 입고 완료</button>
               </div>
             </div>
           </div>
@@ -448,9 +450,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
         </div>
         <button class="btn btn-blue btn-sm" onclick="searchHistory()">조회</button>
         <button class="btn btn-outline btn-sm">초기화</button>
-        <div style="margin-left:auto;display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm">📥 엑셀 다운로드</button>
-        </div>
       </div>
 
       <!-- 요약 pills -->
@@ -461,20 +460,16 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
         <div class="pill pill-cancel"><div class="pill-num">1</div>취소</div>
       </div>
 
-      <!-- 테이블 -->
+      <!-- 🚨 수정된 부분: 테이블 상단 불필요 버튼 제거 및 테이블 헤더 수정 🚨 -->
       <div class="tbl-card">
         <div class="tbl-top">
           <div class="tbl-top-info">총 <strong>15</strong>건 · 페이지 <strong>1 / 3</strong></div>
-          <div class="tbl-top-actions">
-            <button class="btn btn-xs btn-ghost">선택 취소</button>
-            <button class="btn btn-xs btn-outline">선택 엑셀</button>
-          </div>
         </div>
         <div class="tbl-wrap">
           <table>
             <thead>
               <tr>
-                <th style="width:36px"><input type="checkbox" onchange="toggleAllHist(this)"></th>
+                <!-- 체크박스 열 삭제됨 -->
                 <th>입고 번호</th>
                 <th>입고일</th>
                 <th>브랜드</th>
@@ -484,7 +479,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
                 <th>공급업체</th>
                 <th>상태</th>
                 <th>담당자</th>
-                <th>상세</th>
+                <th>관리</th> <!-- 상세에서 관리로 변경 -->
               </tr>
             </thead>
             <tbody id="histTbody"></tbody>
@@ -516,7 +511,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="closeModal()">닫기</button>
-      <button class="btn btn-blue">수정</button>
+      <button class="btn btn-blue">저장</button> <!-- 버튼 명 수정으로 사용할 수 있도록 변경 가능 -->
     </div>
   </div>
 </div>
@@ -538,17 +533,12 @@ function updateClock() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    // 🚨 수정한 부분: JSP가 가로채지 못하게 + 기호로 안전하게 문자열 연결!
     const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
     
-    // 화면에 밀어넣기
     document.getElementById("realTimeClock").innerText = timeString;
 }
 
-// 화면이 켜지자마자 바로 시계 표시
 updateClock();
-
-// 1분(60000ms)마다 갱신
 setInterval(updateClock, 60000);
 
 //── 상품 DB ──────────────────────────────────────────
@@ -583,11 +573,11 @@ const statusBdg = {
   '취소': '<span class="bdg bdg-red">취소</span>',
 };
 
-// ── 이력 렌더 ────────────────────────────────────────
+// 🚨 변경: 렌더 함수에서 체크박스 제거 및 [수정], [삭제] 버튼 추가 🚨
 function renderHist(data) {
   document.getElementById('histTbody').innerHTML = data.map(function(d) {
     return '<tr class="tbl-row" onclick="openDetail(\'' + d.no + '\')">'
-      + '<td onclick="event.stopPropagation()"><input type="checkbox" class="h-chk"></td>'
+      // 체크박스 열 삭제됨
       + '<td style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--blue);font-weight:600">' + d.no + '</td>'
       + '<td style="font-size:12px;color:var(--gray3)">' + d.date + '</td>'
       + '<td style="font-weight:500">' + d.brand + '</td>'
@@ -597,7 +587,10 @@ function renderHist(data) {
       + '<td style="font-size:12px;color:var(--gray3)">' + (d.supplier||'-') + '</td>'
       + '<td>' + (statusBdg[d.status]||'') + '</td>'
       + '<td>' + d.manager + '</td>'
-      + '<td onclick="event.stopPropagation()"><button class="btn btn-xs btn-outline" onclick="openDetail(\'' + d.no + '\')">상세</button></td>'
+      + '<td onclick="event.stopPropagation()" style="display:flex;gap:4px;">'
+      +   '<button class="btn btn-xs btn-outline" onclick="openDetail(\'' + d.no + '\')">수정</button>'
+      +   '<button class="btn btn-xs btn-danger" onclick="deleteHist(\'' + d.no + '\')">삭제</button>'
+      + '</td>'
       + '</tr>';
   }).join('');
 }
@@ -607,8 +600,12 @@ function searchHistory() {
   showToast('조회 완료');
 }
 
-function toggleAllHist(cb) {
-  document.querySelectorAll('.h-chk').forEach(function(c){ c.checked = cb.checked; });
+// 🚨 추가: 삭제 기능용 더미 함수 🚨
+function deleteHist(no) {
+  if (confirm(no + ' 입고 내역을 삭제하시겠습니까?')) {
+      showToast('삭제되었습니다.');
+      // 실제로는 여기에 AJAX나 form submit으로 DB 삭제 로직 연결
+  }
 }
 
 // ── 탭 전환 ──────────────────────────────────────────
@@ -645,19 +642,21 @@ function searchProd(q) {
 function selectProd(sku) {
   const p = prods.find(function(x){ return x.sku===sku; });
   if(!p) return;
-  document.getElementById('prodSearch').value = p.name;
+  
   document.getElementById('searchDrop').style.display = 'none';
-  document.getElementById('fi-brand').value = p.brand;
-  document.getElementById('fi-cat').value   = p.cat;
+  document.getElementById('searchWrapDiv').style.display = 'none';
+  
   document.getElementById('selProdName').textContent = p.name;
   document.getElementById('selProdSku').textContent  = p.sku;
+  document.getElementById('selProdBrand').textContent = p.brand;
+  document.getElementById('selProdCat').textContent = p.cat;
+  
   document.getElementById('selectedProdWrap').style.display = '';
 }
 
 function clearProd() {
   document.getElementById('prodSearch').value = '';
-  document.getElementById('fi-brand').value = '';
-  document.getElementById('fi-cat').value   = '';
+  document.getElementById('searchWrapDiv').style.display = '';
   document.getElementById('selectedProdWrap').style.display = 'none';
 }
 
@@ -685,7 +684,7 @@ function submitInbound() {
 }
 
 function resetForm() {
-  ['fi-brand','fi-cat','fi-color','fi-qty','fi-memo','fi-supplier']
+  ['fi-color','fi-qty','fi-memo','fi-supplier']
     .forEach(function(id){ document.getElementById(id).value=''; });
   document.getElementById('fi-date').value = '2025-04-24';
   clearProd();
