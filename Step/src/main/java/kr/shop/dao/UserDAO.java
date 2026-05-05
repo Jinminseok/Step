@@ -157,7 +157,7 @@ public class UserDAO {
 			if (rs.next()) {
 				user = new UserVO();
 				user.setUser_num(rs.getLong("user_num"));
-				user.setUser_id(rs.getString("user_id")); // 만약 DB 컬럼명이 USER_ID 라면 수정해주세요!
+				user.setUser_id(rs.getString("user_id"));
 				user.setPwd(rs.getString("pwd"));
 				user.setUser_name(rs.getString("user_name"));
 				user.setPhone(rs.getString("phone"));

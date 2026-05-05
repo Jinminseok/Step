@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%-- 가격에 콤마(,)를 찍기 위한 JSTL 포맷 태그 추가 --%>
+<%-- 가격에 ,를 찍기 위한 JSTL 포맷 태그 --%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
@@ -19,7 +19,7 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
     <div class="wrap">
-        <%-- ★ 기존 코드: 비로그인 시 안내 배너 (그대로 유지) ★ --%>
+        <%-- 비로그인 시 안내 배너 --%>
         <c:if test="${empty sessionScope.user_num}">
             <div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:10px 20px;text-align:center;font-size:13px;color:#e65100;margin-bottom:20px;">
               🔔 로그인하시면 장바구니, 즐겨찾기, 주문 내역 등 다양한 서비스를 이용하실 수 있습니다. &nbsp;
@@ -27,7 +27,7 @@
             </div>
         </c:if>
 
-        <%-- ★ 새로 추가된 코드: 상품 리스트 영역 ★ --%>
+        <%-- 상품 리스트 영역 --%>
         <div class="prod-wrap">
             <div class="prod-title">✨ NEW ARRIVALS</div>
             
@@ -51,7 +51,7 @@
                 <%-- 등록된 상품이 없을 경우 --%>
                 <c:if test="${empty productList}">
                     <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #999;">
-                        현재 등록된 상품이 없습니다. 😢 관리자 페이지에서 신발을 등록해 주세요!
+                        현재 등록된 상품이 없습니다. 관리자 페이지에서 신발을 등록해 주세요
                     </div>
                 </c:if>
             </div>

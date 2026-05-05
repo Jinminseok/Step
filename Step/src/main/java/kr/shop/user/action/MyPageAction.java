@@ -17,7 +17,7 @@ public class MyPageAction implements Action {
 		HttpSession session = request.getSession();
 		String user_id = (String) session.getAttribute("user_id");
 		
-		// [방어막] 혹시 로그인이 풀렸거나 안 한 상태로 들어오면 로그인창으로 쫓아내기
+		// 로그인 확인
 		if (user_id == null) {
 			return "redirect:/shop/user/loginForm.do";
 		}
@@ -27,7 +27,7 @@ public class MyPageAction implements Action {
 		UserDAO dao = UserDAO.getInstance();
 		UserVO user = dao.getUserDetail(user_num);
 		
-		// 3. JSP에서 쓸 수 있게 request에 'user'라는 이름으로 담기
+		// 3. JSP에서 쓸 수 있게 request에 담기
 		request.setAttribute("user", user);
 		
 		// 4. 마이페이지 화면으로 이동

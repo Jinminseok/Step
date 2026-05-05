@@ -91,7 +91,7 @@ public class ModifyAction implements Action {
 			// 일치하면 새 비밀번호를 암호화해서 넣기
 			updateUser.setPwd(BCrypt.hashpw(new_passwd, BCrypt.gensalt()));
 		} else {
-			// 새 비밀번호 칸을 비워뒀다면 기존 암호화된 비밀번호를 그대로 복사!
+			// 새 비밀번호 칸을 비워뒀다면 기존 암호화된 비밀번호를 그대로 복사
 			updateUser.setPwd(currentUser.getPwd());
 		}
 		
