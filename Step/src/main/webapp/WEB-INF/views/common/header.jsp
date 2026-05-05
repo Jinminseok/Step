@@ -63,7 +63,7 @@
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
             <span class="hdr-btn-icon">🛒</span><span class="hdr-btn-label">장바구니</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPage.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">
             <span class="hdr-btn-icon" style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">김</span>
             <span class="hdr-btn-label" style="color:#fff">마이페이지</span>
           </button>
