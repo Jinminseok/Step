@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -245,6 +246,9 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       <div class="main-grid">
 
         <!-- LEFT: 등록 폼 -->
+        <form id="inboundForm" action="${pageContext.request.contextPath}/logistics/log_in/log_inInsert.do" method="post" onsubmit="return false;">
+          <input type="hidden" id="hidden_prodNum" name="prodNum" value="">
+          <input type="hidden" id="hidden_sizes" name="sizes" value="">          
         <div class="card">
           <div class="card-hdr">
             <div class="card-title">
@@ -293,7 +297,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <!-- 컬러 -->
               <div class="fg fg-full">
                 <label>입고 컬러 <span class="req">*</span></label>
-                <select class="fi" id="fi-color">
+                <select class="fi" id="fi-color" name="color">
                   <option value="">컬러 선택</option>
                   <option>화이트</option><option>블랙</option><option>그레이</option>
                   <option>네이비</option><option>베이지</option><option>레드</option><option>그린</option>
@@ -324,7 +328,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <div class="fg">
                 <label>입고 수량 <span class="req">*</span></label>
                 <div class="fi-prefix-wrap">
-                  <input class="fi" id="fi-qty" type="number" placeholder="0" min="1" style="padding-left:14px">
+                  <input class="fi" id="fi-qty" type="number" name="inQty" placeholder="0" min="1" style="padding-left:14px">
                 </div>
                 <div class="fi-hint">사이즈별 개 단위 입력</div>
               </div>
@@ -332,13 +336,13 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <!-- 입고일 -->
               <div class="fg">
                 <label>입고일 <span class="req">*</span></label>
-                <input class="fi" id="fi-date" type="date" value="2025-04-24">
+                <input class="fi" id="fi-date" type="date" value="2025-04-24" name="inDate">
               </div>
 
               <!-- 공급업체 -->
               <div class="fg fg-full">
                 <label>공급업체</label>
-                <select class="fi" id="fi-supplier">
+                <select class="fi" id="fi-supplier" name="supplier">
                   <option value="">공급업체 선택 (선택)</option>
                   <option>나이키 코리아</option>
                   <option>아디다스 코리아</option>
@@ -351,17 +355,18 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <!-- 메모 -->
               <div class="fg fg-full">
                 <label>메모 (선택)</label>
-                <textarea class="fi" id="fi-memo" placeholder="특이사항 또는 입고 관련 메모"></textarea>
+                <textarea class="fi" id="fi-memo" placeholder="특이사항 또는 입고 관련 메모" name="inMemo"></textarea>
               </div>
 
               <!-- 버튼 -->
               <div class="fg fg-full" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
-                <button class="btn btn-outline" onclick="resetForm()">취소</button>
-                <button class="btn btn-blue" onclick="submitInbound()">📥 입고 완료</button>
+                <button type="button" class="btn btn-outline" onclick="resetForm()">취소</button>
+                <button type="button" class="btn btn-blue" onclick="submitInbound()">📥 입고 완료</button>
               </div>
             </div>
           </div>
         </div>
+        </form>
 
         <!-- RIGHT: 오늘 입고 + 알림 -->
         <div style="display:flex;flex-direction:column;gap:14px">
@@ -543,28 +548,33 @@ setInterval(updateClock, 60000);
 
 //── 상품 DB ──────────────────────────────────────────
 const prods = [
-  {sku:'NK-AF1-WHT',   name:'나이키 에어포스 1 로우', brand:'나이키',   cat:'운동화'},
-  {sku:'NK-AM270-GRY', name:'나이키 에어맥스 270',    brand:'나이키',   cat:'운동화'},
-  {sku:'NK-SBJRD-RED', name:'나이키 조던 1 레트로',   brand:'나이키',   cat:'농구화'},
-  {sku:'AD-UB22-BLK',  name:'아디다스 울트라부스트',  brand:'아디다스', cat:'러닝화'},
-  {sku:'AD-SAMBA-BLK', name:'아디다스 삼바 OG',       brand:'아디다스', cat:'운동화'},
-  {sku:'NB-990V5-NVY', name:'뉴발란스 990v5',         brand:'뉴발란스', cat:'운동화'},
-  {sku:'NB-327-GRY',   name:'뉴발란스 327',           brand:'뉴발란스', cat:'운동화'},
-  {sku:'HK-CLIFF9-WHT',name:'호카 클리프턴 9',        brand:'호카',     cat:'러닝화'},
-  {sku:'BK-BOSTON-BEG',name:'버켄스탁 보스턴',        brand:'버켄스탁', cat:'샌들'},
+  <c:forEach var="p" items="${prodList}">
+    {
+      sku: '${p.sku}', 
+      name: '${p.prodName}', 
+      brand: '${p.brandName}', 
+      prodNum: '${p.prodNum}'
+    },
+  </c:forEach>
 ];
 
 // ── 이력 데이터 ──────────────────────────────────────
 const histData = [
-  {no:'IN-20250424-001', date:'2025/04/24', brand:'나이키',   name:'에어포스 1 로우',  size:'265mm', color:'화이트', qty:30, supplier:'나이키 코리아',   status:'완료', manager:'이지훈', memo:'정기 입고'},
-  {no:'IN-20250424-002', date:'2025/04/24', brand:'아디다스', name:'삼바 OG',          size:'270mm', color:'블랙',   qty:24, supplier:'아디다스 코리아', status:'완료', manager:'이지훈', memo:''},
-  {no:'IN-20250424-003', date:'2025/04/24', brand:'뉴발란스', name:'327',              size:'255mm', color:'그레이', qty:18, supplier:'뉴발란스 코리아', status:'완료', manager:'이지훈', memo:''},
-  {no:'IN-20250424-004', date:'2025/04/24', brand:'호카',     name:'클리프턴 9',       size:'260mm', color:'화이트', qty:36, supplier:'호카 코리아',    status:'완료', manager:'이지훈', memo:'재입고 알림 발송'},
-  {no:'IN-20250424-005', date:'2025/04/24', brand:'나이키',   name:'에어맥스 270',     size:'265mm', color:'그레이', qty:22, supplier:'나이키 코리아',   status:'완료', manager:'박수진', memo:''},
-  {no:'IN-20250423-001', date:'2025/04/23', brand:'아디다스', name:'울트라부스트 22',  size:'260mm', color:'블랙',   qty:20, supplier:'아디다스 코리아', status:'완료', manager:'박수진', memo:'긴급 입고'},
-  {no:'IN-20250423-002', date:'2025/04/23', brand:'뉴발란스', name:'990v5',            size:'270mm', color:'네이비', qty:15, supplier:'뉴발란스 코리아', status:'대기', manager:'박수진', memo:'검수 중'},
-  {no:'IN-20250423-003', date:'2025/04/23', brand:'나이키',   name:'조던 1 레트로',    size:'260mm', color:'레드',   qty:12, supplier:'나이키 코리아',   status:'대기', manager:'이지훈', memo:''},
-  {no:'IN-20250422-001', date:'2025/04/22', brand:'버켄스탁', name:'보스턴 스웨이드',  size:'250mm', color:'베이지', qty:10, supplier:'기타',           status:'취소', manager:'이지훈', memo:'공급 지연으로 취소'},
+  <c:forEach var="item" items="${inboundList}">
+    {
+      no: 'IN-${item.inNum}',          // 입고번호 (앞에 IN- 을 붙여서 예쁘게)
+      date: '${item.inDate}',          // 입고일
+      brand: '${item.brandName}',      // 브랜드
+      name: '${item.prodName}',        // 상품명
+      size: '${item.sizeVal}mm',       // 사이즈
+      color: '${item.color}',          // 컬러
+      qty: ${item.inQty},              // 수량 (숫자니까 따옴표 뺌)
+      supplier: '${item.supplier}',    // 공급업체
+      status: '완료',                   // INBOUND 테이블에 있다는 건 입고 완료라는 뜻
+      manager: '${item.userName}',     // 담당자
+      memo: '${item.inMemo}'           // 메모
+    },
+  </c:forEach>
 ];
 
 const statusBdg = {
@@ -640,19 +650,21 @@ function searchProd(q) {
 }
 
 function selectProd(sku) {
-  const p = prods.find(function(x){ return x.sku===sku; });
-  if(!p) return;
-  
-  document.getElementById('searchDrop').style.display = 'none';
-  document.getElementById('searchWrapDiv').style.display = 'none';
-  
-  document.getElementById('selProdName').textContent = p.name;
-  document.getElementById('selProdSku').textContent  = p.sku;
-  document.getElementById('selProdBrand').textContent = p.brand;
-  document.getElementById('selProdCat').textContent = p.cat;
-  
-  document.getElementById('selectedProdWrap').style.display = '';
-}
+	  const p = prods.find(function(x){ return x.sku===sku; });
+	  if(!p) return;
+	  
+	  document.getElementById('searchDrop').style.display = 'none';
+	  document.getElementById('searchWrapDiv').style.display = 'none';
+	  
+	  // 🚨 가장 중요한 부분! 선택한 상품의 진짜 DB PK(PROD_NUM)를 폼에 세팅
+	  document.getElementById('hidden_prodNum').value = p.prodNum; 
+	  
+	  document.getElementById('selProdName').textContent = p.name;
+	  document.getElementById('selProdSku').textContent  = p.sku;
+	  document.getElementById('selProdBrand').textContent = p.brand;
+	  
+	  document.getElementById('selectedProdWrap').style.display = '';
+	}
 
 function clearProd() {
   document.getElementById('prodSearch').value = '';
@@ -672,15 +684,34 @@ function selSize(el) {
 
 // ── 입고 처리 ────────────────────────────────────────
 function submitInbound() {
-  const qty  = document.getElementById('fi-qty').value;
-  const date = document.getElementById('fi-date').value;
-  if(!qty || !date || !selSizes.size) {
-    showToast('⚠ 필수 항목을 모두 입력하세요', true);
+  const prodNum = document.getElementById('hidden_prodNum').value;
+  const color = document.getElementById('fi-color').value;
+  const qty = document.getElementById('fi-qty').value;
+  
+  // 1. 필수값 유효성 검사
+  if(!prodNum) {
+    showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true);
     return;
   }
-  const no = 'IN-2025' + String(Math.floor(Math.random()*9000)+1000);
-  showToast('✅ 입고 처리 완료 (' + no + ')');
-  resetForm();
+  if(!color || !qty || selSizes.size === 0) {
+    showToast('⚠ 컬러, 사이즈, 수량 등 필수 항목을 모두 입력하세요.', true);
+    return;
+  }
+
+  // 2. 선택된 사이즈들 모아서 숨김 필드에 넣기 (예: "250,260")
+  const sizeArr = Array.from(selSizes);
+  document.getElementById('hidden_sizes').value = sizeArr.join(',');
+
+  // 3. 성공 알림창 및 폼 전송
+  if(confirm(`총 ${sizeArr.length}개의 사이즈 옵션에 각각 ${qty}개씩 입고 처리하시겠습니까?`)) {
+    // 토스트 알림 띄우기!
+    showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
+    
+    // 알림창을 볼 수 있게 1.5초(1500ms) 대기 후 서버로 전송
+    setTimeout(function() {
+      document.getElementById('inboundForm').submit();
+    }, 1500);
+  }
 }
 
 function resetForm() {
