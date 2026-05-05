@@ -109,4 +109,71 @@ public class UserDAO {
 		}
 		return user;
 	}
+	
+	// 마이페이지 회원 정보 수정
+	public void updateUser(UserVO user) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "UPDATE users_detail SET user_name=?, phone=?, email=?, zipcode=?, addr1=?, addr2=?, pwd=?, user_updated_at=SYSDATE WHERE user_num=?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, user.getUser_name());
+			pstmt.setString(2, user.getPhone());
+			pstmt.setString(3, user.getEmail());
+			pstmt.setString(4, user.getZipcode());
+			pstmt.setString(5, user.getAddr1());
+			pstmt.setString(6, user.getAddr2());
+			pstmt.setString(7, user.getPwd());
+			pstmt.setLong(8, user.getUser_num());
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
+	}
+		
+	// 마이페이지 회원 상세 정보 전체 가져오기
+	public UserVO getUserDetail(long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		UserVO user = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM users u JOIN users_detail d ON u.user_num = d.user_num WHERE u.user_num = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				user = new UserVO();
+				user.setUser_num(rs.getLong("user_num"));
+				user.setUser_id(rs.getString("user_id"));
+				user.setPwd(rs.getString("pwd"));
+				user.setUser_name(rs.getString("user_name"));
+				user.setPhone(rs.getString("phone"));
+				user.setEmail(rs.getString("email"));
+				user.setZipcode(rs.getString("zipcode"));
+				user.setAddr1(rs.getString("addr1"));
+				user.setAddr2(rs.getString("addr2"));
+				user.setAuth(rs.getInt("auth"));
+				user.setUser_created_at(rs.getDate("user_created_at"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return user;
+	}
 }

@@ -318,3 +318,16 @@ textarea.form-input{resize:vertical;min-height:90px}
 .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--gray3);cursor:pointer;margin-bottom:20px;font-weight:500}
 .back-btn:hover{color:var(--black)}
 .page-title{font-size:20px;font-weight:700;margin-bottom:20px}
+
+/* 메인 상품 리스트 */
+.prod-wrap { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+.prod-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center; }
+.prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.prod-item { cursor: pointer; transition: transform 0.2s; }
+.prod-item:hover { transform: translateY(-5px); }
+.prod-img { width: 100%; aspect-ratio: 1/1; background-color: #f5f5f5; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+.prod-img img { width: 100%; height: 100%; object-fit: cover; }
+.prod-brand { font-size: 13px; color: #666; font-weight: 700; margin-bottom: 4px; }
+.prod-name { font-size: 15px; color: #111; line-height: 1.4; margin-bottom: 8px; height: 42px; overflow: hidden; }
+.prod-price { font-size: 18px; font-weight: 800; color: #111; }
+

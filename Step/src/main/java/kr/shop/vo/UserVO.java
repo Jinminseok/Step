@@ -5,6 +5,7 @@ import java.sql.Date;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserVO {
+	// 계정
 	private long user_num;
 	private String user_id;
 	private int auth;
