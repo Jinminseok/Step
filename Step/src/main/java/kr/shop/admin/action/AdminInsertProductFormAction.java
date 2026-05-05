@@ -8,10 +8,10 @@ import kr.controller.Action;
 import kr.shop.dao.AdminDAO;
 import kr.shop.vo.AdminVO;
 
-public class AdminProductInsertFormAction implements Action {
+public class AdminInsertProductFormAction implements Action {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// 1. 관리자 권한 체크
+		// 1. 관리자 권한(9) 확인
 		HttpSession session = request.getSession();
 		Integer user_auth = (Integer) session.getAttribute("user_auth");
 
@@ -19,21 +19,18 @@ public class AdminProductInsertFormAction implements Action {
 			return "common/accessDenied.jsp";
 		}
 
-		// 2. 등록 폼에 필요한 데이터(카테고리, 브랜드) 로드
+		// 2. 싱글톤 인스턴스 획득
 		AdminDAO dao = AdminDAO.getInstance();
 
-		try {
-			List<AdminVO> categoryList = dao.getCategoryList();
-			List<AdminVO> brandList = dao.getBrandList();
+		// 3. 상품 등록 폼(Select Box)에 필요한 카테고리 및 브랜드 목록 조회
+		// 앞서 AdminDAO에 추가한 getCategoryList, getBrandList 메서드 활용
+		List<AdminVO> categoryList = dao.getCategoryList();
+		List<AdminVO> brandList = dao.getBrandList();
 
-			request.setAttribute("categoryList", categoryList);
-			request.setAttribute("brandList", brandList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "common/error.jsp";
-		}
+		// 4. JSP에서 사용할 수 있도록 데이터 바인딩
+		request.setAttribute("categoryList", categoryList);
+		request.setAttribute("brandList", brandList);
 
-		// 3. 등록 폼 뷰로 이동
-		return "shop/admin/productForm.jsp";
+		return "shop/admin/insertProductForm.jsp";
 	}
 }

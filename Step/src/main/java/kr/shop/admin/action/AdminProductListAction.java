@@ -20,19 +20,32 @@ public class AdminProductListAction implements Action {
 			return "common/accessDenied.jsp";
 		}
 
-		// 2. 파라미터 및 검색 조건 설정
+		// 2. 파라미터 설정 및 페이지 번호 처리
 		String pageNum = request.getParameter("pageNum");
 		if (pageNum == null)
 			pageNum = "1";
 
 		String keyfield = request.getParameter("keyfield");
 		String keyword = request.getParameter("keyword");
+		String cat_num = request.getParameter("cat_num");
+		String gender = request.getParameter("gender");
 
+		// 싱글톤 방식으로 DAO 객체 생성
 		AdminDAO dao = AdminDAO.getInstance();
 
 		try {
+			// 필터 객체 세팅
+			AdminVO filter = new AdminVO();
+			filter.setKeyword(keyword);
+			if (cat_num != null && !cat_num.isEmpty())
+				filter.setCat_num(Integer.parseInt(cat_num));
+			if (gender != null && !gender.isEmpty())
+				filter.setGender(Integer.parseInt(gender));
+			else
+				filter.setGender(-1);
+
 			// 전체 상품 개수 조회
-			int count = dao.getProductCount(keyfield, keyword);
+			int count = dao.getProductCount(filter);
 
 			// 3. 페이징 처리 (10개 단위)
 			PagingUtil page = new PagingUtil(keyfield, keyword, Integer.parseInt(pageNum), count, 10, 10,
@@ -40,8 +53,10 @@ public class AdminProductListAction implements Action {
 
 			List<AdminVO> list = null;
 			if (count > 0) {
-				// 목록 조회 (재고 포함)
-				list = dao.showProductList(page.getStartRow(), page.getEndRow(), keyfield, keyword);
+				// VO의 필드명(start_row, end_row)에 맞게 세터 메서드 호출 수정
+				filter.setStart_row(page.getStartRow());
+				filter.setEnd_row(page.getEndRow());
+				list = dao.getProductList(filter);
 			}
 
 			// 4. JSP 데이터 바인딩
