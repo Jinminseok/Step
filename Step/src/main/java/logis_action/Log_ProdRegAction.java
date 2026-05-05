@@ -37,11 +37,13 @@ public class Log_ProdRegAction implements Action {
         vo.setSaleRate (saleRate);
         vo.setProdText (request.getParameter("prodText"));
         vo.setProdStatus(prodStatus);
+        
+        vo.setColors(request.getParameter("colors"));
+        vo.setSizes (request.getParameter("sizes"));
 
         Log_ProdDAO dao = new Log_ProdDAO();
         dao.insertProd(vo);
 
-        // ↓ sendRedirect 제거, return 하나만 사용
-        return "logistics/log_prod/log_prodForm.jsp";
+        return "redirect:/logistics/log_prod/log_prodForm.do";
     }
 }

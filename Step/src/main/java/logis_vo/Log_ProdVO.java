@@ -20,7 +20,54 @@ public class Log_ProdVO {
     private int    stockQty;
     private int    maxStock;
 
+   
+	private int colorCnt;
+    private String sizeRange;
+    
+    private String colors;
+    private String sizes;
+    
+    private String colorList;
+    private String sizeList;
+    
     // ── getter / setter ───────────────────────────
+    
+    public int getColorCnt() {
+		return colorCnt;
+	}
+	public String getColorList() {
+		return colorList;
+	}
+	public void setColorList(String colorList) {
+		this.colorList = colorList;
+	}
+	public String getSizeList() {
+		return sizeList;
+	}
+	public void setSizeList(String sizeList) {
+		this.sizeList = sizeList;
+	}
+	public String getColors() {
+		return colors;
+	}
+	public void setColors(String colors) {
+		this.colors = colors;
+	}
+	public String getSizes() {
+		return sizes;
+	}
+	public void setSizes(String sizes) {
+		this.sizes = sizes;
+	}
+	public void setColorCnt(int colorCnt) {
+		this.colorCnt = colorCnt;
+	}
+	public String getSizeRange() {
+		return sizeRange;
+	}
+	public void setSizeRange(String sizeRange) {
+		this.sizeRange = sizeRange;
+	}
     public int getProdNum()              { return prodNum; }
     public void setProdNum(int prodNum)  { this.prodNum = prodNum; }
 
