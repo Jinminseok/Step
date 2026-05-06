@@ -58,7 +58,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .detail-panel{width:0;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--gray6);background:var(--white);transition:width .3s cubic-bezier(.4,0,.2,1);position:relative;}
 .detail-panel.open{width:560px}
 .dp-hdr{height:50px;background:var(--navy);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;white-space:nowrap;overflow:hidden;}
-.dp-hdr-ico{width:28px;height:28px;background:rgba(255,255,255,.1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.dp-hdr-ico{width:28px;height:28px;background:rgba(255,255,255,.1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden;}
 .dp-hdr-title{font-size:13.5px;font-weight:700;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis}
 .dp-hdr-sku{font-size:10px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.4);padding:2px 7px;background:rgba(255,255,255,.07);border-radius:3px;white-space:nowrap}
 .dp-close{width:28px;height:28px;border:none;background:rgba(255,255,255,.08);border-radius:5px;color:rgba(255,255,255,.6);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
@@ -83,14 +83,11 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .fi:read-only{background:var(--gray7);color:var(--gray3);cursor:default}
 select.fi option{background:var(--white)}
 textarea.fi{resize:vertical;min-height:72px}
-.img-zone{border:2px dashed var(--gray5);border-radius:8px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .18s;background:var(--bg2);}
+.img-zone{border:2px dashed var(--gray5);border-radius:8px;height:64px;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .18s;background:var(--bg2);}
 .img-zone:hover{border-color:var(--blue);background:var(--blue-lt)}
 .img-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.img-thumb{width:64px;height:64px;border-radius:6px;background:var(--gray7);border:1px solid var(--gray5);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;overflow:hidden;cursor:pointer;transition:border .15s;}
-.img-thumb:hover{border-color:var(--blue)}
+.img-thumb{width:64px;height:64px;border-radius:6px;background:var(--gray7);border:1px solid var(--gray5);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;overflow:hidden;transition:border .15s;}
 .img-thumb.main-img{border:2px solid var(--blue)}
-.img-thumb-del{position:absolute;top:3px;right:3px;width:15px;height:15px;background:var(--red);border-radius:50%;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;opacity:0;transition:opacity .15s;}
-.img-thumb:hover .img-thumb-del{opacity:1}
 .img-main-badge{position:absolute;bottom:0;left:0;right:0;background:var(--blue);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:2px;letter-spacing:.05em;}
 .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .chip{padding:5px 11px;border:1.5px solid var(--gray5);border-radius:5px;font-size:11.5px;cursor:pointer;font-family:'Pretendard',sans-serif;font-weight:500;background:var(--white);color:var(--gray3);transition:all .15s;}
@@ -119,14 +116,7 @@ textarea.fi{resize:vertical;min-height:72px}
 .dp-tab-content.active{display:block}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── 상품설명 토글 버튼 ── */
-.desc-toggle-btn {
-    font-size:10px; color:var(--blue);
-    background:none; border:none;
-    cursor:pointer; padding:0;
-    font-weight:600; font-family:'Pretendard',sans-serif;
-}
+.desc-toggle-btn {font-size:10px; color:var(--blue); background:none; border:none; cursor:pointer; padding:0; font-weight:600; font-family:'Pretendard',sans-serif;}
 .desc-toggle-btn:hover { text-decoration:underline; }
 </style>
 </head>
@@ -153,32 +143,18 @@ textarea.fi{resize:vertical;min-height:72px}
     <div class="list-panel" id="listPanel">
      <div class="list-toolbar">
 
-    <%-- 검색 폼 — 서버 검색 --%>
-    <form id="searchForm" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do"
-      method="get"
-      style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;"
-      onsubmit="updateSyncTime()">
-
-        <%-- 검색창 --%>
+    <%-- 검색 폼 --%>
+    <form id="searchForm" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do" method="get" style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;" onsubmit="updateSyncTime()">
         <div class="search-wrap">
             <span class="search-ico">🔍</span>
-            <input type="text" id="searchInput" name="keyword"
-                   value="${keyword}"
-                   placeholder="품번·상품명·브랜드 검색">
+            <input type="text" id="searchInput" name="keyword" value="${keyword}" placeholder="품번·상품명·브랜드 검색">
         </div>
-
-        <%-- 브랜드 필터 --%>
         <select class="sel" name="brand" id="brandFilter">
             <option value="">전체 브랜드</option>
             <c:forEach var="b" items="${brandList}">
-                <option value="${b.brandName}"
-                    ${brandSel eq b.brandName ? 'selected' : ''}>
-                    ${b.brandName}
-                </option>
+                <option value="${b.brandName}" ${brandSel eq b.brandName ? 'selected' : ''}>${b.brandName}</option>
             </c:forEach>
         </select>
-
-        <%-- 상태 필터 --%>
         <select class="sel" name="status" id="statusFilter">
             <option value="">전체 상태</option>
             <option value="판매중" ${statusSel eq '판매중' ? 'selected' : ''}>판매중</option>
@@ -188,21 +164,13 @@ textarea.fi{resize:vertical;min-height:72px}
         </select>
 
         <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
-            <div id="syncTime" style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace;">
-                최종 동기화: -
-            </div>
+            <div id="syncTime" style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace;">최종 동기화: -</div>
             <div style="display:flex;gap:7px;">
-                <%-- 상품 동기화 = 검색 submit --%>
-                <button type="submit" class="btn btn-outline btn-sm">
-                    🔄 상품 동기화
-                </button>
-                <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">
-                    ＋ 상품 등록
-                </button>
+                <button type="submit" class="btn btn-outline btn-sm">🔄 상품 동기화</button>
+                <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
             </div>
         </div>
-
-    </form><%-- /searchForm --%>
+    </form>
 
       </div>
 
@@ -212,6 +180,7 @@ textarea.fi{resize:vertical;min-height:72px}
           <thead>
             <tr>
               <th style="width:36px"><input type="checkbox" onchange="toggleAll(this)"></th>
+              <th>이미지</th>
               <th>품번 (SKU)</th>
               <th>브랜드</th>
               <th>상품명</th>
@@ -234,46 +203,52 @@ textarea.fi{resize:vertical;min-height:72px}
                   <c:set var="bdgCls"  value="${p.stockQty == 0 ? 'bdg-red' : p.prodStatus == 2 ? 'bdg-gray' : pct < 20 ? 'bdg-amber' : 'bdg-green'}"/>
                   <c:set var="bdgTxt"  value="${p.stockQty == 0 ? '품절' : p.prodStatus == 2 ? '숨김' : pct < 20 ? '주의' : '판매중'}"/>
                   
+                  <%-- 🚨 data-img 추가 완료 --%>
                   <tr class="prod-row" data-id="${p.prodNum}"
-   					 data-desc="${p.prodText}"
-   					 data-colors="${p.colorList}"
-  					  data-sizes="${p.sizeList}"
-   					 onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
+                      data-desc="${p.prodText}"
+                      data-colors="${p.colorList}"
+                      data-sizes="${p.sizeList}"
+                      data-img="${p.prodImgUrl}"
+                      onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
                       
                     <td onclick="event.stopPropagation()">
                       <input type="checkbox" class="row-chk" onchange="updateSelCount()">
                     </td>
+                    
+                    <%-- 🚨 형님이 말씀하신 JSTL 사진 처리 방식 적용 (목록 화면) --%>
+                    <td>
+                      <c:if test="${!empty p.prodImgUrl}">
+                          <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
+                      </c:if>
+                      <c:if test="${empty p.prodImgUrl}">
+                          <div style="width:36px;height:36px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray6);font-size:16px;">👟</div>
+                      </c:if>
+                    </td>
+
                     <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3);">${p.sku}</td>
                     <td>${p.brandName}</td>
                     <td style="font-weight:600;color:var(--gray1);">${p.prodName}</td>
                     <td><span class="bdg bdg-gray">${p.catName}</span></td>
-                    <td style="font-family:'DM Mono',monospace;font-size:11px;">
-    ${not empty p.sizeRange ? p.sizeRange : '-'}
-</td>
-<td style="text-align:center;">
-    ${p.colorCnt > 0 ? p.colorCnt : '-'}
-    <c:if test="${p.colorCnt > 0}">색</c:if>
-</td>
+                    <td style="font-family:'DM Mono',monospace;font-size:11px;">${not empty p.sizeRange ? p.sizeRange : '-'}</td>
+                    <td style="text-align:center;">${p.colorCnt > 0 ? p.colorCnt : '-'} <c:if test="${p.colorCnt > 0}">색</c:if></td>
                     <td style="font-family:'DM Mono',monospace;font-weight:600;">${p.stockQty}</td>
                     <td style="min-width:100px;">
                       <div class="prog-wrap">
-                        <div class="prog-track">
-                          <div class="prog-fill ${progCls}" style="width:${pct}%"></div>
-                        </div>
+                        <div class="prog-track"><div class="prog-fill ${progCls}" style="width:${pct}%"></div></div>
                         <div class="prog-num">${pct}%</div>
                       </div>
                     </td>
                     <td><span class="bdg ${bdgCls}">${bdgTxt}</span></td>
                     <td onclick="event.stopPropagation()" style="display:flex;gap:4px;align-items:center;">
-                      <button class="btn btn-outline btn-xs"
-                              onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},document.querySelector('[data-id=\'${p.prodNum}\']'))">상세</button>
-                      <button class="btn btn-danger btn-xs"
-                              onclick="if(confirm('삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=${p.prodNum}'">삭제</button>
+                      <button class="btn btn-outline btn-xs" onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},document.querySelector('[data-id=\'${p.prodNum}\']'))">상세</button>
+                      <button class="btn btn-danger btn-xs" onclick="if(confirm('삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=${p.prodNum}'">삭제</button>
                     </td>
                   </tr>
                 </c:forEach>
               </c:when>
-              <c:otherwise><%-- 데이터 없음 --%></c:otherwise>
+              <c:otherwise>
+                  <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray4);">📭 등록된 상품이 없습니다.</td></tr>
+              </c:otherwise>
             </c:choose>
           </tbody>
         </table>
@@ -281,17 +256,7 @@ textarea.fi{resize:vertical;min-height:72px}
 
       <!-- FOOTER -->
       <div class="list-footer">
-        <div class="list-footer-info">
-          총 <strong>${not empty count ? count : 0}</strong>개 상품 ·
-          선택 <strong id="selCount">0</strong>개
-        </div>
-        <div class="pagination">
-          <div class="pg-btn">‹</div>
-          <div class="pg-btn on">1</div>
-          <div class="pg-btn">2</div>
-          <div class="pg-btn">3</div>
-          <div class="pg-btn">›</div>
-        </div>
+        <div class="list-footer-info">총 <strong>${not empty count ? count : 0}</strong>개 상품 · 선택 <strong id="selCount">0</strong>개</div>
       </div>
     </div><%-- /list-panel --%>
 
@@ -306,13 +271,11 @@ textarea.fi{resize:vertical;min-height:72px}
       <div class="dp-tabs">
         <div class="dp-tab on" onclick="switchTab(this,'tab-info')">기본 정보</div>
         <div class="dp-tab" onclick="switchTab(this,'tab-stock')">옵션 / 재고</div>
-        <div class="dp-tab" onclick="switchTab(this,'tab-review')">리뷰</div>
       </div>
 
-      <form id="prodRegForm" action="" method="post"
-            style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <%-- 🚨 폼에 multipart/form-data 적용 --%>
+      <form id="prodRegForm" action="" method="post" enctype="multipart/form-data" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
 
-        <%-- 히든 필드 --%>
         <input type="hidden" id="h-prodNum"  name="prodNum"  value="">
         <input type="hidden" id="h-catNum"   name="catNum"   value="">
         <input type="hidden" id="h-brandNum" name="brandNum" value="">
@@ -326,15 +289,17 @@ textarea.fi{resize:vertical;min-height:72px}
             <div class="dp-section">
               <div class="dp-section-title">상품 이미지</div>
               <div class="img-previews" id="imgPreviews">
-                <div class="img-thumb main-img">👟<div class="img-main-badge">대표</div><div class="img-thumb-del">✕</div></div>
-                <div class="img-thumb">👟<div class="img-thumb-del">✕</div></div>
-                <div class="img-thumb">👟<div class="img-thumb-del">✕</div></div>
-                <div class="img-zone" style="width:64px;height:64px;border-radius:6px;font-size:18px;" onclick="document.getElementById('fileInput').click()">
+                <%-- 🚨 파일 미리보기 박스 --%>
+                <div id="imagePreviewBox" class="img-thumb main-img">
+                  <span id="previewEmoji" style="font-size:22px;">👟</span>
+                </div>
+                <div class="img-zone" onclick="document.getElementById('fileInput').click()">
                   <span style="color:var(--gray4);font-size:20px">＋</span>
                 </div>
               </div>
               <div style="font-size:10px;color:var(--gray4);margin-top:6px">첫 번째 이미지가 대표 이미지로 설정됩니다.</div>
-              <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+              <%-- 🚨 실제 파일 인풋 태그 --%>
+              <input type="file" id="fileInput" name="uploadFile" accept="image/*" style="display:none" onchange="previewImage(this)">
             </div>
 
             <div class="dp-section">
@@ -347,68 +312,41 @@ textarea.fi{resize:vertical;min-height:72px}
                     <button type="button" class="btn btn-outline" style="flex-shrink:0;padding:9px 12px;" onclick="generateSKU()">자동 생성</button>
                   </div>
                 </div>
-                <div class="fg">
-                  <label>품번 등록일</label>
-                  <input class="fi" id="fi-regdate" readonly style="background:var(--gray7);color:var(--gray3)">
-                </div>
-                <div class="fg fg-full">
-                  <label>상품명 <span style="color:var(--red)">*</span></label>
-                  <input class="fi" id="fi-name" name="prodName" placeholder="상품명을 입력하세요">
-                </div>
+                <div class="fg"><label>품번 등록일</label><input class="fi" id="fi-regdate" readonly style="background:var(--gray7);color:var(--gray3)"></div>
+                <div class="fg fg-full"><label>상품명 <span style="color:var(--red)">*</span></label><input class="fi" id="fi-name" name="prodName" placeholder="상품명을 입력하세요"></div>
+                
                 <div class="fg">
                   <label>브랜드 <span style="color:var(--red)">*</span></label>
                   <select class="fi" id="fi-brand">
                     <option value="">브랜드 선택</option>
-                    <c:forEach var="b" items="${brandList}">
-                      <option value="${b.brandName}" data-num="${b.brandNum}">${b.brandName}</option>
-                    </c:forEach>
+                    <c:forEach var="b" items="${brandList}"><option value="${b.brandName}" data-num="${b.brandNum}">${b.brandName}</option></c:forEach>
                   </select>
                 </div>
                 <div class="fg">
                   <label>카테고리 <span style="color:var(--red)">*</span></label>
                   <select class="fi" id="fi-cat">
                     <option value="">카테고리 선택</option>
-                    <c:forEach var="c" items="${catList}">
-                      <option value="${c.catName}" data-num="${c.catNum}">${c.catName}</option>
-                    </c:forEach>
+                    <c:forEach var="c" items="${catList}"><option value="${c.catName}" data-num="${c.catNum}">${c.catName}</option></c:forEach>
                   </select>
                 </div>
-                <div class="fg">
-                  <label>정가 (원) <span style="color:var(--red)">*</span></label>
-                  <input class="fi" id="fi-price" name="prodPrice" type="number" placeholder="0">
-                </div>
-                <div class="fg">
-                  <label>할인율 (%)</label>
-                  <input class="fi" id="fi-sale" name="saleRate" type="number" placeholder="0" min="0" max="100">
-                </div>
+                
+                <div class="fg"><label>정가 (원) <span style="color:var(--red)">*</span></label><input class="fi" id="fi-price" name="prodPrice" type="number" placeholder="0"></div>
+                <div class="fg"><label>할인율 (%)</label><input class="fi" id="fi-sale" name="saleRate" type="number" placeholder="0" min="0" max="100"></div>
                 <div class="fg">
                   <label>성별</label>
-                  <select class="fi" id="fi-gender" name="gender">
-                    <option value="0">공용</option>
-                    <option value="1">남성</option>
-                    <option value="2">여성</option>
-                  </select>
+                  <select class="fi" id="fi-gender" name="gender"><option value="0">공용</option><option value="1">남성</option><option value="2">여성</option></select>
                 </div>
                 <div class="fg">
                   <label>판매 상태</label>
-                  <select class="fi" id="fi-status" name="prodStatus">
-                    <option value="1">판매중</option>
-                    <option value="2">숨김</option>
-                    <option value="3">품절</option>
-                  </select>
+                  <select class="fi" id="fi-status" name="prodStatus"><option value="1">판매중</option><option value="2">숨김</option><option value="3">품절</option></select>
                 </div>
-
-                <%-- ★ 상품 설명 — 기본 표시, 클릭 시 접기 --%>
                 <div class="fg fg-full">
                   <div style="display:flex;align-items:center;justify-content:space-between;">
                     <label>상품 설명</label>
-                    <button type="button" class="desc-toggle-btn" id="descToggleBtn"
-                            onclick="toggleDesc()">▲ 접기</button>
+                    <button type="button" class="desc-toggle-btn" id="descToggleBtn" onclick="toggleDesc()">▲ 접기</button>
                   </div>
-                  <textarea class="fi" id="fi-desc" name="prodText"
-                            placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
+                  <textarea class="fi" id="fi-desc" name="prodText" placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
                 </div>
-
               </div>
             </div>
 
@@ -428,81 +366,33 @@ textarea.fi{resize:vertical;min-height:72px}
             <div class="dp-section">
               <div class="dp-section-title">사이즈 옵션 (mm)</div>
               <div class="chip-row" id="sizeChips">
-                <div class="chip" onclick="this.classList.toggle('on')">220</div>
-                <div class="chip" onclick="this.classList.toggle('on')">225</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">230</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">235</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">240</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">245</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">250</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">255</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">260</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">265</div>
-                <div class="chip on" onclick="this.classList.toggle('on')">270</div>
-                <div class="chip" onclick="this.classList.toggle('on')">275</div>
-                <div class="chip" onclick="this.classList.toggle('on')">280</div>
-                <div class="chip" onclick="this.classList.toggle('on')">285</div>
+                <div class="chip" onclick="this.classList.toggle('on')">220</div><div class="chip" onclick="this.classList.toggle('on')">225</div>
+                <div class="chip on" onclick="this.classList.toggle('on')">230</div><div class="chip on" onclick="this.classList.toggle('on')">235</div>
+                <div class="chip on" onclick="this.classList.toggle('on')">240</div><div class="chip on" onclick="this.classList.toggle('on')">245</div>
+                <div class="chip on" onclick="this.classList.toggle('on')">250</div><div class="chip on" onclick="this.classList.toggle('on')">255</div>
+                <div class="chip on" onclick="this.classList.toggle('on')">260</div><div class="chip on" onclick="this.classList.toggle('on')">265</div>
+                <div class="chip on" onclick="this.classList.toggle('on')">270</div><div class="chip" onclick="this.classList.toggle('on')">275</div>
+                <div class="chip" onclick="this.classList.toggle('on')">280</div><div class="chip" onclick="this.classList.toggle('on')">285</div>
               </div>
             </div>
           </div><%-- /tab-info --%>
 
-          <!-- TAB: 옵션 / 재고 -->
           <div class="dp-tab-content" id="tab-stock">
-            <div class="dp-section">
-              <div class="dp-section-title">컬러 × 사이즈별 재고 현황</div>
-              <table class="stock-mini-table">
-                <thead>
-                  <tr><th>컬러</th><th>사이즈</th><th>현재 재고</th><th>부족기준</th><th>상태</th><th>수정</th></tr>
-                </thead>
-                <tbody id="stockTbody"></tbody>
-              </table>
-            </div>
-            <div class="dp-section">
-              <div class="dp-section-title">재고 수동 조정</div>
-              <div class="fg-grid">
-                <div class="fg"><label>조정 대상 옵션</label><select class="fi"><option>옵션 선택</option></select></div>
-                <div class="fg"><label>조정 유형</label><select class="fi"><option>증가 (+)</option><option>감소 (-)</option></select></div>
-                <div class="fg"><label>조정 수량</label><input class="fi" type="number" placeholder="0" min="0"></div>
-                <div class="fg"><label>사유 (필수)</label><input class="fi" placeholder="예: 오손파손 처리"></div>
-              </div>
-              <div style="margin-top:10px;display:flex;justify-content:flex-end">
-                <button type="button" class="btn btn-blue btn-sm">재고 조정 적용</button>
-              </div>
-            </div>
-          </div><%-- /tab-stock --%>
-
-          <!-- TAB: 리뷰 -->
-          <div class="dp-tab-content" id="tab-review">
-            <div class="dp-section">
-              <div class="dp-section-title">고객 리뷰</div>
-              <div class="review-item">
-                <div class="review-hdr">
-                  <div class="review-av">홍</div>
-                  <div><div class="review-user">hong1234</div><div class="review-stars">★★★★★</div></div>
-                  <div class="review-date">2025-04-20</div>
-                </div>
-                <div class="review-body">사이즈가 딱 맞고 쿠션감이 좋아요. 배송도 빠르고 포장도 꼼꼼했습니다.</div>
-              </div>
-            </div>
-          </div><%-- /tab-review --%>
-
+             <div style="padding:40px;text-align:center;color:var(--gray4);font-size:12px;">옵션/재고 관리 기능 준비중</div>
+          </div>
         </div><%-- /dp-body --%>
 
-        <!-- DETAIL FOOTER -->
         <div class="dp-footer">
-          <button type="button" class="btn btn-danger btn-sm" id="dpDeleteBtn"
-        		onclick="deleteProd()">삭제</button>
+          <button type="button" class="btn btn-danger btn-sm" id="dpDeleteBtn" onclick="deleteProd()">삭제</button>
           <div style="display:flex;gap:8px;margin-left:auto">
             <button type="button" class="btn btn-outline" onclick="closeDetail()">취소</button>
             <button type="button" class="btn btn-blue" id="dpSaveBtn" onclick="submitProd()">저장</button>
           </div>
         </div>
 
-      </form><%-- /prodRegForm --%>
-
+      </form>
     </div><%-- /detail-panel --%>
-
-  </div><%-- /body-wrap --%>
+  </div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -511,75 +401,56 @@ textarea.fi{resize:vertical;min-height:72px}
 var selectedId = null;
 var isNew      = false;
 
-// ── 시간 ──────────────────────────────────────────
 function updateClock() {
     var now = new Date();
-    var s = now.getFullYear() + "-"
-          + String(now.getMonth()+1).padStart(2,'0') + "-"
-          + String(now.getDate()).padStart(2,'0') + "  "
-          + String(now.getHours()).padStart(2,'0') + ":"
-          + String(now.getMinutes()).padStart(2,'0');
+    var s = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,'0') + "-" + String(now.getDate()).padStart(2,'0') + "  "
+          + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
     var el = document.getElementById("realTimeClock");
     if(el) el.innerText = s;
 }
-updateClock();
-setInterval(updateClock, 60000);
+updateClock(); setInterval(updateClock, 60000);
 
-// ── TOAST ─────────────────────────────────────────
 function showToast(msg) {
     var t = document.getElementById('toast');
     if(!t) return;
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
-// ── 동기화 ────────────────────────────────────────
-function updateSyncTime() {
-    var now = new Date();
-    var s = now.getFullYear() + "-"
-          + String(now.getMonth()+1).padStart(2,'0') + "-"
-          + String(now.getDate()).padStart(2,'0') + " "
-          + String(now.getHours()).padStart(2,'0') + ":"
-          + String(now.getMinutes()).padStart(2,'0') + ":"
-          + String(now.getSeconds()).padStart(2,'0');
-    var el = document.getElementById("syncTime");
-    if(el) el.innerText = "최종 동기화: " + s;
-    // return true 해야 form submit이 계속 진행됨
-    return true;
-}
-
-// ── SKU 자동 생성 ──────────────────────────────────
 function generateSKU() {
     var brand = document.getElementById('fi-brand').value;
     if(!brand){ alert("브랜드를 먼저 선택해 주세요."); return; }
     var map = {"나이키":"NK","아디다스":"AD","뉴발란스":"NB","호카":"HK","버켄스탁":"BK"};
     var prefix = map[brand] || "PRD";
     var now = new Date();
-    var yy = String(now.getFullYear()).slice(2);
-    var mm = String(now.getMonth()+1).padStart(2,'0');
-    var dd = String(now.getDate()).padStart(2,'0');
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     var rand = '';
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     for(var i=0;i<4;i++) rand += chars.charAt(Math.floor(Math.random()*chars.length));
-    document.getElementById('fi-sku').value = prefix + "-" + yy + mm + dd + "-" + rand;
+    document.getElementById('fi-sku').value = prefix + "-" + String(now.getFullYear()).slice(2) + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + "-" + rand;
     showToast('상품 고유코드가 자동 생성되었습니다.');
 }
 
-// ── 상품 설명 토글 ────────────────────────────────
 function toggleDesc() {
     var ta  = document.getElementById('fi-desc');
     var btn = document.getElementById('descToggleBtn');
-    if (ta.style.display === 'none') {
-        ta.style.display  = '';
-        btn.textContent   = '▲ 접기';
-    } else {
-        ta.style.display  = 'none';
-        btn.textContent   = '▼ 펼치기';
+    if (ta.style.display === 'none') { ta.style.display = ''; btn.textContent = '▲ 접기'; } 
+    else { ta.style.display = 'none'; btn.textContent = '▼ 펼치기'; }
+}
+
+// 🚨 이미지 미리보기 스크립트
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var box = document.getElementById('imagePreviewBox');
+            box.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
+                          + '<div class="img-main-badge">대표</div>';
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
-// ── 등록 / 수정 submit ────────────────────────────
+// 🚨 데이터 전송 로직 (FormData 사용)
 function submitProd() {
     var sku   = document.getElementById('fi-sku').value.trim();
     var name  = document.getElementById('fi-name').value.trim();
@@ -593,30 +464,22 @@ function submitProd() {
     if(!cat)   { alert('카테고리를 선택하세요.');  return; }
     if(!price) { alert('정가를 입력하세요.');      return; }
 
-    // data-num 속성으로 번호 읽기
+    // 1. Select 태그의 data-num 속성을 읽어서 hidden input에 채워넣기
     var brandSel = document.getElementById('fi-brand');
     var catSel   = document.getElementById('fi-cat');
-    document.getElementById('h-brandNum').value =
-        brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
-    document.getElementById('h-catNum').value =
-        catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
+    document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
+    document.getElementById('h-catNum').value = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
 
-    // 숨겨진 경우에도 textarea 값은 그대로 name="prodText" 로 전송됨
-
-    // 컬러 수집
+    // 2. 선택된 컬러칩 / 사이즈칩 문자열로 만들어서 hidden input에 채워넣기
     var colors = [];
-    document.querySelectorAll('#colorChips .chip.on').forEach(function(c){
-        colors.push(c.innerText.trim());
-    });
+    document.querySelectorAll('#colorChips .chip.on').forEach(function(c){ colors.push(c.innerText.trim()); });
     document.getElementById('h-colors').value = colors.join(',');
 
-    // 사이즈 수집
     var sizes = [];
-    document.querySelectorAll('#sizeChips .chip.on').forEach(function(c){
-        sizes.push(c.innerText.trim());
-    });
+    document.querySelectorAll('#sizeChips .chip.on').forEach(function(c){ sizes.push(c.innerText.trim()); });
     document.getElementById('h-sizes').value = sizes.join(',');
 
+    // 3. Form action 경로 지정 후 폼 통째로 제출 (파일 포함 전송)
     var form = document.getElementById('prodRegForm');
     var cp   = '${pageContext.request.contextPath}';
 
@@ -627,59 +490,57 @@ function submitProd() {
         document.getElementById('h-prodNum').value = selectedId;
         form.action = cp + '/logistics/log_prod/log_prodMod.do';
     }
+    
+    // 🚨 반드시 form.submit()을 호출해야 파일이 넘어갑니다.
     form.submit();
 }
 
-// ── DB 데이터로 상세 패널 열기 ─────────────────────
+// 🚨 기존 정보 클릭 시, 자바스크립트로 우측 패널에 이미지 세팅
 function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPrice, prodStatus, rowEl) {
     isNew      = false;
     selectedId = prodNum;
 
-    document.getElementById('dpIco').textContent         = '📝';
+    // 1. data-img 에서 파일명 꺼내오기
+    var imgUrl = rowEl ? (rowEl.getAttribute('data-img') || '') : '';
+    var cp = '${pageContext.request.contextPath}';
+    
+    var dpIco = document.getElementById('dpIco');
+    var previewBox = document.getElementById('imagePreviewBox');
+
+    // 2. 이미지가 있으면 세팅, 없으면 기본 아이콘
+    if (imgUrl && imgUrl !== 'null' && imgUrl.trim() !== '') {
+        var imgSrc = cp + '/upload/' + imgUrl;
+        dpIco.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">';
+        previewBox.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
+                             + '<div class="img-main-badge">대표</div>';
+    } else {
+        dpIco.innerHTML = '📑';
+        previewBox.innerHTML = '<span id="previewEmoji" style="font-size:22px;">👟</span><div class="img-main-badge">대표</div>';
+    }
+
     document.getElementById('dpTitle').textContent       = prodName;
     document.getElementById('dpSku').textContent         = sku;
     document.getElementById('dpSaveBtn').textContent     = '수정 저장';
     document.getElementById('dpDeleteBtn').style.display = '';
 
     document.getElementById('fi-sku').value    = sku;
-    document.getElementById('fi-regdate').value= '';
     document.getElementById('fi-name').value   = prodName;
     document.getElementById('fi-brand').value  = brandName;
     document.getElementById('fi-cat').value    = catName;
     document.getElementById('fi-price').value  = prodPrice;
-    document.getElementById('fi-sale').value   = 0;
     document.getElementById('fi-status').value = prodStatus;
 
-    // 상품 설명
     var desc = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
-    var ta   = document.getElementById('fi-desc');
-    ta.value = desc;
-    var btn  = document.getElementById('descToggleBtn');
-    ta.style.display = '';
-    btn.textContent  = '▲ 접기';
+    document.getElementById('fi-desc').value = desc;
 
-    // ★ 컬러 칩 — DB에 저장된 컬러만 활성화
-    var savedColors = rowEl ? (rowEl.getAttribute('data-colors') || '') : '';
-    var colorArr    = savedColors ? savedColors.split(',') : [];
+    var colorArr = rowEl ? (rowEl.getAttribute('data-colors') || '').split(',') : [];
     document.querySelectorAll('#colorChips .chip').forEach(function(c) {
-        var chipColor = c.innerText.trim();
-        if (colorArr.indexOf(chipColor) !== -1) {
-            c.classList.add('on');
-        } else {
-            c.classList.remove('on');
-        }
+        c.classList.toggle('on', colorArr.indexOf(c.innerText.trim()) !== -1);
     });
 
-    // ★ 사이즈 칩 — DB에 저장된 사이즈만 활성화
-    var savedSizes = rowEl ? (rowEl.getAttribute('data-sizes') || '') : '';
-    var sizeArr    = savedSizes ? savedSizes.split(',') : [];
+    var sizeArr = rowEl ? (rowEl.getAttribute('data-sizes') || '').split(',') : [];
     document.querySelectorAll('#sizeChips .chip').forEach(function(c) {
-        var chipSize = c.innerText.trim();
-        if (sizeArr.indexOf(chipSize) !== -1) {
-            c.classList.add('on');
-        } else {
-            c.classList.remove('on');
-        }
+        c.classList.toggle('on', sizeArr.indexOf(c.innerText.trim()) !== -1);
     });
 
     switchTabById('tab-info');
@@ -690,87 +551,40 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
     });
 }
 
-// ── 신규 등록 ─────────────────────────────────────
 function openNew() {
     isNew      = true;
     selectedId = null;
 
-    document.getElementById('dpIco').textContent         = '＋';
-    document.getElementById('dpTitle').textContent       = '신규 상품 등록';
-    document.getElementById('dpSku').textContent         = '';
-    document.getElementById('dpSaveBtn').textContent     = '등록';
+    document.getElementById('dpIco').innerHTML = '＋';
+    document.getElementById('dpTitle').textContent = '신규 상품 등록';
+    document.getElementById('dpSaveBtn').textContent = '등록';
     document.getElementById('dpDeleteBtn').style.display = 'none';
+    
+    // 이미지 초기화
+    var previewBox = document.getElementById('imagePreviewBox');
+    previewBox.innerHTML = '<span id="previewEmoji" style="font-size:22px;">👟</span><div class="img-main-badge">대표</div>';
+    document.getElementById('fileInput').value = ''; // 파일 인풋 비우기
 
-    ['fi-sku','fi-regdate','fi-name','fi-price','fi-sale','fi-desc']
-        .forEach(function(id){ document.getElementById(id).value = ''; });
+    ['fi-sku','fi-regdate','fi-name','fi-price','fi-sale','fi-desc'].forEach(function(id){ document.getElementById(id).value = ''; });
     document.getElementById('fi-brand').value  = '';
     document.getElementById('fi-cat').value    = '';
     document.getElementById('fi-gender').value = '0';
     document.getElementById('fi-status').value = '1';
 
-    // 상품 설명 펼치기
-    var ta  = document.getElementById('fi-desc');
-    var btn = document.getElementById('descToggleBtn');
-    ta.style.display = '';
-    btn.textContent  = '▲ 접기';
-
     document.querySelectorAll('#colorChips .chip').forEach(function(c){ c.classList.remove('on'); });
     document.querySelectorAll('#sizeChips .chip').forEach(function(c){ c.classList.remove('on'); });
 
-    switchTabById('tab-info');
-    openPanel();
+    switchTabById('tab-info'); openPanel();
     document.querySelectorAll('.prod-row').forEach(function(r){ r.classList.remove('selected'); });
 }
 
-function openPanel() {
-    document.getElementById('detailPanel').classList.add('open');
-    document.getElementById('listPanel').classList.add('shrunk');
-}
-function closeDetail() {
-    document.getElementById('detailPanel').classList.remove('open');
-    document.getElementById('listPanel').classList.remove('shrunk');
-    document.querySelectorAll('.prod-row').forEach(function(r){ r.classList.remove('selected'); });
-    selectedId = null;
-    isNew = false;
-}
-
-// ── 탭 전환 ───────────────────────────────────────
-function switchTab(el, tabId) {
-    el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(function(t){ t.classList.remove('on'); });
-    el.classList.add('on');
-    switchTabById(tabId);
-}
-function switchTabById(tabId) {
-    document.querySelectorAll('.dp-tab-content').forEach(function(t){ t.classList.remove('active'); });
-    document.getElementById(tabId).classList.add('active');
-}
-
-// ── 검색 필터 ─────────────────────────────────────
-function filterTable(val) {
-    var q = (val || document.getElementById('searchInput').value).toLowerCase();
-    document.querySelectorAll('.prod-row').forEach(function(row) {
-        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
-
-// ── 체크박스 ──────────────────────────────────────
-function toggleAll(cb) {
-    document.querySelectorAll('.row-chk').forEach(function(c){ c.checked = cb.checked; });
-    updateSelCount();
-}
-function updateSelCount() {
-    document.getElementById('selCount').textContent =
-        document.querySelectorAll('.row-chk:checked').length;
-}
-// ── 상세 패널 삭제 버튼 ───────────────────────────
-function deleteProd() {
-    if (selectedId === null) return;
-    if (!confirm('삭제하시겠습니까?')) return;
-
-    var cp = '${pageContext.request.contextPath}';
-    location.href = cp + '/logistics/log_prod/log_prodDel.do?prodNum=' + selectedId;
-}
+function openPanel() { document.getElementById('detailPanel').classList.add('open'); document.getElementById('listPanel').classList.add('shrunk'); }
+function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); document.getElementById('listPanel').classList.remove('shrunk'); document.querySelectorAll('.prod-row').forEach(function(r){ r.classList.remove('selected'); }); selectedId = null; isNew = false; }
+function switchTab(el, tabId) { el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(function(t){ t.classList.remove('on'); }); el.classList.add('on'); switchTabById(tabId); }
+function switchTabById(tabId) { document.querySelectorAll('.dp-tab-content').forEach(function(t){ t.classList.remove('active'); }); document.getElementById(tabId).classList.add('active'); }
+function toggleAll(cb) { document.querySelectorAll('.row-chk').forEach(function(c){ c.checked = cb.checked; }); updateSelCount(); }
+function updateSelCount() { document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length; }
+function deleteProd() { if (selectedId === null) return; if (!confirm('삭제하시겠습니까?')) return; location.href = '${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=' + selectedId; }
 </script>
-
 </body>
 </html>

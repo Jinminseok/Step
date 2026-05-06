@@ -30,10 +30,18 @@ public class Log_ProdVO {
     private String colorList;
     private String sizeList;
     
+    private String prodImgUrl;
+    
     // ── getter / setter ───────────────────────────
     
     public int getColorCnt() {
 		return colorCnt;
+	}
+	public String getProdImgUrl() {
+		return prodImgUrl;
+	}
+	public void setProdImgUrl(String prodImgUrl) {
+		this.prodImgUrl = prodImgUrl;
 	}
 	public String getColorList() {
 		return colorList;

@@ -9,23 +9,25 @@ public class Log_ProdDAO {
 
     // ── 공통 SQL 조각 ──────────────────────────────────────────────────────
     private static final String SELECT_BASE =
-    		"SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, "
-    			      + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
-    			      + "       NVL(s.STOCK_QTY, 0) AS STOCK_QTY, "
-    			      + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
-    			      + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
-    			      + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
-    			      + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
-    			      + "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) "
-    			      + "        FROM PROD_OPTIONS "
-    			      + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
-    			      + "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) "
-    			      + "        FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS "
-    			      + "              WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST "
-    			      + "FROM   PRODUCTS p "
-    			      + "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
-    			      + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM "
-    			      + "LEFT JOIN STOCK      s ON p.PROD_NUM  = s.PROD_NUM ";
+            "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, "
+          + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
+          + "       NVL(s.STOCK_QTY, 0) AS STOCK_QTY, "
+          + "       i.PROD_IMG_URL, "
+          + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
+          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
+          + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
+          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
+          + "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) "
+          + "        FROM PROD_OPTIONS "
+          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
+          + "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) "
+          + "        FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS "
+          + "              WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST "
+          + "FROM   PRODUCTS p "
+          + "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
+          + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM "
+          + "LEFT JOIN STOCK      s ON p.PROD_NUM  = s.PROD_NUM "
+          + "LEFT JOIN PROD_IMGS  i ON p.PROD_NUM  = i.PROD_NUM AND i.IS_MAIN = 'Y' ";
 
     // ── ResultSet → VO 변환 (공통) ────────────────────────────────────────
     private Log_ProdVO toVO(ResultSet rs) throws SQLException {
@@ -43,6 +45,7 @@ public class Log_ProdDAO {
         vo.setSizeRange (rs.getString("SIZE_RANGE"));
         vo.setColorList (rs.getString("COLOR_LIST")); 
         vo.setSizeList  (rs.getString("SIZE_LIST"));  
+        vo.setProdImgUrl(rs.getString("PROD_IMG_URL"));
         vo.setMaxStock  (100);
         return vo;
     }
@@ -98,7 +101,7 @@ public class Log_ProdDAO {
         return list;
     }
 
-    // ── 상품 등록 (PRODUCTS + PROD_OPTIONS) ──────────────────────────────
+    // ── 상품 등록 (PRODUCTS + PROD_OPTIONS + PROD_IMGS) ─────────────────
     public int insertProd(Log_ProdVO vo) throws Exception {
         int result = 0;
         Connection conn  = null;
@@ -169,13 +172,34 @@ public class Log_ProdDAO {
                 optStmt.close();
             }
 
+            // ④ PROD_IMGS INSERT (이미지 파일이 넘어왔을 때만)
+            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().trim().isEmpty()) {
+                String imgSeqSql = "SELECT NVL(MAX(PROD_IMG_NUM), 0) + 1 FROM PROD_IMGS";
+                String imgSql    = "INSERT INTO PROD_IMGS (PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+                                 + "VALUES (?, ?, ?, 'Y', 0)";
+
+                PreparedStatement imgSeqStmt = conn.prepareStatement(imgSeqSql);
+                ResultSet imgSeqRs = imgSeqStmt.executeQuery();
+                int newImgNum = 1;
+                if (imgSeqRs.next()) newImgNum = imgSeqRs.getInt(1);
+                imgSeqRs.close();
+                imgSeqStmt.close();
+
+                PreparedStatement imgStmt = conn.prepareStatement(imgSql);
+                imgStmt.setInt(1, newImgNum);
+                imgStmt.setInt(2, newProdNum);
+                imgStmt.setString(3, vo.getProdImgUrl());
+                imgStmt.executeUpdate();
+                imgStmt.close();
+            }
+
         } finally {
             DBUtil.executeClose(null, pstmt, conn);
         }
         return result;
     }
 
-    // ── 상품 수정 (PRODUCTS만, PROD_OPTIONS는 별도 관리) ─────────────────
+    // ── 상품 수정 (PRODUCTS 업데이트 + 새로운 사진 업로드 시 PROD_IMGS 교체) ──
     public int updateProd(Log_ProdVO vo) throws Exception {
         int result = 0;
         Connection conn  = null;
@@ -208,8 +232,38 @@ public class Log_ProdDAO {
             pstmt.setInt   (9,  vo.getProdStatus());
             pstmt.setInt   (10, vo.getProdNum());
             result = pstmt.executeUpdate();
+            pstmt.close();
+
+            // ★ 새로운 이미지가 업로드 된 경우, 기존 대표 이미지를 지우고 새 이미지 인서트
+            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().trim().isEmpty()) {
+                // 기존 대표 이미지 삭제
+                String delImgSql = "DELETE FROM PROD_IMGS WHERE PROD_NUM = ? AND IS_MAIN = 'Y'";
+                PreparedStatement delStmt = conn.prepareStatement(delImgSql);
+                delStmt.setInt(1, vo.getProdNum());
+                delStmt.executeUpdate();
+                delStmt.close();
+
+                // 새 대표 이미지 채번 및 인서트
+                String imgSeqSql = "SELECT NVL(MAX(PROD_IMG_NUM), 0) + 1 FROM PROD_IMGS";
+                PreparedStatement imgSeqStmt = conn.prepareStatement(imgSeqSql);
+                ResultSet imgSeqRs = imgSeqStmt.executeQuery();
+                int newImgNum = 1;
+                if (imgSeqRs.next()) newImgNum = imgSeqRs.getInt(1);
+                imgSeqRs.close();
+                imgSeqStmt.close();
+
+                String imgSql = "INSERT INTO PROD_IMGS (PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+                              + "VALUES (?, ?, ?, 'Y', 0)";
+                PreparedStatement imgStmt = conn.prepareStatement(imgSql);
+                imgStmt.setInt(1, newImgNum);
+                imgStmt.setInt(2, vo.getProdNum());
+                imgStmt.setString(3, vo.getProdImgUrl());
+                imgStmt.executeUpdate();
+                imgStmt.close();
+            }
+
         } finally {
-            DBUtil.executeClose(null, pstmt, conn);
+            DBUtil.executeClose(null, pstmt, conn); // 여기선 pstmt 대신 null을 넘겨도 내부 구현에 따라 처리됨. 기본 구조 유지
         }
         return result;
     }
