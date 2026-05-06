@@ -1,5 +1,7 @@
 package logis_action;
 
+import java.io.PrintWriter;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,14 +15,14 @@ public class Log_InInsertAction implements Action{
 		
 		        
         HttpSession session = request.getSession();
-        Object objUserNum = session.getAttribute("user_num");
+        Object objAdminNum = session.getAttribute("user_num");
                 
-        if (objUserNum == null) {
+        if (objAdminNum == null) {
             
         	//로그인한 usernum이 관리자가 아니면 로그인 화면으로            
             return "redirect:/logistics/log_login/log_loginForm.do"; 
         }
-        int user_num = ((Number) objUserNum).intValue(); 
+        int adminNum = ((Number) objAdminNum).intValue(); 
         
         String inDate = request.getParameter("inDate");
         String prodNumStr = request.getParameter("prodNum");
@@ -44,9 +46,6 @@ public class Log_InInsertAction implements Action{
         int inQty = Integer.parseInt(inQtyStr.trim());
         
         
-        String finalMemo = "";
-        if (supplier != null && !supplier.isEmpty()) { finalMemo = "[" + supplier + "] "; }
-        if (inMemo != null) { finalMemo += inMemo; }
 
         Log_InDAO dao = Log_InDAO.getInstance();
         String[] sizeArray = sizes.split(",");
@@ -58,11 +57,19 @@ public class Log_InInsertAction implements Action{
             int sizeVal = Integer.parseInt(sizeStr.trim());            
             
             int optNum = dao.getOptNum(prodNum, sizeVal, color);
-            if(optNum == 0) {
-                optNum = dao.insertOptionAndGetNum(prodNum, sizeVal, color);               
+            if (optNum == 0) {	//상품 마스터 관리에 등록된 상품이 아닐 경우
+                
+                // 자바스크립트로 알림창 띄우고 돌려보내기
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter out = response.getWriter();
+                out.println("<script>");
+                out.println("alert('상품 마스터에 등록되지 않은 사이즈/색상입니다. 마스터 등록을 먼저 확인해주세요!');");
+                out.println("history.back();");
+                out.println("</script>");
+                return null; 
             }
             
-            dao.insertInbound(optNum, prodNum, inQty, user_num, finalMemo, inDate);                        
+            dao.insertInbound(optNum, prodNum, inQty, adminNum, inMemo, inDate, supplier);                        
             dao.updateStock(optNum, prodNum, inQty);
             
         }        

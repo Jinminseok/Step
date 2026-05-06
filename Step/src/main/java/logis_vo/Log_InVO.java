@@ -7,10 +7,28 @@ public class Log_InVO {
     private int optNum;         // 옵션번호 (OPT_NUM)
     private int prodNum;        // 상품번호 (PROD_NUM)
     private int inQty;          // 입고수량 (IN_QTY)
-    private int userNum;        // 담당자번호 (USER_NUM)
-    private String inMemo;      // 입고메모 (IN_MEMO) - 공급업체 정보 포함
+    private int adminNum;       // 담당자번호 (USER_NUM)
+    private String inMemo;      // 입고메모 (IN_MEMO)
     private Date inDate;        // 입고일 (IN_DATE)
     private Date inCreatedAt;   // 등록일시 (IN_CREATED_AT)
+    private String supplier;	// 공급업체 (SUPPLIER)	 - 브랜드이름
+    public int getAdminNum() {
+		return adminNum;
+	}
+
+	public void setAdminNum(int adminNum) {
+		this.adminNum = adminNum;
+	}
+
+	public int getInStatus() {
+		return inStatus;
+	}
+
+	public void setInStatus(int inStatus) {
+		this.inStatus = inStatus;
+	}
+
+	private int inStatus;		// 입고상태 (IN_STATUS)
 
     // 2. 조인(JOIN)해서 가져올 추가 정보들 (화면에 보여줄 데이터)
     private String sku;         // 품번 (PRODUCTS 테이블)
@@ -18,10 +36,8 @@ public class Log_InVO {
     private String brandName;   // 브랜드명 (BRANDS 테이블)
     private int sizeVal;        // 사이즈 (PROD_OPTIONS 테이블)
     private String color;       // 컬러 (PROD_OPTIONS 테이블)
-    private String userName;    // 담당자명 (USERS_DETAIL 테이블)
+    private String userName;    // 담당자명 (USERS_DETAIL 테이블)    
     
-    // 화면 편의용 추가 변수
-    private String supplier;    // 메모에서 분리해 낼 공급업체 이름
 
 	public int getInNum() {
 		return inNum;
@@ -53,14 +69,6 @@ public class Log_InVO {
 
 	public void setInQty(int inQty) {
 		this.inQty = inQty;
-	}
-
-	public int getUserNum() {
-		return userNum;
-	}
-
-	public void setUserNum(int userNum) {
-		this.userNum = userNum;
 	}
 
 	public String getInMemo() {
