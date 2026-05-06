@@ -24,7 +24,7 @@ public class Log_InDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         // IN_DATE와 IN_CREATED_AT은 SYSDATE로 현재 시간 자동 입력
-        String sql = "INSERT INTO INBOUND (IN_NUM, OPT_NUM, PROD_NUM, IN_QTY, USER_NUM, IN_MEMO, IN_DATE, IN_CREATED_AT) "
+        String sql = "INSERT INTO INBOUND (IN_NUM, OPT_NUM, PROD_NUM, IN_QTY, ADMIN_NUM, IN_MEMO, IN_DATE, IN_CREATED_AT) "
                    + "VALUES (INBOUND_SEQ.NEXTVAL, ?, ?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), SYSDATE)";
         try {
             conn = DBUtil.getConnection();
@@ -144,16 +144,16 @@ public class Log_InDAO {
         
         // 💡 5개의 테이블을 조인해서 화면에 필요한 모든 데이터를 한 방에 가져옵니다!
         String sql = "SELECT I.IN_NUM, I.IN_DATE, I.IN_QTY, I.IN_MEMO, "
-                   + "       P.SKU, P.PROD_NAME, "
-                   + "       B.BRAND_NAME, "
-                   + "       O.SIZE_VAL, O.COLOR, "
-                   + "       U.USER_NAME "
-                   + "FROM INBOUND I "
-                   + "JOIN PRODUCTS P ON I.PROD_NUM = P.PROD_NUM "
-                   + "JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM "
-                   + "JOIN PROD_OPTIONS O ON I.OPT_NUM = O.OPT_NUM "
-                   + "JOIN USERS_DETAIL U ON I.USER_NUM = U.USER_NUM "
-                   + "ORDER BY I.IN_NUM DESC"; // 최신 입고순으로 정렬
+                + "       P.SKU, P.PROD_NAME, "
+                + "       B.BRAND_NAME, "
+                + "       O.SIZE_VAL, O.COLOR, "
+                + "       U.USER_NAME "
+                + "FROM INBOUND I "
+                + "JOIN PRODUCTS P ON I.PROD_NUM = P.PROD_NUM "
+                + "JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM "
+                + "JOIN PROD_OPTIONS O ON I.OPT_NUM = O.OPT_NUM "
+                + "JOIN USERS_DETAIL U ON I.ADMIN_NUM = U.USER_NUM " 
+                + "ORDER BY I.IN_NUM DESC";
                    
         try {
             conn = DBUtil.getConnection();
