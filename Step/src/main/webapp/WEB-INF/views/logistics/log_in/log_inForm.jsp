@@ -344,11 +344,10 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
                 <label>공급업체</label>
                 <select class="fi" id="fi-supplier" name="supplier">
                   <option value="">공급업체 선택 (선택)</option>
-                  <option>나이키 코리아</option>
-                  <option>아디다스 코리아</option>
-                  <option>뉴발란스 코리아</option>
-                  <option>호카 코리아</option>
-                  <option>기타</option>
+                  <option>나이키</option>
+                  <option>아디다스</option>
+                  <option>뉴발란스</option>                  
+                  <option>퓨마</option>
                 </select>
               </div>
 
@@ -416,11 +415,8 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
                     <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:right">수량</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">09:14</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">나이키 에어포스1 화이트</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:'DM Mono',monospace">265mm</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">30개</span></td></tr>
-                  <tr><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">09:02</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">아디다스 삼바 블랙</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:'DM Mono',monospace">270mm</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">24개</span></td></tr>
-                  <tr><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">08:45</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">뉴발란스 327 그레이</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:'DM Mono',monospace">255mm</td><td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">18개</span></td></tr>
-                  <tr><td style="padding:9px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">08:30</td><td style="padding:9px 10px;font-size:12px">호카 클리프턴 9 화이트</td><td style="padding:9px 10px;font-size:11px;font-family:'DM Mono',monospace">260mm</td><td style="padding:9px 10px;text-align:right"><span class="bdg bdg-blue">36개</span></td></tr>
+                <tbody id="todayInboundTbody">
+                                  
                 </tbody>
               </table>
             </div>
@@ -436,25 +432,25 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       <div class="filter-bar">
         <div class="filter-group">
           <span class="filter-label">기간</span>
-          <input type="date" class="date-input" value="2025-04-01">
+          <input type="date" class="date-input" value="2025-04-01" id="searchStartDate">
           <span class="date-sep">~</span>
-          <input type="date" class="date-input" value="2025-04-24">
+          <input type="date" class="date-input" value="2025-04-24" id="searchEndDate">
         </div>
         <div style="width:1px;height:20px;background:var(--gray6);margin:0 4px"></div>
-        <select class="sel">
+        <select class="sel" id="searchBrand">
           <option>전체 브랜드</option>
-          <option>나이키</option><option>아디다스</option><option>뉴발란스</option><option>호카</option><option>버켄스탁</option>
+          <option>나이키</option><option>아디다스</option><option>퓨마</option><option>뉴발란스</option>
         </select>
-        <select class="sel">
+        <select class="sel" id="searchStatus">
           <option>전체 상태</option>
           <option>완료</option><option>취소</option><option>대기</option>
         </select>
         <div class="search-wrap">
           <span class="search-ico">🔍</span>
-          <input type="text" placeholder="입고번호, 상품명 검색">
+          <input type="text" id="searchKeyword" placeholder="입고번호, 상품명 검색">
         </div>
         <button class="btn btn-blue btn-sm" onclick="searchHistory()">조회</button>
-        <button class="btn btn-outline btn-sm">초기화</button>
+  		<button class="btn btn-outline btn-sm" onclick="resetSearch()">초기화</button>
       </div>
 
       <!-- 요약 pills -->
@@ -605,9 +601,49 @@ function renderHist(data) {
   }).join('');
 }
 
+//── 입고 이력 다중 검색 기능 ────────────────────────────
 function searchHistory() {
-  renderHist(histData);
-  showToast('조회 완료');
+  const sDate = document.getElementById('searchStartDate').value;
+  const eDate = document.getElementById('searchEndDate').value;
+  const brand = document.getElementById('searchBrand').value;
+  const status = document.getElementById('searchStatus').value;
+  const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
+
+  // histData 배열을 돌면서 조건에 안 맞는 놈들은 걸러냅니다(filter)
+  const filteredData = histData.filter(function(d) {
+    let match = true;
+    
+    // 1. 날짜 필터 (입고일이 시작일과 종료일 사이인지)
+    // DB의 d.date가 '2026-05-06 14:30:00' 형태라면 잘라서 비교
+    const dDateOnly = d.date.substring(0, 10); 
+    if (sDate && dDateOnly < sDate) match = false;
+    if (eDate && dDateOnly > eDate) match = false;
+    
+    // 2. 셀렉트박스 필터
+    if (brand !== 'ALL' && d.brand !== brand) match = false;
+    if (status !== 'ALL' && d.status !== status) match = false;
+    
+    // 3. 키워드 필터 (입고번호나 상품명에 포함되어 있는지)
+    if (keyword) {
+      if (!d.no.toLowerCase().includes(keyword) && !d.name.toLowerCase().includes(keyword)) {
+        match = false;
+      }
+    }
+    return match;
+  });
+
+  // 걸러진 데이터로 테이블 다시 그리기
+  renderHist(filteredData);
+  showToast(filteredData.length + '건이 조회되었습니다.');
+}
+
+//── 검색 초기화 버튼 기능 ────────────────────────────
+function resetSearch() {
+  document.getElementById('searchBrand').value = 'ALL';
+  document.getElementById('searchStatus').value = 'ALL';
+  document.getElementById('searchKeyword').value = '';
+  // 날짜는 오늘 날짜나 기본값으로 세팅해주셔도 좋습니다.
+  searchHistory(); // 초기화 후 전체 목록 다시 띄우기
 }
 
 // 🚨 추가: 삭제 기능용 더미 함수 🚨
@@ -767,6 +803,102 @@ function showToast(msg, warn) {
 
 // ── 초기 렌더 ────────────────────────────────────────
 renderHist(histData);
+
+//── 오늘 입고 요약 자동 계산 ────────────────────────────
+function renderTodaySummary() {
+  // 오늘 날짜 구하기 (예: '2026-05-06')
+  const now = new Date();
+  const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  
+  // histData에서 오늘 날짜인 것만 뽑아내기
+  const todayData = histData.filter(function(d) {
+    return d.date.startsWith(todayStr);
+  });
+
+  // 요약 통계 계산
+  let totalQty = 0;
+  todayData.forEach(function(d) { totalQty += d.qty; });
+
+  // 화면에 숫자 꽂아넣기 (아이디를 미리 HTML에 줘야 합니다)
+  // (JSP의 요약 부분 숫자가 있는 div에 id="todayTotalQty", id="todayCount" 등을 달아주시면 됩니다)
+  document.getElementById('todayCount').innerText = todayData.length; // 탭 버튼 옆 숫자
+  
+  // 콘솔로 먼저 확인해보십쇼!
+  console.log("오늘 입고 건수: " + todayData.length + "건");
+  console.log("오늘 총 입고 수량: " + totalQty + "개");
+}
+
+// 초기 렌더링 시 요약판도 같이 돌려줍니다.
+renderTodaySummary();
+
+//── 1. 오늘 날짜 구하기 (YYYY-MM-DD 형식) ────────────────
+function getTodayStr() {
+    const now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+}
+
+// ── 2. 오늘 입고 요약 & 미니 테이블 렌더링 ────────────────
+function renderTodayDashboard() {
+    const today = getTodayStr();
+    
+    // 1) 오늘 데이터만 필터링
+    const todayData = histData.filter(d => d.date.startsWith(today));
+    
+    // 2) 요약 숫자 계산
+    let totalQty = 0;
+    todayData.forEach(d => { totalQty += d.qty; });
+    
+    // 3) 화면에 숫자 꽂기
+    document.getElementById('summary-total-qty').innerText = totalQty;
+    document.getElementById('summary-total-count').innerText = todayData.length;
+    document.getElementById('todayCount').innerText = todayData.length; // 탭 옆의 숫자 파란 배지
+
+    // 4) 미니 테이블 그리기
+    const tbody = document.getElementById('todayInboundTbody');
+    if(todayData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--gray4);">오늘 입고 내역이 없습니다.</td></tr>';
+    } else {
+        tbody.innerHTML = todayData.map(d => {
+            // 시간만 추출 (예: 14:30)
+            const time = d.date.length > 11 ? d.date.substring(11, 16) : '--:--';
+            return '<tr>'
+                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:\'DM Mono\',monospace;font-size:11px;color:var(--gray3)">' + time + '</td>'
+                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">' + d.name + '</td>'
+                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:\'DM Mono\',monospace">' + d.size + '</td>'
+                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">' + d.qty + '개</span></td>'
+                + '</tr>';
+        }).join('');
+    }
+}
+
+// ── 3. 이력 조회 필터링 기능 완성 ───────────────────────
+function searchHistory() {
+    const sDate = document.getElementById('searchStartDate')?.value;
+    const eDate = document.getElementById('searchEndDate')?.value;
+    const brand = document.getElementById('searchBrand')?.value;
+    const status = document.getElementById('searchStatus')?.value;
+    const keyword = document.getElementById('searchKeyword')?.value.trim().toLowerCase();
+
+    const filtered = histData.filter(d => {
+        const dDate = d.date.substring(0, 10);
+        if (sDate && dDate < sDate) return false;
+        if (eDate && dDate > eDate) return false;
+        if (brand && brand !== '전체 브랜드' && d.brand !== brand) return false;
+        if (status && status !== '전체 상태' && d.status !== status) return false;
+        if (keyword && !d.name.toLowerCase().includes(keyword) && !d.no.toLowerCase().includes(keyword)) return false;
+        return true;
+    });
+
+    renderHist(filtered); // 기존에 만드신 테이블 렌더 함수 호출
+    
+    // 상단 요약 pills 숫자 업데이트 (선택 사항)
+    document.querySelector('.pill-total .pill-num').innerText = filtered.length;
+}
+
+// 마지막에 초기 실행 추가
+renderTodayDashboard(); 
+renderHist(histData); // 초기에는 전체 목록 표시
+
 </script>
 </body>
 </html>
