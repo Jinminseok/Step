@@ -141,6 +141,7 @@ public class UserDAO {
 				user.setUser_created_at(rs.getDate("user_created_at"));
 				user.setUser_updated_at(rs.getDate("user_updated_at"));
 				user.setLast_login(rs.getDate("last_login"));
+				user.setTotal_amount(rs.getLong("total_amount"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

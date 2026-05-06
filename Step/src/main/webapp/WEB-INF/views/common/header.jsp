@@ -114,9 +114,8 @@
     <div class="cat-item active" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
     <div class="cat-item">👟 운동화</div>
     <div class="cat-item">👡 샌들</div>
-    <div class="cat-item">👞 구두</div>
-    <div class="cat-item">🥾 부츠</div>
     <div class="cat-item">🩴 슬리퍼</div>
+    <div class="cat-item">🥾 축구화</div>
     <div class="cat-item">🗺️ 매장찾기</div>
   </div>
 </div>

@@ -39,20 +39,43 @@
                         <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                             <div>
                                 <div style="font-size:12px; color:var(--gray3); margin-bottom:4px;">현재 등급</div>
-                                <div style="font-size:24px; font-weight:700; color:var(--blue);">${user.grade}</div>
+                                <div style="font-size:24px; font-weight:700; color:var(--blue);">
+								    <c:choose>
+								        <c:when test="${user.grade == 1}">BRONZE</c:when>
+								        <c:when test="${user.grade == 2}">SILVER</c:when>
+								        <c:when test="${user.grade == 3}">GOLD</c:when>
+								        <c:when test="${user.grade == 4}">VIP</c:when>
+								        <c:otherwise>일반회원</c:otherwise>
+								    </c:choose>
+								</div>
                             </div>
                             <div style="text-align:right; font-size:13px; line-height: 1.4;">
-				              다음 등급 <strong style="color:var(--black);">${user.grade+1}</strong>까지<br>
-				              <strong style="color:var(--red); font-size: 16px;">(수정 필요)000</strong> 남았습니다!
+				            	다음 등급
+				            	<strong style="color:var(--black);">
+				            		<c:choose>
+				            			<c:when test="${user.grade == 1}">SILVER</c:when>
+				            			<c:when test="${user.grade == 2}">GOLD</c:when>
+				            			<c:when test="${user.grade == 3}">VIP</c:when>
+				            			<c:when test="${user.grade == 4}">최고 등급</c:when>
+				            			<c:otherwise>BRONZE</c:otherwise>
+				            		</c:choose>
+				            	</strong>까지<br>
+				            	<strong style="color:var(--red); font-size: 16px;">(누적 금액 필요)</strong> 남았습니다!
 				            </div>
                         </div>
                         <div>
 				            <div style="width:100%; height:10px; background:var(--gray6); border-radius:5px; overflow:hidden;">
-				            	<div style="width:70%; height:100%; background:var(--black);"></div>
+				            	<div style="width: <c:choose>
+									            		<c:when test='${user.grade == 1}'>25</c:when>
+									            		<c:when test='${user.grade == 2}'>50</c:when>
+									            		<c:when test='${user.grade == 3}'>75</c:when>
+				            							<c:otherwise>100</c:otherwise>
+				            						</c:choose>%; height:100%; background:var(--black);">
+				            	</div>
 				            </div>
 				            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray4); margin-top: 6px;">
-				            	<span>0원(수정 필요)</span>
-				            	<span>누적 500,000원 달성 시 등급업(수정 필요)</span>
+				            	<span>0원</span>
+				            	<span>누적 500,000원 달성 시 등급업</span>
 				            </div>
 				        </div>
                     </div>
