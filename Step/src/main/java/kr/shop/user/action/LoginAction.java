@@ -31,10 +31,9 @@ public class LoginAction implements Action {
                 return "redirect:/shop/user/main.do";
             }
         } else {
-            // 로그인 실패 시 (비밀번호 불일치 혹은 없는 아이디)
-            // 실패 메시지를 띄우거나 다시 로그인 폼으로 돌려보내는 로직 필요
-            request.setAttribute("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return "/common/alert_view.jsp"; // 얼럿 띄우는 공통 뷰 활용
+            // 로그인 실패 시 로그인 화면
+        	request.setAttribute("loginError", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            return "shop/user/login.jsp";
         }
     }
 }

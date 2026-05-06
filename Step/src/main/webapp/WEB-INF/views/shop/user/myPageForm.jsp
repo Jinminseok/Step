@@ -38,13 +38,23 @@
                     <div style="border:1px solid var(--border); padding: 24px; border-radius: 4px; margin-bottom: 24px; display:flex; flex-direction:column; gap:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                             <div>
-                                <div style="font-size:12px; color:var(--gray3); margin-bottom:4px;">현재 등급 (권한: ${user.auth})</div>
-                                <div style="font-size:24px; font-weight:700; color:var(--blue);">일반회원</div>
+                                <div style="font-size:12px; color:var(--gray3); margin-bottom:4px;">현재 등급</div>
+                                <div style="font-size:24px; font-weight:700; color:var(--blue);">${user.grade}</div>
                             </div>
                             <div style="text-align:right; font-size:13px; line-height: 1.4;">
-                                <strong>가입일:</strong> ${user.user_created_at}
-                            </div>
+				              다음 등급 <strong style="color:var(--black);">${user.grade+1}</strong>까지<br>
+				              <strong style="color:var(--red); font-size: 16px;">(수정 필요)000</strong> 남았습니다!
+				            </div>
                         </div>
+                        <div>
+				            <div style="width:100%; height:10px; background:var(--gray6); border-radius:5px; overflow:hidden;">
+				            	<div style="width:70%; height:100%; background:var(--black);"></div>
+				            </div>
+				            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray4); margin-top: 6px;">
+				            	<span>0원(수정 필요)</span>
+				            	<span>누적 500,000원 달성 시 등급업(수정 필요)</span>
+				            </div>
+				        </div>
                     </div>
 
                     <div class="sec-title" style="margin-top: 32px;">

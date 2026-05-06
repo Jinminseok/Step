@@ -60,11 +60,25 @@
               </div>
             </div>
           </div>
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/AIpickForm.do'">
+          	<span class="hdr-btn-icon">🤖</span>
+          	<span class="hdr-btn-label">AI추천</span>
+          </button>
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/offlineshopForm.do'">
+	        <span class="hdr-btn-icon">🗺️</span>
+	        <span class="hdr-btn-label">매장찾기</span>
+	      </button>
+	      <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/heartForm.do'">
+	        <span class="hdr-btn-icon">🤍</span>
+	        <span class="hdr-btn-label">찜</span>
+	        <span class="hdr-badge" style="background:#4d94ff">2</span>
+	      </button>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
             <span class="hdr-btn-icon">🛒</span><span class="hdr-btn-label">장바구니</span>
           </button>
+          <div style="width:1px;height:28px;background:#333;margin:0 4px"></div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">
-            <span class="hdr-btn-icon" style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">김</span>
+            <span class="hdr-btn-icon" style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">M</span>
             <span class="hdr-btn-label" style="color:#fff">마이페이지</span>
           </button>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/logout.do'">
@@ -74,6 +88,15 @@
         
         <%-- 2. 비로그인 상태일 때 --%>
         <c:otherwise>
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/AIpickForm.do'">
+          	<span class="hdr-btn-icon">🤖</span>
+          	<span class="hdr-btn-label">AI추천</span>
+          </button>
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/offlineshopForm.do'">
+	        <span class="hdr-btn-icon">🗺️</span>
+	        <span class="hdr-btn-label">매장찾기</span>
+	      </button>
+          <div style="width:1px;height:28px;background:#333;margin:0 4px"></div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'" style="color:#fff;background:rgba(255,255,255,.08);border-radius:3px;padding:6px 14px;">
             <span class="hdr-btn-label" style="font-size:12px;font-weight:700">로그인</span>
           </button>

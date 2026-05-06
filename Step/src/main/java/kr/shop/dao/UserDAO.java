@@ -110,6 +110,47 @@ public class UserDAO {
 		return user;
 	}
 	
+	// 마이페이지 회원 상세 정보 전체 가져오기
+	public UserVO getUserDetail(long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		UserVO user = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM users u JOIN users_detail d ON u.user_num = d.user_num WHERE u.user_num = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				user = new UserVO();
+				user.setUser_num(rs.getLong("user_num"));
+				user.setUser_id(rs.getString("user_id"));
+				user.setAuth(rs.getInt("auth"));
+				user.setUser_name(rs.getString("user_name"));
+				user.setPwd(rs.getString("pwd"));
+				user.setPhone(rs.getString("phone"));
+				user.setEmail(rs.getString("email"));
+				user.setZipcode(rs.getString("zipcode"));
+				user.setGrade(rs.getInt("grade"));
+				user.setAddr1(rs.getString("addr1"));
+				user.setAddr2(rs.getString("addr2"));
+				user.setUser_created_at(rs.getDate("user_created_at"));
+				user.setUser_updated_at(rs.getDate("user_updated_at"));
+				user.setLast_login(rs.getDate("last_login"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return user;
+	}
+	
 	// 마이페이지 회원 정보 수정
 	public void updateUser(UserVO user) throws Exception {
 		Connection conn = null;
@@ -139,41 +180,5 @@ public class UserDAO {
 		}
 	}
 		
-	// 마이페이지 회원 상세 정보 전체 가져오기
-	public UserVO getUserDetail(long user_num) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		UserVO user = null;
-		
-		try {
-			conn = DBUtil.getConnection();
-			String sql = "SELECT * FROM users u JOIN users_detail d ON u.user_num = d.user_num WHERE u.user_num = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, user_num);
-			rs = pstmt.executeQuery();
-			
-			if (rs.next()) {
-				user = new UserVO();
-				user.setUser_num(rs.getLong("user_num"));
-				user.setUser_id(rs.getString("user_id"));
-				user.setPwd(rs.getString("pwd"));
-				user.setUser_name(rs.getString("user_name"));
-				user.setPhone(rs.getString("phone"));
-				user.setEmail(rs.getString("email"));
-				user.setZipcode(rs.getString("zipcode"));
-				user.setAddr1(rs.getString("addr1"));
-				user.setAddr2(rs.getString("addr2"));
-				user.setAuth(rs.getInt("auth"));
-				user.setUser_created_at(rs.getDate("user_created_at"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		return user;
-	}
+	
 }

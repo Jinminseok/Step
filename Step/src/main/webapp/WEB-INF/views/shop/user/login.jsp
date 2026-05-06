@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // 로그인 에러 메시지 처리용 변수
+    String loginError = (String) request.getAttribute("loginError");
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -16,6 +20,13 @@
             <div class="auth-wrap">
                 <div class="auth-logo">ShoeMall</div>
                 <div class="auth-sub">ShoeMall에 오신 것을 환영합니다</div>
+                
+                <!-- 로그인 에러 메시지 -->
+                <% if (loginError != null) { %>
+				<script>
+       			 alert('<%= loginError %>');
+    			</script>
+				<% } %>
                 
                 <div class="form-group">
                     <label class="form-label" for="id">아이디</label>
