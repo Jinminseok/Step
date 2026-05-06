@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -237,7 +236,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       </div>
       <div class="tab-btn" id="tab-hist-btn" onclick="switchMain('hist')">
         📋 입고 이력 조회
-        <span class="tab-cnt tab-cnt-blue" id="todayCount">127</span>
+        <span class="tab-cnt tab-cnt-blue" id="todayCountBadge">0</span>
       </div>
     </div>
 
@@ -255,7 +254,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <div class="card-title-ico">📥</div>
               입고 대상 정보
             </div>
-            <button class="btn btn-ghost btn-sm" onclick="resetForm()">초기화</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="resetForm()">초기화</button>
           </div>
           <div class="card-body">
 
@@ -277,7 +276,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <div class="fg fg-full" id="selectedProdWrap" style="display:none; margin-bottom: 8px;">
                 <label>선택된 상품 <span class="req">*</span></label>
                 <div style="border:1.5px solid var(--blue); background:var(--blue-lt); border-radius:8px; padding:16px; position:relative;">
-                  <button class="btn btn-xs btn-outline" onclick="clearProd()" style="position:absolute; top:16px; right:16px; background:#fff;">🔄 변경</button>
+                  <button type="button" class="btn btn-xs btn-outline" onclick="clearProd()" style="position:absolute; top:16px; right:16px; background:#fff;">🔄 변경</button>
                   <div style="display:flex; gap:14px; align-items:center;">
                     <div style="width:54px; height:54px; background:#fff; border:1px solid #93C5FD; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:24px;">👟</div>
                     <div>
@@ -335,9 +334,9 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 
               <!-- 입고일 -->
               <div class="fg">
-                <label>입고일 <span class="req">*</span></label>
-                <input class="fi" id="fi-date" type="date" value="2025-04-24" name="inDate">
-              </div>
+				  <label>입고일 <span class="req">*</span></label>				  
+				  <input class="fi" id="fi-date" type="date" name="inDate">
+				</div>
 
               <!-- 공급업체 -->
               <div class="fg fg-full">
@@ -374,7 +373,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
           <div class="alert alert-blue">
             <span class="alert-ico">🔔</span>
             <div>
-              <strong>재입고 알림 대기 5건</strong><br>
+              <strong>재입고 알림 대기 5건(알림 기능 구현 시 수정 필요)</strong><br>
               재입고 신청 사용자가 있는 옵션에 입고 처리 시 자동으로 알림이 발송됩니다.
             </div>
           </div>
@@ -386,30 +385,31 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
                 <div class="card-title-ico">📊</div>
                 오늘 입고 요약
               </div>
-              <span style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace">2025-04-24</span>
+              <span id="summaryDate" style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace"></span>
             </div>
+            <!-- 🚨 수정: 중복된 card-body 태그 하나로 통합 -->
             <div class="card-body" style="padding:14px 18px">
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-                <div style="text-align:center;padding:12px;background:var(--blue-lt);border-radius:8px;border:1px solid #93C5FD">
-                  <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--blue)">127</div>
-                  <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">총 입고</div>
-                </div>
-                <div style="text-align:center;padding:12px;background:var(--green-lt);border-radius:8px;border:1px solid #6EE7B7">
-                  <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--green)">5</div>
-                  <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">처리 건수</div>
-                </div>
-                <div style="text-align:center;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid #FCD34D">
-                  <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--amber)">3</div>
-                  <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">알림 발송</div>
-                </div>
-              </div>
+				  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+				    <div style="text-align:center;padding:12px;background:var(--blue-lt);border-radius:8px;border:1px solid #93C5FD">
+				      <div id="summaryTotalQty" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--blue)">0</div>
+				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">총 입고 수량</div>
+				    </div>
+				    <div style="text-align:center;padding:12px;background:var(--green-lt);border-radius:8px;border:1px solid #6EE7B7">
+				      <div id="summaryTotalCount" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--green)">0</div>
+				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">처리 건수</div>
+				    </div>
+				    <div style="text-align:center;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid #FCD34D">
+				      <div id="summaryAlertCount" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--amber)">0</div>
+				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">알림 발송</div>
+				    </div>
+				  </div>
 
               <!-- 오늘 목록 -->
               <div style="font-size:10.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">오늘 입고 내역</div>
               <table style="width:100%;border-collapse:collapse">
                 <thead>
                   <tr>
-                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">시간</th>
+                  	<th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">시간</th>
                     <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">상품명</th>
                     <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">사이즈</th>
                     <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:right">수량</th>
@@ -430,12 +430,12 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 
       <!-- 필터 바 -->
       <div class="filter-bar">
-        <div class="filter-group">
-          <span class="filter-label">기간</span>
-          <input type="date" class="date-input" value="2025-04-01" id="searchStartDate">
-          <span class="date-sep">~</span>
-          <input type="date" class="date-input" value="2025-04-24" id="searchEndDate">
-        </div>
+		<div class="filter-group">
+		    <span class="filter-label">기간</span>		    
+		    <input type="date" class="date-input" id="searchStartDate">
+		    <span class="date-sep">~</span>
+		    <input type="date" class="date-input" id="searchEndDate">
+		</div>
         <div style="width:1px;height:20px;background:var(--gray6);margin:0 4px"></div>
         <select class="sel" id="searchBrand">
           <option>전체 브랜드</option>
@@ -449,28 +449,26 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
           <span class="search-ico">🔍</span>
           <input type="text" id="searchKeyword" placeholder="입고번호, 상품명 검색">
         </div>
-        <button class="btn btn-blue btn-sm" onclick="searchHistory()">조회</button>
-  		<button class="btn btn-outline btn-sm" onclick="resetSearch()">초기화</button>
+        <button type="button" class="btn btn-blue btn-sm" onclick="searchHistory()">조회</button>
+  		<button type="button" class="btn btn-outline btn-sm" onclick="resetSearch()">초기화</button>
       </div>
 
       <!-- 요약 pills -->
       <div class="summary-pills">
-        <div class="pill pill-total"><div class="pill-num">15</div>전체</div>
-        <div class="pill pill-done"><div class="pill-num">12</div>완료</div>
-        <div class="pill pill-pend"><div class="pill-num">2</div>대기</div>
-        <div class="pill pill-cancel"><div class="pill-num">1</div>취소</div>
+        <div class="pill pill-total"><div class="pill-num" id="pillTotalNum">0</div>전체</div>
+        <div class="pill pill-done"><div class="pill-num" id="pillDoneNum">0</div>완료</div>
+        <div class="pill pill-pend"><div class="pill-num">0</div>대기</div>
+        <div class="pill pill-cancel"><div class="pill-num">0</div>취소</div>
       </div>
 
-      <!-- 🚨 수정된 부분: 테이블 상단 불필요 버튼 제거 및 테이블 헤더 수정 🚨 -->
       <div class="tbl-card">
         <div class="tbl-top">
-          <div class="tbl-top-info">총 <strong>15</strong>건 · 페이지 <strong>1 / 3</strong></div>
+          <div class="tbl-top-info">총 <strong id="totalCountDisplay">0</strong>건</div>
         </div>
         <div class="tbl-wrap">
           <table>
             <thead>
               <tr>
-                <!-- 체크박스 열 삭제됨 -->
                 <th>입고 번호</th>
                 <th>입고일</th>
                 <th>브랜드</th>
@@ -480,21 +478,11 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
                 <th>공급업체</th>
                 <th>상태</th>
                 <th>담당자</th>
-                <th>관리</th> <!-- 상세에서 관리로 변경 -->
+                <th>관리</th>
               </tr>
             </thead>
             <tbody id="histTbody"></tbody>
           </table>
-        </div>
-        <div class="pagination-wrap">
-          <div class="page-info">1 - 5 / 15건</div>
-          <div class="page-btns">
-            <div class="pg-btn">‹</div>
-            <div class="pg-btn on">1</div>
-            <div class="pg-btn">2</div>
-            <div class="pg-btn">3</div>
-            <div class="pg-btn">›</div>
-          </div>
         </div>
       </div>
     </div>
@@ -502,403 +490,481 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
   </div>
 </main>
 
-<!-- ═══ DETAIL MODAL ═══ -->
-<div class="modal-bg" id="detailModal">
-  <div class="modal">
-    <div class="modal-hdr">
-      <div class="modal-title">📋 입고 상세 정보</div>
-      <button class="modal-x" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" onclick="closeModal()">닫기</button>
-      <button class="btn btn-blue">저장</button> <!-- 버튼 명 수정으로 사용할 수 있도록 변경 가능 -->
-    </div>
+<!-- ═══ UPDATE MODAL (수정용 폼) ═══ -->
+<div class="modal-bg" id="updateModal">
+  <div class="modal" style="max-width:500px;">
+    <form id="updateForm" action="${pageContext.request.contextPath}/logistics/log_in/log_inUpdate.do" method="post">
+      <!-- 🚨 서버로 넘길 진짜 PK (입고번호) -->
+      <input type="hidden" id="upd_inNum" name="inNum">
+      
+      <div class="modal-hdr">
+        <div class="modal-title">📝 입고 내역 수정</div>
+        <button type="button" class="modal-x" onclick="closeUpdateModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="fg-grid">
+          <!-- 1. 입고일 -->
+          <div class="fg fg-full"><label>입고일 <span class="req">*</span></label>
+            <input type="date" class="fi" id="upd_date" name="inDate" required>
+          </div>
+          
+          <!-- 2. 상품 정보 (변경 불가 처리 - readonly) -->
+          <div class="fg"><label>브랜드</label>
+            <input type="text" class="fi" id="upd_brand" style="background:var(--gray7);color:var(--gray4)" readonly>
+          </div>
+          <div class="fg"><label>상품명</label>
+            <input type="text" class="fi" id="upd_name" style="background:var(--gray7);color:var(--gray4)" readonly>
+          </div>
+          
+          <!-- 3. 사이즈 & 컬러 -->
+          <div class="fg"><label>사이즈 (mm)</label>
+            <select class="fi" id="upd_size" name="sizeVal">
+              <option value="225">225</option>
+              <option value="230">230</option>
+              <option value="235">235</option>
+              <option value="240">240</option>
+              <option value="245">245</option>
+              <option value="250">250</option>
+              <option value="255">255</option>
+              <option value="260">260</option>
+              <option value="265">265</option>
+              <option value="270">270</option>
+              <option value="275">275</option>
+              <option value="280">280</option>
+            </select>
+          </div>
+          <div class="fg"><label>컬러</label>
+            <select class="fi" id="upd_color" name="color">
+              <option value="화이트">화이트</option>
+              <option value="블랙">블랙</option>
+              <option value="그레이">그레이</option>
+              <option value="네이비">네이비</option>
+              <option value="베이지">베이지</option>
+              <option value="레드">레드</option>
+              <option value="그린">그린</option>
+            </select>
+          </div>
+
+          <!-- 4. 수량 & 상태 -->
+          <div class="fg"><label>입고 수량 <span class="req">*</span></label>
+            <input type="number" class="fi" id="upd_qty" name="inQty" required>
+          </div>
+          <div class="fg"><label>상태</label>
+            <select class="fi" id="upd_status" name="status">
+              <option value="1">대기</option>
+              <option value="2">완료</option>
+              <option value="3">취소</option>
+            </select>
+          </div>
+          
+          <!-- 5. 공급업체 & 메모 -->
+          <div class="fg fg-full"><label>공급업체</label>
+            <select class="fi" id="upd_supplier" name="supplier">
+              <option value="나이키">나이키</option>
+              <option value="아디다스">아디다스</option>
+              <option value="퓨마">퓨마</option>
+              <option value="뉴발란스">뉴발란스</option>
+            </select>
+          </div>
+          <div class="fg fg-full"><label>메모</label>
+            <textarea class="fi" id="upd_memo" name="inMemo"></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-foot">
+        <button type="button" class="btn btn-outline" onclick="closeUpdateModal()">취소</button>
+        <button type="submit" class="btn btn-blue">수정 완료</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
- 
- 
-  <script>
+
+<script>
+// 1. 실시간 시계
 function updateClock() {
     const now = new Date();
-    
-    // 년, 월, 일 구하기
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    
-    // 시, 분 구하기
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    
     const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
-    
-    document.getElementById("realTimeClock").innerText = timeString;
+    const el = document.getElementById("realTimeClock");
+    if(el) el.innerText = timeString;
 }
-
 updateClock();
 setInterval(updateClock, 60000);
 
-//── 상품 DB ──────────────────────────────────────────
+// 2. 데이터 초기화 (JSP -> JS)
 const prods = [
   <c:forEach var="p" items="${prodList}">
-    {
-      sku: '${p.sku}', 
-      name: '${p.prodName}', 
-      brand: '${p.brandName}', 
-      prodNum: '${p.prodNum}'
-    },
+    { sku: '${p.sku}', name: '${p.prodName}', brand: '${p.brandName}', prodNum: '${p.prodNum}' },
   </c:forEach>
 ];
 
-// ── 이력 데이터 ──────────────────────────────────────
+function getStatusText(code) {
+    if (code == '1') return '대기';
+    if (code == '2') return '완료';
+    if (code == '3') return '취소';
+    return '완료'; // 값이 없거나 0일 때의 기본값
+}
+
 const histData = [
-  <c:forEach var="item" items="${inboundList}">
-    {
-      no: 'IN-${item.inNum}',          // 입고번호 (앞에 IN- 을 붙여서 예쁘게)
-      date: '${item.inDate}',          // 입고일
-      brand: '${item.brandName}',      // 브랜드
-      name: '${item.prodName}',        // 상품명
-      size: '${item.sizeVal}mm',       // 사이즈
-      color: '${item.color}',          // 컬러
-      qty: ${item.inQty},              // 수량 (숫자니까 따옴표 뺌)
-      supplier: '${item.supplier}',    // 공급업체
-      status: '완료',                   // INBOUND 테이블에 있다는 건 입고 완료라는 뜻
-      manager: '${item.userName}',     // 담당자
-      memo: '${item.inMemo}'           // 메모
-    },
-  </c:forEach>
-];
+	  <c:forEach var="item" items="${inboundList}">
+	    {
+	      no: 'IN-${item.inNum}', 
+	      date: '${item.inDate}', 
+	      brand: '${item.brandName}', 
+	      name: '${item.prodName}',
+	      size: '${item.sizeVal}mm', 
+	      color: '${item.color}', 
+	      qty: ${item.inQty}, 
+	      supplier: '${item.supplier}',
+	      
+	      // 💡 여기가 핵심! 숫자로 넘어온 값을 위 함수를 거쳐서 글자로 바꿔 담습니다.
+	      status: getStatusText('${item.inStatus}'), 
+	      
+	      manager: '${item.userName}', 
+	      memo: '${item.inMemo}'
+	    },
+	  </c:forEach>
+	];
 
-const statusBdg = {
-  '완료': '<span class="bdg bdg-green">완료</span>',
-  '대기': '<span class="bdg bdg-amber">대기</span>',
-  '취소': '<span class="bdg bdg-red">취소</span>',
-};
+const statusBdg = { '완료': '<span class="bdg bdg-green">완료</span>', '대기': '<span class="bdg bdg-amber">대기</span>', '취소': '<span class="bdg bdg-red">취소</span>' };
 
-// 🚨 변경: 렌더 함수에서 체크박스 제거 및 [수정], [삭제] 버튼 추가 🚨
-function renderHist(data) {
-  document.getElementById('histTbody').innerHTML = data.map(function(d) {
-    return '<tr class="tbl-row" onclick="openDetail(\'' + d.no + '\')">'
-      // 체크박스 열 삭제됨
-      + '<td style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--blue);font-weight:600">' + d.no + '</td>'
-      + '<td style="font-size:12px;color:var(--gray3)">' + d.date + '</td>'
-      + '<td style="font-weight:500">' + d.brand + '</td>'
-      + '<td style="font-weight:600;color:var(--gray1)">' + d.name + '</td>'
-      + '<td><span class="bdg bdg-gray" style="font-family:\'DM Mono\',monospace;font-size:10px">' + d.size + '</span> <span style="font-size:11px;color:var(--gray4)">' + d.color + '</span></td>'
-      + '<td style="font-family:\'DM Mono\',monospace;font-weight:700;color:var(--gray1)">' + d.qty + '<span style="font-size:10px;font-weight:400;color:var(--gray4)">개</span></td>'
-      + '<td style="font-size:12px;color:var(--gray3)">' + (d.supplier||'-') + '</td>'
-      + '<td>' + (statusBdg[d.status]||'') + '</td>'
-      + '<td>' + d.manager + '</td>'
-      + '<td onclick="event.stopPropagation()" style="display:flex;gap:4px;">'
-      +   '<button class="btn btn-xs btn-outline" onclick="openDetail(\'' + d.no + '\')">수정</button>'
-      +   '<button class="btn btn-xs btn-danger" onclick="deleteHist(\'' + d.no + '\')">삭제</button>'
-      + '</td>'
-      + '</tr>';
-  }).join('');
-}
-
-//── 입고 이력 다중 검색 기능 ────────────────────────────
-function searchHistory() {
-  const sDate = document.getElementById('searchStartDate').value;
-  const eDate = document.getElementById('searchEndDate').value;
-  const brand = document.getElementById('searchBrand').value;
-  const status = document.getElementById('searchStatus').value;
-  const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
-
-  // histData 배열을 돌면서 조건에 안 맞는 놈들은 걸러냅니다(filter)
-  const filteredData = histData.filter(function(d) {
-    let match = true;
-    
-    // 1. 날짜 필터 (입고일이 시작일과 종료일 사이인지)
-    // DB의 d.date가 '2026-05-06 14:30:00' 형태라면 잘라서 비교
-    const dDateOnly = d.date.substring(0, 10); 
-    if (sDate && dDateOnly < sDate) match = false;
-    if (eDate && dDateOnly > eDate) match = false;
-    
-    // 2. 셀렉트박스 필터
-    if (brand !== 'ALL' && d.brand !== brand) match = false;
-    if (status !== 'ALL' && d.status !== status) match = false;
-    
-    // 3. 키워드 필터 (입고번호나 상품명에 포함되어 있는지)
-    if (keyword) {
-      if (!d.no.toLowerCase().includes(keyword) && !d.name.toLowerCase().includes(keyword)) {
-        match = false;
-      }
-    }
-    return match;
-  });
-
-  // 걸러진 데이터로 테이블 다시 그리기
-  renderHist(filteredData);
-  showToast(filteredData.length + '건이 조회되었습니다.');
-}
-
-//── 검색 초기화 버튼 기능 ────────────────────────────
-function resetSearch() {
-  document.getElementById('searchBrand').value = 'ALL';
-  document.getElementById('searchStatus').value = 'ALL';
-  document.getElementById('searchKeyword').value = '';
-  // 날짜는 오늘 날짜나 기본값으로 세팅해주셔도 좋습니다.
-  searchHistory(); // 초기화 후 전체 목록 다시 띄우기
-}
-
-// 🚨 추가: 삭제 기능용 더미 함수 🚨
-function deleteHist(no) {
-  if (confirm(no + ' 입고 내역을 삭제하시겠습니까?')) {
-      showToast('삭제되었습니다.');
-      // 실제로는 여기에 AJAX나 form submit으로 DB 삭제 로직 연결
-  }
-}
-
-// ── 탭 전환 ──────────────────────────────────────────
-function switchMain(tab) {
-  const isReg = tab === 'reg';
-  document.getElementById('reg-section').style.display  = isReg ? '' : 'none';
-  document.getElementById('hist-section').style.display = isReg ? 'none' : '';
-  document.getElementById('tab-reg-btn').classList.toggle('on', isReg);
-  document.getElementById('tab-hist-btn').classList.toggle('on', !isReg);
-  if(!isReg) renderHist(histData);
-}
-
-// ── 상품 검색 드롭다운 ────────────────────────────────
-function searchProd(q) {
-  const drop = document.getElementById('searchDrop');
-  if(!q) { drop.style.display='none'; return; }
-  const matched = prods.filter(function(p) {
-    return p.name.includes(q) || p.sku.toLowerCase().includes(q.toLowerCase()) || p.brand.includes(q);
-  });
-  if(!matched.length) { drop.style.display='none'; return; }
-  drop.innerHTML = matched.map(function(p) {
-    return '<div onclick="selectProd(\'' + p.sku + '\')" '
-      + 'style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--gray7);transition:background .12s;display:flex;align-items:center;gap:10px" '
-      + 'onmouseover="this.style.background=\'var(--blue-lt)\'" onmouseout="this.style.background=\'\'">'
-      + '<span style="font-size:18px">👟</span>'
-      + '<div>'
-      + '<div style="font-size:13px;font-weight:600;color:var(--gray1)">' + p.name + '</div>'
-      + '<div style="font-size:11px;font-family:\'DM Mono\',monospace;color:var(--gray3)">' + p.sku + ' · ' + p.brand + '</div>'
-      + '</div></div>';
-  }).join('');
-  drop.style.display = 'block';
-}
-
-function selectProd(sku) {
-	  const p = prods.find(function(x){ return x.sku===sku; });
-	  if(!p) return;
-	  
-	  document.getElementById('searchDrop').style.display = 'none';
-	  document.getElementById('searchWrapDiv').style.display = 'none';
-	  
-	  // 🚨 가장 중요한 부분! 선택한 상품의 진짜 DB PK(PROD_NUM)를 폼에 세팅
-	  document.getElementById('hidden_prodNum').value = p.prodNum; 
-	  
-	  document.getElementById('selProdName').textContent = p.name;
-	  document.getElementById('selProdSku').textContent  = p.sku;
-	  document.getElementById('selProdBrand').textContent = p.brand;
-	  
-	  document.getElementById('selectedProdWrap').style.display = '';
-	}
-
-function clearProd() {
-  document.getElementById('prodSearch').value = '';
-  document.getElementById('searchWrapDiv').style.display = '';
-  document.getElementById('selectedProdWrap').style.display = 'none';
-}
-
-// ── 사이즈 선택 ──────────────────────────────────────
-const selSizes = new Set();
-function selSize(el) {
-  el.classList.toggle('on');
-  const mm = el.textContent;
-  selSizes.has(mm) ? selSizes.delete(mm) : selSizes.add(mm);
-  document.getElementById('selSizeTxt').textContent =
-    selSizes.size ? [...selSizes].sort(function(a,b){return +a-+b}).join(', ')+'mm' : '없음';
-}
-
-// ── 입고 처리 ────────────────────────────────────────
-function submitInbound() {
-  const prodNum = document.getElementById('hidden_prodNum').value;
-  const color = document.getElementById('fi-color').value;
-  const qty = document.getElementById('fi-qty').value;
-  
-  // 1. 필수값 유효성 검사
-  if(!prodNum) {
-    showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true);
-    return;
-  }
-  if(!color || !qty || selSizes.size === 0) {
-    showToast('⚠ 컬러, 사이즈, 수량 등 필수 항목을 모두 입력하세요.', true);
-    return;
-  }
-
-  // 2. 선택된 사이즈들 모아서 숨김 필드에 넣기 (예: "250,260")
-  const sizeArr = Array.from(selSizes);
-  document.getElementById('hidden_sizes').value = sizeArr.join(',');
-
-  // 3. 성공 알림창 및 폼 전송
-  if(confirm(`총 ${sizeArr.length}개의 사이즈 옵션에 각각 ${qty}개씩 입고 처리하시겠습니까?`)) {
-    // 토스트 알림 띄우기!
-    showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
-    
-    // 알림창을 볼 수 있게 1.5초(1500ms) 대기 후 서버로 전송
-    setTimeout(function() {
-      document.getElementById('inboundForm').submit();
-    }, 1500);
-  }
-}
-
-function resetForm() {
-  ['fi-color','fi-qty','fi-memo','fi-supplier']
-    .forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('fi-date').value = '2025-04-24';
-  clearProd();
-  selSizes.clear();
-  document.querySelectorAll('#sizeChips .chip').forEach(function(c){ c.classList.remove('on'); });
-  document.getElementById('selSizeTxt').textContent = '없음';
-}
-
-// ── 상세 모달 ────────────────────────────────────────
-function openDetail(no) {
-  const d = histData.find(function(x){ return x.no===no; });
-  if(!d) return;
-  const alertType  = d.status==='완료' ? 'green'  : d.status==='취소' ? 'red'  : 'amber';
-  const alertIcon  = d.status==='완료' ? '✅'     : d.status==='취소' ? '❌'  : '⏳';
-  document.getElementById('modalBody').innerHTML =
-      '<div class="alert alert-' + alertType + '" style="margin-bottom:16px">'
-    +   '<span class="alert-ico">' + alertIcon + '</span>'
-    +   '<strong>입고 ' + d.status + '</strong> — ' + d.no
-    + '</div>'
-    + '<div class="detail-row"><div class="detail-key">입고 번호</div><div class="detail-val" style="font-family:\'DM Mono\',monospace;font-size:13px;color:var(--blue)">' + d.no + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">입고일</div><div class="detail-val">' + d.date + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">브랜드</div><div class="detail-val">' + d.brand + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">상품명</div><div class="detail-val" style="font-weight:600">' + d.name + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">사이즈</div><div class="detail-val" style="font-family:\'DM Mono\',monospace">' + d.size + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">컬러</div><div class="detail-val">' + d.color + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">입고 수량</div><div class="detail-val" style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:16px">' + d.qty + ' <span style="font-size:12px;font-weight:400;color:var(--gray3)">개</span></div></div>'
-    + '<div class="detail-row"><div class="detail-key">공급업체</div><div class="detail-val">' + (d.supplier||'-') + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">담당자</div><div class="detail-val">' + d.manager + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">상태</div><div class="detail-val">' + (statusBdg[d.status]||'') + '</div></div>'
-    + '<div class="detail-row"><div class="detail-key">메모</div><div class="detail-val" style="color:var(--gray3)">' + (d.memo||'—') + '</div></div>';
-  document.getElementById('detailModal').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('detailModal').classList.remove('open');
-}
-document.getElementById('detailModal').addEventListener('click', function(e) {
-  if(e.target===e.currentTarget) closeModal();
-});
-
-// ── TOAST ────────────────────────────────────────────
-function showToast(msg, warn) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = warn ? 'var(--amber)' : 'var(--gray1)';
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2800);
-}
-
-// ── 초기 렌더 ────────────────────────────────────────
-renderHist(histData);
-
-//── 오늘 입고 요약 자동 계산 ────────────────────────────
-function renderTodaySummary() {
-  // 오늘 날짜 구하기 (예: '2026-05-06')
-  const now = new Date();
-  const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-  
-  // histData에서 오늘 날짜인 것만 뽑아내기
-  const todayData = histData.filter(function(d) {
-    return d.date.startsWith(todayStr);
-  });
-
-  // 요약 통계 계산
-  let totalQty = 0;
-  todayData.forEach(function(d) { totalQty += d.qty; });
-
-  // 화면에 숫자 꽂아넣기 (아이디를 미리 HTML에 줘야 합니다)
-  // (JSP의 요약 부분 숫자가 있는 div에 id="todayTotalQty", id="todayCount" 등을 달아주시면 됩니다)
-  document.getElementById('todayCount').innerText = todayData.length; // 탭 버튼 옆 숫자
-  
-  // 콘솔로 먼저 확인해보십쇼!
-  console.log("오늘 입고 건수: " + todayData.length + "건");
-  console.log("오늘 총 입고 수량: " + totalQty + "개");
-}
-
-// 초기 렌더링 시 요약판도 같이 돌려줍니다.
-renderTodaySummary();
-
-//── 1. 오늘 날짜 구하기 (YYYY-MM-DD 형식) ────────────────
+// 3. 날짜 포맷 함수
 function getTodayStr() {
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 }
 
-// ── 2. 오늘 입고 요약 & 미니 테이블 렌더링 ────────────────
+function initDates() {
+    const todayStr = getTodayStr();
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthStr = lastMonth.getFullYear() + '-' + String(lastMonth.getMonth() + 1).padStart(2, '0') + '-' + String(lastMonth.getDate()).padStart(2, '0');
+
+    const fiDate = document.getElementById('fi-date');
+    if(fiDate) fiDate.value = todayStr;
+
+    const summaryDate = document.getElementById('summaryDate');
+    if(summaryDate) summaryDate.innerText = todayStr;
+
+    const sDate = document.getElementById('searchStartDate');
+    const eDate = document.getElementById('searchEndDate');
+    if(sDate) sDate.value = lastMonthStr;
+    if(eDate) eDate.value = todayStr;
+}
+
+// 4. 오늘 입고 요약 렌더링 (시간 T 포함 해결본)
 function renderTodayDashboard() {
     const today = getTodayStr();
-    
-    // 1) 오늘 데이터만 필터링
     const todayData = histData.filter(d => d.date.startsWith(today));
     
-    // 2) 요약 숫자 계산
     let totalQty = 0;
     todayData.forEach(d => { totalQty += d.qty; });
     
-    // 3) 화면에 숫자 꽂기
-    document.getElementById('summary-total-qty').innerText = totalQty;
-    document.getElementById('summary-total-count').innerText = todayData.length;
-    document.getElementById('todayCount').innerText = todayData.length; // 탭 옆의 숫자 파란 배지
+    const qtyEl = document.getElementById('summaryTotalQty') || document.getElementById('summary-total-qty');
+    const cntEl = document.getElementById('summaryTotalCount') || document.getElementById('summary-total-count');
+    const badgeEl = document.getElementById('todayCountBadge') || document.getElementById('todayCount');
+    
+    if(qtyEl) qtyEl.innerText = totalQty;
+    if(cntEl) cntEl.innerText = todayData.length;
+    if(badgeEl) badgeEl.innerText = todayData.length;
 
-    // 4) 미니 테이블 그리기
     const tbody = document.getElementById('todayInboundTbody');
-    if(todayData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--gray4);">오늘 입고 내역이 없습니다.</td></tr>';
-    } else {
-        tbody.innerHTML = todayData.map(d => {
-            // 시간만 추출 (예: 14:30)
-            const time = d.date.length > 11 ? d.date.substring(11, 16) : '--:--';
-            return '<tr>'
-                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:\'DM Mono\',monospace;font-size:11px;color:var(--gray3)">' + time + '</td>'
-                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">' + d.name + '</td>'
-                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:\'DM Mono\',monospace">' + d.size + '</td>'
-                + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">' + d.qty + '개</span></td>'
-                + '</tr>';
-        }).join('');
+    if(tbody) {
+        if(todayData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--gray4);">오늘 입고 내역이 없습니다.</td></tr>';
+        } else {
+            tbody.innerHTML = todayData.map(d => {
+                let time = '--:--';
+                if (d.date.includes(' ')) {
+                    time = d.date.split(' ')[1].substring(0, 5);
+                } else if (d.date.includes('T')) {
+                    time = d.date.split('T')[1].substring(0, 5);
+                } else if (d.date.length >= 16) {
+                    time = d.date.substring(11, 16);
+                }
+                return '<tr>'
+                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:\'DM Mono\',monospace;font-size:11px;color:var(--gray3)">' + time + '</td>'
+                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">' + d.name + '</td>'
+                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:\'DM Mono\',monospace">' + d.size + '</td>'
+                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">' + d.qty + '개</span></td>'
+                    + '</tr>';
+            }).join('');
+        }
     }
 }
 
-// ── 3. 이력 조회 필터링 기능 완성 ───────────────────────
+// 5. 이력 조회 리스트 렌더링 (수정 모달 연결 완벽 처리)
+function renderHistList(data) {
+    const histTbody = document.getElementById('histTbody');
+    if(!histTbody) return;
+    
+    histTbody.innerHTML = data.map(d => `
+        <tr class="tbl-row" onclick="openUpdateModal('\${d.no}')">
+          <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);font-weight:600">\${d.no}</td>
+          <td style="font-size:12px">\${d.date.substring(0, 10)}</td>
+          <td>\${d.brand}</td>
+          <td style="font-weight:600">\${d.name}</td>
+          <td><span class="bdg bdg-gray">\${d.size}</span> \${d.color}</td>
+          <td style="font-weight:700">\${d.qty}개</td>
+          <td style="font-size:12px">\${d.supplier || '-'}</td>
+          <td>\${statusBdg[d.status] || ''}</td>
+          <td>\${d.manager}</td>
+          <td onclick="event.stopPropagation()">
+            <button type="button" class="btn btn-xs btn-outline" onclick="openUpdateModal('\${d.no}')">수정</button>
+            <button type="button" class="btn btn-xs btn-danger" onclick="deleteHist('\${d.no}')">삭제</button>
+          </td>
+        </tr>`).join('');
+
+	    const pillTotal = document.querySelector('.pill-total .pill-num');
+	    const pillDone = document.querySelector('.pill-done .pill-num');
+	    const pillPend = document.querySelector('.pill-pend .pill-num');
+	    const pillCancel = document.querySelector('.pill-cancel .pill-num');
+	    const totalDisplay = document.getElementById('totalCountDisplay');
+	
+	    if(pillTotal) pillTotal.innerText = data.length;
+	    if(totalDisplay) totalDisplay.innerText = data.length;
+	    
+	    // data.filter 를 돌려서 각각의 상태 개수를 정확히 꽂아줍니다.
+	    if(pillDone) pillDone.innerText = data.filter(x => x.status === '완료').length;
+	    if(pillPend) pillPend.innerText = data.filter(x => x.status === '대기').length;
+	    if(pillCancel) pillCancel.innerText = data.filter(x => x.status === '취소').length;
+
+}
+
+// 6. 검색 로직
 function searchHistory() {
     const sDate = document.getElementById('searchStartDate')?.value;
     const eDate = document.getElementById('searchEndDate')?.value;
     const brand = document.getElementById('searchBrand')?.value;
-    const status = document.getElementById('searchStatus')?.value;
     const keyword = document.getElementById('searchKeyword')?.value.trim().toLowerCase();
 
     const filtered = histData.filter(d => {
-        const dDate = d.date.substring(0, 10);
-        if (sDate && dDate < sDate) return false;
-        if (eDate && dDate > eDate) return false;
+        let dDateOnly = d.date;
+        if(d.date.includes(' ')) dDateOnly = d.date.split(' ')[0];
+        else if(d.date.includes('T')) dDateOnly = d.date.split('T')[0];
+        else dDateOnly = d.date.substring(0, 10);
+
+        if (sDate && dDateOnly < sDate) return false;
+        if (eDate && dDateOnly > eDate) return false;
         if (brand && brand !== '전체 브랜드' && d.brand !== brand) return false;
-        if (status && status !== '전체 상태' && d.status !== status) return false;
         if (keyword && !d.name.toLowerCase().includes(keyword) && !d.no.toLowerCase().includes(keyword)) return false;
         return true;
     });
 
-    renderHist(filtered); // 기존에 만드신 테이블 렌더 함수 호출
-    
-    // 상단 요약 pills 숫자 업데이트 (선택 사항)
-    document.querySelector('.pill-total .pill-num').innerText = filtered.length;
+    renderHistList(filtered);
 }
 
-// 마지막에 초기 실행 추가
-renderTodayDashboard(); 
-renderHist(histData); // 초기에는 전체 목록 표시
+// 7. 탭 전환
+function switchMain(tab) {
+    const isReg = tab === 'reg';
+    const regSec = document.getElementById('reg-section');
+    const histSec = document.getElementById('hist-section');
+    
+    if(regSec) regSec.style.display = isReg ? '' : 'none';
+    if(histSec) histSec.style.display = isReg ? 'none' : '';
+    
+    const regBtn = document.getElementById('tab-reg-btn');
+    const histBtn = document.getElementById('tab-hist-btn');
+    if(regBtn) regBtn.classList.toggle('on', isReg);
+    if(histBtn) histBtn.classList.toggle('on', !isReg);
+    
+    if(!isReg) searchHistory();
+}
 
+// 8. 수정 모달 열기/닫기
+function openUpdateModal(no) {
+    const d = histData.find(x => x.no === no);
+    if(!d) return;
+
+    // 모달에 값 세팅
+    document.getElementById('upd_inNum').value = d.no.replace('IN-', '');
+    
+    let dateVal = d.date;
+    if(d.date.includes(' ')) dateVal = d.date.split(' ')[0];
+    else if(d.date.includes('T')) dateVal = d.date.split('T')[0];
+    else dateVal = d.date.substring(0, 10);
+    document.getElementById('upd_date').value = dateVal;
+    
+    document.getElementById('upd_brand').value = d.brand;
+    document.getElementById('upd_name').value = d.name;    
+    const sizeEl = document.getElementById('upd_size');
+    if(sizeEl) sizeEl.value = d.size.replace('mm', '');
+    const colorEl = document.getElementById('upd_color');
+    if(colorEl) colorEl.value = d.color;    
+    document.getElementById('upd_qty').value = d.qty;
+    
+    const statusEl = document.getElementById('upd_status');
+    if(statusEl) {
+        if(d.status === '대기') statusEl.value = "1";
+        else if(d.status === '완료') statusEl.value = "2";
+        else if(d.status === '취소') statusEl.value = "3";
+    }
+    
+    const supplierEl = document.getElementById('upd_supplier');
+    if(supplierEl) supplierEl.value = d.supplier || '';
+    
+    document.getElementById('upd_memo').value = d.memo || '';
+
+    document.getElementById('updateModal').classList.add('open');
+}
+
+function closeUpdateModal() {
+    document.getElementById('updateModal').classList.remove('open');
+}
+
+document.getElementById('updateModal').addEventListener('click', function(e) {
+    if(e.target === e.currentTarget) closeUpdateModal();
+});
+
+// 9. 삭제 함수
+function deleteHist(no) {
+    const inNum = no.replace('IN-', '');
+    if (confirm(no + ' 입고 내역을 정말 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) {
+        saveSearchState(); // 👈 삭제 요청 보내기 직전에 날짜 킵(Keep)!
+        window.location.href = '${pageContext.request.contextPath}/logistics/log_in/log_inDelete.do?inNum=' + inNum;
+    }
+}
+
+// 수정 완료 버튼 누를 때도 날짜 저장하기!
+const updateForm = document.getElementById('updateForm');
+if(updateForm) {
+    updateForm.addEventListener('submit', function() {
+        saveSearchState(); // 👈 수정 폼이 전송되기 직전에 날짜 킵(Keep)!
+    });
+}
+function saveSearchState() {
+    const sDate = document.getElementById('searchStartDate');
+    const eDate = document.getElementById('searchEndDate');
+    if(sDate) sessionStorage.setItem('log_sDate', sDate.value);
+    if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
+}
+
+// 10. 기존 상품 검색 및 초기화 기능
+function searchProd(q) {
+  const drop = document.getElementById('searchDrop');
+  if(!q) { drop.style.display='none'; return; }
+  const matched = prods.filter(p => p.name.includes(q) || p.sku.toLowerCase().includes(q.toLowerCase()) || p.brand.includes(q));
+  if(!matched.length) { drop.style.display='none'; return; }
+  drop.innerHTML = matched.map(p => `
+    <div onclick="selectProd('\${p.sku}')" style="padding:10px 14px;cursor:pointer;border-bottom:1.5px solid var(--gray7);display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">👟</span>
+      <div><div style="font-size:13px;font-weight:600;color:var(--gray1)">\${p.name}</div><div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gray3)">\${p.sku} · \${p.brand}</div></div>
+    </div>`).join('');
+  drop.style.display = 'block';
+}
+
+function selectProd(sku) {
+  const p = prods.find(x => x.sku === sku);
+  if(!p) return;
+  document.getElementById('searchDrop').style.display = 'none';
+  document.getElementById('searchWrapDiv').style.display = 'none';
+  document.getElementById('hidden_prodNum').value = p.prodNum; 
+  document.getElementById('selProdName').textContent = p.name;
+  document.getElementById('selProdSku').textContent  = p.sku;
+  document.getElementById('selProdBrand').textContent = p.brand;
+  document.getElementById('selectedProdWrap').style.display = 'block';
+}
+
+function clearProd() {
+  document.getElementById('prodSearch').value = '';
+  document.getElementById('searchWrapDiv').style.display = 'block';
+  document.getElementById('selectedProdWrap').style.display = 'none';
+  document.getElementById('hidden_prodNum').value = '';
+}
+
+const selSizes = new Set();
+function selSize(el) {
+  el.classList.toggle('on');
+  const mm = el.textContent;
+  selSizes.has(mm) ? selSizes.delete(mm) : selSizes.add(mm);
+  document.getElementById('selSizeTxt').textContent = selSizes.size ? [...selSizes].sort((a,b) => a-b).join(', ') + 'mm' : '없음';
+}
+
+function resetForm() {
+  ['fi-color','fi-qty','fi-memo','fi-supplier'].forEach(id => { 
+      const el = document.getElementById(id); if(el) el.value=''; 
+  });
+  const fiDate = document.getElementById('fi-date');
+  if(fiDate) fiDate.value = getTodayStr();
+  clearProd();
+  selSizes.clear();
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  document.getElementById('selSizeTxt').textContent = '없음';
+}
+
+function submitInbound() {
+  const prodNum = document.getElementById('hidden_prodNum').value;
+  const color = document.getElementById('fi-color').value;
+  const qty = document.getElementById('fi-qty').value;
+  
+  if(!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
+  if(!color || !qty || selSizes.size === 0) { showToast('⚠ 필수 항목을 모두 입력하세요.', true); return; }
+
+  const sizeArr = Array.from(selSizes);
+  document.getElementById('hidden_sizes').value = sizeArr.join(',');
+
+  if(confirm(`총 \${sizeArr.length}개의 사이즈 옵션에 각각 \${qty}개씩 입고 처리하시겠습니까?`)) {
+    showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
+    setTimeout(function() { document.getElementById('inboundForm').submit(); }, 1500);
+  }
+}
+
+function showToast(msg, warn) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg; t.style.background = warn ? 'var(--amber)' : 'var(--gray1)';
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// 🚨 페이지 로드 시 최우선 실행
+window.addEventListener('load', function() {
+    initDates(); //기본 세팅 (오늘~한달전)
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const result = urlParams.get('result');
+
+    //삭제나 수정 후에 돌아온 거라면 브라우저 기억을 되살립니다
+    if(result === 'deleted' || result === 'updated' || result === 'opt_error') {
+        const savedSDate = sessionStorage.getItem('log_sDate');
+        const savedEDate = sessionStorage.getItem('log_eDate');
+        
+        // 기억해둔 날짜가 있으면 화면 달력에 다시 꽂아줌
+        if(savedSDate && savedEDate) {
+            document.getElementById('searchStartDate').value = savedSDate;
+            document.getElementById('searchEndDate').value = savedEDate;
+        }
+        
+        // 한 번 복구했으니 기억은 깨끗하게 지워줍니다.
+        sessionStorage.removeItem('log_sDate');
+        sessionStorage.removeItem('log_eDate');
+    }
+
+    renderTodayDashboard();
+    searchHistory(); //복구된 날짜를 바탕으로 리스트를 다시 그립니다.
+
+    // 기존의 알림 및 탭 전환 로직
+    if(result === 'updated') {
+        alert('✅ 수정이 완료되었습니다.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        switchMain('hist'); 
+    } else if (result === 'deleted') {
+        alert('🗑️ 입고 내역이 성공적으로 삭제되었습니다.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        switchMain('hist'); 
+    } else if (result === 'opt_error') {
+        alert('❌ 선택하신 사이즈/컬러 옵션이 존재하지 않습니다.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        switchMain('hist'); 
+    }
+});
 </script>
 </body>
 </html>

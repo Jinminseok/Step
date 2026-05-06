@@ -171,7 +171,9 @@ public class Log_InDAO {
         List<Log_InVO> list = new ArrayList<>();
         
         // 💡 5개의 테이블을 조인해서 화면에 필요한 모든 데이터를 한 방에 가져옵니다!
-        String sql = "SELECT I.IN_NUM, I.IN_DATE, I.IN_QTY, I.IN_MEMO, I.SUPPLIER, I.IN_STATUS, "
+        String sql = "SELECT I.IN_NUM, "
+                + "TO_CHAR(I.IN_DATE, 'YYYY-MM-DD') || ' ' || TO_CHAR(I.IN_CREATED_AT, 'HH24:MI:SS') AS IN_DATE, "
+                + "I.IN_QTY, I.IN_MEMO, I.SUPPLIER, I.IN_STATUS, "
                 + "       P.SKU, P.PROD_NAME, "
                 + "       B.BRAND_NAME, "
                 + "       O.SIZE_VAL, O.COLOR, "
@@ -191,8 +193,9 @@ public class Log_InDAO {
             while (rs.next()) {
             	Log_InVO vo = new Log_InVO();
                 vo.setInNum(rs.getInt("IN_NUM"));
-                vo.setInDate(rs.getDate("IN_DATE")); 
+                vo.setInDate(rs.getString("IN_DATE"));
                 vo.setInQty(rs.getInt("IN_QTY"));
+                vo.setInStatus(rs.getInt("IN_STATUS"));
                 vo.setSku(rs.getString("SKU"));
                 vo.setProdName(rs.getString("PROD_NAME"));
                 vo.setBrandName(rs.getString("BRAND_NAME"));
@@ -245,6 +248,77 @@ public class Log_InDAO {
             DBUtil.executeClose(rs, pstmt, conn);
         }
         return list;
+    }
+    
+    //입고 내역 수정 (UPDATE)
+    public void updateInbound(Log_InVO vo) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        // 🚨 UPDATE 안에 SELECT를 넣어서 오라클이 알아서 새 옵션 번호를 찾아 끼우게 만듭니다!
+        String sql = "UPDATE INBOUND "
+                   + "SET IN_DATE = TO_DATE(?, 'YYYY-MM-DD'), "
+                   + "    IN_QTY = ?, "
+                   + "    IN_STATUS = ?, "
+                   + "    SUPPLIER = ?, "
+                   + "    IN_MEMO = ?, "
+                   + "    OPT_NUM = ( "
+                   + "        SELECT OPT_NUM FROM PROD_OPTIONS "
+                   + "        WHERE PROD_NUM = (SELECT PROD_NUM FROM INBOUND WHERE IN_NUM = ?) "
+                   + "          AND SIZE_VAL = ? "
+                   + "          AND COLOR = ? "
+                   + "    ) "
+                   + "WHERE IN_NUM = ?";
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            
+            // 1~5번째 물음표: 일반 정보
+            pstmt.setString(1, vo.getInDate());
+            pstmt.setInt(2, vo.getInQty());
+            pstmt.setInt(3, vo.getInStatus());
+            pstmt.setString(4, vo.getSupplier());
+            pstmt.setString(5, vo.getInMemo());
+            
+            // 6~8번째 물음표: 서브쿼리(옵션 번호 찾기)에 들어갈 재료들
+            pstmt.setInt(6, vo.getInNum());
+            pstmt.setInt(7, vo.getSizeVal());  // 🚨 VO에 sizeVal 이 있어야 합니다!
+            pstmt.setString(8, vo.getColor()); // 🚨 VO에 color 가 있어야 합니다!
+            
+            // 9번째 물음표: 어떤 입고 번호를 수정할지
+            pstmt.setInt(9, vo.getInNum());
+            
+            pstmt.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("입고 내역 수정 중 오류 발생", e);
+        } finally {
+            DBUtil.executeClose(null, pstmt, conn);
+        }
+    }
+    
+    // 입고 내역 삭제 (DELETE)
+    public void deleteInbound(int inNum) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        // 아주 깔끔한 한 줄짜리 삭제 쿼리!
+        String sql = "DELETE FROM INBOUND WHERE IN_NUM = ?";
+        
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, inNum); // JSP에서 가져온 번호를 꽂아줍니다.
+            
+            pstmt.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("입고 내역 삭제 중 오류 발생", e);
+        } finally {
+            DBUtil.executeClose(null, pstmt, conn);
+        }
     }
 	
 }

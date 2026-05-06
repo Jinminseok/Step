@@ -9,7 +9,7 @@ public class Log_InVO {
     private int inQty;          // 입고수량 (IN_QTY)
     private int adminNum;       // 담당자번호 (USER_NUM)
     private String inMemo;      // 입고메모 (IN_MEMO)
-    private Date inDate;        // 입고일 (IN_DATE)
+    private String inDate;        // 입고일 (IN_DATE)
     private Date inCreatedAt;   // 등록일시 (IN_CREATED_AT)
     private String supplier;	// 공급업체 (SUPPLIER)	 - 브랜드이름
     public int getAdminNum() {
@@ -79,11 +79,12 @@ public class Log_InVO {
 		this.inMemo = inMemo;
 	}
 
-	public Date getInDate() {
+
+	public String getInDate() {
 		return inDate;
 	}
 
-	public void setInDate(Date inDate) {
+	public void setInDate(String inDate) {
 		this.inDate = inDate;
 	}
 
