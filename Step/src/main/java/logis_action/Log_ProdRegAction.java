@@ -32,7 +32,7 @@ public class Log_ProdRegAction implements Action {
                 }
             }
             if (!originName.isEmpty()) {
-                fileName = System.currentTimeMillis() + "_" + originName;
+            	fileName = originName;
                 part.write(savePath + File.separator + fileName); // 실제 폴더에 파일 저장
             }
         }
