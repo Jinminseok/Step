@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall Admin</title>
-<!-- CSS 경로에 컨텍스트 패스 적용 -->
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/KM_style.css">
 <link
@@ -14,7 +15,6 @@
 </head>
 <body>
 
-	<!-- ═════════ SIDEBAR ═════════ -->
 	<aside class="sidebar">
 		<div class="sb-logo">
 			<div class="sb-logo-mark">A</div>
@@ -29,7 +29,7 @@
 		<nav class="nav">
 			<div class="nav-section">대시보드</div>
 			<div class="nav-item active"
-				onclick="location.href='${pageContext.request.contextPath}/shop/admin/main.do'">
+				onclick="location.href='${pageContext.request.contextPath}/shop/main/main.do'">
 				<span class="nav-icon">📊</span>통계 / 대시보드
 			</div>
 
@@ -52,20 +52,6 @@
 			<div class="nav-item">
 				<span class="nav-icon">🚚</span>배송 관리
 			</div>
-			<div class="nav-item">
-				<span class="nav-icon">↩️</span>반품/교환 관리
-			</div>
-
-			<div class="nav-section">고객</div>
-			<div class="nav-item">
-				<span class="nav-icon">👤</span>회원 관리
-			</div>
-			<div class="nav-item">
-				<span class="nav-icon">🎫</span>쿠폰 관리
-			</div>
-			<div class="nav-item">
-				<span class="nav-icon">💬</span>채팅 문의<span class="nav-badge">3</span>
-			</div>
 		</nav>
 
 		<div class="sb-footer">
@@ -80,14 +66,12 @@
 		</div>
 	</aside>
 
-	<!-- ═════════ MAIN ═════════ -->
 	<main class="main">
 		<div class="topbar">
 			<div class="topbar-title">Dashboard Overview</div>
 		</div>
 
 		<div class="content">
-			<!-- ✅ '신규 상품 등록' 버튼이 삭제된 헤더 영역 -->
 			<div class="page-hdr">
 				<div>
 					<h1 class="page-hdr-title">통계 개요</h1>
@@ -96,7 +80,6 @@
 				</div>
 			</div>
 
-			<!-- 요약 카드 섹션 -->
 			<div class="stats-row">
 				<div class="stat-card">
 					<div class="stat-label">오늘의 매출</div>
@@ -116,38 +99,51 @@
 				</div>
 			</div>
 
-			<!-- 최근 주문 테이블 -->
+			<div class="page-hdr" style="margin-top: 40px;">
+				<h2 class="page-hdr-title" style="font-size: 18px;">최근 등록 상품
+					(8개)</h2>
+			</div>
 			<div class="tbl-wrap">
 				<table>
 					<thead>
 						<tr>
-							<th>주문번호</th>
-							<th>고객명</th>
+							<th>상품번호</th>
+							<th>이미지</th>
+							<th>브랜드</th>
 							<th>상품명</th>
-							<th>결제금액</th>
-							<th>상태</th>
+							<th>판매가</th>
+							<th>관리</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>#20260502-01</td>
-							<td>김철수</td>
-							<td>나이키 에어포스 1</td>
-							<td>₩ 139,000</td>
-							<td><span style="color: var(--blue)">배송중</span></td>
-						</tr>
-						<tr>
-							<td>#20260502-02</td>
-							<td>이영희</td>
-							<td>아디다스 슈퍼스타</td>
-							<td>₩ 109,000</td>
-							<td><span>결제완료</span></td>
-						</tr>
+						<c:if test="${empty productList}">
+							<tr>
+								<td colspan="6" style="text-align: center;">등록된 상품이 없습니다.</td>
+							</tr>
+						</c:if>
+						<c:forEach var="item" items="${productList}">
+							<tr>
+								<td>${item.prodNum}</td>
+								<td><c:if test="${not empty item.mainImgUrl}">
+										<img
+											src="${pageContext.request.contextPath}/upload/${item.mainImgUrl}"
+											width="50" style="border-radius: 4px;">
+									</c:if></td>
+								<td>${item.brandName}</td>
+								<td style="text-align: left; font-weight: bold;">${item.prodName}</td>
+								<td><fmt:formatNumber value="${item.prodPrice}"
+										pattern="#,###" />원</td>
+								<td>
+									<button class="logout-btn"
+										style="padding: 4px 8px; font-size: 11px;"
+										onclick="location.href='detail.do?prod_num=${item.prodNum}'">상세보기</button>
+								</td>
+							</tr>
+						</c:forEach>
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</main>
-
 </body>
 </html>
