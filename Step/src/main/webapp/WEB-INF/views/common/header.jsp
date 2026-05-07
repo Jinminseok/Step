@@ -60,7 +60,7 @@
               </div>
             </div>
           </div>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/AIpickForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/aipickForm.do'">
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>
@@ -88,7 +88,7 @@
         
         <%-- 2. 비로그인 상태일 때 --%>
         <c:otherwise>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/AIpickForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/aipickForm.do'">
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>

@@ -23,6 +23,9 @@ public class MainAction implements Action {
 		filter.setStart_row(1); 
 		filter.setEnd_row(8);
 		
+		// 성별 필터 무력화
+		filter.setGender(-1);
+		
 		// 3. 상품 목록 받아오기
 		List<AdminVO> productList = dao.getProductList(filter);
 		
