@@ -449,7 +449,7 @@ function previewImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
-
+   
 // 🚨 데이터 전송 로직 (FormData 사용)
 function submitProd() {
     var sku   = document.getElementById('fi-sku').value.trim();
