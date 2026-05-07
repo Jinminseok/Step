@@ -74,7 +74,8 @@
 	        <span class="hdr-badge" style="background:#4d94ff">2</span>
 	      </button>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
-            <span class="hdr-btn-icon">🛒</span><span class="hdr-btn-label">장바구니</span>
+            <span class="hdr-btn-icon">🛒</span>
+            <span class="hdr-btn-label">장바구니</span>
           </button>
           <div style="width:1px;height:28px;background:#333;margin:0 4px"></div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">
@@ -111,12 +112,22 @@
 
 <div class="cat-nav">
   <div class="cat-nav-inner">
-    <div class="cat-item active" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
-    <div class="cat-item">👟 운동화</div>
-    <div class="cat-item">👡 샌들</div>
-    <div class="cat-item">🩴 슬리퍼</div>
-    <div class="cat-item">🥾 축구화</div>
-    <div class="cat-item">🗺️ 매장찾기</div>
+    <%-- 선택된 카테고리가 0이거나 없을 때 '전체' 탭 활성화 --%>
+    <div class="cat-item ${empty param.cat_num or param.cat_num == '0' ? 'active' : ''}" 
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
+         
+    <%-- 💡 주의: 아래 cat_num=1, 2, 3 등은 실제 DB의 카테고리 번호에 맞게 수정해야 합니다! --%>
+    <div class="cat-item ${param.cat_num == '1' ? 'active' : ''}" 
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=1'">👟 운동화</div>
+         
+    <div class="cat-item ${param.cat_num == '2' ? 'active' : ''}" 
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=2'">👡 샌들</div>
+         
+    <div class="cat-item ${param.cat_num == '3' ? 'active' : ''}" 
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=3'">⚽ 축구화</div>
+         
+    <div class="cat-item ${param.cat_num == '5' ? 'active' : ''}" 
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=5'">🩴 슬리퍼</div>
   </div>
 </div>
 

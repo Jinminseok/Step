@@ -23,7 +23,7 @@ public class AdminProductDAO {
 
 		// 1. 단순화된 쿼리 (조인/서브쿼리 제거)
 		String sql = "SELECT * FROM ( " + "  SELECT a.*, rownum rnum FROM ( "
-				+ "    SELECT * FROM products ORDER BY prod_num DESC " + "  ) a WHERE rownum <= ? "
+				+ "    SELECT * FROM products JOIN brands USING(brand_num) JOIN prod_imgs USING(prod_num) WHERE is_main='Y' ORDER BY prod_num DESC " + "  ) a WHERE rownum <= ? "
 				+ ") WHERE rnum >= ?";
 
 		try {
@@ -46,8 +46,8 @@ public class AdminProductDAO {
 				vo.setGender(rs.getInt("gender"));
 
 				// 조인/이미지 정보는 일단 주석 처리 (에러 원인 격리)
-				// vo.setBrandName(rs.getString("brand_name"));
-				// vo.setMainImgUrl(rs.getString("main_img_url"));
+				vo.setBrandName(rs.getString("brand_name"));
+				vo.setMainImgUrl(rs.getString("prod_img_url"));
 
 				list.add(vo);
 			}
