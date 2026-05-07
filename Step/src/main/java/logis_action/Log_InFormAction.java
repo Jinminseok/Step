@@ -24,6 +24,10 @@ public class Log_InFormAction implements Action{
         List<Log_InVO> prodList = dao.getProductListForSearch();
         request.setAttribute("prodList", prodList);
         
+        // 3. 상품 마스터 관리에 신규 등록된 입고 대기 상품 목록 가져오기 (오른쪽 요약판용)
+        List<Log_InVO> pendingMasterList = dao.getPendingMasterList();
+        request.setAttribute("pendingMasterList", pendingMasterList);
+        
         // 3. 폼 화면으로 포워딩
         return "logistics/log_in/log_inForm.jsp";
 	}

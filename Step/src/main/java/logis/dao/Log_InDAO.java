@@ -372,5 +372,39 @@ public class Log_InDAO {
             DBUtil.executeClose(null, pstmt, conn);
         }
     }
+    
+    //상품 마스터 관리에 등록된 입고 대기 상품 목록 가져오기
+    public List<Log_InVO> getPendingMasterList() throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<Log_InVO> list = new ArrayList<>();
+
+        // 쿼리 설명: PROD_OPTIONS(O)에는 있는데 INBOUND(I)에는 없는 OPT_NUM을 찾습니다.
+        String sql = "SELECT P.SKU, P.PROD_NAME, B.BRAND_NAME, O.COLOR, O.SIZE_VAL " +
+                     "FROM PROD_OPTIONS O " +
+                     "JOIN PRODUCTS P ON O.PROD_NUM = P.PROD_NUM " +
+                     "JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM " +
+                     "WHERE O.OPT_NUM NOT IN (SELECT OPT_NUM FROM INBOUND) " +
+                     "ORDER BY P.PROD_NUM DESC";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Log_InVO vo = new Log_InVO();
+                vo.setSku(rs.getString("SKU"));
+                vo.setProdName(rs.getString("PROD_NAME"));
+                vo.setBrandName(rs.getString("BRAND_NAME"));
+                vo.setColor(rs.getString("COLOR"));
+                vo.setSizeVal(rs.getInt("SIZE_VAL"));
+                list.add(vo);
+            }
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return list;
+    }
 	
 }

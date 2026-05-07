@@ -366,7 +366,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
         </div>
         </form>
 
-        <!-- RIGHT: 오늘 입고 + 알림 -->
+        <!-- RIGHT: 알림 -->
         <div style="display:flex;flex-direction:column;gap:14px">
 
           <!-- 재입고 알림 -->
@@ -378,47 +378,36 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             </div>
           </div>
 
-          <!-- 오늘 입고 요약 -->
-          <div class="card">
+          <!-- 입고 대기 상품 -->
+		<div class="card">
             <div class="card-hdr">
               <div class="card-title">
-                <div class="card-title-ico">📊</div>
-                오늘 입고 요약
+                <div class="card-title-ico">⏳</div>
+                입고 대기 상품
               </div>
-              <span id="summaryDate" style="font-size:11px;color:var(--gray4);font-family:'DM Mono',monospace"></span>
+              <span class="bdg bdg-amber" style="font-size:12px;" id="pendingTotalCount">0건</span>
             </div>
-            <!-- 🚨 수정: 중복된 card-body 태그 하나로 통합 -->
             <div class="card-body" style="padding:14px 18px">
-				  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-				    <div style="text-align:center;padding:12px;background:var(--blue-lt);border-radius:8px;border:1px solid #93C5FD">
-				      <div id="summaryTotalQty" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--blue)">0</div>
-				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">총 입고 수량</div>
-				    </div>
-				    <div style="text-align:center;padding:12px;background:var(--green-lt);border-radius:8px;border:1px solid #6EE7B7">
-				      <div id="summaryTotalCount" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--green)">0</div>
-				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">처리 건수</div>
-				    </div>
-				    <div style="text-align:center;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid #FCD34D">
-				      <div id="summaryAlertCount" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--amber)">0</div>
-				      <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:600;text-transform:uppercase">알림 발송</div>
-				    </div>
-				  </div>
-
-              <!-- 오늘 목록 -->
-              <div style="font-size:10.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">오늘 입고 내역</div>
               <table style="width:100%;border-collapse:collapse">
                 <thead>
                   <tr>
-                  	<th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">시간</th>
-                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">상품명</th>
-                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">사이즈</th>
-                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:right">수량</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">품번(SKU)</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">상품명</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">브랜드</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">컬러</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left">사이즈</th>
+                    <th style="padding:7px 10px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:center">상태</th>
                   </tr>
                 </thead>
-                <tbody id="todayInboundTbody">
-                                  
-                </tbody>
+                <tbody id="pendingInboundTbody">
+                  </tbody>
               </table>
+
+              <div class="pagination-wrap" id="pendingPagination" style="display:none;">
+                <div class="page-info" id="pendingPageInfo">0 - 0 / 0건</div>
+                <div class="page-btns" id="pendingPageBtns"></div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -483,6 +472,10 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             </thead>
             <tbody id="histTbody"></tbody>
           </table>
+          <div class="pagination-wrap" id="histPagination" style="display:none;">
+                <div class="page-info" id="histPageInfo">0 - 0 / 0건</div>
+                <div class="page-btns" id="histPageBtns"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -552,8 +545,8 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
           </div>
           <div class="fg"><label>상태</label>
             <select class="fi" id="upd_status" name="status">
-              <option value="1">대기</option>
-              <option value="2">완료</option>
+              <option value="1">완료</option>
+              <option value="2">대기</option>
               <option value="3">취소</option>
             </select>
           </div>
@@ -584,7 +577,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 <div class="toast" id="toast"></div>
 
 <script>
-// 1. 실시간 시계
+// ── 1. 시계 & 유틸리티 ─────────────────────────
 function updateClock() {
     const now = new Date();
     const year = now.getFullYear();
@@ -592,51 +585,55 @@ function updateClock() {
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
     const el = document.getElementById("realTimeClock");
-    if(el) el.innerText = timeString;
+    if(el) el.innerText = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
 }
 updateClock();
 setInterval(updateClock, 60000);
 
-// 2. 데이터 초기화 (JSP -> JS)
+function showToast(msg, warn) {
+    const t = document.getElementById('toast');
+    if(!t) return;
+    t.textContent = msg; 
+    t.style.background = warn ? 'var(--amber)' : 'var(--gray1)';
+    t.classList.add('show'); 
+    setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── 2. 데이터 세팅 ─────────────────────────────
+function getStatusText(code) {
+    if (code == '1') return '완료';
+    if (code == '2') return '대기';
+    if (code == '3') return '취소';
+    return '완료'; 
+}
+
 const prods = [
   <c:forEach var="p" items="${prodList}">
     { sku: '${p.sku}', name: '${p.prodName}', brand: '${p.brandName}', prodNum: '${p.prodNum}' },
   </c:forEach>
 ];
 
-function getStatusText(code) {
-    if (code == '1') return '대기';
-    if (code == '2') return '완료';
-    if (code == '3') return '취소';
-    return '완료'; // 값이 없거나 0일 때의 기본값
-}
-
 const histData = [
-	  <c:forEach var="item" items="${inboundList}">
-	    {
-	      no: 'IN-${item.inNum}', 
-	      date: '${item.inDate}', 
-	      brand: '${item.brandName}', 
-	      name: '${item.prodName}',
-	      size: '${item.sizeVal}mm', 
-	      color: '${item.color}', 
-	      qty: ${item.inQty}, 
-	      supplier: '${item.supplier}',
-	      
-	      // 💡 여기가 핵심! 숫자로 넘어온 값을 위 함수를 거쳐서 글자로 바꿔 담습니다.
-	      status: getStatusText('${item.inStatus}'), 
-	      
-	      manager: '${item.userName}', 
-	      memo: '${item.inMemo}'
-	    },
-	  </c:forEach>
-	];
+  <c:forEach var="item" items="${inboundList}">
+    {
+      no: 'IN-${item.inNum}', date: '${item.inDate}', brand: '${item.brandName}', 
+      name: '${item.prodName}', size: '${item.sizeVal}mm', color: '${item.color}', 
+      qty: ${item.inQty}, supplier: '${item.supplier}',
+      status: getStatusText('${item.inStatus}'), manager: '${item.userName}', memo: '${item.inMemo}'
+    },
+  </c:forEach>
+];
+
+const pendingMasterData = [
+  <c:forEach var="p" items="${pendingMasterList}">
+    { sku: '${p.sku}', name: '${p.prodName}', brand: '${p.brandName}', color: '${p.color}', size: '${p.sizeVal}mm', status: '완료' },
+  </c:forEach>
+];
 
 const statusBdg = { '완료': '<span class="bdg bdg-green">완료</span>', '대기': '<span class="bdg bdg-amber">대기</span>', '취소': '<span class="bdg bdg-red">취소</span>' };
 
-// 3. 날짜 포맷 함수
+// ── 3. 날짜 및 검색 상태 저장 로직 ────────────────
 function getTodayStr() {
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
@@ -650,124 +647,198 @@ function initDates() {
 
     const fiDate = document.getElementById('fi-date');
     if(fiDate) fiDate.value = todayStr;
-
-    const summaryDate = document.getElementById('summaryDate');
-    if(summaryDate) summaryDate.innerText = todayStr;
-
     const sDate = document.getElementById('searchStartDate');
     const eDate = document.getElementById('searchEndDate');
     if(sDate) sDate.value = lastMonthStr;
     if(eDate) eDate.value = todayStr;
 }
 
-// 4. 오늘 입고 요약 렌더링 (시간 T 포함 해결본)
-function renderTodayDashboard() {
-    const today = getTodayStr();
-    const todayData = histData.filter(d => d.date.startsWith(today));
-    
-    let totalQty = 0;
-    todayData.forEach(d => { totalQty += d.qty; });
-    
-    const qtyEl = document.getElementById('summaryTotalQty') || document.getElementById('summary-total-qty');
-    const cntEl = document.getElementById('summaryTotalCount') || document.getElementById('summary-total-count');
-    const badgeEl = document.getElementById('todayCountBadge') || document.getElementById('todayCount');
-    
-    if(qtyEl) qtyEl.innerText = totalQty;
-    if(cntEl) cntEl.innerText = todayData.length;
-    if(badgeEl) badgeEl.innerText = todayData.length;
+function saveSearchState() {
+    const sDate = document.getElementById('searchStartDate');
+    const eDate = document.getElementById('searchEndDate');
+    if(sDate) sessionStorage.setItem('log_sDate', sDate.value);
+    if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
+}
 
-    const tbody = document.getElementById('todayInboundTbody');
-    if(tbody) {
-        if(todayData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--gray4);">오늘 입고 내역이 없습니다.</td></tr>';
-        } else {
-            tbody.innerHTML = todayData.map(d => {
-                let time = '--:--';
-                if (d.date.includes(' ')) {
-                    time = d.date.split(' ')[1].substring(0, 5);
-                } else if (d.date.includes('T')) {
-                    time = d.date.split('T')[1].substring(0, 5);
-                } else if (d.date.length >= 16) {
-                    time = d.date.substring(11, 16);
-                }
-                return '<tr>'
-                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-family:\'DM Mono\',monospace;font-size:11px;color:var(--gray3)">' + time + '</td>'
-                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:12px">' + d.name + '</td>'
-                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);font-size:11px;font-family:\'DM Mono\',monospace">' + d.size + '</td>'
-                    + '<td style="padding:9px 10px;border-bottom:1px solid var(--gray7);text-align:right"><span class="bdg bdg-blue">' + d.qty + '개</span></td>'
-                    + '</tr>';
-            }).join('');
-        }
+// ── 4. [페이징 1] 입고 대기 상품 ──────────────────
+let currentPendingPage = 1;
+const pendingItemsPerPage = 10;
+
+function renderPendingDashboard() {
+    const tbody = document.getElementById('pendingInboundTbody');
+    const cntEl = document.getElementById('pendingTotalCount');
+    const paginWrap = document.getElementById('pendingPagination');
+    
+    if(cntEl) cntEl.innerText = pendingMasterData.length + '건';
+
+    if(!tbody) return;
+
+    if(pendingMasterData.length === 0) {
+        if(paginWrap) paginWrap.style.display = 'none';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--gray4);">현재 입고 대기 중인 상품이 없습니다 🎉</td></tr>';
+    } else {
+        if(paginWrap) paginWrap.style.display = 'flex';
+        const startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
+        const endIndex = startIndex + pendingItemsPerPage;
+        const paginatedData = pendingMasterData.slice(startIndex, endIndex);
+
+        tbody.innerHTML = paginatedData.map(d => `
+            <tr style="border-bottom:1px solid var(--gray6);">
+                <td style="padding:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">\${d.sku || '-'}</td>
+                <td style="padding:10px;font-size:12px;font-weight:600;">\${d.name}</td>
+                <td style="padding:10px;font-size:11px;">\${d.brand}</td>
+                <td style="padding:10px;font-size:11px;color:var(--gray2)">\${d.color}</td>
+                <td style="padding:10px;font-size:11px;font-family:'DM Mono',monospace">\${d.size}</td>
+                <td style="padding:10px;text-align:center;"><span class="bdg bdg-amber">대기</span></td>
+            </tr>`).join('');
+        renderPendingPagination();
     }
 }
 
-// 5. 이력 조회 리스트 렌더링 (수정 모달 연결 완벽 처리)
-function renderHistList(data) {
-    const histTbody = document.getElementById('histTbody');
-    if(!histTbody) return;
-    
-    histTbody.innerHTML = data.map(d => `
-        <tr class="tbl-row" onclick="openUpdateModal('\${d.no}')">
-          <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);font-weight:600">\${d.no}</td>
-          <td style="font-size:12px">\${d.date.substring(0, 10)}</td>
-          <td>\${d.brand}</td>
-          <td style="font-weight:600">\${d.name}</td>
-          <td><span class="bdg bdg-gray">\${d.size}</span> \${d.color}</td>
-          <td style="font-weight:700">\${d.qty}개</td>
-          <td style="font-size:12px">\${d.supplier || '-'}</td>
-          <td>\${statusBdg[d.status] || ''}</td>
-          <td>\${d.manager}</td>
-          <td onclick="event.stopPropagation()">
-            <button type="button" class="btn btn-xs btn-outline" onclick="openUpdateModal('\${d.no}')">수정</button>
-            <button type="button" class="btn btn-xs btn-danger" onclick="deleteHist('\${d.no}')">삭제</button>
-          </td>
-        </tr>`).join('');
+function renderPendingPagination() {
+    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
+    const pageInfo = document.getElementById('pendingPageInfo');
+    const pageBtns = document.getElementById('pendingPageBtns');
+    if (!pageInfo || !pageBtns) return;
 
-	    const pillTotal = document.querySelector('.pill-total .pill-num');
-	    const pillDone = document.querySelector('.pill-done .pill-num');
-	    const pillPend = document.querySelector('.pill-pend .pill-num');
-	    const pillCancel = document.querySelector('.pill-cancel .pill-num');
-	    const totalDisplay = document.getElementById('totalCountDisplay');
-	
-	    if(pillTotal) pillTotal.innerText = data.length;
-	    if(totalDisplay) totalDisplay.innerText = data.length;
-	    
-	    // data.filter 를 돌려서 각각의 상태 개수를 정확히 꽂아줍니다.
-	    if(pillDone) pillDone.innerText = data.filter(x => x.status === '완료').length;
-	    if(pillPend) pillPend.innerText = data.filter(x => x.status === '대기').length;
-	    if(pillCancel) pillCancel.innerText = data.filter(x => x.status === '취소').length;
+    const startNum = (currentPendingPage - 1) * pendingItemsPerPage + 1;
+    const endNum = Math.min(currentPendingPage * pendingItemsPerPage, pendingMasterData.length);
+    pageInfo.innerText = `\${startNum} - \${endNum} / \${pendingMasterData.length}건`;
 
+    let btnsHTML = '';
+    btnsHTML += `<div class="pg-btn \${currentPendingPage === 1 ? 'disabled' : ''}" style="\${currentPendingPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage - 1})">‹</div>`;
+    for (let i = 1; i <= totalPages; i++) {
+        btnsHTML += `<div class="pg-btn \${i === currentPendingPage ? 'on' : ''}" style="cursor:pointer;" onclick="changePendingPage(\${i})">\${i}</div>`;
+    }
+    btnsHTML += `<div class="pg-btn \${currentPendingPage === totalPages ? 'disabled' : ''}" style="\${currentPendingPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage + 1})">›</div>`;
+    pageBtns.innerHTML = btnsHTML;
 }
 
-// 6. 검색 로직
+function changePendingPage(page) {
+    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
+    if (page < 1 || page > totalPages) return; 
+    currentPendingPage = page;
+    renderPendingDashboard();
+}
+
+// ── 5. [페이징 2] 입고 이력 조회 ──────────────────
+let currentHistPage = 1;
+const histItemsPerPage = 10;
+let currentFilteredHistData = [];
+
 function searchHistory() {
     const sDate = document.getElementById('searchStartDate')?.value;
     const eDate = document.getElementById('searchEndDate')?.value;
     const brand = document.getElementById('searchBrand')?.value;
+    const status = document.getElementById('searchStatus')?.value;
     const keyword = document.getElementById('searchKeyword')?.value.trim().toLowerCase();
 
-    const filtered = histData.filter(d => {
-        let dDateOnly = d.date;
-        if(d.date.includes(' ')) dDateOnly = d.date.split(' ')[0];
-        else if(d.date.includes('T')) dDateOnly = d.date.split('T')[0];
-        else dDateOnly = d.date.substring(0, 10);
-
+    currentFilteredHistData = histData.filter(d => {
+        let dDateOnly = d.date.includes(' ') ? d.date.split(' ')[0] : (d.date.includes('T') ? d.date.split('T')[0] : d.date.substring(0, 10));
         if (sDate && dDateOnly < sDate) return false;
         if (eDate && dDateOnly > eDate) return false;
         if (brand && brand !== '전체 브랜드' && d.brand !== brand) return false;
+        if (status && status !== '전체 상태' && d.status !== status) return false;
         if (keyword && !d.name.toLowerCase().includes(keyword) && !d.no.toLowerCase().includes(keyword)) return false;
         return true;
     });
 
-    renderHistList(filtered);
+    currentHistPage = 1; // 검색 시 1페이지로 리셋
+    renderHistList(); 
 }
 
-// 7. 탭 전환
+function renderHistList() {
+    const histTbody = document.getElementById('histTbody');
+    const data = currentFilteredHistData;
+    const paginWrap = document.getElementById('histPagination');
+
+    if(!histTbody) return;
+
+    if(data.length === 0) {
+        if(paginWrap) paginWrap.style.display = 'none';
+        histTbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px; color:var(--gray4);">조건에 맞는 입고 내역이 없습니다.</td></tr>';
+    } else {
+        if(paginWrap) paginWrap.style.display = 'flex';
+        const startIndex = (currentHistPage - 1) * histItemsPerPage;
+        const endIndex = startIndex + histItemsPerPage;
+        const paginatedData = data.slice(startIndex, endIndex);
+
+        histTbody.innerHTML = paginatedData.map(d => `
+            <tr class="tbl-row" onclick="openUpdateModal('\${d.no}')">
+              <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);font-weight:600">\${d.no}</td>
+              <td style="font-size:12px">\${d.date.substring(0, 10)}</td>
+              <td>\${d.brand}</td>
+              <td style="font-weight:600">\${d.name}</td>
+              <td><span class="bdg bdg-gray">\${d.size}</span> \${d.color}</td>
+              <td style="font-weight:700">\${d.qty}개</td>
+              <td style="font-size:12px">\${d.supplier || '-'}</td>
+              <td>\${statusBdg[d.status] || ''}</td>
+              <td>\${d.manager}</td>
+              <td onclick="event.stopPropagation()">
+                <button type="button" class="btn btn-xs btn-outline" onclick="openUpdateModal('\${d.no}')">수정</button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="deleteHist('\${d.no}')">삭제</button>
+              </td>
+            </tr>`).join('');
+            
+        renderHistPagination();
+    }
+
+    // 상단 요약 알약 업데이트
+    const pillTotal = document.querySelector('.pill-total .pill-num');
+    const pillDone = document.querySelector('.pill-done .pill-num');
+    const pillPend = document.querySelector('.pill-pend .pill-num');
+    const pillCancel = document.querySelector('.pill-cancel .pill-num');
+    const totalDisplay = document.getElementById('totalCountDisplay');
+
+    if(pillTotal) pillTotal.innerText = data.length;
+    if(totalDisplay) totalDisplay.innerText = data.length;
+    if(pillDone) pillDone.innerText = data.filter(x => x.status === '완료').length;
+    if(pillPend) pillPend.innerText = data.filter(x => x.status === '대기').length;
+    if(pillCancel) pillCancel.innerText = data.filter(x => x.status === '취소').length;
+}
+
+function renderHistPagination() {
+    const totalPages = Math.ceil(currentFilteredHistData.length / histItemsPerPage);
+    const pageInfo = document.getElementById('histPageInfo');
+    const pageBtns = document.getElementById('histPageBtns');
+    if (!pageInfo || !pageBtns) return;
+
+    const startNum = (currentHistPage - 1) * histItemsPerPage + 1;
+    const endNum = Math.min(currentHistPage * histItemsPerPage, currentFilteredHistData.length);
+    pageInfo.innerText = `\${startNum} - \${endNum} / \${currentFilteredHistData.length}건`;
+
+    let btnsHTML = '';
+    btnsHTML += `<div class="pg-btn \${currentHistPage === 1 ? 'disabled' : ''}" style="\${currentHistPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeHistPage(\${currentHistPage - 1})">‹</div>`;
+    for (let i = 1; i <= totalPages; i++) {
+        btnsHTML += `<div class="pg-btn \${i === currentHistPage ? 'on' : ''}" style="cursor:pointer;" onclick="changeHistPage(\${i})">\${i}</div>`;
+    }
+    btnsHTML += `<div class="pg-btn \${currentHistPage === totalPages ? 'disabled' : ''}" style="\${currentHistPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeHistPage(\${currentHistPage + 1})">›</div>`;
+    pageBtns.innerHTML = btnsHTML;
+}
+
+function changeHistPage(page) {
+    const totalPages = Math.ceil(currentFilteredHistData.length / histItemsPerPage);
+    if (page < 1 || page > totalPages) return; 
+    currentHistPage = page;
+    renderHistList();
+}
+
+function resetSearch() {
+    const brandEl = document.getElementById('searchBrand');
+    const statusEl = document.getElementById('searchStatus');
+    const keywordEl = document.getElementById('searchKeyword');
+    if(brandEl) brandEl.selectedIndex = 0; 
+    if(statusEl) statusEl.selectedIndex = 0; 
+    if(keywordEl) keywordEl.value = ''; 
+    initDates();
+    searchHistory(); 
+}
+
+// ── 6. 탭 전환 & 상품 등록 폼 제어 ────────────────
 function switchMain(tab) {
     const isReg = tab === 'reg';
     const regSec = document.getElementById('reg-section');
     const histSec = document.getElementById('hist-section');
-    
     if(regSec) regSec.style.display = isReg ? '' : 'none';
     if(histSec) histSec.style.display = isReg ? 'none' : '';
     
@@ -779,32 +850,99 @@ function switchMain(tab) {
     if(!isReg) searchHistory();
 }
 
-// 8. 수정 모달 열기/닫기
+function searchProd(q) {
+    const drop = document.getElementById('searchDrop');
+    if(!q) { drop.style.display='none'; return; }
+    const matched = prods.filter(p => p.name.includes(q) || p.sku.toLowerCase().includes(q.toLowerCase()) || p.brand.includes(q));
+    if(!matched.length) { drop.style.display='none'; return; }
+    drop.innerHTML = matched.map(p => `
+      <div onclick="selectProd('\${p.sku}')" style="padding:10px 14px;cursor:pointer;border-bottom:1.5px solid var(--gray7);display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">👟</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--gray1)">\${p.name}</div><div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gray3)">\${p.sku} · \${p.brand}</div></div>
+      </div>`).join('');
+    drop.style.display = 'block';
+}
+
+function selectProd(sku) {
+    const p = prods.find(x => x.sku === sku);
+    if(!p) return;
+    document.getElementById('searchDrop').style.display = 'none';
+    document.getElementById('searchWrapDiv').style.display = 'none';
+    document.getElementById('hidden_prodNum').value = p.prodNum; 
+    document.getElementById('selProdName').textContent = p.name;
+    document.getElementById('selProdSku').textContent  = p.sku;
+    document.getElementById('selProdBrand').textContent = p.brand;
+    document.getElementById('selectedProdWrap').style.display = 'block';
+}
+
+function clearProd() {
+    document.getElementById('prodSearch').value = '';
+    document.getElementById('searchWrapDiv').style.display = 'block';
+    document.getElementById('selectedProdWrap').style.display = 'none';
+    document.getElementById('hidden_prodNum').value = '';
+}
+
+const selSizes = new Set();
+function selSize(el) {
+    el.classList.toggle('on');
+    const mm = el.textContent;
+    selSizes.has(mm) ? selSizes.delete(mm) : selSizes.add(mm);
+    document.getElementById('selSizeTxt').textContent = selSizes.size ? [...selSizes].sort((a,b) => a-b).join(', ') + 'mm' : '없음';
+}
+
+function resetForm() {
+    ['fi-color','fi-qty','fi-memo','fi-supplier'].forEach(id => { 
+        const el = document.getElementById(id); if(el) el.value=''; 
+    });
+    const fiDate = document.getElementById('fi-date');
+    if(fiDate) fiDate.value = getTodayStr();
+    clearProd();
+    selSizes.clear();
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    document.getElementById('selSizeTxt').textContent = '없음';
+}
+
+function submitInbound() {
+    const prodNum = document.getElementById('hidden_prodNum').value;
+    const color = document.getElementById('fi-color').value;
+    const qty = document.getElementById('fi-qty').value;
+    
+    if(!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
+    if(!color || !qty || selSizes.size === 0) { showToast('⚠ 필수 항목을 모두 입력하세요.', true); return; }
+
+    const sizeArr = Array.from(selSizes);
+    document.getElementById('hidden_sizes').value = sizeArr.join(',');
+
+    if(confirm(`총 \${sizeArr.length}개의 사이즈 옵션에 각각 \${qty}개씩 입고 처리하시겠습니까?`)) {
+        showToast('✅ 입고 처리가 완료되었습니다!');
+        setTimeout(function() { document.getElementById('inboundForm').submit(); }, 1500);
+    }
+}
+
+// ── 7. 모달 제어 (수정 및 삭제) ────────────────────
 function openUpdateModal(no) {
     const d = histData.find(x => x.no === no);
     if(!d) return;
 
-    // 모달에 값 세팅
     document.getElementById('upd_inNum').value = d.no.replace('IN-', '');
     
-    let dateVal = d.date;
-    if(d.date.includes(' ')) dateVal = d.date.split(' ')[0];
-    else if(d.date.includes('T')) dateVal = d.date.split('T')[0];
-    else dateVal = d.date.substring(0, 10);
+    let dateVal = d.date.includes(' ') ? d.date.split(' ')[0] : (d.date.includes('T') ? d.date.split('T')[0] : d.date.substring(0, 10));
     document.getElementById('upd_date').value = dateVal;
     
     document.getElementById('upd_brand').value = d.brand;
-    document.getElementById('upd_name').value = d.name;    
+    document.getElementById('upd_name').value = d.name;
+    
     const sizeEl = document.getElementById('upd_size');
     if(sizeEl) sizeEl.value = d.size.replace('mm', '');
     const colorEl = document.getElementById('upd_color');
-    if(colorEl) colorEl.value = d.color;    
+    if(colorEl) colorEl.value = d.color;
+    
     document.getElementById('upd_qty').value = d.qty;
     
     const statusEl = document.getElementById('upd_status');
     if(statusEl) {
-        if(d.status === '대기') statusEl.value = "1";
-        else if(d.status === '완료') statusEl.value = "2";
+        if(d.status === '완료') statusEl.value = "1";
+        else if(d.status === '대기') statusEl.value = "2";
         else if(d.status === '취소') statusEl.value = "3";
     }
     
@@ -812,7 +950,6 @@ function openUpdateModal(no) {
     if(supplierEl) supplierEl.value = d.supplier || '';
     
     document.getElementById('upd_memo').value = d.memo || '';
-
     document.getElementById('updateModal').classList.add('open');
 }
 
@@ -820,147 +957,58 @@ function closeUpdateModal() {
     document.getElementById('updateModal').classList.remove('open');
 }
 
-document.getElementById('updateModal').addEventListener('click', function(e) {
-    if(e.target === e.currentTarget) closeUpdateModal();
-});
+const updateModalEl = document.getElementById('updateModal');
+if(updateModalEl) {
+    updateModalEl.addEventListener('click', function(e) {
+        if(e.target === e.currentTarget) closeUpdateModal();
+    });
+}
 
-// 9. 삭제 함수
+const updateForm = document.getElementById('updateForm');
+if(updateForm) {
+    updateForm.addEventListener('submit', function() { saveSearchState(); });
+}
+
 function deleteHist(no) {
     const inNum = no.replace('IN-', '');
-    if (confirm(no + ' 입고 내역을 정말 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) {
-        saveSearchState(); // 👈 삭제 요청 보내기 직전에 날짜 킵(Keep)!
+    if (confirm(no + ' 입고 내역을 정말 삭제하시겠습니까?')) {
+        saveSearchState();
         window.location.href = '${pageContext.request.contextPath}/logistics/log_in/log_inDelete.do?inNum=' + inNum;
     }
 }
 
-// 수정 완료 버튼 누를 때도 날짜 저장하기!
-const updateForm = document.getElementById('updateForm');
-if(updateForm) {
-    updateForm.addEventListener('submit', function() {
-        saveSearchState(); // 👈 수정 폼이 전송되기 직전에 날짜 킵(Keep)!
-    });
-}
-function saveSearchState() {
-    const sDate = document.getElementById('searchStartDate');
-    const eDate = document.getElementById('searchEndDate');
-    if(sDate) sessionStorage.setItem('log_sDate', sDate.value);
-    if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
-}
-
-// 10. 기존 상품 검색 및 초기화 기능
-function searchProd(q) {
-  const drop = document.getElementById('searchDrop');
-  if(!q) { drop.style.display='none'; return; }
-  const matched = prods.filter(p => p.name.includes(q) || p.sku.toLowerCase().includes(q.toLowerCase()) || p.brand.includes(q));
-  if(!matched.length) { drop.style.display='none'; return; }
-  drop.innerHTML = matched.map(p => `
-    <div onclick="selectProd('\${p.sku}')" style="padding:10px 14px;cursor:pointer;border-bottom:1.5px solid var(--gray7);display:flex;align-items:center;gap:10px">
-      <span style="font-size:18px">👟</span>
-      <div><div style="font-size:13px;font-weight:600;color:var(--gray1)">\${p.name}</div><div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gray3)">\${p.sku} · \${p.brand}</div></div>
-    </div>`).join('');
-  drop.style.display = 'block';
-}
-
-function selectProd(sku) {
-  const p = prods.find(x => x.sku === sku);
-  if(!p) return;
-  document.getElementById('searchDrop').style.display = 'none';
-  document.getElementById('searchWrapDiv').style.display = 'none';
-  document.getElementById('hidden_prodNum').value = p.prodNum; 
-  document.getElementById('selProdName').textContent = p.name;
-  document.getElementById('selProdSku').textContent  = p.sku;
-  document.getElementById('selProdBrand').textContent = p.brand;
-  document.getElementById('selectedProdWrap').style.display = 'block';
-}
-
-function clearProd() {
-  document.getElementById('prodSearch').value = '';
-  document.getElementById('searchWrapDiv').style.display = 'block';
-  document.getElementById('selectedProdWrap').style.display = 'none';
-  document.getElementById('hidden_prodNum').value = '';
-}
-
-const selSizes = new Set();
-function selSize(el) {
-  el.classList.toggle('on');
-  const mm = el.textContent;
-  selSizes.has(mm) ? selSizes.delete(mm) : selSizes.add(mm);
-  document.getElementById('selSizeTxt').textContent = selSizes.size ? [...selSizes].sort((a,b) => a-b).join(', ') + 'mm' : '없음';
-}
-
-function resetForm() {
-  ['fi-color','fi-qty','fi-memo','fi-supplier'].forEach(id => { 
-      const el = document.getElementById(id); if(el) el.value=''; 
-  });
-  const fiDate = document.getElementById('fi-date');
-  if(fiDate) fiDate.value = getTodayStr();
-  clearProd();
-  selSizes.clear();
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-  document.getElementById('selSizeTxt').textContent = '없음';
-}
-
-function submitInbound() {
-  const prodNum = document.getElementById('hidden_prodNum').value;
-  const color = document.getElementById('fi-color').value;
-  const qty = document.getElementById('fi-qty').value;
-  
-  if(!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
-  if(!color || !qty || selSizes.size === 0) { showToast('⚠ 필수 항목을 모두 입력하세요.', true); return; }
-
-  const sizeArr = Array.from(selSizes);
-  document.getElementById('hidden_sizes').value = sizeArr.join(',');
-
-  if(confirm(`총 \${sizeArr.length}개의 사이즈 옵션에 각각 \${qty}개씩 입고 처리하시겠습니까?`)) {
-    showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
-    setTimeout(function() { document.getElementById('inboundForm').submit(); }, 1500);
-  }
-}
-
-function showToast(msg, warn) {
-  const t = document.getElementById('toast');
-  if(!t) return;
-  t.textContent = msg; t.style.background = warn ? 'var(--amber)' : 'var(--gray1)';
-  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// 🚨 페이지 로드 시 최우선 실행
+// ── 8. 초기 로드 이벤트 ───────────────────────────
 window.addEventListener('load', function() {
-    initDates(); //기본 세팅 (오늘~한달전)
+    initDates(); 
 
     const urlParams = new URLSearchParams(window.location.search);
     const result = urlParams.get('result');
 
-    //삭제나 수정 후에 돌아온 거라면 브라우저 기억을 되살립니다
     if(result === 'deleted' || result === 'updated' || result === 'opt_error') {
         const savedSDate = sessionStorage.getItem('log_sDate');
         const savedEDate = sessionStorage.getItem('log_eDate');
-        
-        // 기억해둔 날짜가 있으면 화면 달력에 다시 꽂아줌
         if(savedSDate && savedEDate) {
             document.getElementById('searchStartDate').value = savedSDate;
             document.getElementById('searchEndDate').value = savedEDate;
         }
-        
-        // 한 번 복구했으니 기억은 깨끗하게 지워줍니다.
         sessionStorage.removeItem('log_sDate');
         sessionStorage.removeItem('log_eDate');
     }
 
-    renderTodayDashboard();
-    searchHistory(); //복구된 날짜를 바탕으로 리스트를 다시 그립니다.
+    // 💡 두 테이블 모두 렌더링 호출
+    renderPendingDashboard();
+    searchHistory(); 
 
-    // 기존의 알림 및 탭 전환 로직
     if(result === 'updated') {
         alert('✅ 수정이 완료되었습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     } else if (result === 'deleted') {
-        alert('🗑️ 입고 내역이 성공적으로 삭제되었습니다.');
+        alert('🗑️ 성공적으로 삭제되었습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     } else if (result === 'opt_error') {
-        alert('❌ 선택하신 사이즈/컬러 옵션이 존재하지 않습니다.');
+        alert('❌ 선택하신 옵션이 존재하지 않습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     }
