@@ -19,11 +19,12 @@ public class MainAction implements Action {
 
 		// 2. 검색, 페이징 필터 세팅 (ProductVO가 BaseVO를 상속받았으므로 필터 역할 가능)
 		AdminProductVO filter = new AdminProductVO();
+		// DAO 코드 안에서 실행
 
 		// 최신순 8개까지만 가져오도록 세팅 (BaseVO의 필드들)
 		filter.setStart_row(1);
 		filter.setEnd_row(8);
-
+		
 		// 성별 필터 (ProductVO의 gender 필드 사용)
 		// -1이 '전체'를 의미한다면 그대로 유지
 		filter.setGender(-1);

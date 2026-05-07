@@ -151,4 +151,13 @@ public class AdminProductVO extends AdminBaseVO {
 		this.options = options;
 	}
 
+	@Override
+	public String toString() {
+		return "AdminProductVO [prodNum=" + prodNum + ", catNum=" + catNum + ", brandNum=" + brandNum + ", sku=" + sku
+				+ ", prodName=" + prodName + ", gender=" + gender + ", prodPrice=" + prodPrice + ", saleRate="
+				+ saleRate + ", prodText=" + prodText + ", prodStatus=" + prodStatus + ", prodCreatedAt="
+				+ prodCreatedAt + ", prodUpdatedAt=" + prodUpdatedAt + ", catName=" + catName + ", brandName="
+				+ brandName + ", mainImgUrl=" + mainImgUrl + ", options=" + options + "]";
+	}
+
 }

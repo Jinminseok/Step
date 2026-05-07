@@ -21,20 +21,15 @@ public class AdminProductDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		// 문자열 합칠 때 앞뒤 공백을 명확하게 줌 (특수 공백 제거됨)
-		String sql = "SELECT * FROM ( " + "  SELECT a.*, rownum rnum FROM ( " + "    SELECT p.*, b.brand_name, "
-				+ "           (SELECT i.prod_img_url FROM prod_imgs i "
-				+ "            WHERE i.prod_num = p.prod_num AND i.is_main = 1) as main_img_url "
-				+ "    FROM products p " + "    JOIN brands b ON p.brand_num = b.brand_num "
-				+ "    ORDER BY p.prod_num DESC " + "  ) a WHERE rownum <= ? " + ") WHERE rnum >= ?";
+		// 1. 단순화된 쿼리 (조인/서브쿼리 제거)
+		String sql = "SELECT * FROM ( " + "  SELECT a.*, rownum rnum FROM ( "
+				+ "    SELECT * FROM products ORDER BY prod_num DESC " + "  ) a WHERE rownum <= ? "
+				+ ") WHERE rnum >= ?";
 
 		try {
 			conn = DBUtil.getConnection();
 			pstmt = conn.prepareStatement(sql);
 
-			// 콘솔에서 파라미터 값 확인용 (에러 추적용)
-			System.out.println("LOG - Start Row: " + filter.getStart_row());
-			System.out.println("LOG - End Row: " + filter.getEnd_row());
 
 			pstmt.setInt(1, filter.getEnd_row());
 			pstmt.setInt(2, filter.getStart_row());
@@ -42,15 +37,21 @@ public class AdminProductDAO {
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				AdminProductVO vo = new AdminProductVO();
+
+				// 2. products 테이블의 기본 컬럼만 매핑
 				vo.setProdNum(rs.getInt("prod_num"));
 				vo.setProdName(rs.getString("prod_name"));
 				vo.setProdPrice(rs.getInt("prod_price"));
 				vo.setSaleRate(rs.getDouble("sale_rate"));
 				vo.setGender(rs.getInt("gender"));
-				vo.setBrandName(rs.getString("brand_name"));
-				vo.setMainImgUrl(rs.getString("main_img_url"));
+
+				// 조인/이미지 정보는 일단 주석 처리 (에러 원인 격리)
+				// vo.setBrandName(rs.getString("brand_name"));
+				// vo.setMainImgUrl(rs.getString("main_img_url"));
+
 				list.add(vo);
 			}
+		  
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
