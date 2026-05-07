@@ -1,47 +1,47 @@
 package kr.shop.product.action;
 
+import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import kr.controller.Action;
-// import kr.shop.dao.ProductDAO;
-// import kr.shop.vo.ProductVO;
+import kr.shop.dao.UserProductDAO;
+import kr.shop.vo.AdminVO;
 
 public class DetailAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		// 1. 상품 번호 파라미터 받기 (메인에서 클릭하고 넘어올 때의 번호)
+		// 1. 상품 번호 파라미터
 		int prod_num = Integer.parseInt(request.getParameter("prod_num"));
 		
-		// -------------------------------------------------------------
-		// 💡 나중에 ProductDAO 완성 시 아래 주석을 풀고 DB와 연동하세요!
-		// -------------------------------------------------------------
-		/*
-		ProductDAO dao = ProductDAO.getInstance();
-		ProductVO product = dao.getProductDetail(prod_num);     // 상품 기본 정보
-		List<String> imgList = dao.getProductImages(prod_num);  // 다중 이미지 리스트
-		List<AdminVO> optList = dao.getProductOptions(prod_num);// 색상, 사이즈 옵션들
+		// 2. 실제 DB에서 데이터 꺼내오기!
+		UserProductDAO dao = UserProductDAO.getInstance();
+		AdminVO product = dao.getProductDetail(prod_num);
+		List<String> imgList = dao.getProductImages(prod_num);
+		List<String> colorList = dao.getProductColors(prod_num);
+		List<Integer> sizeList = dao.getProductSizes(prod_num);
+		int totalStock = dao.getProductTotalStock(prod_num);
 		
+		// 3. JSP에서 쓸 수 있도록 request에 담기
 		request.setAttribute("product", product);
 		request.setAttribute("imgList", imgList);
-		request.setAttribute("optList", optList);
-		*/
+		request.setAttribute("colorList", colorList);
+		request.setAttribute("sizeList", sizeList);
+		request.setAttribute("totalStock", totalStock);
 		
-		// 임시 세팅 (UI 테스트용)
-		request.setAttribute("prod_num", prod_num);
+		// 4. 할인 가격 계산 (원가 - (원가 * 할인율/100))
+		int salePrice = product.getProd_price() - (product.getProd_price() * product.getSale_rate() / 100);
+		request.setAttribute("salePrice", salePrice);
 		
-		// 2. 로그인 상태 및 등급 확인 (할인가 표시, 버튼 제어용)
+		// 5. 로그인 상태 확인
 		HttpSession session = request.getSession();
 		Long user_num = (Long) session.getAttribute("user_num");
-		Integer grade = (Integer) session.getAttribute("grade"); // 등급
-		
-		// 로그인 여부 체크
+		Integer grade = (Integer) session.getAttribute("grade"); 
 		request.setAttribute("isLogin", user_num != null);
 		
-		// 3. 상세 페이지 JSP로 이동
 		return "shop/product/detail.jsp";
 	}
 }
