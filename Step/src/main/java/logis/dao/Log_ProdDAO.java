@@ -107,36 +107,33 @@ public class Log_ProdDAO {
         Connection conn  = null;
         PreparedStatement pstmt = null;
 
-        String seqSql = "SELECT NVL(MAX(PROD_NUM), 0) + 1 FROM PRODUCTS";
-        String sql    = "INSERT INTO PRODUCTS "
-                      + "(PROD_NUM, CAT_NUM, BRAND_NUM, SKU, PROD_NAME, "
-                      + " GENDER, PROD_PRICE, SALE_RATE, PROD_TEXT, PROD_STATUS, PROD_CREATED_AT) "
-                      + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
+        // ✅ PRODUCTS_SEQ.NEXTVAL 사용으로 변경
+        String sql = "INSERT INTO PRODUCTS "
+                   + "(PROD_NUM, CAT_NUM, BRAND_NUM, SKU, PROD_NAME, "
+                   + " GENDER, PROD_PRICE, SALE_RATE, PROD_TEXT, PROD_STATUS, PROD_CREATED_AT) "
+                   + "VALUES (PRODUCTS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
 
         try {
             conn = DBUtil.getConnection();
 
-            // ① PROD_NUM 채번
-            PreparedStatement seqStmt = conn.prepareStatement(seqSql);
-            ResultSet seqRs = seqStmt.executeQuery();
-            int newProdNum = 1;
-            if (seqRs.next()) newProdNum = seqRs.getInt(1);
-            seqRs.close();
-            seqStmt.close();
-
-            // ② PRODUCTS INSERT
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt   (1,  newProdNum);
-            pstmt.setInt   (2,  vo.getCatNum());
-            pstmt.setInt   (3,  vo.getBrandNum());
-            pstmt.setString(4,  vo.getSku());
-            pstmt.setString(5,  vo.getProdName());
-            pstmt.setInt   (6,  vo.getGender());
-            pstmt.setInt   (7,  vo.getProdPrice());
-            pstmt.setInt   (8,  vo.getSaleRate());
-            pstmt.setString(9,  vo.getProdText());
-            pstmt.setInt   (10, vo.getProdStatus());
+            // ✅ getGeneratedKeys()로 생성된 PROD_NUM 받기
+            pstmt = conn.prepareStatement(sql, new String[]{"PROD_NUM"});
+            pstmt.setInt   (1,  vo.getCatNum());
+            pstmt.setInt   (2,  vo.getBrandNum());
+            pstmt.setString(3,  vo.getSku());
+            pstmt.setString(4,  vo.getProdName());
+            pstmt.setInt   (5,  vo.getGender());
+            pstmt.setInt   (6,  vo.getProdPrice());
+            pstmt.setInt   (7,  vo.getSaleRate());
+            pstmt.setString(8,  vo.getProdText());
+            pstmt.setInt   (9,  vo.getProdStatus());
             result = pstmt.executeUpdate();
+
+            // ✅ 생성된 PROD_NUM 가져오기
+            ResultSet keyRs = pstmt.getGeneratedKeys();
+            int newProdNum = 0;
+            if (keyRs.next()) newProdNum = keyRs.getInt(1);
+            keyRs.close();
             pstmt.close();
 
             // ③ PROD_OPTIONS INSERT (컬러 × 사이즈 조합)
