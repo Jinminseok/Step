@@ -42,6 +42,6 @@ public class DetailAction implements Action {
 		Integer grade = (Integer) session.getAttribute("grade"); 
 		request.setAttribute("isLogin", user_num != null);
 		
-		return "shop/product/detail.jsp";
+		return "shop/product/userdetail.jsp";
 	}
 }
