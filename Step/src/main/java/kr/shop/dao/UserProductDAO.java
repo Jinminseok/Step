@@ -6,37 +6,42 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import kr.shop.vo.AdminVO;
+import kr.shop.vo.AdminProductVO;
 import kr.util.DBUtil;
 
 public class UserProductDAO {
 	private static UserProductDAO instance = new UserProductDAO();
-	public static UserProductDAO getInstance() { return instance; }
-	private UserProductDAO() {}
+
+	public static UserProductDAO getInstance() {
+		return instance;
+	}
+
+	private UserProductDAO() {
+	}
 
 	// 1. 상품 기본 상세 정보 + 브랜드명 가져오기
-	public AdminVO getProductDetail(int prod_num) throws Exception {
+	public AdminProductVO getProductDetail(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		AdminVO vo = null;
-		
+		AdminProductVO vo = null;
+
 		String sql = "SELECT P.PROD_NUM, P.PROD_NAME, P.SKU, P.PROD_PRICE, P.SALE_RATE, B.BRAND_NAME "
-				   + "FROM PRODUCTS P JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM "
-				   + "WHERE P.PROD_NUM = ?";
+				+ "FROM PRODUCTS P JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM " + "WHERE P.PROD_NUM = ?";
 		try {
 			conn = DBUtil.getConnection();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
-			if(rs.next()) {
-				vo = new AdminVO();
-				vo.setProd_num(rs.getInt("PROD_NUM"));
-				vo.setProd_name(rs.getString("PROD_NAME"));
+			if (rs.next()) {
+				vo = new AdminProductVO();
+				vo.setProdNum(rs.getInt("PROD_NUM"));
+				vo.setProdName(rs.getString("PROD_NAME"));
 				vo.setSku(rs.getString("SKU"));
-				vo.setProd_price(rs.getInt("PROD_PRICE"));
-				vo.setSale_rate(rs.getInt("SALE_RATE"));
-				vo.setBrand_name(rs.getString("BRAND_NAME"));
+				vo.setProdPrice(rs.getInt("PROD_PRICE"));
+				vo.setSaleRate(rs.getDouble("SALE_RATE"));
+				vo.setBrandName(rs.getString("BRAND_NAME"));
+				vo.setProdText(rs.getString("PROD_TEXT"));
 			}
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
@@ -57,7 +62,7 @@ public class UserProductDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				list.add(rs.getString("PROD_IMG_URL"));
 			}
 		} finally {
@@ -78,7 +83,7 @@ public class UserProductDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				list.add(rs.getString("COLOR"));
 			}
 		} finally {
@@ -100,7 +105,7 @@ public class UserProductDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				list.add(rs.getInt("SIZE_VAL"));
 			}
 		} finally {
@@ -121,7 +126,7 @@ public class UserProductDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				total = rs.getInt(1);
 			}
 		} finally {
