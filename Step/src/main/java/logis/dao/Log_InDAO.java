@@ -254,42 +254,94 @@ public class Log_InDAO {
     public void updateInbound(Log_InVO vo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
-        // 🚨 UPDATE 안에 SELECT를 넣어서 오라클이 알아서 새 옵션 번호를 찾아 끼우게 만듭니다!
-        String sql = "UPDATE INBOUND "
-                   + "SET IN_DATE = TO_DATE(?, 'YYYY-MM-DD'), "
-                   + "    IN_QTY = ?, "
-                   + "    IN_STATUS = ?, "
-                   + "    SUPPLIER = ?, "
-                   + "    IN_MEMO = ?, "
-                   + "    OPT_NUM = ( "
-                   + "        SELECT OPT_NUM FROM PROD_OPTIONS "
-                   + "        WHERE PROD_NUM = (SELECT PROD_NUM FROM INBOUND WHERE IN_NUM = ?) "
-                   + "          AND SIZE_VAL = ? "
-                   + "          AND COLOR = ? "
-                   + "    ) "
-                   + "WHERE IN_NUM = ?";
+
         try {
             conn = DBUtil.getConnection();
+
+            // ① 수정 전 기존 수량·옵션번호 조회 (재고 차감용)
+            String oldSql = "SELECT OPT_NUM, IN_QTY FROM INBOUND WHERE IN_NUM = ?";
+            PreparedStatement oldStmt = conn.prepareStatement(oldSql);
+            oldStmt.setInt(1, vo.getInNum());
+            ResultSet oldRs = oldStmt.executeQuery();
+            int oldOptNum = 0;
+            int oldQty    = 0;
+            if (oldRs.next()) {
+                oldOptNum = oldRs.getInt("OPT_NUM");
+                oldQty    = oldRs.getInt("IN_QTY");
+            }
+            oldRs.close();
+            oldStmt.close();
+
+            // ② 새 옵션번호 조회
+            String optSql = "SELECT OPT_NUM FROM PROD_OPTIONS "
+                          + "WHERE PROD_NUM = (SELECT PROD_NUM FROM INBOUND WHERE IN_NUM = ?) "
+                          + "  AND SIZE_VAL = ? AND COLOR = ?";
+            PreparedStatement optStmt = conn.prepareStatement(optSql);
+            optStmt.setInt   (1, vo.getInNum());
+            optStmt.setInt   (2, vo.getSizeVal());
+            optStmt.setString(3, vo.getColor());
+            ResultSet optRs = optStmt.executeQuery();
+            int newOptNum = oldOptNum; // 기본값은 기존 옵션
+            if (optRs.next()) newOptNum = optRs.getInt("OPT_NUM");
+            optRs.close();
+            optStmt.close();
+
+            // ③ INBOUND UPDATE
+            String sql = "UPDATE INBOUND SET "
+                       + "  IN_DATE   = TO_DATE(?, 'YYYY-MM-DD'), "
+                       + "  IN_QTY    = ?, "
+                       + "  IN_STATUS = ?, "
+                       + "  SUPPLIER  = ?, "
+                       + "  IN_MEMO   = ?, "
+                       + "  OPT_NUM   = ? "
+                       + "WHERE IN_NUM = ?";
             pstmt = conn.prepareStatement(sql);
-            
-            // 1~5번째 물음표: 일반 정보
             pstmt.setString(1, vo.getInDate());
-            pstmt.setInt(2, vo.getInQty());
-            pstmt.setInt(3, vo.getInStatus());
+            pstmt.setInt   (2, vo.getInQty());
+            pstmt.setInt   (3, vo.getInStatus());
             pstmt.setString(4, vo.getSupplier());
             pstmt.setString(5, vo.getInMemo());
-            
-            // 6~8번째 물음표: 서브쿼리(옵션 번호 찾기)에 들어갈 재료들
-            pstmt.setInt(6, vo.getInNum());
-            pstmt.setInt(7, vo.getSizeVal());  // 🚨 VO에 sizeVal 이 있어야 합니다!
-            pstmt.setString(8, vo.getColor()); // 🚨 VO에 color 가 있어야 합니다!
-            
-            // 9번째 물음표: 어떤 입고 번호를 수정할지
-            pstmt.setInt(9, vo.getInNum());
-            
+            pstmt.setInt   (6, newOptNum);
+            pstmt.setInt   (7, vo.getInNum());
             pstmt.executeUpdate();
-            
+            pstmt.close();
+
+            // ④ STOCK 재고 보정
+            // 기존 옵션 재고 차감
+            String deductSql = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY - ?, STOCK_UPDATED_AT = SYSDATE "
+                             + "WHERE OPT_NUM = ?";
+            PreparedStatement deductStmt = conn.prepareStatement(deductSql);
+            deductStmt.setInt(1, oldQty);
+            deductStmt.setInt(2, oldOptNum);
+            deductStmt.executeUpdate();
+            deductStmt.close();
+
+            // 새 옵션 재고 증가 (MERGE INTO로 없으면 INSERT)
+            int prodNum = 0;
+            String prodSql = "SELECT PROD_NUM FROM INBOUND WHERE IN_NUM = ?";
+            PreparedStatement prodStmt = conn.prepareStatement(prodSql);
+            prodStmt.setInt(1, vo.getInNum());
+            ResultSet prodRs = prodStmt.executeQuery();
+            if (prodRs.next()) prodNum = prodRs.getInt("PROD_NUM");
+            prodRs.close();
+            prodStmt.close();
+
+            String mergeSql = "MERGE INTO STOCK S "
+                            + "USING DUAL ON (S.OPT_NUM = ?) "
+                            + "WHEN MATCHED THEN "
+                            + "  UPDATE SET S.STOCK_QTY = S.STOCK_QTY + ?, S.STOCK_UPDATED_AT = SYSDATE "
+                            + "WHEN NOT MATCHED THEN "
+                            + "  INSERT (STOCK_NUM, OPT_NUM, PROD_NUM, STOCK_QTY, STOCK_MIN_QTY, STOCK_UPDATED_AT) "
+                            + "  VALUES (STOCK_SEQ.NEXTVAL, ?, ?, ?, 10, SYSDATE)";
+            PreparedStatement mergeStmt = conn.prepareStatement(mergeSql);
+            mergeStmt.setInt(1, newOptNum);
+            mergeStmt.setInt(2, vo.getInQty());
+            mergeStmt.setInt(3, newOptNum);
+            mergeStmt.setInt(4, prodNum);
+            mergeStmt.setInt(5, vo.getInQty());
+            mergeStmt.executeUpdate();
+            mergeStmt.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("입고 내역 수정 중 오류 발생", e);
