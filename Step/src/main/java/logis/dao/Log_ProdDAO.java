@@ -145,6 +145,8 @@ public class Log_ProdDAO {
             String[] sizes  = (vo.getSizes()  != null && !vo.getSizes().isEmpty())
                               ? vo.getSizes().split(",")  : new String[0];
 
+            int firstOptNum = 0; // ← 첫 번째 OPT_NUM 기억용
+
             if (colors.length > 0 && sizes.length > 0) {
                 String optSeqSql = "SELECT NVL(MAX(OPT_NUM), 0) + 1 FROM PROD_OPTIONS";
                 String optSql    = "INSERT INTO PROD_OPTIONS "
@@ -158,6 +160,8 @@ public class Log_ProdDAO {
                 optSeqRs.close();
                 optSeqStmt.close();
 
+                firstOptNum = optNum; // ← 첫 번째 OPT_NUM 저장
+
                 PreparedStatement optStmt = conn.prepareStatement(optSql);
                 for (String color : colors) {
                     for (String size : sizes) {
@@ -170,27 +174,44 @@ public class Log_ProdDAO {
                 }
                 optStmt.executeBatch();
                 optStmt.close();
+
+                // ④ PRODUCTS.OPT_NUM 업데이트 ← 여기가 추가된 부분
+                String updateOptSql = "UPDATE PRODUCTS SET OPT_NUM = ? WHERE PROD_NUM = ?";
+                PreparedStatement updateOptStmt = conn.prepareStatement(updateOptSql);
+                updateOptStmt.setInt(1, firstOptNum);
+                updateOptStmt.setInt(2, newProdNum);
+                updateOptStmt.executeUpdate();
+                updateOptStmt.close();
             }
 
-            // ④ PROD_IMGS INSERT (이미지 파일이 넘어왔을 때만)
-            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().trim().isEmpty()) {
+            // ⑤ PROD_IMGS INSERT + PRODUCTS.IMG_NUM 업데이트 ← 이미지 있을 때만
+            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().isEmpty()) {
                 String imgSeqSql = "SELECT NVL(MAX(PROD_IMG_NUM), 0) + 1 FROM PROD_IMGS";
-                String imgSql    = "INSERT INTO PROD_IMGS (PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
-                                 + "VALUES (?, ?, ?, 'Y', 0)";
+                String imgSql    = "INSERT INTO PROD_IMGS "
+                                 + "(PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+                                 + "VALUES (?, ?, ?, 'Y', 1)";
 
                 PreparedStatement imgSeqStmt = conn.prepareStatement(imgSeqSql);
                 ResultSet imgSeqRs = imgSeqStmt.executeQuery();
-                int newImgNum = 1;
-                if (imgSeqRs.next()) newImgNum = imgSeqRs.getInt(1);
+                int imgNum = 1;
+                if (imgSeqRs.next()) imgNum = imgSeqRs.getInt(1);
                 imgSeqRs.close();
                 imgSeqStmt.close();
 
                 PreparedStatement imgStmt = conn.prepareStatement(imgSql);
-                imgStmt.setInt(1, newImgNum);
-                imgStmt.setInt(2, newProdNum);
+                imgStmt.setInt   (1, imgNum);
+                imgStmt.setInt   (2, newProdNum);
                 imgStmt.setString(3, vo.getProdImgUrl());
                 imgStmt.executeUpdate();
                 imgStmt.close();
+
+                // PRODUCTS.IMG_NUM 업데이트
+                String updateImgSql = "UPDATE PRODUCTS SET IMG_NUM = ? WHERE PROD_NUM = ?";
+                PreparedStatement updateImgStmt = conn.prepareStatement(updateImgSql);
+                updateImgStmt.setInt(1, imgNum);
+                updateImgStmt.setInt(2, newProdNum);
+                updateImgStmt.executeUpdate();
+                updateImgStmt.close();
             }
 
         } finally {
@@ -199,7 +220,7 @@ public class Log_ProdDAO {
         return result;
     }
 
-    // ── 상품 수정 (PRODUCTS 업데이트 + 새로운 사진 업로드 시 PROD_IMGS 교체) ──
+ // ── 상품 수정 ─────────────────────────────────────────────────────────
     public int updateProd(Log_ProdVO vo) throws Exception {
         int result = 0;
         Connection conn  = null;
@@ -219,7 +240,7 @@ public class Log_ProdDAO {
                    + "WHERE PROD_NUM = ?";
 
         try {
-            conn  = DBUtil.getConnection();
+            conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt   (1,  vo.getCatNum());
             pstmt.setInt   (2,  vo.getBrandNum());
@@ -234,36 +255,113 @@ public class Log_ProdDAO {
             result = pstmt.executeUpdate();
             pstmt.close();
 
-            // ★ 새로운 이미지가 업로드 된 경우, 기존 대표 이미지를 지우고 새 이미지 인서트
-            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().trim().isEmpty()) {
-                // 기존 대표 이미지 삭제
-                String delImgSql = "DELETE FROM PROD_IMGS WHERE PROD_NUM = ? AND IS_MAIN = 'Y'";
-                PreparedStatement delStmt = conn.prepareStatement(delImgSql);
-                delStmt.setInt(1, vo.getProdNum());
-                delStmt.executeUpdate();
-                delStmt.close();
+            // ── 이미지 수정 (새 파일 올렸을 때만) ────────────────────────
+            if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().isEmpty()) {
 
-                // 새 대표 이미지 채번 및 인서트
+                //  기존 대표 이미지 삭제
+                String delImgSql = "DELETE FROM PROD_IMGS WHERE PROD_NUM = ? AND IS_MAIN = 'Y'";
+                PreparedStatement delImgStmt = conn.prepareStatement(delImgSql);
+                delImgStmt.setInt(1, vo.getProdNum());
+                delImgStmt.executeUpdate();
+                delImgStmt.close();
+
+                //  새 이미지 PROD_IMGS INSERT
                 String imgSeqSql = "SELECT NVL(MAX(PROD_IMG_NUM), 0) + 1 FROM PROD_IMGS";
+                String imgSql    = "INSERT INTO PROD_IMGS "
+                                 + "(PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+                                 + "VALUES (?, ?, ?, 'Y', 1)";
+
                 PreparedStatement imgSeqStmt = conn.prepareStatement(imgSeqSql);
                 ResultSet imgSeqRs = imgSeqStmt.executeQuery();
-                int newImgNum = 1;
-                if (imgSeqRs.next()) newImgNum = imgSeqRs.getInt(1);
+                int imgNum = 1;
+                if (imgSeqRs.next()) imgNum = imgSeqRs.getInt(1);
                 imgSeqRs.close();
                 imgSeqStmt.close();
 
-                String imgSql = "INSERT INTO PROD_IMGS (PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
-                              + "VALUES (?, ?, ?, 'Y', 0)";
                 PreparedStatement imgStmt = conn.prepareStatement(imgSql);
-                imgStmt.setInt(1, newImgNum);
-                imgStmt.setInt(2, vo.getProdNum());
+                imgStmt.setInt   (1, imgNum);
+                imgStmt.setInt   (2, vo.getProdNum());
                 imgStmt.setString(3, vo.getProdImgUrl());
                 imgStmt.executeUpdate();
                 imgStmt.close();
+
+                // PRODUCTS.IMG_NUM 업데이트
+                String updateImgSql = "UPDATE PRODUCTS SET IMG_NUM = ? WHERE PROD_NUM = ?";
+                PreparedStatement updateImgStmt = conn.prepareStatement(updateImgSql);
+                updateImgStmt.setInt(1, imgNum);
+                updateImgStmt.setInt(2, vo.getProdNum());
+                updateImgStmt.executeUpdate();
+                updateImgStmt.close();
+            }
+
+            // ── 컬러·사이즈 수정 ──────────────────────────────────────────
+            String[] colors = (vo.getColors() != null && !vo.getColors().isEmpty())
+                              ? vo.getColors().split(",") : new String[0];
+            String[] sizes  = (vo.getSizes()  != null && !vo.getSizes().isEmpty())
+                              ? vo.getSizes().split(",")  : new String[0];
+
+            if (colors.length > 0 && sizes.length > 0) {
+
+                // 기존 옵션 전체 비활성화
+                String deactivateSql = "UPDATE PROD_OPTIONS SET PROD_USE_YN = 'N' WHERE PROD_NUM = ?";
+                PreparedStatement deactivateStmt = conn.prepareStatement(deactivateSql);
+                deactivateStmt.setInt(1, vo.getProdNum());
+                deactivateStmt.executeUpdate();
+                deactivateStmt.close();
+
+                // 현재 최대 OPT_NUM 조회
+                String optSeqSql = "SELECT NVL(MAX(OPT_NUM), 0) + 1 FROM PROD_OPTIONS";
+                PreparedStatement optSeqStmt = conn.prepareStatement(optSeqSql);
+                ResultSet optSeqRs = optSeqStmt.executeQuery();
+                int optNum = 1;
+                if (optSeqRs.next()) optNum = optSeqRs.getInt(1);
+                optSeqRs.close();
+                optSeqStmt.close();
+
+                String checkSql  = "SELECT OPT_NUM FROM PROD_OPTIONS "
+                                 + "WHERE PROD_NUM=? AND SIZE_VAL=? AND COLOR=?";
+                String insertSql = "INSERT INTO PROD_OPTIONS "
+                                 + "(OPT_NUM, PROD_NUM, SIZE_VAL, COLOR, ADD_PRICE, PROD_USE_YN) "
+                                 + "VALUES (?, ?, ?, ?, 0, 'Y')";
+                String updateSql = "UPDATE PROD_OPTIONS SET PROD_USE_YN='Y' "
+                                 + "WHERE PROD_NUM=? AND SIZE_VAL=? AND COLOR=?";
+
+                for (String color : colors) {
+                    for (String size : sizes) {
+                        int    sizeVal   = Integer.parseInt(size.trim());
+                        String colorTrim = color.trim();
+
+                        // 기존에 있으면 재활성화, 없으면 새로 INSERT
+                        PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+                        checkStmt.setInt   (1, vo.getProdNum());
+                        checkStmt.setInt   (2, sizeVal);
+                        checkStmt.setString(3, colorTrim);
+                        ResultSet checkRs = checkStmt.executeQuery();
+
+                        if (checkRs.next()) {
+                            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+                            updateStmt.setInt   (1, vo.getProdNum());
+                            updateStmt.setInt   (2, sizeVal);
+                            updateStmt.setString(3, colorTrim);
+                            updateStmt.executeUpdate();
+                            updateStmt.close();
+                        } else {
+                            PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+                            insertStmt.setInt   (1, optNum++);
+                            insertStmt.setInt   (2, vo.getProdNum());
+                            insertStmt.setInt   (3, sizeVal);
+                            insertStmt.setString(4, colorTrim);
+                            insertStmt.executeUpdate();
+                            insertStmt.close();
+                        }
+                        checkRs.close();
+                        checkStmt.close();
+                    }
+                }
             }
 
         } finally {
-            DBUtil.executeClose(null, pstmt, conn); // 여기선 pstmt 대신 null을 넘겨도 내부 구현에 따라 처리됨. 기본 구조 유지
+            DBUtil.executeClose(null, pstmt, conn);
         }
         return result;
     }

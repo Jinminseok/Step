@@ -58,6 +58,8 @@ public class Log_ProdModAction implements Action {
         vo.setSaleRate(saleRate);
         vo.setProdText(request.getParameter("prodText"));
         vo.setProdStatus(prodStatus);
+        vo.setColors(request.getParameter("colors"));
+        vo.setSizes (request.getParameter("sizes"));
         
         // 🚨 새 파일이 올라왔을 때만 파일명 세팅 (안 올렸으면 null 유지 -> 기존 사진 유지됨)
         if (!fileName.isEmpty()) {
