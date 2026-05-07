@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -230,9 +230,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
-<!-- ═══ MAIN ═══ -->
 <main class="main">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="breadcrumb">
       <span class="breadcrumb-root">Step WMS</span>
@@ -246,94 +244,69 @@ tr:last-child td{border-bottom:none}
   </div>
   
   <div class="content">
-    <!-- TAB BAR -->
     <div class="tab-bar">
       <div class="tab-btn on" id="tab-out-btn" onclick="switchTab('out')">
-        📤 출고 처리 <span class="tab-cnt" id="waitCnt">5</span>
+        📤 출고 처리 <span class="tab-cnt" id="waitCnt">${pendingList.size()}</span>
       </div>
       <div class="tab-btn" id="tab-hist-btn" onclick="switchTab('hist')">
-        📋 출고 이력 조회 <span class="tab-cnt tab-cnt-gray">84</span>
+        📋 출고 이력 조회 <span class="tab-cnt tab-cnt-gray">${historyList.size()}</span>
       </div>
     </div>
 
-    <!-- ════════ 출고 처리 탭 ════════ -->
     <div id="sec-out">
-
-      <!-- 알림 -->
       <div class="alert alert-amber" id="waitAlert">
         <span class="alert-ico">⚠</span>
-        <div>출고 대기 주문이 <strong id="waitNum">5</strong>건 있습니다. 출고 처리 시 주문 상태가 <strong>'배송 중'</strong>으로 변경되며 재고가 자동 차감됩니다.</div>
+        <div>출고 대기 주문이 <strong id="waitNum">${pendingList.size()}</strong>건 있습니다. 출고 처리 시 주문 상태가 <strong>'배송 중'</strong>으로 변경되며 재고가 자동 차감됩니다.</div>
       </div>
 
-      <!-- KPI -->
       <div class="kpi-row">
         <div class="kpi amber">
           <div class="kpi-label">출고 대기</div>
-          <div class="kpi-val c-amber" id="kpiWait">5</div>
+          <div class="kpi-val c-amber" id="kpiWait">${pendingList.size()}</div>
           <div class="kpi-sub">즉시 처리 필요</div>
         </div>
         <div class="kpi green">
-          <div class="kpi-label">오늘 출고 완료</div>
-          <div class="kpi-val c-green">84</div>
-          <div class="kpi-sub">↑ 11건 전일 대비</div>
+          <div class="kpi-label">전체 출고 완료</div>
+          <div class="kpi-val c-green">${historyList.size()}</div>
+          <div class="kpi-sub">완료된 주문 건수</div>
         </div>
         <div class="kpi blue">
-          <div class="kpi-label">배송 중</div>
-          <div class="kpi-val c-blue">31</div>
+          <div class="kpi-label">배송 중 (삭제? 택배 API안쓰면 배송중, 배송완료 시점을 알 수 없음)</div>
+          <div class="kpi-val c-blue">0</div>
           <div class="kpi-sub">진행 중인 배송</div>
         </div>
         <div class="kpi gray">
-          <div class="kpi-label">배송 완료</div>
-          <div class="kpi-val c-gray">53</div>
-          <div class="kpi-sub">오늘 기준</div>
+          <div class="kpi-label">배송 완료 (삭제? 택배 API안쓰면 배송중, 배송완료 시점을 알 수 없음)</div>
+          <div class="kpi-val c-gray">0</div>
+          <div class="kpi-sub">도착 완료</div>
         </div>
       </div>
 
-      <!-- 배송 프로세스 -->
-      <div class="flow" style="margin-bottom:18px">
-        <div class="flow-step done"><div class="flow-step-num">✓</div>결제 완료</div>
-        <div class="flow-step active"><div class="flow-step-num">2</div>출고 대기</div>
-        <div class="flow-step"><div class="flow-step-num">3</div>출고 완료</div>
-        <div class="flow-step"><div class="flow-step-num">4</div>배송 중</div>
-        <div class="flow-step"><div class="flow-step-num">5</div>배송 완료</div>
-      </div>
+	  <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" class="toolbar" style="display:flex; align-items:center; gap:8px; width:100%;">
+        
+        <div style="display:flex; align-items:center; gap:6px;">
+          <input type="date" name="startDate" value="${startDate}" style="padding:7px 10px; border:1px solid var(--gray5); border-radius:6px; font-size:12px; color:var(--gray2); outline:none;">
+          <span style="color:var(--gray4); font-size:12px;">~</span>
+          <input type="date" name="endDate" value="${endDate}" style="padding:7px 10px; border:1px solid var(--gray5); border-radius:6px; font-size:12px; color:var(--gray2); outline:none;">
+        </div>
 
-      <!-- TOOLBAR -->
-      <div class="toolbar">
         <div class="search-wrap">
           <span class="search-ico">🔍</span>
-          <input type="text" placeholder="주문번호·상품명 검색" oninput="filterOrders(this.value)">
+          <input type="text" name="keyword" value="${keyword}" placeholder="주문번호·상품명 검색">
         </div>
 
-        <!-- 커스텀 셀렉트 -->
-        <div class="sel-wrap">
-          <div class="sel-btn" id="statusSelBtn" onclick="toggleSel()">
-            <span id="selLabel">전체 상태</span>
-            <span class="sel-arrow">▼</span>
-          </div>
-          <div class="sel-drop" id="statusDrop">
-            <div class="sel-opt opt-all selected" onclick="setStatus('전체 상태',this)">전체 상태</div>
-            <div class="sel-opt opt-wait" onclick="setStatus('출고 대기',this)">출고 대기</div>
-            <div class="sel-opt opt-done" onclick="setStatus('출고 완료',this)">출고 완료</div>
-            <div class="sel-opt opt-cancel" onclick="setStatus('취소',this)">취소</div>
-          </div>
-        </div>
+        <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
 
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <!-- 선택 항목 일괄 출고 (체크박스 유지) -->
-          <button class="btn btn-blue" id="bulkBtn" onclick="openBulkConfirm()" disabled>
+        <div style="margin-left:auto; display:flex; gap:8px">
+          <button type="button" class="btn btn-blue" id="bulkBtn" onclick="openBulkConfirm()" disabled>
             선택 항목 일괄 출고 <span id="bulkCnt"></span>
           </button>
         </div>
-      </div>
+      </form>
 
-      <!-- TABLE -->
-      <div class="tbl-card">
+	<div class="tbl-card">
         <div class="tbl-top">
-          <div class="tbl-top-info">총 <strong id="totalCnt">5</strong>건 · 선택 <strong id="selCnt">0</strong>건</div>
-          <div class="sel-summary" id="selSummary" style="opacity:0;pointer-events:none">
-            <span>📦</span><span id="selSummaryTxt">0건 선택됨</span>
-          </div>
+          <div class="tbl-top-info">총 <strong id="totalCnt">${pendingList.size()}</strong>건 · 선택 <strong id="selCnt">0</strong>건</div>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -346,7 +319,6 @@ tr:last-child td{border-bottom:none}
                 <th>사이즈 / 컬러</th>
                 <th>수량</th>
                 <th>배송지</th>
-                <th>송장번호</th>
                 <th>상태</th>
                 <th>처리</th>
               </tr>
@@ -354,82 +326,58 @@ tr:last-child td{border-bottom:none}
             <tbody id="orderTbody"></tbody>
           </table>
         </div>
+        
         <div class="pagination-wrap">
-          <div class="page-info" id="pageInfo">1 – 5 / 5건</div>
-          <div class="page-btns">
-            <div class="pg-btn">‹</div>
-            <div class="pg-btn on">1</div>
-            <div class="pg-btn">›</div>
-          </div>
-        </div>
+          <div class="page-info" id="pageInfo">0건</div>
+          <div class="page-btns" id="pageBtns"></div>
+        </div>        
       </div>
     </div>
-
-    <!-- ════════ 출고 이력 탭 ════════ -->
-    <div id="sec-hist" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 18px;background:var(--white);border:1px solid var(--gray6);border-radius:10px;margin-bottom:14px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(15,32,68,.05)">
+    
+	<div id="sec-hist" style="display:none">
+      
+      <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" style="display:flex;align-items:center;gap:8px;padding:14px 18px;background:var(--white);border:1px solid var(--gray6);border-radius:10px;margin-bottom:14px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(15,32,68,.05)">
+        <input type="hidden" name="tab" value="hist">
         <span style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.05em">기간</span>
-        <input type="date" value="2025-04-01" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none">
+        <input type="date" name="histStartDate" value="${histStartDate}" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;color:var(--gray2);outline:none">
         <span style="font-size:12px;color:var(--gray4)">~</span>
-        <input type="date" value="2025-04-24" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none">
-        <select style="padding:7px 10px;border:1.5px solid var(--gray5);background:var(--white);font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none;border-radius:6px;cursor:pointer">
-          <option>전체 상태</option><option>출고 완료</option><option>배송 중</option><option>배송 완료</option><option>취소</option>
-        </select>
+        <input type="date" name="histEndDate" value="${histEndDate}" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;color:var(--gray2);outline:none">
+        
         <div class="search-wrap" style="max-width:220px">
           <span class="search-ico">🔍</span>
-          <input type="text" placeholder="주문번호·상품명 검색">
+          <input type="text" name="histKeyword" value="${histKeyword}" placeholder="주문번호·상품명 검색">
         </div>
-        <button class="btn btn-blue btn-sm">조회</button>
-        <button class="btn btn-ghost btn-sm">초기화</button>
-      </div>
-
-      <!-- 요약 pills -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #93C5FD;background:var(--blue-lt);font-size:12px;font-weight:600;color:var(--blue)"><span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700">84</span>오늘 출고</div>
-        <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #6EE7B7;background:var(--green-lt);font-size:12px;font-weight:600;color:#065F46"><span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700">53</span>배송 완료</div>
-        <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #FCD34D;background:var(--amber-lt);font-size:12px;font-weight:600;color:#92400E"><span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700">31</span>배송 중</div>
-        <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #FECACA;background:var(--red-lt);font-size:12px;font-weight:600;color:#991B1B"><span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700">3</span>취소</div>
-      </div>
+        
+        <button type="submit" class="btn btn-blue btn-sm">조회</button>
+        <a href="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do?tab=hist" class="btn btn-ghost btn-sm">초기화</a>
+      </form>
 
       <div class="tbl-card">
         <div class="tbl-top">
-          <div class="tbl-top-info">총 <strong>84</strong>건 · 페이지 <strong>1 / 17</strong></div>
+          <div class="tbl-top-info">총 <strong id="totalHistCnt">0</strong>건</div>
         </div>
         <div class="tbl-wrap">
           <table>
             <thead>
               <tr>
-                <!-- 체크박스 제거 -->
                 <th>출고 번호</th><th>주문번호</th><th>출고일시</th><th>상품명</th>
                 <th>사이즈/컬러</th><th>수량</th><th>택배사</th><th>송장번호</th><th>상태</th><th>담당자</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- 이력 탭 렌더링은 유지. 모달은 histModal 연결됨. 필요하다면 나중에 이쪽도 수정 가능 -->
-              <tr class="tbl-row" onclick="document.getElementById('histModal').classList.add('open')">
-                <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">OUT-20250424-084</td><td style="font-family:'DM Mono',monospace;font-size:11px">#0082</td><td style="font-size:11px;color:var(--gray3)">09:30</td><td style="font-weight:600">나이키 에어맥스 270</td><td><span class="bdg bdg-gray" style="font-size:10px">265mm / 그레이</span></td><td style="font-family:'DM Mono',monospace;font-weight:700">1</td><td>CJ대한통운</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">591234567890</td><td><span class="bdg bdg-green">배송 완료</span></td><td>이지훈</td>
-              </tr>
-              <tr class="tbl-row" onclick="document.getElementById('histModal').classList.add('open')">
-                <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">OUT-20250424-083</td><td style="font-family:'DM Mono',monospace;font-size:11px">#0081</td><td style="font-size:11px;color:var(--gray3)">09:15</td><td style="font-weight:600">아디다스 삼바 OG</td><td><span class="bdg bdg-gray" style="font-size:10px">270mm / 블랙</span></td><td style="font-family:'DM Mono',monospace;font-weight:700">1</td><td>롯데택배</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">441234567890</td><td><span class="bdg bdg-amber">배송 중</span></td><td>이지훈</td>
-              </tr>
-            </tbody>
+            <tbody id="histTbody"></tbody>
           </table>
         </div>
+        
         <div class="pagination-wrap">
-          <div class="page-info">1 – 5 / 84건</div>
-          <div class="page-btns">
-            <div class="pg-btn">‹</div>
-            <div class="pg-btn on">1</div><div class="pg-btn">2</div><div class="pg-btn">3</div><div class="pg-btn">…</div><div class="pg-btn">17</div>
-            <div class="pg-btn">›</div>
-          </div>
+          <div class="page-info" id="histPageInfo">0건</div>
+          <div class="page-btns" id="histPageBtns"></div>
         </div>
       </div>
-    </div>
+    </div> 
+    </main>
 
-  </div>
-</main>
+<form id="outboundForm" method="post" action="${pageContext.request.contextPath}/logistics/log_out/log_outProcess.do" style="display:none;"></form>
 
-<!-- ══ 개별 출고 처리 모달 ══ -->
 <div class="modal-bg" id="singleModal">
   <div class="modal">
     <div class="modal-hdr">
@@ -444,21 +392,23 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ══ 일괄 출고 확인 모달 ══ -->
 <div class="modal-bg" id="bulkModal">
-  <div class="modal confirm-modal" style="width:420px">
+  <div class="modal confirm-modal" style="width:460px">
     <div class="modal-hdr">
       <div class="modal-title">📦 일괄 출고 처리</div>
       <button class="modal-x" onclick="closeBulk()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="confirm-icon">📦</div>
-      <div class="confirm-title">선택 주문 일괄 출고</div>
-      <div class="confirm-desc" id="bulkDesc"></div>
-      <div class="confirm-items" id="bulkItems"></div>
-      <div class="alert alert-amber" style="margin-top:14px;margin-bottom:0">
-        <span class="alert-ico">⚠</span>
-        출고 처리 시 재고가 즉시 차감되며 주문 상태가 <strong>'배송 중'</strong>으로 변경됩니다.
+    <div class="modal-body" style="text-align:center; padding:30px 22px;">
+      <div class="confirm-icon" style="font-size:42px; margin-bottom:12px;">📦</div>
+      <div class="confirm-title" style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--gray1);">선택 주문 일괄 출고</div>
+      <div class="confirm-desc" id="bulkDesc" style="font-size:13px; color:var(--gray3); margin-bottom:24px;"></div>
+      
+      <div class="alert alert-amber" style="margin:0; text-align:left; display:flex; gap:8px; align-items:flex-start; line-height:1.5;">
+        <span class="alert-ico" style="flex-shrink:0; margin-top:2px;">⚠</span>
+        <div style="flex:1; font-size:12.5px;">
+          출고 처리 시 재고가 즉시 차감되며<br>
+          주문 상태가 <strong style="color:#92400E;">'출고 완료'</strong>로 변경됩니다.
+        </div>
       </div>
     </div>
     <div class="modal-foot">
@@ -468,25 +418,6 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- 🚨 새로 추가된 [출고 정보 수정] 전용 모달 🚨 -->
-<div class="modal-bg" id="editModal">
-  <div class="modal">
-    <div class="modal-hdr">
-      <div class="modal-title">📝 출고 정보 수정</div>
-      <button class="modal-x" onclick="closeEditModal()">✕</button>
-    </div>
-    <div class="modal-body" id="editBody">
-      <!-- 자바스크립트로 폼 생성됨 -->
-    </div>
-    <div class="modal-foot">
-      <!-- 취소, 저장 버튼만 있음 (삭제 버튼 없음) -->
-      <button class="btn btn-outline" onclick="closeEditModal()">취소</button>
-      <button class="btn btn-blue" onclick="saveEdit()">💾 정보 저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ 출고 이력 상세 모달 (히스토리 탭용) ══ -->
 <div class="modal-bg" id="histModal">
   <div class="modal">
     <div class="modal-hdr">
@@ -494,31 +425,7 @@ tr:last-child td{border-bottom:none}
       <button class="modal-x" onclick="document.getElementById('histModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="order-flow">
-        <div class="of-step done"><div class="of-dot">✓</div><div class="of-lbl">결제완료</div></div>
-        <div class="of-step done"><div class="of-dot">✓</div><div class="of-lbl">출고완료</div></div>
-        <div class="of-step active"><div class="of-dot">●</div><div class="of-lbl">배송 중</div></div>
-        <div class="of-step"><div class="of-dot">4</div><div class="of-lbl">배송완료</div></div>
-      </div>
-      <div style="margin-bottom:16px">
-        <div class="sec-title">출고 정보</div>
-        <div class="dr"><div class="dk">출고 번호</div><div class="dv" style="font-family:'DM Mono',monospace;color:var(--blue)">OUT-20250424-084</div></div>
-        <div class="dr"><div class="dk">주문 번호</div><div class="dv" style="font-family:'DM Mono',monospace">#20250421-0082</div></div>
-        <div class="dr"><div class="dk">출고 일시</div><div class="dv">2025-04-24 09:30</div></div>
-        <div class="dr"><div class="dk">상품명</div><div class="dv" style="font-weight:600">나이키 에어맥스 270</div></div>
-        <div class="dr"><div class="dk">사이즈/컬러</div><div class="dv">265mm / 그레이</div></div>
-        <div class="dr"><div class="dk">수량</div><div class="dv" style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px">1 <span style="font-size:11px;font-weight:400;color:var(--gray3)">개</span></div></div>
-        <div class="dr"><div class="dk">담당자</div><div class="dv">이지훈</div></div>
-      </div>
-      <div>
-        <div class="sec-title">배송 정보</div>
-        <div class="dr"><div class="dk">수령인</div><div class="dv">김민준</div></div>
-        <div class="dr"><div class="dk">배송지</div><div class="dv">서울특별시 강남구 테헤란로 123 (역삼동)</div></div>
-        <div class="dr"><div class="dk">연락처</div><div class="dv">010-1234-5678</div></div>
-        <div class="dr"><div class="dk">택배사</div><div class="dv">CJ대한통운</div></div>
-        <div class="dr"><div class="dk">송장번호</div><div class="dv" style="font-family:'DM Mono',monospace;font-weight:600;color:var(--blue)">591234567890</div></div>
-        <div class="dr"><div class="dk">배송 상태</div><div class="dv"><span class="bdg bdg-green">배송 완료</span></div></div>
-      </div>
+      <div style="text-align:center; padding:30px; color:var(--gray4);">상세 정보 출력 영역</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="document.getElementById('histModal').classList.remove('open')">닫기</button>
@@ -529,6 +436,7 @@ tr:last-child td{border-bottom:none}
 <div class="toast" id="toast"></div>
 
 <script>
+// ── 1. 공통 유틸리티 (시계 & 토스트 알림 & 탭 전환) ──────────────────────────
 function updateClock() {
     const now = new Date();
     const year = now.getFullYear();
@@ -536,352 +444,336 @@ function updateClock() {
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    const timeString = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
-    document.getElementById("realTimeClock").innerText = timeString;
+    const el = document.getElementById("realTimeClock");
+    if(el) el.innerText = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
 }
-
 updateClock();
 setInterval(updateClock, 60000);
 
-//── 주문 데이터 ────────────────────────────────────
-// courier, invoice 속성 추가하여 관리가 가능하게끔 세팅
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function switchTab(tab) {
+    const isOut = tab === 'out';
+    document.getElementById('sec-out').style.display  = isOut ? '' : 'none';
+    document.getElementById('sec-hist').style.display = isOut ? 'none' : '';
+    document.getElementById('tab-out-btn').classList.toggle('on', isOut);
+    document.getElementById('tab-hist-btn').classList.toggle('on', !isOut);
+}
+
+// ── 2. DB 데이터를 JS 배열로 변환 (대기 & 이력) ─────────────────────────────
 const orders = [
-  {id:'#20250421-0082', time:'09:30', name:'나이키 에어맥스 270',   size:'265mm', color:'그레이', qty:1, addr:'서울 강남구',   status:'출고 대기', recv:'김민준', phone:'010-1234-5678', fullAddr:'서울 강남구 테헤란로 123', courier:'', invoice:''},
-  {id:'#20250421-0081', time:'09:15', name:'아디다스 울트라부스트', size:'270mm', color:'블랙',   qty:1, addr:'경기 수원시',   status:'출고 대기', recv:'이수진', phone:'010-2345-6789', fullAddr:'경기 수원시 영통구 매탄로 45', courier:'', invoice:''},
-  {id:'#20250421-0079', time:'08:55', name:'나이키 조던 1 레트로',  size:'260mm', color:'레드',   qty:2, addr:'부산 해운대구', status:'출고 대기', recv:'박지호', phone:'010-3456-7890', fullAddr:'부산 해운대구 해운대로 789', courier:'', invoice:''},
-  {id:'#20250421-0077', time:'08:40', name:'뉴발란스 990v5',        size:'270mm', color:'네이비', qty:1, addr:'서울 마포구',   status:'출고 대기', recv:'최예린', phone:'010-4567-8901', fullAddr:'서울 마포구 홍대입구로 22', courier:'', invoice:''},
-  {id:'#20250421-0075', time:'08:20', name:'호카 클리프턴 9',       size:'255mm', color:'화이트', qty:1, addr:'대구 수성구',   status:'출고 대기', recv:'정민호', phone:'010-5678-9012', fullAddr:'대구 수성구 수성로 100', courier:'', invoice:''},
+  <c:forEach var="p" items="${pendingList}">
+  { 
+    id: '#${p.orderNum}', 
+    rawId: ${p.orderNum}, 
+    optNum: ${p.optNum}, 
+    qty: ${p.orderItemQty}, 
+    time: '${p.orderCreatedAt}'.substring(0, 16), 
+    name: '${p.prodName}', 
+    size: '${p.sizeVal}mm', 
+    color: '${p.color}', 
+    addr: '${p.recvAddr1}'.split(' ').slice(0, 2).join(' '), 
+    recv: '${p.recvName}' 
+  },
+  </c:forEach>
 ];
- 
-let currentOrders = [...orders];
+
+const histories = [
+  <c:forEach var="h" items="${historyList}">
+  { 
+    outNum: ${h.outNum}, 
+    orderNum: ${h.orderNum}, 
+    outDate: '${h.outDate}', 
+    name: '${h.prodName}', 
+    size: '${h.sizeVal}mm', 
+    color: '${h.color}', 
+    qty: ${h.orderItemQty}, 
+    courier: '${empty h.courier ? "-" : h.courier}', 
+    invoice: '${empty h.invoiceNo ? "미등록" : h.invoiceNo}',
+    adminNum: '${h.adminNum}'
+  },
+  </c:forEach>
+];
+
+// 전역 변수
 let currentSingleId = null;
-const couriers = ['CJ대한통운','롯데택배','한진택배','우체국택배'];
- 
-const statusBdg = {
-  '출고 대기': '<span class="bdg bdg-amber">출고 대기</span>',
-  '출고 완료': '<span class="bdg bdg-green">출고 완료</span>',
-  '취소':      '<span class="bdg bdg-red">취소</span>',
-};
- 
-// ── 주문 목록 렌더 ──────────────────────────────────
-function renderOrders(data) {
+let currentHistOutNum = null;
+
+// 출고 대기용 페이징 변수
+let currentPage = 1;
+const itemsPerPage = 8;
+let filteredOrders = [...orders];
+
+// 출고 이력용 페이징 변수
+let currentHistPage = 1;
+const histItemsPerPage = 10;
+let filteredHistories = [...histories];
+
+
+// ── 3. [출고 처리 탭] 테이블 렌더링 & 페이징 ────────────────────────────────
+function renderTable() {
   const tbody = document.getElementById('orderTbody');
-  if(!data.length) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--gray4);font-size:13px">📭 해당 조건의 주문이 없습니다</td></tr>';
+  if(!tbody) return;
+  
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const pageData = filteredOrders.slice(start, end);
+
+  if(!pageData.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray4);font-size:13px">📭 출고 대기 주문이 없습니다</td></tr>';
+    if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
+    renderPagination();
     return;
   }
-  tbody.innerHTML = data.map(function(o) {
-    const invId = 'inv-' + o.id.replace(/#/g,'').replace(/-/g,'');
-    
-    // 🚨 변경된 부분: 상태가 '출고 대기'가 아니면 "수정" 버튼이 뜨고, 이를 통해 정보를 수정할 수 있음
-    const actionBtn = o.status === '출고 대기'
-      ? '<button class="btn btn-blue btn-xs" onclick="openSingle(\'' + o.id + '\')">출고 처리</button>'
-      : '<button class="btn btn-ghost btn-xs" onclick="openEditModal(\'' + o.id + '\')">수정</button>';
-      
-    // 🚨 송장 부분 처리: 대기 상태일 때는 인풋 박스, 완료 후에는 텍스트로 고정 표시
-    const invHtml = o.status === '출고 대기'
-      ? '<input class="inv-input" placeholder="송장번호 입력" onclick="event.stopPropagation()" id="' + invId + '">'
-      : '<span style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--gray3)">' + (o.invoice || '미등록') + '</span>';
 
-    return '<tr class="tbl-row" data-id="' + o.id + '" onclick="rowClick(this)">'
-      + '<td onclick="event.stopPropagation()">'
-      +   '<input type="checkbox" class="row-chk" data-id="' + o.id + '" onchange="updateSel()">'
-      + '</td>'
+  let html = '';
+  for(let i=0; i<pageData.length; i++) {
+    const o = pageData[i];
+    const actionBtn = '<button type="button" class="btn btn-blue btn-xs" onclick="openSingle(\'' + o.id + '\')">출고 처리</button>';
+    html += '<tr class="tbl-row" data-id="' + o.id + '" onclick="rowClick(this)">'
+      + '<td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="' + o.id + '" onchange="updateSel()"></td>'
       + '<td style="font-family:\'DM Mono\',monospace;font-size:11.5px;font-weight:700;color:var(--blue)">' + o.id + '</td>'
       + '<td style="font-size:11px;color:var(--gray3)">' + o.time + '</td>'
       + '<td style="font-weight:600;color:var(--gray1)">' + o.name + '</td>'
       + '<td><span class="bdg bdg-gray" style="font-family:\'DM Mono\',monospace;font-size:10px">' + o.size + '</span> <span style="font-size:11px;color:var(--gray4)">' + o.color + '</span></td>'
       + '<td style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:13px">' + o.qty + '</td>'
       + '<td style="font-size:12px">' + o.addr + '</td>'
-      + '<td>' + invHtml + '</td>'
-      + '<td>' + (statusBdg[o.status]||'') + '</td>'
+      + '<td><span class="bdg bdg-amber">출고 대기</span></td>'
       + '<td onclick="event.stopPropagation()">' + actionBtn + '</td>'
       + '</tr>';
-  }).join('');
-  document.getElementById('totalCnt').textContent = data.length;
-  document.getElementById('pageInfo').textContent = '1 – ' + data.length + ' / ' + data.length + '건';
+  }
+  tbody.innerHTML = html;
+
+  if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
+  renderPagination();
 }
- 
-function rowClick(tr) {
-  const chk = tr.querySelector('.row-chk');
-  chk.checked = !chk.checked;
+
+function renderPagination() {
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
+  const pageInfo = document.getElementById('pageInfo');
+  const pageBtns = document.getElementById('pageBtns');
+
+  const startNum = filteredOrders.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endNum = Math.min(currentPage * itemsPerPage, filteredOrders.length);
+  if(pageInfo) pageInfo.textContent = startNum + ' – ' + endNum + ' / ' + filteredOrders.length + '건';
+
+  if(!pageBtns) return;
+  let btnsHTML = '<div class="pg-btn ' + (currentPage === 1 ? 'disabled' : '') + '" onclick="changePage(' + (currentPage - 1) + ')">‹</div>';
+  for(let i=1; i<=totalPages; i++) {
+      btnsHTML += '<div class="pg-btn ' + (i === currentPage ? 'on' : '') + '" onclick="changePage(' + i + ')">' + i + '</div>';
+  }
+  btnsHTML += '<div class="pg-btn ' + (currentPage === totalPages ? 'disabled' : '') + '" onclick="changePage(' + (currentPage + 1) + ')">›</div>';
+  pageBtns.innerHTML = btnsHTML;
+}
+
+function changePage(page) {
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
+  if(page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderTable();
+  if(document.getElementById('chkAll')) document.getElementById('chkAll').checked = false;
   updateSel();
 }
- 
-function toggleAll(cb) {
-  document.querySelectorAll('.row-chk').forEach(function(c) {
-    c.checked = cb.checked;
-    c.closest('tr').classList.toggle('checked', cb.checked);
-  });
-  updateSel();
-}
- 
+
+// 체크박스 제어
+function rowClick(tr) { const chk = tr.querySelector('.row-chk'); chk.checked = !chk.checked; updateSel(); }
+function toggleAll(cb) { document.querySelectorAll('.row-chk').forEach(c => c.checked = cb.checked); updateSel(); }
 function updateSel() {
   const checked = document.querySelectorAll('.row-chk:checked');
   const n = checked.length;
-  document.getElementById('selCnt').textContent = n;
- 
-  document.querySelectorAll('.row-chk').forEach(function(c) {
-    c.closest('tr').classList.toggle('checked', c.checked);
-  });
- 
-  const summary = document.getElementById('selSummary');
-  summary.style.opacity = n > 0 ? '1' : '0';
-  summary.style.pointerEvents = n > 0 ? 'auto' : 'none';
-  document.getElementById('selSummaryTxt').textContent = n + '건 선택됨';
- 
-  const btn = document.getElementById('bulkBtn');
-  btn.disabled = n === 0;
-  document.getElementById('bulkCnt').textContent = n > 0 ? '(' + n + '건)' : '';
- 
-  const all = document.querySelectorAll('.row-chk').length;
-  document.getElementById('chkAll').indeterminate = n > 0 && n < all;
-  document.getElementById('chkAll').checked = n === all && all > 0;
+  if(document.getElementById('selCnt')) document.getElementById('selCnt').textContent = n;
+  if(document.getElementById('bulkBtn')) document.getElementById('bulkBtn').disabled = n === 0;
+  if(document.getElementById('bulkCnt')) document.getElementById('bulkCnt').textContent = n > 0 ? '(' + n + '건)' : '';
+  if(document.getElementById('chkAll')) document.getElementById('chkAll').checked = (n > 0 && n === document.querySelectorAll('.row-chk').length);
 }
- 
-function filterOrders(q) {
-  const filtered = orders.filter(function(o) {
-    return o.id.toLowerCase().includes(q.toLowerCase())
-        || o.name.toLowerCase().includes(q.toLowerCase());
-  });
-  renderOrders(filtered);
-}
- 
-// ── 커스텀 셀렉트 ──────────────────────────────────
-function toggleSel() {
-  document.getElementById('statusSelBtn').classList.toggle('open');
-  document.getElementById('statusDrop').classList.toggle('open');
-}
-function setStatus(val, el) {
-  document.getElementById('selLabel').textContent = val;
-  document.querySelectorAll('.sel-opt').forEach(function(o){ o.classList.remove('selected'); });
-  el.classList.add('selected');
-  toggleSel();
-  if(val === '전체 상태') renderOrders(orders);
-  else renderOrders(orders.filter(function(o){ return o.status === val; }));
-}
-document.addEventListener('click', function(e) {
-  const wrap = document.querySelector('.sel-wrap');
-  if(!wrap.contains(e.target)) {
-    document.getElementById('statusSelBtn').classList.remove('open');
-    document.getElementById('statusDrop').classList.remove('open');
-  }
-});
- 
-// ── 개별 출고 처리 ─────────────────────────────────
+
+// ── 4. [출고 처리 로직] 단일 & 일괄 폼 전송 ────────────────────────────────
 function openSingle(id) {
-  const o = orders.find(function(x){ return x.id === id; });
+  const o = orders.find(x => x.id === id);
   if(!o) return;
   currentSingleId = id;
-  const invId = 'inv-' + id.replace(/#/g,'').replace(/-/g,'');
-  const invEl = document.getElementById(invId);
-  const existInv = invEl ? invEl.value : '';
-  const courierOptions = couriers.map(function(c){ return '<option>' + c + '</option>'; }).join('');
- 
-  document.getElementById('singleBody').innerHTML =
-      '<div class="alert alert-blue" style="margin-bottom:18px">'
-    +   '<span class="alert-ico">📋</span>'
-    +   '<div>아래 주문을 출고 처리합니다. 송장번호를 입력하면 배송 추적이 활성화됩니다.</div>'
-    + '</div>'
-    + '<div style="margin-bottom:18px">'
-    +   '<div class="sec-title">주문 정보</div>'
-    +   '<div class="dr"><div class="dk">주문번호</div><div class="dv" style="font-family:\'DM Mono\',monospace;font-weight:700;color:var(--blue)">' + o.id + '</div></div>'
-    +   '<div class="dr"><div class="dk">상품명</div><div class="dv" style="font-weight:600">' + o.name + '</div></div>'
-    +   '<div class="dr"><div class="dk">사이즈/컬러</div><div class="dv">' + o.size + ' / ' + o.color + '</div></div>'
-    +   '<div class="dr"><div class="dk">수량</div><div class="dv" style="font-family:\'DM Mono\',monospace;font-weight:700">' + o.qty + '개</div></div>'
-    + '</div>'
-    + '<div style="margin-bottom:18px">'
-    +   '<div class="sec-title">배송 정보</div>'
-    +   '<div class="dr"><div class="dk">수령인</div><div class="dv">' + o.recv + '</div></div>'
-    +   '<div class="dr"><div class="dk">연락처</div><div class="dv">' + o.phone + '</div></div>'
-    +   '<div class="dr"><div class="dk">배송지</div><div class="dv">' + o.fullAddr + '</div></div>'
-    + '</div>'
-    + '<div>'
-    +   '<div class="sec-title">송장 정보 입력</div>'
-    +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
-    +     '<div style="display:flex;flex-direction:column;gap:5px">'
-    +       '<label style="font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em">택배사</label>'
-    +       '<select id="modal-courier" style="padding:9px 12px;border:1.5px solid var(--gray5);background:var(--white);border-radius:7px;font-size:13px;font-family:\'Pretendard\',sans-serif;color:var(--gray2);outline:none">'
-    +         '<option value="">택배사 선택</option>'
-    +         courierOptions
-    +       '</select>'
-    +     '</div>'
-    +     '<div style="display:flex;flex-direction:column;gap:5px">'
-    +       '<label style="font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em">송장번호</label>'
-    +       '<input id="modal-invoice" value="' + existInv + '" placeholder="숫자 12자리 입력" style="padding:9px 12px;border:1.5px solid var(--gray5);border-radius:7px;font-size:13px;font-family:\'DM Mono\',monospace;color:var(--gray1);outline:none;transition:border .15s">'
-    +     '</div>'
-    +   '</div>'
-    +   '<div style="font-size:11px;color:var(--gray4);margin-top:6px">* 송장번호 미입력 시 출고 처리 후 별도 입력 가능합니다.</div>'
-    + '</div>';
+  const couriers = ['CJ대한통운','롯데택배','한진택배','우체국택배'];
+  const courierOptions = couriers.map(c => '<option>' + c + '</option>').join('');
+  document.getElementById('singleBody').innerHTML = 
+      '<div class="sec-title">주문 정보</div>'
+    + '<div class="dr"><div class="dk">주문번호</div><div class="dv"><b>' + o.id + '</b></div></div>'
+    + '<div class="dr"><div class="dk">상품명</div><div class="dv">' + o.name + '</div></div>'
+    + '<div class="dr"><div class="dk">수량</div><div class="dv"><b>' + o.qty + '개</b></div></div>'
+    + '<hr style="border:0;border-top:1px solid var(--gray6);margin:15px 0">'
   document.getElementById('singleModal').classList.add('open');
 }
 
 function closeSingle(){ document.getElementById('singleModal').classList.remove('open'); }
 
 function confirmSingle() {
-  const o = orders.find(function(x){ return x.id === currentSingleId; });
-  if(o) {
-      o.status = '출고 완료';
-      o.courier = document.getElementById('modal-courier').value;
-      o.invoice = document.getElementById('modal-invoice').value;
-  }
-  closeSingle();
-  
-  // 현재 보고있는 탭 상태 유지하여 리렌더링
-  const curLabel = document.getElementById('selLabel').textContent;
-  if(curLabel === '전체 상태') renderOrders(orders);
-  else renderOrders(orders.filter(function(x){ return x.status === curLabel; }));
-  
-  updateWait();
-  showToast('✅ ' + currentSingleId + ' 출고 처리 완료');
+    const o = orders.find(x => x.id === currentSingleId);
+    if(!o) return;
+    const courier = document.getElementById('modal-courier').value;
+    const invoice = document.getElementById('modal-invoice').value;
+    const form = document.getElementById('outboundForm');
+    form.innerHTML = '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
+                   + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
+                   + '<input type="hidden" name="qty" value="'+o.qty+'">'
+                   + '<input type="hidden" name="courier" value="'+courier+'">'
+                   + '<input type="hidden" name="invoiceNo" value="'+invoice+'">';
+    form.submit(); 
 }
- 
-// ── 일괄 출고 ──────────────────────────────────────
+
 function openBulkConfirm() {
-  const checked = Array.from(document.querySelectorAll('.row-chk:checked'));
-  const ids = checked.map(function(c){ return c.dataset.id; });
-  const selected = orders.filter(function(o){ return ids.includes(o.id); });
-  document.getElementById('bulkDesc').textContent = '선택하신 ' + selected.length + '건의 주문을 일괄 출고 처리합니다.';
-  document.getElementById('bulkItems').innerHTML = selected.map(function(o) {
-    return '<div class="ci-row">'
-      + '<div class="ci-key" style="font-family:\'DM Mono\',monospace;font-size:11px">' + o.id + '</div>'
-      + '<div class="ci-val" style="font-size:12px">' + o.name + ' · ' + o.size + '</div>'
-      + '</div>';
-  }).join('');
+  const checked = document.querySelectorAll('.row-chk:checked');
+  document.getElementById('bulkDesc').textContent = '선택하신 ' + checked.length + '건의 주문을 일괄 출고합니다.';
   document.getElementById('bulkModal').classList.add('open');
 }
 function closeBulk(){ document.getElementById('bulkModal').classList.remove('open'); }
+
 function doBulk() {
-  const checked = Array.from(document.querySelectorAll('.row-chk:checked'));
-  const ids = checked.map(function(c){ return c.dataset.id; });
-  ids.forEach(function(id) {
-    const o = orders.find(function(x){ return x.id === id; });
-    if(o) {
-        o.status = '출고 완료';
-        // 목록 테이블상에서 입력한 송장번호가 있다면 가져와서 세팅
-        const invEl = document.getElementById('inv-' + id.replace(/#/g,'').replace(/-/g,''));
-        if(invEl && invEl.value) { o.invoice = invEl.value; }
-    }
-  });
-  closeBulk();
-  
-  const curLabel = document.getElementById('selLabel').textContent;
-  if(curLabel === '전체 상태') renderOrders(orders);
-  else renderOrders(orders.filter(function(x){ return x.status === curLabel; }));
-  
-  updateWait();
-  document.getElementById('chkAll').checked = false;
-  updateSel();
-  showToast('✅ ' + ids.length + '건 일괄 출고 처리 완료');
-}
- 
-function updateWait() {
-  const waitN = orders.filter(function(o){ return o.status === '출고 대기'; }).length;
-  document.getElementById('kpiWait').textContent = waitN;
-  document.getElementById('waitNum').textContent = waitN;
-  document.getElementById('waitCnt').textContent = waitN;
-  if(waitN === 0) {
-    document.getElementById('waitAlert').className = 'alert alert-green';
-    document.getElementById('waitAlert').innerHTML = '<span class="alert-ico">✅</span><div>모든 출고 대기 주문이 처리되었습니다.</div>';
-  }
-}
-
-// 🚨 새 기능: 출고 정보 "수정" 전용 팝업 로직 🚨
-let currentEditId = null;
-
-function openEditModal(id) {
-  const o = orders.find(function(x){ return x.id === id; });
-  if(!o) return;
-  currentEditId = id;
-  
-  // 택배사 셀렉트박스 만들기 (선택된 거 있으면 selected)
-  const courierOptions = couriers.map(function(c){ 
-      const isSel = (c === o.courier) ? 'selected' : '';
-      return '<option ' + isSel + '>' + c + '</option>'; 
-  }).join('');
-
-  document.getElementById('editBody').innerHTML = 
-      '<div class="sec-title">주문 기본 정보 (수정 불가)</div>'
-    + '<div class="dr"><div class="dk">주문번호</div><div class="dv"><b>' + o.id + '</b></div></div>'
-    + '<div class="dr"><div class="dk">상품명</div><div class="dv">' + o.name + '</div></div>'
-    + '<div class="dr"><div class="dk">사이즈/컬러</div><div class="dv">' + o.size + ' / ' + o.color + '</div></div>'
-    
-    + '<div class="sec-title" style="margin-top:24px;">배송 정보 (수정 가능)</div>'
-    + '<div style="display:flex; flex-direction:column; gap:12px;">'
-    +   '<div style="display:flex; gap:12px;">'
-    +     '<div style="flex:1;"><label style="font-size:11px; color:var(--gray3); font-weight:700; margin-bottom:4px; display:block;">수령인</label>'
-    +     '<input id="edit-recv" class="modal-input" value="' + o.recv + '"></div>'
-    +     '<div style="flex:1;"><label style="font-size:11px; color:var(--gray3); font-weight:700; margin-bottom:4px; display:block;">연락처</label>'
-    +     '<input id="edit-phone" class="modal-input" value="' + o.phone + '"></div>'
-    +   '</div>'
-    +   '<div><label style="font-size:11px; color:var(--gray3); font-weight:700; margin-bottom:4px; display:block;">배송지 (주소)</label>'
-    +   '<input id="edit-addr" class="modal-input" value="' + o.fullAddr + '"></div>'
-    +   '<div style="display:flex; gap:12px;">'
-    +     '<div style="flex:1;"><label style="font-size:11px; color:var(--gray3); font-weight:700; margin-bottom:4px; display:block;">택배사</label>'
-    +     '<select id="edit-courier" class="modal-input"><option value="">선택 안함</option>' + courierOptions + '</select></div>'
-    +     '<div style="flex:1;"><label style="font-size:11px; color:var(--gray3); font-weight:700; margin-bottom:4px; display:block;">송장번호</label>'
-    +     '<input id="edit-inv" class="modal-input" value="' + (o.invoice || '') + '"></div>'
-    +   '</div>'
-    + '</div>';
-    
-  document.getElementById('editModal').classList.add('open');
-}
-
-function closeEditModal() { 
-    document.getElementById('editModal').classList.remove('open'); 
-}
-
-function saveEdit() {
-    const o = orders.find(function(x){ return x.id === currentEditId; });
-    if(o) {
-        o.recv     = document.getElementById('edit-recv').value;
-        o.phone    = document.getElementById('edit-phone').value;
-        o.fullAddr = document.getElementById('edit-addr').value;
-        o.courier  = document.getElementById('edit-courier').value;
-        o.invoice  = document.getElementById('edit-inv').value;
-        
-        // 목록 주소 축약 표시 (간단히 띄어쓰기로 잘라 씀)
-        const addrParts = o.fullAddr.split(' ');
-        if(addrParts.length >= 2) {
-            o.addr = addrParts[0] + ' ' + addrParts[1];
-        } else {
-            o.addr = o.fullAddr;
+    const checked = Array.from(document.querySelectorAll('.row-chk:checked'));
+    const ids = checked.map(c => c.dataset.id);
+    const form = document.getElementById('outboundForm');
+    form.innerHTML = '';
+    ids.forEach(id => {
+        const o = orders.find(x => x.id === id);
+        if(o) {
+            form.innerHTML += '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
+                            + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
+                            + '<input type="hidden" name="qty" value="'+o.qty+'">'
+                            + '<input type="hidden" name="courier" value="">'
+                            + '<input type="hidden" name="invoiceNo" value="">';
         }
-    }
-    closeEditModal();
-    showToast('✅ 수정 정보가 저장되었습니다.');
+    });
+    form.submit();
+}
+
+// ── 5. [출고 이력 탭] 테이블 렌더링 & 페이징 ────────────────────────────────
+function renderHistTable() {
+  const tbody = document.getElementById('histTbody');
+  if(!tbody) return;
+
+  const start = (currentHistPage - 1) * histItemsPerPage;
+  const end = start + histItemsPerPage;
+  const pageData = filteredHistories.slice(start, end);
+
+  if(!pageData.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--gray4);">📭 조회된 출고 이력이 없습니다.</td></tr>';
+    if(document.getElementById('totalHistCnt')) document.getElementById('totalHistCnt').textContent = "0";
+    renderHistPagination();
+    return;
+  }
+
+  let html = '';
+  for(let i=0; i<pageData.length; i++) {
+    const h = pageData[i];
+    const outDateStr = h.outDate.substring(0, 10).replace(/-/g, '');
+    html += '<tr class="tbl-row" onclick="openHistModal(' + h.outNum + ')">'
+      + '<td style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--blue)">OUT-' + outDateStr + '-' + h.outNum + '</td>'
+      + '<td style="font-family:\'DM Mono\',monospace;font-size:11px">#' + h.orderNum + '</td>'
+      + '<td style="font-size:11px;color:var(--gray3)">' + h.outDate + '</td>'
+      + '<td style="font-weight:600">' + h.name + '</td>'
+      + '<td><span class="bdg bdg-gray" style="font-size:10px">' + h.size + ' / ' + h.color + '</span></td>'
+      + '<td style="font-family:\'DM Mono\',monospace;font-weight:700">' + h.qty + '</td>'
+      + '<td>' + h.courier + '</td>'
+      + '<td style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--gray3)">' + h.invoice + '</td>'
+      + '<td><span class="bdg bdg-green">출고 완료</span></td>'
+      + '<td>' + (h.adminNum || '관리자') + '</td>'
+      + '</tr>';
+  }
+  tbody.innerHTML = html;
+
+  if(document.getElementById('totalHistCnt')) document.getElementById('totalHistCnt').textContent = filteredHistories.length;
+  renderHistPagination();
+}
+
+function renderHistPagination() {
+  const totalPages = Math.ceil(filteredHistories.length / histItemsPerPage) || 1;
+  const pageInfo = document.getElementById('histPageInfo');
+  const pageBtns = document.getElementById('histPageBtns');
+
+  const startNum = filteredHistories.length === 0 ? 0 : (currentHistPage - 1) * histItemsPerPage + 1;
+  const endNum = Math.min(currentHistPage * histItemsPerPage, filteredHistories.length);
+  if(pageInfo) pageInfo.textContent = startNum + ' – ' + endNum + ' / ' + filteredHistories.length + '건';
+
+  if(!pageBtns) return;
+  let btnsHTML = '<div class="pg-btn ' + (currentHistPage === 1 ? 'disabled' : '') + '" onclick="changeHistPage(' + (currentHistPage - 1) + ')">‹</div>';
+  for(let i=1; i<=totalPages; i++) {
+      btnsHTML += '<div class="pg-btn ' + (i === currentHistPage ? 'on' : '') + '" onclick="changeHistPage(' + i + ')">' + i + '</div>';
+  }
+  btnsHTML += '<div class="pg-btn ' + (currentHistPage === totalPages ? 'disabled' : '') + '" onclick="changeHistPage(' + (currentHistPage + 1) + ')">›</div>';
+  
+  pageBtns.innerHTML = btnsHTML;
+}
+
+function changeHistPage(page) {
+  const totalPages = Math.ceil(filteredHistories.length / histItemsPerPage) || 1;
+  if(page < 1 || page > totalPages) return;
+  currentHistPage = page;
+  renderHistTable();
+}
+
+// ── 6. [출고 이력 모달] 데이터 채우기 & 출고 취소 ───────────────────────────
+function openHistModal(outNum) {
+    const h = histories.find(x => x.outNum === outNum);
+    if(!h) return;
     
-    const curLabel = document.getElementById('selLabel').textContent;
-    if(curLabel === '전체 상태') renderOrders(orders);
-    else renderOrders(orders.filter(function(x){ return x.status === curLabel; }));
+    currentHistOutNum = h.outNum; 
+    
+    const histBody = document.querySelector('#histModal .modal-body');
+    const histFoot = document.querySelector('#histModal .modal-foot');
+    
+    histBody.innerHTML = 
+      '<div style="margin-bottom:16px">'
+      + '<div class="sec-title">출고 기본 정보</div>'
+      + '<div class="dr"><div class="dk">출고 번호</div><div class="dv" style="font-family:\'DM Mono\',monospace;color:var(--blue)">OUT-' + h.outNum + '</div></div>'
+      + '<div class="dr"><div class="dk">주문 번호</div><div class="dv" style="font-family:\'DM Mono\',monospace">#' + h.orderNum + '</div></div>'
+      + '<div class="dr"><div class="dk">출고 일시</div><div class="dv">' + h.outDate + '</div></div>'
+      + '<hr style="border:0;border-top:1px solid var(--gray6);margin:15px 0">'
+      + '<div class="sec-title">상품 및 배송 정보</div>'
+      + '<div class="dr"><div class="dk">상품명</div><div class="dv" style="font-weight:600">' + h.name + ' (' + h.size + ' / ' + h.color + ')</div></div>'
+      + '<div class="dr"><div class="dk">수량</div><div class="dv"><b>' + h.qty + '개</b></div></div>'
+      + '<div class="dr"><div class="dk">택배사</div><div class="dv">' + h.courier + '</div></div>'
+      + '<div class="dr"><div class="dk">송장번호</div><div class="dv" style="font-family:\'DM Mono\',monospace;color:var(--gray3)">' + h.invoice + '</div></div>'
+      + '</div>';
+
+    histFoot.innerHTML = 
+      '<button class="btn btn-outline" onclick="document.getElementById(\'histModal\').classList.remove(\'open\')">닫기</button>'
+      + '<button class="btn btn-red" onclick="cancelHistory(' + h.outNum + ', ' + h.orderNum + ')">🗑️ 출고 취소(삭제)</button>';
+
+    document.getElementById('histModal').classList.add('open');
 }
- 
-// ── 탭 전환 ────────────────────────────────────────
-function switchTab(tab) {
-  const isOut = tab === 'out';
-  document.getElementById('sec-out').style.display  = isOut ? '' : 'none';
-  document.getElementById('sec-hist').style.display = isOut ? 'none' : '';
-  document.getElementById('tab-out-btn').classList.toggle('on', isOut);
-  document.getElementById('tab-hist-btn').classList.toggle('on', !isOut);
+
+function cancelHistory(outNum, orderNum) {
+    if(!confirm("이 출고 이력을 삭제하고 다시 대기 상태로 되돌리시겠습니까?")) return;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '${pageContext.request.contextPath}/logistics/log_out/log_outCancel.do';
+    form.innerHTML = '<input type="hidden" name="outNum" value="' + outNum + '"><input type="hidden" name="orderNum" value="' + orderNum + '">';
+    document.body.appendChild(form);
+    form.submit();
 }
- 
-// ── TOAST ───────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2800);
-}
- 
-// ── 모달 바깥 클릭 ─────────────────────────────────
-['singleModal','bulkModal','histModal','editModal'].forEach(function(id) {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if(e.target === e.currentTarget) e.currentTarget.classList.remove('open');
-  });
+
+// ── 7. 모달 바깥 클릭 시 닫기 ──────────────────────────────────────────────
+['singleModal','bulkModal', 'histModal'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) {
+      el.addEventListener('click', e => {
+        if(e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+      });
+  }
 });
- 
-// ── 초기 렌더 ──────────────────────────────────────
-renderOrders(orders);
+
+// ── 8. 페이지 로딩 시 초기 렌더링 ──────────────────────────────────────────
+renderTable();
+renderHistTable();
+
+// 서버에서 넘겨준 탭 상태로 열기 (새로고침, 조회 후 탭 유지)
+const activeTab = '${activeTab}' || 'out';
+switchTab(activeTab);
+
 </script>
 </body>
 </html>
