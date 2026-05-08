@@ -598,6 +598,10 @@ function openSingle(id) {
   const o = orders.find(x => x.id === id);
   if(!o) return;
   currentSingleId = id;
+  if (o.stock !== undefined && o.qty > o.stock) {
+      showToast(`⚠ 재고(${o.stock}개)가 주문 수량(${o.qty}개)보다 부족합니다.`, true);
+      return;
+  }
   const couriers = ['CJ대한통운','롯데택배','한진택배','우체국택배'];
   const courierOptions = couriers.map(c => '<option>' + c + '</option>').join('');
   document.getElementById('singleBody').innerHTML = 

@@ -904,17 +904,33 @@ function resetForm() {
 
 function submitInbound() {
     const prodNum = document.getElementById('hidden_prodNum').value;
-    const color = document.getElementById('fi-color').value;
-    const qty = document.getElementById('fi-qty').value;
-    
-    if(!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
-    if(!color || !qty || selSizes.size === 0) { showToast('⚠ 필수 항목을 모두 입력하세요.', true); return; }
+    const color   = document.getElementById('fi-color').value;
+    const qty     = parseInt(document.getElementById('fi-qty').value);
+
+    if (!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
+    if (!color)   { showToast('⚠ 컬러를 선택해주세요.', true); return; }
+    if (selSizes.size === 0) { showToast('⚠ 사이즈를 선택해주세요.', true); return; }
+
+    // ── 수량 유효성 검사 ────────────────────────────────────────────
+    if (isNaN(qty) || qty < 1) {
+        showToast('⚠ 수량은 1개 이상이어야 합니다.', true);
+        return;
+    }
+    if (qty > 9999) {
+        showToast('⚠ 1회 입고 수량은 9,999개를 초과할 수 없습니다.', true);
+        return;
+    }
+    if (!Number.isInteger(parseFloat(document.getElementById('fi-qty').value))) {
+        showToast('⚠ 수량은 정수만 입력 가능합니다.', true);
+        return;
+    }
+    // ────────────────────────────────────────────────────────────────
 
     const sizeArr = Array.from(selSizes);
     document.getElementById('hidden_sizes').value = sizeArr.join(',');
 
-    if(confirm(`총 \${sizeArr.length}개의 사이즈 옵션에 각각 \${qty}개씩 입고 처리하시겠습니까?`)) {
-        showToast('✅ 입고 처리가 완료되었습니다!');
+    if (confirm(`총 ${sizeArr.length}개의 사이즈 옵션에 각각 ${qty}개씩 입고 처리하시겠습니까?`)) {
+        showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
         setTimeout(function() { document.getElementById('inboundForm').submit(); }, 1500);
     }
 }

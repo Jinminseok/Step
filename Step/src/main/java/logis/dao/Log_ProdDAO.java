@@ -9,25 +9,27 @@ public class Log_ProdDAO {
 
 	// ── 공통 SQL 조각 ──────────────────────────────────────────────────────
 	private static final String SELECT_BASE =
-			"SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, "
-					+ "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
-					+ "       NVL(s.STOCK_QTY, 0) AS STOCK_QTY, "
-					+ "       i.PROD_IMG_URL, "
-					+ "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
-					+ "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
-					+ "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
-					+ "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
-					+ "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) "
-					+ "        FROM PROD_OPTIONS "
-					+ "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
-					+ "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) "
-					+ "        FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS "
-					+ "              WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST "
-					+ "FROM   PRODUCTS p "
-					+ "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
-					+ "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM "
-					+ "LEFT JOIN STOCK      s ON p.PROD_NUM  = s.PROD_NUM "
-					+ "LEFT JOIN PROD_IMGS  i ON p.PROD_NUM  = i.PROD_NUM AND i.IS_MAIN = 'Y' ";
+		    "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, "
+		  + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
+		  // ↓ LEFT JOIN STOCK 제거하고 서브쿼리로 교체
+		  + "       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK "
+		  + "        WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, "
+		  + "       i.PROD_IMG_URL, "
+		  + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
+		  + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
+		  + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
+		  + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
+		  + "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) "
+		  + "        FROM PROD_OPTIONS "
+		  + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
+		  + "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) "
+		  + "        FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS "
+		  + "              WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST "
+		  + "FROM   PRODUCTS p "
+		  + "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
+		  + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM "
+		  // ↓ LEFT JOIN STOCK 완전 삭제
+		  + "LEFT JOIN PROD_IMGS  i ON p.PROD_NUM  = i.PROD_NUM AND i.IS_MAIN = 'Y' ";
 
 	// ── ResultSet → VO 변환 (공통) ────────────────────────────────────────
 	private Log_ProdVO toVO(ResultSet rs) throws SQLException {
@@ -108,59 +110,54 @@ public class Log_ProdDAO {
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 
-	    // 1. 선택된 사이즈와 컬러 배열화
-	    String[] sizes = (vo.getSizes() != null && !vo.getSizes().isEmpty()) 
-	                     ? vo.getSizes().split(",") : new String[0];
-	    String[] colors = (vo.getColors() != null && !vo.getColors().isEmpty()) 
+	    String[] sizes  = (vo.getSizes()  != null && !vo.getSizes().isEmpty())
+	                      ? vo.getSizes().split(",")  : new String[0];
+	    String[] colors = (vo.getColors() != null && !vo.getColors().isEmpty())
 	                      ? vo.getColors().split(",") : new String[]{"기본"};
 
 	    try {
 	        conn = DBUtil.getConnection();
-	        conn.setAutoCommit(false); // 트랜잭션 시작
+	        conn.setAutoCommit(false);
 
-	        // 🚨 [A] PRODUCTS 테이블 INSERT (반복문 밖에서 딱 1번만!)
-	        // 품번(SKU) 뒤에 사이즈 안 붙입니다. 형님이 입력한 원본 그대로 딱 하나 저장됩니다.
+	        // ① PRODUCTS INSERT (1개만)
 	        String sql = "INSERT INTO PRODUCTS "
 	                   + "(PROD_NUM, CAT_NUM, BRAND_NUM, SKU, PROD_NAME, "
 	                   + " GENDER, PROD_PRICE, SALE_RATE, PROD_TEXT, PROD_STATUS, PROD_CREATED_AT) "
 	                   + "VALUES (PRODUCTS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
 
 	        pstmt = conn.prepareStatement(sql, new String[]{"PROD_NUM"});
-	        pstmt.setInt(1, vo.getCatNum());
-	        pstmt.setInt(2, vo.getBrandNum());
-	        pstmt.setString(3, vo.getSku()); // 원본 SKU 그대로! (중복 제약조건 걱정 NO)
-	        pstmt.setString(4, vo.getProdName()); // 상품명도 사이즈 없이 깔끔하게!
-	        pstmt.setInt(5, vo.getGender());
-	        pstmt.setInt(6, vo.getProdPrice());
-	        pstmt.setInt(7, vo.getSaleRate());
+	        pstmt.setInt   (1, vo.getCatNum());
+	        pstmt.setInt   (2, vo.getBrandNum());
+	        pstmt.setString(3, vo.getSku());
+	        pstmt.setString(4, vo.getProdName());
+	        pstmt.setInt   (5, vo.getGender());
+	        pstmt.setInt   (6, vo.getProdPrice());
+	        pstmt.setInt   (7, vo.getSaleRate());
 	        pstmt.setString(8, vo.getProdText());
-	        pstmt.setInt(9, vo.getProdStatus());
-	        
+	        pstmt.setInt   (9, vo.getProdStatus());
 	        pstmt.executeUpdate();
 
-	        // 생성된 대표 PROD_NUM 가져오기
 	        int newProdNum = 0;
 	        rs = pstmt.getGeneratedKeys();
 	        if (rs.next()) newProdNum = rs.getInt(1);
 	        rs.close();
 	        pstmt.close();
 
-	        // 🚨 [B] PROD_OPTIONS 테이블 INSERT (사이즈 개수만큼 여기서 루프 돌리기!)
+	        // ② PROD_OPTIONS INSERT (사이즈 × 컬러 조합)
 	        String optSql = "INSERT INTO PROD_OPTIONS "
 	                      + "(OPT_NUM, PROD_NUM, SIZE_VAL, COLOR, ADD_PRICE, PROD_USE_YN) "
 	                      + "VALUES (PROD_OPTIONS_SEQ.NEXTVAL, ?, ?, ?, 0, 'Y')";
-	        
+
 	        pstmt = conn.prepareStatement(optSql, new String[]{"OPT_NUM"});
 	        int firstOptNum = 0;
 
 	        for (String size : sizes) {
 	            for (String color : colors) {
-	                pstmt.setInt(1, newProdNum); // 위에서 만든 하나의 상품 번호에 묶음
-	                pstmt.setInt(2, Integer.parseInt(size.trim()));
+	                pstmt.setInt   (1, newProdNum);
+	                pstmt.setInt   (2, Integer.parseInt(size.trim()));
 	                pstmt.setString(3, color.trim());
 	                pstmt.executeUpdate();
-	                
-	                // 대표 옵션 번호 하나 보관 (상품 정보 업데이트용)
+
 	                if (firstOptNum == 0) {
 	                    ResultSet optKeyRs = pstmt.getGeneratedKeys();
 	                    if (optKeyRs.next()) firstOptNum = optKeyRs.getInt(1);
@@ -170,15 +167,41 @@ public class Log_ProdDAO {
 	        }
 	        pstmt.close();
 
-	        // [C] 대표 이미지 및 옵션번호 최종 업데이트
-	        String updateSql = "UPDATE PRODUCTS SET OPT_NUM = ? WHERE PROD_NUM = ?";
-	        pstmt = conn.prepareStatement(updateSql);
+	        // ③ PRODUCTS.OPT_NUM 업데이트
+	        String updateOptSql = "UPDATE PRODUCTS SET OPT_NUM = ? WHERE PROD_NUM = ?";
+	        pstmt = conn.prepareStatement(updateOptSql);
 	        pstmt.setInt(1, firstOptNum);
 	        pstmt.setInt(2, newProdNum);
 	        pstmt.executeUpdate();
+	        pstmt.close();
 
-	        conn.commit(); // 모든 사이즈 저장 성공 시 커밋
-	        result = 1; // 1개 상품 등록 성공
+	        // ④ 이미지 있을 때만 PROD_IMGS INSERT + IMG_NUM 업데이트 ← 여기가 빠져있었음
+	        if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().isEmpty()) {
+	            String imgSql = "INSERT INTO PROD_IMGS "
+	                          + "(PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+	                          + "VALUES (PROD_IMGS_SEQ.NEXTVAL, ?, ?, 'Y', 1)";
+
+	            pstmt = conn.prepareStatement(imgSql, new String[]{"PROD_IMG_NUM"});
+	            pstmt.setInt   (1, newProdNum);
+	            pstmt.setString(2, vo.getProdImgUrl());
+	            pstmt.executeUpdate();
+
+	            int imgNum = 0;
+	            ResultSet imgKeyRs = pstmt.getGeneratedKeys();
+	            if (imgKeyRs.next()) imgNum = imgKeyRs.getInt(1);
+	            imgKeyRs.close();
+	            pstmt.close();
+
+	            String updateImgSql = "UPDATE PRODUCTS SET IMG_NUM = ? WHERE PROD_NUM = ?";
+	            pstmt = conn.prepareStatement(updateImgSql);
+	            pstmt.setInt(1, imgNum);
+	            pstmt.setInt(2, newProdNum);
+	            pstmt.executeUpdate();
+	            pstmt.close();
+	        }
+
+	        conn.commit();
+	        result = 1;
 
 	    } catch (Exception e) {
 	        if (conn != null) conn.rollback();

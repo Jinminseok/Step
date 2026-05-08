@@ -134,4 +134,131 @@ public class Log_DashDAO {
         }
         return list;
     }
+ // ① 오늘 출고 수량
+    public int getTodayOutQty() throws Exception {
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        int total = 0;
+        String sql = "SELECT NVL(SUM(OUT_QTY), 0) FROM OUTBOUND "
+                   + "WHERE TRUNC(OUT_DATE) = TRUNC(SYSDATE)";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) total = rs.getInt(1);
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return total;
+    }
+
+    // ② 어제 입고 수량
+    public int getYesterdayInQty() throws Exception {
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        int total = 0;
+        String sql = "SELECT NVL(SUM(IN_QTY), 0) FROM INBOUND "
+                   + "WHERE TRUNC(IN_DATE) = TRUNC(SYSDATE) - 1";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) total = rs.getInt(1);
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return total;
+    }
+
+    // ③ 어제 출고 수량
+    public int getYesterdayOutQty() throws Exception {
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        int total = 0;
+        String sql = "SELECT NVL(SUM(OUT_QTY), 0) FROM OUTBOUND "
+                   + "WHERE TRUNC(OUT_DATE) = TRUNC(SYSDATE) - 1";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) total = rs.getInt(1);
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return total;
+    }
+
+    // ④ 주간 입고 현황 (이번 주 월~오늘)
+    public List<Map<String, Object>> getWeeklyInbound() throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        String sql = "SELECT TO_CHAR(IN_DATE, 'MM/DD') AS DAY_LABEL, "
+                   + "       NVL(SUM(IN_QTY), 0) AS QTY "
+                   + "FROM INBOUND "
+                   + "WHERE IN_DATE >= TRUNC(SYSDATE, 'IW') "
+                   + "  AND IN_DATE <  TRUNC(SYSDATE) + 1 "
+                   + "GROUP BY TO_CHAR(IN_DATE, 'MM/DD'), TRUNC(IN_DATE) "
+                   + "ORDER BY TRUNC(IN_DATE)";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("dayLabel", rs.getString("DAY_LABEL"));
+                map.put("qty",      rs.getInt("QTY"));
+                list.add(map);
+            }
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return list;
+    }
+
+    // ⑤ 주간 출고 현황 (이번 주 월~오늘)
+    public List<Map<String, Object>> getWeeklyOutbound() throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        String sql = "SELECT TO_CHAR(OUT_DATE, 'MM/DD') AS DAY_LABEL, "
+                   + "       NVL(SUM(OUT_QTY), 0) AS QTY "
+                   + "FROM OUTBOUND "
+                   + "WHERE OUT_DATE >= TRUNC(SYSDATE, 'IW') "
+                   + "  AND OUT_DATE <  TRUNC(SYSDATE) + 1 "
+                   + "GROUP BY TO_CHAR(OUT_DATE, 'MM/DD'), TRUNC(OUT_DATE) "
+                   + "ORDER BY TRUNC(OUT_DATE)";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("dayLabel", rs.getString("DAY_LABEL"));
+                map.put("qty",      rs.getInt("QTY"));
+                list.add(map);
+            }
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return list;
+    }
+
+    // ⑥ 출고 대기 주문 TOP 5 (ORDER_STATUS = 1)
+    public List<Map<String, Object>> getPendingOutboundList() throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        String sql = "SELECT * FROM ("
+                   + "  SELECT o.ORDER_NUM, p.PROD_NAME, oi.ORDER_ITEM_QTY "
+                   + "  FROM ORDERS o "
+                   + "  JOIN ORDER_ITEMS oi ON o.ORDER_NUM = oi.ORDER_NUM "
+                   + "  JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM "
+                   + "  WHERE o.ORDER_STATUS = 1 "
+                   + "  ORDER BY o.ORDER_CREATED_AT ASC"
+                   + ") WHERE ROWNUM <= 5";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("orderNum",  rs.getInt("ORDER_NUM"));
+                map.put("prodName",  rs.getString("PROD_NAME"));
+                map.put("qty",       rs.getInt("ORDER_ITEM_QTY"));
+                list.add(map);
+            }
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return list;
+    }
+ // 출고 대기 실제 건수 (카운트용)
+    public int getPendingOutboundCount() throws Exception {
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM ORDERS WHERE ORDER_STATUS = 1";
+        try {
+            conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return count;
+    }
 }

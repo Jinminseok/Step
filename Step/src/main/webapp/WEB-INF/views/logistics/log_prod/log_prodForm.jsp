@@ -11,9 +11,13 @@
 /* 기본 레이아웃 */
 .main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
 .body-wrap{flex:1;display:flex;overflow:hidden;position:relative}
-.list-panel{display:flex;flex-direction:column;background:var(--bg);transition:width .3s cubic-bezier(.4,0,.2,1);width:100%;overflow:hidden;flex-shrink:0;}
+
+/* 🚀 수정됨: list-panel에 24px 여백 추가 및 카드형 간격(gap) 설정 */
+.list-panel{display:flex;flex-direction:column;background:var(--bg);transition:width .3s cubic-bezier(.4,0,.2,1);width:100%;overflow:hidden;flex-shrink:0; padding:24px; gap:16px;}
 .list-panel.shrunk{width:calc(100% - 560px)}
-.list-toolbar{display:flex;align-items:center;gap:8px;padding:14px 18px;background:var(--white);border-bottom:1px solid var(--gray6);flex-shrink:0;flex-wrap:wrap;}
+
+/* 🚀 수정됨: 검색바(toolbar) 꽉 차는 배경 제거 후 여백 핏으로 통일 */
+.toolbar{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
 
 /* 검색 & 필터 */
 .search-wrap{position:relative;flex:1;min-width:180px;max-width:260px}
@@ -30,6 +34,9 @@
 .btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #FECACA}.btn-danger:hover{background:var(--red);color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
 .btn-xs{padding:3px 8px;font-size:10px}
+
+/* 🚀 수정됨: 테이블을 감싸는 화이트 카드(tbl-card) 영역 추가 */
+.tbl-card{background:var(--white);border:1px solid var(--gray6);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(15,32,68,.06);display:flex;flex-direction:column;flex:1;min-height:0;}
 
 /* 테이블 */
 .tbl-outer{flex:1;overflow-y:auto}
@@ -59,7 +66,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .prog-ok{background:var(--blue)}.prog-warn{background:var(--amber)}.prog-low{background:var(--red)}
 .prog-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray3);width:30px;text-align:right;flex-shrink:0}
 
-/* 🚨 페이징 전용 스타일 (추가됨) */
+/* 페이징 전용 스타일 */
 .pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--gray6);background:var(--white);flex-shrink:0;}
 .page-info{font-size:12px;color:var(--gray3)}
 .page-info strong{color:var(--gray1)}
@@ -145,118 +152,118 @@ textarea.fi{resize:vertical;min-height:72px}
   <div class="body-wrap">
 
     <div class="list-panel" id="listPanel">
-     <div class="list-toolbar">
+      
+      <!-- 🚀 수정됨: toolbar 클래스로 심플하게 변경 -->
+      <form id="searchForm" class="toolbar" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do" method="get">
+          <div class="search-wrap">
+              <span class="search-ico">🔍</span>
+              <input type="text" id="searchInput" name="keyword" value="${keyword}" placeholder="품번·상품명·브랜드 검색">
+          </div>
+          <select class="sel" name="brand" id="brandFilter">
+              <option value="">전체 브랜드</option>
+              <c:forEach var="b" items="${brandList}">
+                  <option value="${b.brandName}" ${brandSel eq b.brandName ? 'selected' : ''}>${b.brandName}</option>
+              </c:forEach>
+          </select>
+          <select class="sel" name="status" id="statusFilter">
+              <option value="">전체 상태</option>
+              <option value="판매중" ${statusSel eq '판매중' ? 'selected' : ''}>판매중</option>
+              <option value="주의"   ${statusSel eq '주의'   ? 'selected' : ''}>주의</option>
+              <option value="품절"   ${statusSel eq '품절'   ? 'selected' : ''}>품절</option>
+              <option value="숨김"   ${statusSel eq '숨김'   ? 'selected' : ''}>숨김</option>
+          </select>
 
-        <%-- 검색 폼 --%>
-        <form id="searchForm" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do" method="get" style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;">
-            <div class="search-wrap">
-                <span class="search-ico">🔍</span>
-                <input type="text" id="searchInput" name="keyword" value="${keyword}" placeholder="품번·상품명·브랜드 검색">
-            </div>
-            <select class="sel" name="brand" id="brandFilter">
-                <option value="">전체 브랜드</option>
-                <c:forEach var="b" items="${brandList}">
-                    <option value="${b.brandName}" ${brandSel eq b.brandName ? 'selected' : ''}>${b.brandName}</option>
-                </c:forEach>
-            </select>
-            <select class="sel" name="status" id="statusFilter">
-                <option value="">전체 상태</option>
-                <option value="판매중" ${statusSel eq '판매중' ? 'selected' : ''}>판매중</option>
-                <option value="주의"   ${statusSel eq '주의'   ? 'selected' : ''}>주의</option>
-                <option value="품절"   ${statusSel eq '품절'   ? 'selected' : ''}>품절</option>
-                <option value="숨김"   ${statusSel eq '숨김'   ? 'selected' : ''}>숨김</option>
-            </select>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+              <div style="display:flex;gap:7px;">
+                  <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
+                  <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
+              </div>
+          </div>
+      </form>
 
-            <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
-                <div style="display:flex;gap:7px;">
-                    <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
-                    <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
-                </div>
-            </div>
-        </form>
-
-      </div>
-
-      <div class="tbl-outer">
-        <table id="prodTable">
-          <thead>
-            <tr>
-              <th style="width:36px"><input type="checkbox" onchange="toggleAll(this)"></th>
-              <th>이미지</th>
-              <th>품번 (SKU)</th>
-              <th>브랜드</th>
-              <th>상품명</th>
-              <th>카테고리</th>
-              <th>사이즈 범위</th>
-              <th>컬러</th>
-              <th>총 재고</th>
-              <th>재고율</th>
-              <th>상태</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="prodTbody">
-            <c:choose>
-              <c:when test="${not empty list}">
-                <c:forEach var="p" items="${list}">
-                  <c:set var="maxStk" value="${p.maxStock > 0 ? p.maxStock : 100}"/>
-                  <c:set var="pct"    value="${p.stockQty * 100 / maxStk}"/>
-                  <c:set var="progCls" value="${p.stockQty == 0 ? 'prog-low' : pct < 15 ? 'prog-low' : pct < 30 ? 'prog-warn' : 'prog-ok'}"/>
-                  <c:set var="bdgCls"  value="${p.stockQty == 0 ? 'bdg-red' : p.prodStatus == 2 ? 'bdg-gray' : pct < 20 ? 'bdg-amber' : 'bdg-green'}"/>
-                  <c:set var="bdgTxt"  value="${p.stockQty == 0 ? '품절' : p.prodStatus == 2 ? '숨김' : pct < 20 ? '주의' : '판매중'}"/>
-                  
-                  <tr class="prod-row" data-id="${p.prodNum}"
-                      data-desc="${p.prodText}"
-                      data-colors="${p.colorList}"
-                      data-sizes="${p.sizeList}"
-                      data-img="${p.prodImgUrl}"
-                      onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
-                      
-                    <td onclick="event.stopPropagation()">
-                      <input type="checkbox" class="row-chk" onchange="updateSelCount()">
-                    </td>
+      <!-- 🚀 수정됨: 둥근 모서리의 카드 영역(tbl-card)으로 테이블과 페이징을 감쌈 -->
+      <div class="tbl-card">
+        <div class="tbl-outer">
+          <table id="prodTable">
+            <thead>
+              <tr>
+                <th style="width:36px"><input type="checkbox" onchange="toggleAll(this)"></th>
+                <th>이미지</th>
+                <th>품번 (SKU)</th>
+                <th>브랜드</th>
+                <th>상품명</th>
+                <th>카테고리</th>
+                <th>사이즈 범위</th>
+                <th>컬러</th>
+                <th>총 재고</th>
+                <th>재고율</th>
+                <th>상태</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="prodTbody">
+              <c:choose>
+                <c:when test="${not empty list}">
+                  <c:forEach var="p" items="${list}">
+                    <c:set var="maxStk" value="${p.maxStock > 0 ? p.maxStock : 100}"/>
+                    <c:set var="pct"    value="${p.stockQty * 100 / maxStk}"/>
+                    <c:set var="progCls" value="${p.stockQty == 0 ? 'prog-low' : pct < 15 ? 'prog-low' : pct < 30 ? 'prog-warn' : 'prog-ok'}"/>
+                    <c:set var="bdgCls"  value="${p.stockQty == 0 ? 'bdg-red' : p.prodStatus == 2 ? 'bdg-gray' : pct < 20 ? 'bdg-amber' : 'bdg-green'}"/>
+                    <c:set var="bdgTxt"  value="${p.stockQty == 0 ? '품절' : p.prodStatus == 2 ? '숨김' : pct < 20 ? '주의' : '판매중'}"/>
                     
-                    <td>
-                      <c:if test="${!empty p.prodImgUrl}">
-                          <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
-                      </c:if>
-                      <c:if test="${empty p.prodImgUrl}">
-                          <div style="width:36px;height:36px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray6);font-size:16px;">👟</div>
-                      </c:if>
-                    </td>
+                    <tr class="prod-row" data-id="${p.prodNum}"
+                        data-desc="${p.prodText}"
+                        data-colors="${p.colorList}"
+                        data-sizes="${p.sizeList}"
+                        data-img="${p.prodImgUrl}"
+                        onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
+                        
+                      <td onclick="event.stopPropagation()">
+                        <input type="checkbox" class="row-chk" onchange="updateSelCount()">
+                      </td>
+                      
+                      <td>
+                        <c:if test="${!empty p.prodImgUrl}">
+                            <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
+                        </c:if>
+                        <c:if test="${empty p.prodImgUrl}">
+                            <div style="width:36px;height:36px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray6);font-size:16px;">👟</div>
+                        </c:if>
+                      </td>
 
-                    <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3);">${p.sku}</td>
-                    <td>${p.brandName}</td>
-                    <td style="font-weight:600;color:var(--gray1);">${p.prodName}</td>
-                    <td><span class="bdg bdg-gray">${p.catName}</span></td>
-                    <td style="font-family:'DM Mono',monospace;font-size:11px;">${not empty p.sizeRange ? p.sizeRange : '-'}</td>
-                    <td style="text-align:center;">${p.colorCnt > 0 ? p.colorCnt : '-'} <c:if test="${p.colorCnt > 0}">색</c:if></td>
-                    <td style="font-family:'DM Mono',monospace;font-weight:600;">${p.stockQty}</td>
-                    <td style="min-width:100px;">
-                      <div class="prog-wrap">
-                        <div class="prog-track"><div class="prog-fill ${progCls}" style="width:${pct}%"></div></div>
-                        <div class="prog-num">${pct}%</div>
-                      </div>
-                    </td>
-                    <td><span class="bdg ${bdgCls}">${bdgTxt}</span></td>
-                    <td onclick="event.stopPropagation()" style="display:flex;gap:4px;align-items:center;">
-                      <button class="btn btn-outline btn-xs" onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},document.querySelector('[data-id=\'${p.prodNum}\']'))">상세</button>
-                      <button class="btn btn-danger btn-xs" onclick="if(confirm('삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=${p.prodNum}'">삭제</button>
-                    </td>
-                  </tr>
-                </c:forEach>
-              </c:when>
-              <c:otherwise>
-                  <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray4);">📭 등록된 상품이 없습니다.</td></tr>
-              </c:otherwise>
-            </c:choose>
-          </tbody>
-        </table>
-      </div>
+                      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3);">${p.sku}</td>
+                      <td>${p.brandName}</td>
+                      <td style="font-weight:600;color:var(--gray1);">${p.prodName}</td>
+                      <td><span class="bdg bdg-gray">${p.catName}</span></td>
+                      <td style="font-family:'DM Mono',monospace;font-size:11px;">${not empty p.sizeRange ? p.sizeRange : '-'}</td>
+                      <td style="text-align:center;">${p.colorCnt > 0 ? p.colorCnt : '-'} <c:if test="${p.colorCnt > 0}">색</c:if></td>
+                      <td style="font-family:'DM Mono',monospace;font-weight:600;">${p.stockQty}</td>
+                      <td style="min-width:100px;">
+                        <div class="prog-wrap">
+                          <div class="prog-track"><div class="prog-fill ${progCls}" style="width:${pct}%"></div></div>
+                          <div class="prog-num">${pct}%</div>
+                        </div>
+                      </td>
+                      <td><span class="bdg ${bdgCls}">${bdgTxt}</span></td>
+                      <td onclick="event.stopPropagation()" style="display:flex;gap:4px;align-items:center;">
+                        <button class="btn btn-outline btn-xs" onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},document.querySelector('[data-id=\'${p.prodNum}\']'))">상세</button>
+                        <button class="btn btn-danger btn-xs" onclick="if(confirm('삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=${p.prodNum}'">삭제</button>
+                      </td>
+                    </tr>
+                  </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray4);">📭 등록된 상품이 없습니다.</td></tr>
+                </c:otherwise>
+              </c:choose>
+            </tbody>
+          </table>
+        </div>
 
-      <div class="pagination-wrap" id="prodPagination" style="display:none;">
-        <div class="page-info" id="prodPageInfo">총 <strong>0</strong>개 상품 · 선택 <strong id="selCount">0</strong>개 · 0 - 0 / 0건</div>
-        <div class="page-btns" id="prodPageBtns"></div>
+        <div class="pagination-wrap" id="prodPagination" style="display:none;">
+          <div class="page-info" id="prodPageInfo">총 <strong>0</strong>개 상품 · 선택 <strong id="selCount">0</strong>개 · 0 - 0 / 0건</div>
+          <div class="page-btns" id="prodPageBtns"></div>
+        </div>
       </div>
 
     </div><%-- /list-panel --%>
@@ -397,7 +404,6 @@ textarea.fi{resize:vertical;min-height:72px}
 var selectedId = null;
 var isNew      = false;
 
-// ── 1. 시계 & 유틸리티 ─────────────────────────
 function updateClock() {
     var now = new Date();
     var s = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,'0') + "-" + String(now.getDate()).padStart(2,'0') + "  "
@@ -412,78 +418,6 @@ function showToast(msg) {
     if(!t) return;
     t.textContent = msg; t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
-}
-
-function generateSKU() {
-    var brand = document.getElementById('fi-brand').value;
-    if(!brand){ alert("브랜드를 먼저 선택해 주세요."); return; }
-    var map = {"나이키":"NK","아디다스":"AD","뉴발란스":"NB","호카":"HK","버켄스탁":"BK"};
-    var prefix = map[brand] || "PRD";
-    var now = new Date();
-    var rand = '';
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    for(var i=0;i<4;i++) rand += chars.charAt(Math.floor(Math.random()*chars.length));
-    document.getElementById('fi-sku').value = prefix + "-" + String(now.getFullYear()).slice(2) + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + "-" + rand;
-    showToast('상품 고유코드가 자동 생성되었습니다.');
-}
-
-function toggleDesc() {
-    var ta  = document.getElementById('fi-desc');
-    var btn = document.getElementById('descToggleBtn');
-    if (ta.style.display === 'none') { ta.style.display = ''; btn.textContent = '▲ 접기'; } 
-    else { ta.style.display = 'none'; btn.textContent = '▼ 펼치기'; }
-}
-
-function previewImage(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var box = document.getElementById('imagePreviewBox');
-            box.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
-                          + '<div class="img-main-badge">대표</div>';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-   
-function submitProd() {
-    var sku   = document.getElementById('fi-sku').value.trim();
-    var name  = document.getElementById('fi-name').value.trim();
-    var brand = document.getElementById('fi-brand').value;
-    var cat   = document.getElementById('fi-cat').value;
-    var price = document.getElementById('fi-price').value;
-
-    if(!sku)   { alert('SKU를 입력하세요.');      return; }
-    if(!name)  { alert('상품명을 입력하세요.');    return; }
-    if(!brand) { alert('브랜드를 선택하세요.');    return; }
-    if(!cat)   { alert('카테고리를 선택하세요.');  return; }
-    if(!price) { alert('정가를 입력하세요.');      return; }
-
-    var brandSel = document.getElementById('fi-brand');
-    var catSel   = document.getElementById('fi-cat');
-    document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
-    document.getElementById('h-catNum').value = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
-
-    var colors = [];
-    document.querySelectorAll('#colorChips .chip.on').forEach(function(c){ colors.push(c.innerText.trim()); });
-    document.getElementById('h-colors').value = colors.join(',');
-
-    var sizes = [];
-    document.querySelectorAll('#sizeChips .chip.on').forEach(function(c){ sizes.push(c.innerText.trim()); });
-    document.getElementById('h-sizes').value = sizes.join(',');
-
-    var form = document.getElementById('prodRegForm');
-    var cp   = '${pageContext.request.contextPath}';
-
-    if(isNew) {
-        document.getElementById('h-prodNum').value = '';
-        form.action = cp + '/logistics/log_prod/log_prodReg.do';
-    } else {
-        document.getElementById('h-prodNum').value = selectedId;
-        form.action = cp + '/logistics/log_prod/log_prodMod.do';
-    }
-    
-    form.submit();
 }
 
 function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPrice, prodStatus, rowEl) {
@@ -520,28 +454,28 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
     var desc = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
     document.getElementById('fi-desc').value = desc;
 
+    document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
+    if(rowEl) rowEl.classList.add('selected');
+
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    
     var colorArr = rowEl ? (rowEl.getAttribute('data-colors') || '').split(',') : [];
     document.querySelectorAll('#colorChips .chip').forEach(function(c) {
-        c.classList.toggle('on', colorArr.indexOf(c.innerText.trim()) !== -1);
+        if(colorArr.includes(c.innerText.trim())) c.classList.add('on');
     });
 
     var sizeArr = rowEl ? (rowEl.getAttribute('data-sizes') || '').split(',') : [];
     document.querySelectorAll('#sizeChips .chip').forEach(function(c) {
-        c.classList.toggle('on', sizeArr.indexOf(c.innerText.trim()) !== -1);
+        if(sizeArr.includes(c.innerText.trim())) c.classList.add('on');
     });
 
     switchTabById('tab-info');
     openPanel();
-
-    document.querySelectorAll('.prod-row').forEach(function(r) {
-        r.classList.toggle('selected', parseInt(r.dataset.id) === prodNum);
-    });
 }
 
 function openNew() {
     isNew      = true;
     selectedId = null;
-
     document.getElementById('dpIco').innerHTML = '＋';
     document.getElementById('dpTitle').textContent = '신규 상품 등록';
     document.getElementById('dpSaveBtn').textContent = '등록';
@@ -550,63 +484,57 @@ function openNew() {
     var previewBox = document.getElementById('imagePreviewBox');
     previewBox.innerHTML = '<span id="previewEmoji" style="font-size:22px;">👟</span><div class="img-main-badge">대표</div>';
     document.getElementById('fileInput').value = ''; 
-
-    ['fi-sku','fi-regdate','fi-name','fi-price','fi-sale','fi-desc'].forEach(function(id){ document.getElementById(id).value = ''; });
+    ['fi-sku','fi-regdate','fi-name','fi-price','fi-desc'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value = '';
+    });
     document.getElementById('fi-brand').value  = '';
     document.getElementById('fi-cat').value    = '';
-    document.getElementById('fi-gender').value = '0';
-    document.getElementById('fi-status').value = '1';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
 
-    document.querySelectorAll('#colorChips .chip').forEach(function(c){ c.classList.remove('on'); });
-    document.querySelectorAll('#sizeChips .chip').forEach(function(c){ c.classList.remove('on'); });
-
-    switchTabById('tab-info'); openPanel();
-    document.querySelectorAll('.prod-row').forEach(function(r){ r.classList.remove('selected'); });
+    switchTabById('tab-info'); 
+    openPanel();
+    document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
 }
 
-function openPanel() {
-    document.getElementById('detailPanel').classList.add('open');
-    document.getElementById('listPanel').classList.add('shrunk');
-}
+function submitProd() {
+    var sku = document.getElementById('fi-sku').value.trim();
+    var name = document.getElementById('fi-name').value.trim();
+    if(!sku || !name) { alert('필수 항목을 입력하세요.'); return; }
 
-function closeDetail() {
-    document.getElementById('detailPanel').classList.remove('open');
-    document.getElementById('listPanel').classList.remove('shrunk');
-    document.querySelectorAll('.prod-row').forEach(function(r){ r.classList.remove('selected'); });
-    selectedId = null;
-    isNew = false;
-}
+    var brandSel = document.getElementById('fi-brand');
+    var catSel   = document.getElementById('fi-cat');
+    document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
+    document.getElementById('h-catNum').value = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
 
-function switchTab(el, tabId) {
-    el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(function(t){ t.classList.remove('on'); });
-    el.classList.add('on');
-    switchTabById(tabId);
-}
+    var colors = []; document.querySelectorAll('#colorChips .chip.on').forEach(c => colors.push(c.innerText.trim()));
+    document.getElementById('h-colors').value = colors.join(',');
+    var sizes = []; document.querySelectorAll('#sizeChips .chip.on').forEach(c => sizes.push(c.innerText.trim()));
+    document.getElementById('h-sizes').value = sizes.join(',');
 
-function switchTabById(tabId) {
-    document.querySelectorAll('.dp-tab-content').forEach(function(t){ t.classList.remove('active'); });
-    document.getElementById(tabId).classList.add('active');
-}
-
-function toggleAll(cb) {
-    // 숨겨지지 않은(화면에 보이는) 체크박스만 선택되게 처리
-    document.querySelectorAll('.prod-row:not([style*="display: none"]) .row-chk').forEach(function(c){
-        c.checked = cb.checked;
-    });
-    updateSelCount();
-}
-
-function updateSelCount() {
-    document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length;
+    var form = document.getElementById('prodRegForm');
+    var cp = '${pageContext.request.contextPath}';
+    if(isNew) {
+        document.getElementById('h-prodNum').value = '';
+        form.action = cp + '/logistics/log_prod/log_prodReg.do';
+    } else {
+        document.getElementById('h-prodNum').value = selectedId;
+        form.action = cp + '/logistics/log_prod/log_prodMod.do';
+    }
+    form.submit();
 }
 
 function deleteProd() {
-    if (selectedId === null) return;
-    if (!confirm('삭제하시겠습니까?')) return;
+    if (!selectedId || !confirm('삭제하시겠습니까?')) return;
     location.href = '${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=' + selectedId;
 }
 
-// ── 🚨 2. 자바스크립트 DOM 페이징 기능 (추가됨) ──────────────────
+function openPanel() { document.getElementById('detailPanel').classList.add('open'); document.getElementById('listPanel').classList.add('shrunk'); }
+function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); document.getElementById('listPanel').classList.remove('shrunk'); document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected')); selectedId = null; isNew = false; }
+function switchTab(el, tabId) { el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(t => t.classList.remove('on')); el.classList.add('on'); switchTabById(tabId); }
+function switchTabById(tabId) { document.querySelectorAll('.dp-tab-content').forEach(t => t.classList.remove('active')); document.getElementById(tabId).classList.add('active'); }
+function toggleAll(cb) { document.querySelectorAll('.prod-row:not([style*="display: none"]) .row-chk').forEach(c => c.checked = cb.checked); updateSelCount(); }
+function updateSelCount() { document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length; }
+
 let currentProdPage = 1;
 const prodItemsPerPage = 10;
 let allProdRows = []; 
@@ -614,27 +542,19 @@ let allProdRows = [];
 window.addEventListener('load', function() {
     const tbody = document.getElementById('prodTbody');
     if(tbody) {
-        // 서버에서 받아온 <tr> 데이터(클래스가 prod-row인 것)를 배열에 저장
         allProdRows = Array.from(tbody.querySelectorAll('.prod-row'));
-        if(allProdRows.length > 0) {
-            renderProdTable();
-        } else {
-            document.getElementById('prodPagination').style.display = 'none';
-        }
+        if(allProdRows.length > 0) { renderProdTable(); }
+        else { document.getElementById('prodPagination').style.display = 'none'; }
     }
 });
 
 function renderProdTable() {
-    // 1. 전체 행 숨기기
     allProdRows.forEach(row => row.style.display = 'none');
-    
-    // 2. 현재 페이지에 맞는 10개 행만 보이기
     const start = (currentProdPage - 1) * prodItemsPerPage;
     const end = start + prodItemsPerPage;
     for(let i = start; i < end && i < allProdRows.length; i++) {
         allProdRows[i].style.display = '';
     }
-    
     renderProdPagination();
 }
 
@@ -643,38 +563,69 @@ function renderProdPagination() {
     const paginWrap = document.getElementById('prodPagination');
     const pageInfo = document.getElementById('prodPageInfo');
     const pageBtns = document.getElementById('prodPageBtns');
-
-    if (!paginWrap || !pageInfo || !pageBtns) return;
+    if (!paginWrap || !pageBtns) return;
     paginWrap.style.display = 'flex';
 
     const startNum = (currentProdPage - 1) * prodItemsPerPage + 1;
     const endNum = Math.min(currentProdPage * prodItemsPerPage, allProdRows.length);
-    
     pageInfo.innerHTML = `총 <strong style="color:var(--gray1)">\${allProdRows.length}</strong>개 상품 · 선택 <strong id="selCount" style="color:var(--gray1)">0</strong>개 · \${startNum} - \${endNum} / \${allProdRows.length}건`;
-    updateSelCount();
 
     let btnsHTML = '';
-    btnsHTML += `<div class="pg-btn \${currentProdPage === 1 ? 'disabled' : ''}" style="\${currentProdPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeProdPage(\${currentProdPage - 1})">‹</div>`;
+    btnsHTML += `<div class="pg-btn \${currentProdPage === 1 ? 'disabled' : ''}" onclick="changeProdPage(\${currentProdPage - 1})">‹</div>`;
     for (let i = 1; i <= totalPages; i++) {
-        btnsHTML += `<div class="pg-btn \${i === currentProdPage ? 'on' : ''}" style="cursor:pointer;" onclick="changeProdPage(\${i})">\${i}</div>`;
+        btnsHTML += `<div class="pg-btn \${i === currentProdPage ? 'on' : ''}" onclick="changeProdPage(\${i})">\${i}</div>`;
     }
-    btnsHTML += `<div class="pg-btn \${currentProdPage === totalPages ? 'disabled' : ''}" style="\${currentProdPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeProdPage(\${currentProdPage + 1})">›</div>`;
-    
+    btnsHTML += `<div class="pg-btn \${currentProdPage === totalPages ? 'disabled' : ''}" onclick="changeProdPage(\${currentProdPage + 1})">›</div>`;
     pageBtns.innerHTML = btnsHTML;
 }
 
 function changeProdPage(page) {
     const totalPages = Math.ceil(allProdRows.length / prodItemsPerPage);
     if (page < 1 || page > totalPages) return; 
-    
     currentProdPage = page;
     renderProdTable();
-    
-    // 페이지 넘길 때 체크박스 초기화
     document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
-    const topChk = document.querySelector('thead input[type="checkbox"]');
-    if(topChk) topChk.checked = false;
     updateSelCount();
+}
+
+function generateSKU() {
+    var brand = document.getElementById('fi-brand').value;
+    if (!brand) { alert("브랜드를 먼저 선택해 주세요."); return; }
+
+    function makePrefix(name) {
+        var result = '';
+        var choMap = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+        var engMap = {'ㄱ':'G','ㄲ':'G','ㄴ':'N','ㄷ':'D','ㄸ':'D','ㄹ':'R','ㅁ':'M',
+                      'ㅂ':'B','ㅃ':'B','ㅅ':'S','ㅆ':'S','ㅇ':'Y','ㅈ':'J','ㅉ':'J',
+                      'ㅊ':'C','ㅋ':'K','ㅌ':'T','ㅍ':'P','ㅎ':'H'};
+
+        for (var i = 0; i < name.length && result.length < 2; i++) {
+            var code = name.charCodeAt(i);
+            if (code >= 65 && code <= 90) { result += name[i]; }
+            else if (code >= 97 && code <= 122) { result += name[i].toUpperCase(); }
+            else if (code >= 0xAC00 && code <= 0xD7A3) {
+                var cho = choMap[Math.floor((code - 0xAC00) / 28 / 21)];
+                result += (engMap[cho] || cho);
+            }
+        }
+        while (result.length < 2) result += 'X';
+        return result.toUpperCase();
+    }
+
+    var prefix = makePrefix(brand);
+    var now    = new Date();
+    var rand   = '';
+    var chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    for (var i = 0; i < 4; i++) rand += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    document.getElementById('fi-sku').value =
+        prefix + "-"
+        + String(now.getFullYear()).slice(2)
+        + String(now.getMonth() + 1).padStart(2, '0')
+        + String(now.getDate()).padStart(2, '0')
+        + "-" + rand;
+
+    showToast('상품 고유코드가 자동 생성되었습니다. (' + prefix + ')');
 }
 </script>
 </body>
