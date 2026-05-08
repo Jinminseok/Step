@@ -190,11 +190,11 @@ public class UserDAO {
 			conn = DBUtil.getConnection();
 			// 오라클 CASE WHEN을 사용하여 금액 구간별로 등급(1~4)을 자동 판별 후 덮어쓰기!
 			String sql = "UPDATE users_detail SET grade = CASE "
-					   + "  WHEN TOTAL_AMOUNT >= 500000 THEN 4 " // 50만 원 이상: VIP(4)
-					   + "  WHEN TOTAL_AMOUNT >= 300000 THEN 3 " // 30만 원 이상: GOLD(3)
-					   + "  WHEN TOTAL_AMOUNT >= 100000 THEN 2 " // 10만 원 이상: SILVER(2)
+					   + "  WHEN total_amount >= 500000 THEN 4 " // 50만 원 이상: VIP(4)
+					   + "  WHEN total_amount >= 300000 THEN 3 " // 30만 원 이상: GOLD(3)
+					   + "  WHEN total_amount >= 100000 THEN 2 " // 10만 원 이상: SILVER(2)
 					   + "  ELSE 1 "                             // 그 외: BRONZE(1)
-					   + "END WHERE USER_NUM = ?";
+					   + "END WHERE user_num = ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, user_num);

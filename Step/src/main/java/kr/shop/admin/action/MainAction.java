@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import kr.controller.Action;
-import kr.shop.dao.AdminDAO;
+import kr.shop.dao.UserProductDAO;
 import kr.shop.vo.AdminProductVO;
 
 public class MainAction implements Action {
@@ -13,8 +13,8 @@ public class MainAction implements Action {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// 1. AdminDAO 객체 생성 (싱글톤 getInstance 호출)
-		AdminDAO dao = AdminDAO.getInstance();
+		// 1. UserProductDAO 객체 생성
+		UserProductDAO dao = UserProductDAO.getInstance();
 
 		// 2. 검색 및 페이징 필터 세팅
 		AdminProductVO filter = new AdminProductVO();
@@ -27,8 +27,7 @@ public class MainAction implements Action {
 		filter.setGender(-1);
 
 		// 3. 상품 목록 받아오기
-		// (기존 getProductList에서 AdminDAO에 만든 selectProductList로 이름 맞춤)
-		List<AdminProductVO> productList = dao.selectProductList(filter);
+		List<AdminProductVO> productList = dao.getMainProductList(filter);
 
 		// 4. JSP에서 사용할 데이터 저장
 		request.setAttribute("productList", productList);

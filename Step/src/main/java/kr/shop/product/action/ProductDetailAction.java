@@ -9,7 +9,7 @@ import kr.controller.Action;
 import kr.shop.dao.UserProductDAO;
 import kr.shop.vo.AdminProductVO;
 
-public class DetailAction implements Action {
+public class ProductDetailAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -55,6 +55,6 @@ public class DetailAction implements Action {
 		Object user_num = session.getAttribute("user_num");
 		request.setAttribute("isLogin", user_num != null);
 
-		return "shop/product/userdetail.jsp";
+		return "shop/product/productdetail.jsp";
 	}
 }

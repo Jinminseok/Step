@@ -90,7 +90,7 @@
                 
                 <div class="prod-grid">
                     <c:forEach var="product" items="${productList}">
-                        <div class="prod-item" onclick="location.href='${pageContext.request.contextPath}/shop/product/userdetail.do?prod_num=${product.prod_num}'">
+                        <div class="prod-item" onclick="location.href='${pageContext.request.contextPath}/shop/product/productdetail.do?prod_num=${product.prod_num}'">
                             <div class="prod-img">
                                 <img src="${pageContext.request.contextPath}/upload/${product.prod_img_url}" alt="${product.prod_name}">
                             </div>
