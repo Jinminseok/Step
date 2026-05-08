@@ -26,7 +26,8 @@ public class UserProductDAO {
 		ResultSet rs = null;
 		AdminProductVO vo = null;
 
-		String sql = "SELECT P.PROD_NUM, P.PROD_NAME, P.SKU, P.PROD_PRICE, P.SALE_RATE, B.BRAND_NAME "
+		// PROD_TEXT가 누락되어 있어 추가함
+		String sql = "SELECT P.PROD_NUM, P.PROD_NAME, P.SKU, P.PROD_PRICE, P.SALE_RATE, P.PROD_TEXT, B.BRAND_NAME "
 				+ "FROM PRODUCTS P JOIN BRANDS B ON P.BRAND_NUM = B.BRAND_NUM " + "WHERE P.PROD_NUM = ?";
 		try {
 			conn = DBUtil.getConnection();
@@ -35,13 +36,14 @@ public class UserProductDAO {
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				vo = new AdminProductVO();
-				vo.setProdNum(rs.getInt("PROD_NUM"));
-				vo.setProdName(rs.getString("PROD_NAME"));
+				// 세터 메서드명을 VO에 정의된 스네이크 케이스 기반으로 수정
+				vo.setProd_num(rs.getInt("PROD_NUM"));
+				vo.setProd_name(rs.getString("PROD_NAME"));
 				vo.setSku(rs.getString("SKU"));
-				vo.setProdPrice(rs.getInt("PROD_PRICE"));
-				vo.setSaleRate(rs.getDouble("SALE_RATE"));
-				vo.setBrandName(rs.getString("BRAND_NAME"));
-				vo.setProdText(rs.getString("PROD_TEXT"));
+				vo.setProd_price(rs.getInt("PROD_PRICE"));
+				vo.setSale_rate(rs.getInt("SALE_RATE")); // VO가 int이므로 getInt 사용
+				vo.setBrand_name(rs.getString("BRAND_NAME"));
+				vo.setProd_text(rs.getString("PROD_TEXT"));
 			}
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);

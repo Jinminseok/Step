@@ -33,24 +33,26 @@
 
 			<div class="prod-grid">
 				<c:forEach var="product" items="${productList}">
+					<%-- product.prodNum -> product.prod_num 으로 수정 --%>
 					<div class="prod-item"
-						onclick="location.href='${pageContext.request.contextPath}/shop/product/userdetail.do?prod_num=${product.prodNum}'">
+						onclick="location.href='${pageContext.request.contextPath}/shop/product/userdetail.do?prod_num=${product.prod_num}'">
+
 						<div class="prod-img">
-							<%-- product 다음에 오는 변수명이 VO의 이미지 필드명과 일치해야 함 --%>
-
-							<div class="prod-img">
-								<%-- VO 필드명인 mainImgUrl을 사용 --%>
-
-								<img
-									src="${pageContext.request.contextPath}/upload/${product.mainImgUrl}"
-									alt="${product.prodName}">
-							</div>
+							<%-- product.mainImgUrl -> product.prod_img_url 으로 수정 --%>
+							<%-- product.prodName -> product.prod_name 으로 수정 --%>
+							<img
+								src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
+								alt="${product.prod_name}">
 						</div>
+
 						<div class="prod-info">
-							<div class="prod-brand">${product.brandName}</div>
-							<div class="prod-name">${product.prodName}</div>
+							<%-- product.brandName -> product.brand_name 으로 수정 --%>
+							<div class="prod-brand">${product.brand_name}</div>
+							<%-- product.prodName -> product.prod_name 으로 수정 --%>
+							<div class="prod-name">${product.prod_name}</div>
 							<div class="prod-price">
-								<fmt:formatNumber value="${product.prodPrice}" pattern="#,###" />
+								<%-- product.prodPrice -> product.prod_price 으로 수정 --%>
+								<fmt:formatNumber value="${product.prod_price}" pattern="#,###" />
 								원
 							</div>
 						</div>

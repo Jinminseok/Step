@@ -1,13 +1,29 @@
 package kr.shop.vo;
 
-public class AdminBaseVO {
-	// 페이징 처리
-	private int start_row;
-	private int end_row;
+import java.util.Date;
 
-	// 검색 조건
-	private String search_type;
-	private String keyword;
+public class AdminBaseVO {
+	// 6. 기타 및 검색 (공통 영역)
+	private String keyword; // KEYWORD (검색어)
+	private String search_type; // SEARCH_TYPE (검색 조건)
+	private int start_row; // START_ROW (페이징 시작 로우)
+	private int end_row; // END_ROW (페이징 끝 로우)
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public String getSearch_type() {
+		return search_type;
+	}
+
+	public void setSearch_type(String search_type) {
+		this.search_type = search_type;
+	}
 
 	public int getStart_row() {
 		return start_row;
@@ -23,22 +39,6 @@ public class AdminBaseVO {
 
 	public void setEnd_row(int end_row) {
 		this.end_row = end_row;
-	}
-
-	public String getSearch_type() {
-		return search_type;
-	}
-
-	public void setSearch_type(String search_type) {
-		this.search_type = search_type;
-	}
-
-	public String getKeyword() {
-		return keyword;
-	}
-
-	public void setKeyword(String keyword) {
-		this.keyword = keyword;
 	}
 
 }
