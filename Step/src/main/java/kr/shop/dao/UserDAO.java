@@ -181,5 +181,31 @@ public class UserDAO {
 		}
 	}
 		
+	// 마이페이지 누적 금액에 따른 회원 등급 갱신
+	public void updateUserGrade(long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			// 오라클 CASE WHEN을 사용하여 금액 구간별로 등급(1~4)을 자동 판별 후 덮어쓰기!
+			String sql = "UPDATE users_detail SET grade = CASE "
+					   + "  WHEN TOTAL_AMOUNT >= 500000 THEN 4 " // 50만 원 이상: VIP(4)
+					   + "  WHEN TOTAL_AMOUNT >= 300000 THEN 3 " // 30만 원 이상: GOLD(3)
+					   + "  WHEN TOTAL_AMOUNT >= 100000 THEN 2 " // 10만 원 이상: SILVER(2)
+					   + "  ELSE 1 "                             // 그 외: BRONZE(1)
+					   + "END WHERE USER_NUM = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
+	}
 	
 }

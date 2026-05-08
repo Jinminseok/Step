@@ -35,6 +35,34 @@
                 <div class="my-sub on" id="my-page">
                     <div class="sec-title">나의 쇼핑 혜택</div>
                     
+                    <%-- DB 누적 금액 데이터 세팅 --%>
+                    <c:set var="total_spent" value="${empty user.total_amount ? 0 : user.total_amount}" />
+                    
+                    <%-- 등급별 목표 금액 세팅 (10만, 30만, 50만) --%>
+                    <c:choose>
+                        <c:when test="${user.grade == 1}">
+                            <c:set var="target_amount" value="100000" />
+                        </c:when>
+                        <c:when test="${user.grade == 2}">
+                            <c:set var="target_amount" value="300000" />
+                        </c:when>
+                        <c:when test="${user.grade == 3}">
+                            <c:set var="target_amount" value="500000" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="target_amount" value="500000" />
+                        </c:otherwise>
+                    </c:choose>
+                    
+                    <%-- 남은 금액 및 퍼센트 바 계산 --%>
+                    <c:set var="remain_amount" value="${target_amount - total_spent}" />
+                    <c:if test="${remain_amount < 0}"><c:set var="remain_amount" value="0" /></c:if>
+                    
+                    <c:set var="percent" value="${(total_spent / target_amount) * 100}" />
+                    <c:if test="${percent > 100}"><c:set var="percent" value="100" /></c:if>
+                    <%-- 최고 등급이면 100%로 보이도록 설정 --%>
+                    <c:if test="${user.grade >= 4}"><c:set var="percent" value="100" /></c:if>
+
                     <div style="border:1px solid var(--border); padding: 24px; border-radius: 4px; margin-bottom: 24px; display:flex; flex-direction:column; gap:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                             <div>
@@ -50,7 +78,7 @@
 								</div>
                             </div>
                             <div style="text-align:right; font-size:13px; line-height: 1.4;">
-				            	다음 등급
+				            	다음 등급 
 				            	<strong style="color:var(--black);">
 				            		<c:choose>
 				            			<c:when test="${user.grade == 1}">SILVER</c:when>
@@ -60,22 +88,26 @@
 				            			<c:otherwise>BRONZE</c:otherwise>
 				            		</c:choose>
 				            	</strong>까지<br>
-				            	<strong style="color:var(--red); font-size: 16px;">(누적 금액 필요)</strong> 남았습니다!
+				            	
+                                <%-- 남은 금액 동적 출력 --%>
+                                <c:choose>
+                                    <c:when test="${user.grade >= 4}">
+                                        <strong style="color:var(--blue); font-size: 16px;">최고 등급입니다! 🎉</strong>
+                                    </c:when>
+                                    <c:otherwise>
+				            	        <strong style="color:var(--red); font-size: 16px;"><fmt:formatNumber value="${remain_amount}" pattern="#,###"/>원</strong> 남았습니다!
+                                    </c:otherwise>
+                                </c:choose>
 				            </div>
                         </div>
                         <div>
+                            <%-- 퍼센트 바 넓이 동적 적용 --%>
 				            <div style="width:100%; height:10px; background:var(--gray6); border-radius:5px; overflow:hidden;">
-				            	<div style="width: <c:choose>
-									            		<c:when test='${user.grade == 1}'>25</c:when>
-									            		<c:when test='${user.grade == 2}'>50</c:when>
-									            		<c:when test='${user.grade == 3}'>75</c:when>
-				            							<c:otherwise>100</c:otherwise>
-				            						</c:choose>%; height:100%; background:var(--black);">
-				            	</div>
+				            	<div style="width: ${percent}%; height:100%; background:var(--black); transition: width 0.5s ease-in-out;"></div>
 				            </div>
 				            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray4); margin-top: 6px;">
-				            	<span>0원</span>
-				            	<span>누적 500,000원 달성 시 등급업</span>
+				            	<span>현재 누적: <fmt:formatNumber value="${total_spent}" pattern="#,###"/>원</span>
+				            	<span>목표: <fmt:formatNumber value="${target_amount}" pattern="#,###"/>원</span>
 				            </div>
 				        </div>
                     </div>
@@ -85,7 +117,7 @@
                         <a onclick="document.getElementById('menu-orders').click()" style="cursor:pointer; font-size:12px; color:var(--gray4);">더보기 ➔</a>
                     </div>
                     
-                    <%-- 실제 최근 주문 리스트 (recentOrderList) 출력 영역 --%>
+                    <%-- 최근 주문 리스트 출력 영역 --%>
                     <c:if test="${empty recentOrderList}">
                         <div style="text-align:center; padding:40px; color:var(--gray4); background:var(--gray7); border:1px solid var(--border);">
                             최근 주문하신 내역이 없습니다.
@@ -117,7 +149,7 @@
                 <div class="my-sub" id="my-restock">
                     <div class="sec-title" style="margin-bottom:16px;">신청한 재입고 알림</div>
                     
-                    <%-- 실제 재입고 알림 리스트 (restockList) 출력 영역 --%>
+                    <%-- 실제 재입고 알림 리스트 출력 영역 --%>
                     <c:if test="${empty restockList}">
                         <div style="text-align:center; padding:40px; color:var(--gray4); background:var(--gray7); border:1px solid var(--border);">
                             신청하신 재입고 알림 내역이 없습니다.
@@ -149,7 +181,7 @@
                 <div class="my-sub" id="my-orders">
                     <div class="tabs"><div class="tab on">전체</div><div class="tab">배송중</div><div class="tab">배송완료</div></div>
                     
-                    <%-- 실제 전체 주문 리스트 (orderList) 출력 영역 --%>
+                    <%-- 실제 전체 주문 리스트 출력 영역 --%>
                     <c:if test="${empty orderList}">
                         <div style="text-align:center; padding:40px; color:var(--gray4); background:var(--gray7); border:1px solid var(--border); margin-top:16px;">
                             주문하신 내역이 없습니다.
@@ -178,7 +210,7 @@
                     </c:forEach>
                 </div>
 
-                <!-- 4. 내 정보 수정 탭 (기존 유지) -->
+                <!-- 4. 내 정보 수정 탭 -->
                 <div class="my-sub" id="my-info">
                     <form action="${pageContext.request.contextPath}/shop/user/modify.do" method="post" id="modifyForm">
                         <div class="form-sec" style="border:none;padding:0;max-width:100%">
@@ -214,7 +246,6 @@
                         <div class="form-group">
                             <label class="form-label">주문 선택</label>
                             <select class="form-input" name="order_num">
-                                <%-- 나중에 진짜 주문 리스트가 넘어오면 이 부분이 채워짐 --%>
                                 <c:if test="${empty orderList}">
                                     <option value="">선택할 수 있는 주문 내역이 없습니다</option>
                                 </c:if>

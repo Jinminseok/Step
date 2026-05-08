@@ -21,10 +21,15 @@ public class MyPageAction implements Action {
 		if (user_id == null) {
 			return "redirect:/shop/user/loginForm.do";
 		}
-		
+				
 		// 2. DAO를 통해서 내 아이디로 전체 회원 정보 가져오기
 		Long user_num = (Long) session.getAttribute("user_num");
 		UserDAO dao = UserDAO.getInstance();
+		
+		// 내 정보의 등급부터 불러오기(업데이트)
+		dao.updateUserGrade(user_num);
+		
+		// 등급 갱신 후 나머지 정보와 같이 가져오기
 		UserVO user = dao.getUserDetail(user_num);
 		
 		// 3. JSP에서 쓸 수 있게 request에 담기
