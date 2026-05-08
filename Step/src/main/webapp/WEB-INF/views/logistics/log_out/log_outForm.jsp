@@ -5,45 +5,24 @@
 <head>
 <meta charset="UTF-8">
 <title>출고 관리</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath }/css/YH_style.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/YH_style.css" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ══ MAIN ══ */
-.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0;width:100%;}
-.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px}
-.breadcrumb-root{color:var(--gray4);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.breadcrumb-sep{color:var(--gray5);font-size:12px}
-.breadcrumb-cur{font-size:14px;font-weight:700;color:var(--gray1)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.tb-btn{
-  width:34px;height:34px;border:1px solid var(--gray6);
-  background:var(--bg2);border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:14px;
-  transition:all .15s;position:relative;
-}
-.tb-btn:hover{background:var(--gray6);border-color:var(--gray5)}
-.notif-dot{
-  position:absolute;top:6px;right:6px;
-  width:6px;height:6px;border-radius:50%;
-  background:var(--red);border:1.5px solid var(--white);
-}
-.tb-date{font-size:12px;color:var(--gray3);font-family:'DM Mono',monospace;padding:6px 12px;background:var(--bg2);border:1px solid var(--gray6);border-radius:7px}
-
-/* 🚨 레이아웃 깨짐 수정: 배경색 지정 및 너비 확보 🚨 */
-.content{flex:1;overflow-y:auto;padding:24px;background:#F0F4F8;width:100%;}
+/* ══ 처음 보여준 스타일과 동일하게 통일된 기본 레이아웃 ══ */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
+.content{flex:1;overflow-y:auto;padding:24px}
 .content::-webkit-scrollbar{width:5px}
 .content::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:3px}
 
-/* ══ TAB BAR ══ */
+/* ══ 탭 바 ══ */
 .tab-bar{display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid var(--gray6)}
-.tab-btn{padding:10px 24px;font-size:12.5px;font-weight:700;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;display:flex;align-items:center;gap:7px}
+.tab-btn{padding:10px 22px;font-size:12.5px;font-weight:700;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;display:flex;align-items:center;gap:7px}
 .tab-btn.on{color:var(--blue);border-bottom-color:var(--blue)}
 .tab-btn:hover:not(.on){color:var(--gray2)}
 .tab-cnt{background:var(--amber);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
-.tab-cnt-gray{background:var(--gray3)}
+.tab-cnt-gray{background:var(--gray4)}
 
-/* ══ ALERT ══ */
+/* ══ 알럿 ══ */
 .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:8px;font-size:12.5px;line-height:1.6;border:1px solid;margin-bottom:16px}
 .alert-amber{background:var(--amber-lt);border-color:#FCD34D;color:#78350F}
 .alert-green{background:var(--green-lt);border-color:#6EE7B7;color:#065F46}
@@ -51,61 +30,32 @@
 .alert-red{background:var(--red-lt);border-color:#FECACA;color:#991B1B}
 .alert-ico{flex-shrink:0;font-size:15px;margin-top:1px}
 
-/* ══ KPI ROW ══ */
+/* ══ KPI 요약 카드 ══ */
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.kpi{background:var(--white);border:1px solid var(--gray6);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(15,32,68,.06);position:relative;overflow:hidden}
+.kpi{background:var(--white);border:1px solid var(--gray6);border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(15,32,68,.06);position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .kpi.amber::before{background:var(--amber)}
 .kpi.green::before{background:var(--green)}
 .kpi.blue::before{background:var(--blue)}
 .kpi.gray::before{background:var(--gray4)}
-.kpi-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.kpi-val{font-family:'DM Mono',monospace;font-size:26px;font-weight:700;margin-bottom:4px}
-.kpi-val.c-amber{color:var(--amber)}.kpi-val.c-green{color:var(--green)}.kpi-val.c-blue{color:var(--blue)}.kpi-val.c-gray{color:var(--gray3)}
+.kpi-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kpi-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:700;margin-bottom:4px;letter-spacing:-1px}
+.kpi-val.c-amber{color:var(--amber)}
+.kpi-val.c-green{color:var(--green)}
+.kpi-val.c-blue{color:var(--blue)}
+.kpi-val.c-gray{color:var(--gray3)}
 .kpi-sub{font-size:11px;color:var(--gray4)}
 
-/* ══ TOOLBAR ══ */
+/* ══ 툴바 & 검색 ══ */
 .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .search-wrap{position:relative;flex:1;min-width:200px;max-width:280px}
 .search-wrap input{width:100%;padding:9px 12px 9px 32px;border:1.5px solid var(--gray5);background:var(--white);border-radius:7px;font-size:12.5px;color:var(--gray1);font-family:'Pretendard',sans-serif;outline:none;transition:all .15s}
 .search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,228,.08)}
 .search-wrap input::placeholder{color:var(--gray4)}
 .search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:13px}
+.sel{padding:9px 12px;border:1.5px solid var(--gray5);background:var(--white);font-size:12.5px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none;border-radius:7px;cursor:pointer;}
 
-/* CUSTOM SELECT */
-.sel-wrap{position:relative}
-.sel-btn{
-  display:flex;align-items:center;gap:6px;padding:9px 12px;
-  border:1.5px solid var(--gray5);background:var(--white);border-radius:7px;
-  font-size:12.5px;color:var(--gray2);cursor:pointer;font-family:'Pretendard',sans-serif;
-  font-weight:500;transition:all .15s;white-space:nowrap;user-select:none;min-width:120px;
-  justify-content:space-between;
-}
-.sel-btn:hover{border-color:var(--gray3)}
-.sel-btn.open{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,228,.08)}
-.sel-drop{
-  position:absolute;top:calc(100% + 6px);left:0;min-width:150px;
-  background:var(--white);border:1.5px solid var(--gray5);border-radius:8px;
-  box-shadow:0 4px 20px rgba(15,32,68,.12);z-index:100;overflow:hidden;
-  display:none;
-}
-.sel-drop.open{display:block}
-.sel-opt{
-  padding:10px 14px;font-size:12.5px;color:var(--gray2);cursor:pointer;
-  font-family:'Pretendard',sans-serif;font-weight:500;transition:background .12s;
-  display:flex;align-items:center;gap:8px;
-}
-.sel-opt:hover{background:var(--blue-lt);color:var(--blue)}
-.sel-opt.selected{background:var(--blue-lt);color:var(--blue);font-weight:700}
-.sel-opt::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.sel-opt.opt-all::before{background:var(--gray3)}
-.sel-opt.opt-wait::before{background:var(--amber)}
-.sel-opt.opt-done::before{background:var(--green)}
-.sel-opt.opt-cancel::before{background:var(--red)}
-.sel-arrow{font-size:10px;color:var(--gray4);transition:transform .15s}
-.sel-btn.open .sel-arrow{transform:rotate(180deg)}
-
-/* ══ BUTTONS ══ */
+/* ══ 버튼 ══ */
 .btn{padding:9px 16px;border:none;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
 .btn-blue{background:var(--blue);color:#fff}
 .btn-blue:hover{background:var(--navy2)}
@@ -120,18 +70,11 @@
 .btn-green{background:var(--green);color:#fff}
 .btn-green:hover{background:#059669}
 
-/* ══ TABLE ══ */
+/* ══ 테이블 ══ */
 .tbl-card{background:var(--white);border:1px solid var(--gray6);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(15,32,68,.06)}
 .tbl-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray6);background:var(--bg2);gap:10px;flex-wrap:wrap}
 .tbl-top-info{font-size:12px;color:var(--gray3)}
 .tbl-top-info strong{color:var(--gray1)}
-.sel-summary{
-  display:flex;align-items:center;gap:8px;
-  padding:6px 12px;background:var(--blue-lt);border:1.5px solid var(--blue);
-  border-radius:6px;font-size:12px;color:var(--blue);font-weight:700;
-  transition:all .2s;
-}
-.tbl-actions{display:flex;gap:6px;margin-left:auto}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;z-index:5}
@@ -144,7 +87,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .tbl-row.checked td:first-child{border-left:3px solid var(--blue)}
 tr:last-child td{border-bottom:none}
 
-/* BADGE */
+/* 배지 */
 .bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10.5px;font-weight:700;white-space:nowrap;gap:4px}
 .bdg::before{content:'●';font-size:7px}
 .bdg-amber{background:var(--amber-lt);color:#92400E}
@@ -152,35 +95,17 @@ tr:last-child td{border-bottom:none}
 .bdg-red{background:var(--red-lt);color:#991B1B}
 .bdg-gray{background:var(--gray7);color:var(--gray3)}
 .bdg-blue{background:var(--blue-lt);color:var(--blue)}
-.bdg-purple{background:var(--purple-lt);color:var(--purple)}
 
-/* STEP FLOW */
-.flow{display:flex;align-items:center;gap:0;margin-bottom:20px}
-.flow-step{
-  display:flex;align-items:center;gap:6px;
-  padding:8px 14px;font-size:12px;font-weight:600;
-  background:var(--gray7);border:1px solid var(--gray6);
-  color:var(--gray3);position:relative;
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%);
-  padding-left:20px;
-}
-.flow-step:first-child{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);padding-left:14px;border-radius:5px 0 0 5px}
-.flow-step:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,10px 50%);border-radius:0 5px 5px 0}
-.flow-step.done{background:var(--blue-lt);border-color:#93C5FD;color:var(--blue)}
-.flow-step.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.flow-step-num{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
-.flow-step.done .flow-step-num{background:var(--blue);color:#fff}
-.flow-step.active .flow-step-num{background:rgba(255,255,255,.3)}
-
-/* PAGINATION */
+/* 페이징 */
 .pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--gray6)}
 .page-info{font-size:12px;color:var(--gray3)}
 .page-btns{display:flex;gap:4px}
 .pg-btn{width:30px;height:30px;border:1.5px solid var(--gray5);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray3);background:var(--white);transition:all .15s}
 .pg-btn:hover{border-color:var(--blue);color:var(--blue)}
 .pg-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pg-btn.disabled{opacity:.4;cursor:not-allowed}
 
-/* MODAL */
+/* ══ 모달 ══ */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(15,32,68,.48);z-index:300;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:var(--white);width:560px;max-height:88vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,32,68,.25)}
@@ -191,37 +116,25 @@ tr:last-child td{border-bottom:none}
 .modal-body{padding:22px;overflow-y:auto;flex:1}
 .modal-foot{padding:14px 22px;border-top:1px solid var(--gray6);display:flex;gap:8px;justify-content:flex-end;background:var(--bg2)}
 
-/* CONFIRM MODAL */
+/* 컨펌 모달 (일괄 처리) */
 .confirm-modal{width:420px}
 .confirm-icon{width:56px;height:56px;border-radius:50%;background:var(--amber-lt);border:2px solid var(--amber-lt);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
 .confirm-title{font-size:17px;font-weight:800;color:var(--gray1);text-align:center;margin-bottom:8px}
 .confirm-desc{font-size:13px;color:var(--gray3);text-align:center;line-height:1.7;margin-bottom:20px}
-.confirm-items{background:var(--bg2);border:1px solid var(--gray6);border-radius:8px;overflow:hidden;margin-bottom:4px}
-.ci-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--gray6);font-size:12.5px}
-.ci-row:last-child{border-bottom:none}
-.ci-key{color:var(--gray3);font-weight:500}
-.ci-val{color:var(--gray1);font-weight:700}
 
-/* DETAIL ROWS (모달 내부용) */
+/* 모달 내부 테이블 */
 .dr{display:flex;padding:10px 0;border-bottom:1px solid var(--gray7); align-items:center;}
 .dr:last-child{border-bottom:none}
 .dk{font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.06em;width:110px;flex-shrink:0;padding-top:1px}
 .dv{font-size:13px;color:var(--gray1);flex:1}
-
-/* INPUT in MODAL */
 .modal-input{width:100%; padding:8px 12px; border:1.5px solid var(--gray5); border-radius:6px; font-size:13px; outline:none; transition:border .15s;}
 .modal-input:focus{border-color:var(--blue);}
 
-/* TOAST */
+/* 토스트 알림 */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* INVOICE INPUT (테이블 내부) */
-.inv-input{padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray1);outline:none;width:130px;transition:border .15s}
-.inv-input:focus{border-color:var(--blue)}
-.inv-input::placeholder{color:var(--gray4);font-size:11px}
-
-/* SECTION TITLE */
+/* 섹션 타이틀 */
 .sec-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px; margin-top:20px;}
 .sec-title:first-child{margin-top:0;}
 .sec-title::before{content:'';width:3px;height:12px;background:var(--blue);border-radius:2px;display:inline-block}
@@ -229,7 +142,7 @@ tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
-	<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
+<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
 <main class="main">
   <div class="topbar">
     <div class="breadcrumb">
@@ -271,23 +184,22 @@ tr:last-child td{border-bottom:none}
           <div class="kpi-sub">완료된 주문 건수</div>
         </div>
         <div class="kpi blue">
-          <div class="kpi-label">배송 중 (삭제? 택배 API안쓰면 배송중, 배송완료 시점을 알 수 없음)</div>
+          <div class="kpi-label">배송 중 (기능 연동 필요)</div>
           <div class="kpi-val c-blue">0</div>
           <div class="kpi-sub">진행 중인 배송</div>
         </div>
         <div class="kpi gray">
-          <div class="kpi-label">배송 완료 (삭제? 택배 API안쓰면 배송중, 배송완료 시점을 알 수 없음)</div>
+          <div class="kpi-label">배송 완료 (기능 연동 필요)</div>
           <div class="kpi-val c-gray">0</div>
           <div class="kpi-sub">도착 완료</div>
         </div>
       </div>
 
-	  <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" class="toolbar" style="display:flex; align-items:center; gap:8px; width:100%;">
-        
+      <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" class="toolbar">
         <div style="display:flex; align-items:center; gap:6px;">
-          <input type="date" name="startDate" value="${startDate}" style="padding:7px 10px; border:1px solid var(--gray5); border-radius:6px; font-size:12px; color:var(--gray2); outline:none;">
+          <input type="date" name="startDate" value="${startDate}" class="sel">
           <span style="color:var(--gray4); font-size:12px;">~</span>
-          <input type="date" name="endDate" value="${endDate}" style="padding:7px 10px; border:1px solid var(--gray5); border-radius:6px; font-size:12px; color:var(--gray2); outline:none;">
+          <input type="date" name="endDate" value="${endDate}" class="sel">
         </div>
 
         <div class="search-wrap">
@@ -304,7 +216,7 @@ tr:last-child td{border-bottom:none}
         </div>
       </form>
 
-	<div class="tbl-card">
+      <div class="tbl-card">
         <div class="tbl-top">
           <div class="tbl-top-info">총 <strong id="totalCnt">${pendingList.size()}</strong>건 · 선택 <strong id="selCnt">0</strong>건</div>
         </div>
@@ -334,14 +246,13 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
     
-	<div id="sec-hist" style="display:none">
-      
-      <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" style="display:flex;align-items:center;gap:8px;padding:14px 18px;background:var(--white);border:1px solid var(--gray6);border-radius:10px;margin-bottom:14px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(15,32,68,.05)">
+    <div id="sec-hist" style="display:none">
+      <form action="${pageContext.request.contextPath}/logistics/log_out/log_outForm.do" method="get" class="toolbar" style="padding:14px 18px;background:var(--white);border:1px solid var(--gray6);border-radius:10px;box-shadow:0 1px 3px rgba(15,32,68,.05)">
         <input type="hidden" name="tab" value="hist">
         <span style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.05em">기간</span>
-        <input type="date" name="histStartDate" value="${histStartDate}" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;color:var(--gray2);outline:none">
+        <input type="date" name="histStartDate" value="${histStartDate}" class="sel">
         <span style="font-size:12px;color:var(--gray4)">~</span>
-        <input type="date" name="histEndDate" value="${histEndDate}" style="padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;color:var(--gray2);outline:none">
+        <input type="date" name="histEndDate" value="${histEndDate}" class="sel">
         
         <div class="search-wrap" style="max-width:220px">
           <span class="search-ico">🔍</span>
@@ -374,7 +285,8 @@ tr:last-child td{border-bottom:none}
         </div>
       </div>
     </div> 
-    </main>
+  </div>
+</main>
 
 <form id="outboundForm" method="post" action="${pageContext.request.contextPath}/logistics/log_out/log_outProcess.do" style="display:none;"></form>
 
@@ -436,7 +348,6 @@ tr:last-child td{border-bottom:none}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── 1. 공통 유틸리티 (시계 & 토스트 알림 & 탭 전환) ──────────────────────────
 function updateClock() {
     const now = new Date();
     const year = now.getFullYear();
@@ -466,7 +377,6 @@ function switchTab(tab) {
     document.getElementById('tab-hist-btn').classList.toggle('on', !isOut);
 }
 
-// ── 2. DB 데이터를 JS 배열로 변환 (대기 & 이력) ─────────────────────────────
 const orders = [
   <c:forEach var="p" items="${pendingList}">
   { 
@@ -501,22 +411,17 @@ const histories = [
   </c:forEach>
 ];
 
-// 전역 변수
 let currentSingleId = null;
 let currentHistOutNum = null;
 
-// 출고 대기용 페이징 변수
 let currentPage = 1;
 const itemsPerPage = 8;
 let filteredOrders = [...orders];
 
-// 출고 이력용 페이징 변수
 let currentHistPage = 1;
 const histItemsPerPage = 10;
 let filteredHistories = [...histories];
 
-
-// ── 3. [출고 처리 탭] 테이블 렌더링 & 페이징 ────────────────────────────────
 function renderTable() {
   const tbody = document.getElementById('orderTbody');
   if(!tbody) return;
@@ -581,7 +486,6 @@ function changePage(page) {
   updateSel();
 }
 
-// 체크박스 제어
 function rowClick(tr) { const chk = tr.querySelector('.row-chk'); chk.checked = !chk.checked; updateSel(); }
 function toggleAll(cb) { document.querySelectorAll('.row-chk').forEach(c => c.checked = cb.checked); updateSel(); }
 function updateSel() {
@@ -593,7 +497,6 @@ function updateSel() {
   if(document.getElementById('chkAll')) document.getElementById('chkAll').checked = (n > 0 && n === document.querySelectorAll('.row-chk').length);
 }
 
-// ── 4. [출고 처리 로직] 단일 & 일괄 폼 전송 ────────────────────────────────
 function openSingle(id) {
   const o = orders.find(x => x.id === id);
   if(!o) return;
@@ -618,8 +521,8 @@ function closeSingle(){ document.getElementById('singleModal').classList.remove(
 function confirmSingle() {
     const o = orders.find(x => x.id === currentSingleId);
     if(!o) return;
-    const courier = document.getElementById('modal-courier').value;
-    const invoice = document.getElementById('modal-invoice').value;
+    const courier = document.getElementById('modal-courier') ? document.getElementById('modal-courier').value : '';
+    const invoice = document.getElementById('modal-invoice') ? document.getElementById('modal-invoice').value : '';
     const form = document.getElementById('outboundForm');
     form.innerHTML = '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
                    + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
@@ -654,7 +557,6 @@ function doBulk() {
     form.submit();
 }
 
-// ── 5. [출고 이력 탭] 테이블 렌더링 & 페이징 ────────────────────────────────
 function renderHistTable() {
   const tbody = document.getElementById('histTbody');
   if(!tbody) return;
@@ -719,7 +621,6 @@ function changeHistPage(page) {
   renderHistTable();
 }
 
-// ── 6. [출고 이력 모달] 데이터 채우기 & 출고 취소 ───────────────────────────
 function openHistModal(outNum) {
     const h = histories.find(x => x.outNum === outNum);
     if(!h) return;
@@ -760,7 +661,6 @@ function cancelHistory(outNum, orderNum) {
     form.submit();
 }
 
-// ── 7. 모달 바깥 클릭 시 닫기 ──────────────────────────────────────────────
 ['singleModal','bulkModal', 'histModal'].forEach(id => {
   const el = document.getElementById(id);
   if(el) {
@@ -770,14 +670,11 @@ function cancelHistory(outNum, orderNum) {
   }
 });
 
-// ── 8. 페이지 로딩 시 초기 렌더링 ──────────────────────────────────────────
 renderTable();
 renderHistTable();
 
-// 서버에서 넘겨준 탭 상태로 열기 (새로고침, 조회 후 탭 유지)
 const activeTab = '${activeTab}' || 'out';
 switchTab(activeTab);
-
 </script>
 </body>
 </html>
