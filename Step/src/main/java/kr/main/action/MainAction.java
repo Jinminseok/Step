@@ -19,9 +19,9 @@ public class MainAction implements Action {
 		// 2. 검색 및 페이징 필터 세팅
 		AdminProductVO filter = new AdminProductVO();
 
-		// 최신순 8개 페이징 세팅
+		// 최신순 10개 페이징 세팅
 		filter.setStart_row(1);
-		filter.setEnd_row(8);
+		filter.setEnd_row(10);
 
 		// 성별 필터 (-1: 전체)
 		filter.setGender(-1);

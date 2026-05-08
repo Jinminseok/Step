@@ -10,7 +10,7 @@
     </div>
     <div class="hdr-actions">
       <c:choose>
-        <%-- 1. 로그인 상태일 때 (세션에 user_num이 있을 때) --%>
+        <%-- 1. 로그인 상태일 때 --%>
         <c:when test="${!empty sessionScope.user_num}">
           
           <div class="noti-wrap">
@@ -116,7 +116,6 @@
     <div class="cat-item ${empty param.cat_num or param.cat_num == '0' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
          
-    <%-- 💡 주의: 아래 cat_num=1, 2, 3 등은 실제 DB의 카테고리 번호에 맞게 수정해야 합니다! --%>
     <div class="cat-item ${param.cat_num == '1' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=1'">👟 운동화</div>
          
@@ -126,7 +125,7 @@
     <div class="cat-item ${param.cat_num == '3' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=3'">⚽ 축구화</div>
          
-    <div class="cat-item ${param.cat_num == '5' ? 'active' : ''}" 
+    <div class="cat-item ${param.cat_num == '4' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=5'">🩴 슬리퍼</div>
   </div>
 </div>
