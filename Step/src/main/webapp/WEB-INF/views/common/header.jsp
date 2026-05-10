@@ -60,20 +60,20 @@
               </div>
             </div>
           </div>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/aipickForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/ai/aiPick.do'">
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/offlineshopForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/store/storeList.do'">
 	        <span class="hdr-btn-icon">🗺️</span>
 	        <span class="hdr-btn-label">매장찾기</span>
 	      </button>
-	      <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/heartForm.do'">
+	      <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/wish/wishList.do'">
 	        <span class="hdr-btn-icon">🤍</span>
 	        <span class="hdr-btn-label">찜</span>
 	        <span class="hdr-badge" style="background:#4d94ff">2</span>
 	      </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/cart/list.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/cart/cartList.do'">
             <span class="hdr-btn-icon">🛒</span>
             <span class="hdr-btn-label">장바구니</span>
           </button>
@@ -89,11 +89,11 @@
         
         <%-- 2. 비로그인 상태일 때 --%>
         <c:otherwise>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/aipickForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/ai/aiPick.do'">
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/offlineshopForm.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/store/storeList.do'">
 	        <span class="hdr-btn-icon">🗺️</span>
 	        <span class="hdr-btn-label">매장찾기</span>
 	      </button>
@@ -126,7 +126,7 @@
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=3'">⚽ 축구화</div>
          
     <div class="cat-item ${param.cat_num == '4' ? 'active' : ''}" 
-         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=5'">🩴 슬리퍼</div>
+         onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=4'">🩴 슬리퍼</div>
   </div>
 </div>
 

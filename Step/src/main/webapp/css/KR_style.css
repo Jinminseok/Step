@@ -271,3 +271,26 @@ textarea.form-input{resize:vertical;min-height:90px}
 .store-nm{font-size:14px;font-weight:700;margin-bottom:4px}
 .store-addr{font-size:12px;color:var(--gray4);margin-bottom:6px}
 .store-info{display:flex;gap:10px;font-size:12px;color:var(--gray3)}
+
+/* ── 12. AI & SURVEY ── */
+.ai-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.ai-box{border:1px solid var(--border);background:#fff;overflow:hidden; border-radius:0;}
+.ai-hdr{background:var(--black);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.ai-av{width:36px;height:36px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;}
+.ai-title{font-size:15px;font-weight:700}
+.ai-sub-txt{font-size:12px;opacity:.7;margin-top:2px}
+.ai-msgs{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;background:var(--gray7)}
+.ai-msg{max-width:80%;padding:12px 16px;font-size:14px;line-height:1.5;}
+.ai-bot{background:#fff;border:1px solid var(--border);color:var(--gray1);align-self:flex-start;}
+.ai-user{background:var(--black);color:#fff;align-self:flex-end;}
+.ai-inp{display:flex;gap:10px;padding:16px;border-top:1px solid var(--border);background:#fff}
+.ai-inp input{flex:1;padding:12px 16px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;}
+.ai-inp input:focus{border-color:var(--black)}
+.ai-inp button{padding:12px 24px;background:var(--black);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+.survey-box{border:1px solid var(--border);background:#fff;padding:24px;}
+.s-q{font-size:14px;font-weight:700;margin-bottom:12px; color:var(--gray1);}
+.s-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.s-chip{padding:10px 18px;border:1px solid var(--border);font-size:13px;cursor:pointer;transition:all .15s;color:var(--gray3);font-weight:500;}
+.s-chip.on,.s-chip:hover{border-color:var(--black);color:var(--black);font-weight:700;}
+.s-result{background:var(--gray7);border:1px solid var(--border);padding:16px;font-size:13px;color:var(--gray2);line-height:1.6;margin-top:12px;}
