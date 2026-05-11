@@ -37,4 +37,9 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.xhtml</welcome-file>
   </welcome-file-list>
+  <!-- Claude API 키 -->
+    <context-param>
+        <param-name>CLAUDE_API_KEY</param-name>
+        <param-value>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</param-value>
+    </context-param>
 </web-app>
