@@ -15,8 +15,6 @@ import jakarta.servlet.http.HttpSession;
 import kr.controller.Action;
 import kr.shop.dao.AiChatDAO;
 
-
-
 public class AiChatSendAction implements Action {
 
     @Override
@@ -32,7 +30,7 @@ public class AiChatSendAction implements Action {
 
         // 2. API 키 가져오기 (web.xml에서)
         ServletContext ctx = request.getServletContext();
-        String apiKey = ctx.getInitParameter("CLAUDE_API_KEY");
+        String apiKey = ctx.getInitParameter("GEMINI_API_KEY");
 
         // 3. 세션에서 대화 기록 가져오기
         HttpSession session = request.getSession();
@@ -46,13 +44,13 @@ public class AiChatSendAction implements Action {
         AiChatDAO dao = AiChatDAO.getInstance();
         List<String> productList = dao.getProductListForAI();
 
-        // 5. 상품 목록을 텍스트로 변환
+        // 5. 상품 목록 텍스트 구성
         StringBuilder productText = new StringBuilder();
         for (String prod : productList) {
             productText.append("- ").append(prod).append("\n");
         }
 
-        // 6. 시스템 프롬프트 구성
+        // 6. 시스템 프롬프트
         String systemPrompt = "당신은 ShoeMall의 친절한 AI 신발 추천 어시스턴트입니다.\n"
                 + "아래는 현재 판매 중인 상품 목록입니다. 반드시 이 목록에 있는 상품만 추천하세요.\n\n"
                 + "=== 판매 상품 목록 ===\n"
@@ -61,37 +59,41 @@ public class AiChatSendAction implements Action {
                 + "1. 목록에 없는 상품은 절대 추천하지 마세요.\n"
                 + "2. 추천 시 상품명, 가격을 명확히 알려주세요.\n"
                 + "3. 친절하고 자연스러운 한국어로 답변하세요.\n"
-                + "4. 목록에 조건에 맞는 상품이 없으면 솔직하게 없다고 말하세요.";
+                + "4. 조건에 맞는 상품이 없으면 솔직하게 없다고 말하세요.";
 
-        // 7. Claude API 요청 JSON 구성
-        StringBuilder messagesJson = new StringBuilder();
-        messagesJson.append("[");
+        // 7. Gemini API 요청 JSON 구성
+        StringBuilder contentsJson = new StringBuilder();
+        contentsJson.append("[");
 
-        // 이전 대화 기록 추가
         for (String[] chat : chatHistory) {
-            messagesJson.append("{\"role\":\"").append(chat[0]).append("\",")
-                        .append("\"content\":\"").append(escapeJson(chat[1])).append("\"},");
+            // Gemini는 assistant 대신 "model" 사용
+            String role = chat[0].equals("assistant") ? "model" : "user";
+            contentsJson.append("{")
+                        .append("\"role\":\"").append(role).append("\",")
+                        .append("\"parts\":[{\"text\":\"").append(escapeJson(chat[1])).append("\"}]")
+                        .append("},");
         }
 
         // 현재 사용자 메시지 추가
-        messagesJson.append("{\"role\":\"user\",\"content\":\"").append(escapeJson(userMsg)).append("\"}");
-        messagesJson.append("]");
+        contentsJson.append("{")
+                    .append("\"role\":\"user\",")
+                    .append("\"parts\":[{\"text\":\"").append(escapeJson(userMsg)).append("\"}]")
+                    .append("}");
+        contentsJson.append("]");
 
         String requestBody = "{"
-                + "\"model\":\"claude-sonnet-4-20250514\","
-                + "\"max_tokens\":1000,"
-                + "\"system\":\"" + escapeJson(systemPrompt) + "\","
-                + "\"messages\":" + messagesJson.toString()
+                + "\"system_instruction\":{\"parts\":[{\"text\":\"" + escapeJson(systemPrompt) + "\"}]},"
+                + "\"contents\":" + contentsJson.toString()
                 + "}";
 
-        // 8. Claude API 호출
-        String aiResponse = callClaudeAPI(apiKey, requestBody);
+        // 8. Gemini API 호출
+        String aiResponse = callGeminiAPI(apiKey, requestBody);
 
-        // 9. 대화 기록 업데이트 (최근 10개만 유지)
+        // 9. 대화 기록 업데이트 (최근 20개 유지)
         chatHistory.add(new String[]{"user", userMsg});
         chatHistory.add(new String[]{"assistant", aiResponse});
         if (chatHistory.size() > 20) {
-            chatHistory = chatHistory.subList(chatHistory.size() - 20, chatHistory.size());
+            chatHistory = new ArrayList<>(chatHistory.subList(chatHistory.size() - 20, chatHistory.size()));
         }
         session.setAttribute("chatHistory", chatHistory);
 
@@ -103,28 +105,23 @@ public class AiChatSendAction implements Action {
         return "shop/ai/aiPick.jsp";
     }
 
-    // Claude API 호출 메서드
-    private String callClaudeAPI(String apiKey, String requestBody) throws Exception {
-        URL url = new URL("https://api.anthropic.com/v1/messages");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    // Gemini API 호출
+    private String callGeminiAPI(String apiKey, String requestBody) throws Exception {
+        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
+        URL url = new URL(endpoint);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("x-api-key", apiKey);
-        conn.setRequestProperty("anthropic-version", "2023-06-01");
         conn.setDoOutput(true);
         conn.setConnectTimeout(15000);
         conn.setReadTimeout(30000);
 
-        // 요청 전송
         try (OutputStream os = conn.getOutputStream()) {
             os.write(requestBody.getBytes("UTF-8"));
         }
 
-        // 응답 읽기
-        StringBuilder responseBuilder = new StringBuilder();
         int statusCode = conn.getResponseCode();
-
         BufferedReader br;
         if (statusCode == 200) {
             br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
@@ -132,25 +129,25 @@ public class AiChatSendAction implements Action {
             br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
         }
 
+        StringBuilder sb = new StringBuilder();
         String line;
         while ((line = br.readLine()) != null) {
-            responseBuilder.append(line);
+            sb.append(line);
         }
         br.close();
 
-        String jsonResponse = responseBuilder.toString();
+        String jsonResponse = sb.toString();
 
         if (statusCode != 200) {
-            return "죄송합니다. AI 응답 중 오류가 발생했습니다. (오류코드: " + statusCode + ")";
+            return "죄송합니다. AI 응답 중 오류가 발생했습니다. (오류코드: " + statusCode + ")\n상세: " + jsonResponse;
         }
 
-        // JSON에서 텍스트 추출 ("text":"...내용..." 부분)
+        // Gemini 응답에서 텍스트 추출
         String marker = "\"text\":\"";
         int start = jsonResponse.indexOf(marker);
         if (start == -1) return "응답을 처리하는 중 오류가 발생했습니다.";
 
         start += marker.length();
-        // 닫는 따옴표 찾기 (이스케이프된 따옴표 제외)
         int end = start;
         while (end < jsonResponse.length()) {
             if (jsonResponse.charAt(end) == '"' && jsonResponse.charAt(end - 1) != '\\') break;
@@ -158,7 +155,6 @@ public class AiChatSendAction implements Action {
         }
 
         String text = jsonResponse.substring(start, end);
-        // JSON 이스케이프 복원
         text = text.replace("\\n", "\n")
                    .replace("\\\"", "\"")
                    .replace("\\'", "'")
@@ -167,7 +163,7 @@ public class AiChatSendAction implements Action {
         return text;
     }
 
-    // JSON 문자열 이스케이프
+    // JSON 이스케이프
     private String escapeJson(String text) {
         if (text == null) return "";
         return text.replace("\\", "\\\\")
