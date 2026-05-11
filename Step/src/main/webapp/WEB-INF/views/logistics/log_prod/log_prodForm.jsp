@@ -587,7 +587,36 @@ function changeProdPage(page) {
     document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
     updateSelCount();
 }
+//── 이미지 미리보기 ────────────────────────────────────
+function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
 
+    var file = input.files[0];
+
+    // 이미지 파일만 허용
+    if (!file.type.startsWith('image/')) {
+        showToast('⚠ 이미지 파일만 업로드 가능합니다.');
+        input.value = '';
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        // 미리보기 박스 교체
+        var previewBox = document.getElementById('imagePreviewBox');
+        previewBox.innerHTML = '<img src="' + e.target.result + '" '
+            + 'style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
+            + '<div class="img-main-badge">대표</div>';
+
+        // 헤더 아이콘도 동일하게 교체
+        var dpIco = document.getElementById('dpIco');
+        dpIco.innerHTML = '<img src="' + e.target.result + '" '
+            + 'style="width:100%;height:100%;object-fit:cover;border-radius:5px;">';
+
+        showToast('✅ 이미지가 선택되었습니다. 저장 시 반영됩니다.');
+    };
+    reader.readAsDataURL(file);
+}
 function generateSKU() {
     var brand = document.getElementById('fi-brand').value;
     if (!brand) { alert("브랜드를 먼저 선택해 주세요."); return; }
