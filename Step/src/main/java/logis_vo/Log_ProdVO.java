@@ -1,5 +1,7 @@
 package logis_vo;
 
+import java.sql.Date;
+
 public class Log_ProdVO {
 
     // ── DB INSERT 용 ──────────────────────────────
@@ -13,6 +15,9 @@ public class Log_ProdVO {
     private int    saleRate;     // 할인율
     private String prodText;     // 상품 설명
     private int    prodStatus;   // 1:판매중, 2:숨김, 3:품절
+    private Date   prodCreatedAt;	//상품 등록일
+    private Date   prodUpdatedAt;	//상품 수정일
+    
 
     // ── 화면 표시용 (JOIN) ────────────────────────
     private String brandName;
@@ -37,6 +42,23 @@ public class Log_ProdVO {
     public int getColorCnt() {
 		return colorCnt;
 	}
+
+	public Date getProdCreatedAt() {
+		return prodCreatedAt;
+	}
+
+	public void setProdCreatedAt(Date prodCreatedAt) {
+		this.prodCreatedAt = prodCreatedAt;
+	}
+
+	public Date getProdUpdatedAt() {
+		return prodUpdatedAt;
+	}
+
+	public void setProdUpdatedAt(Date prodUpdatedAt) {
+		this.prodUpdatedAt = prodUpdatedAt;
+	}
+
 	public String getProdImgUrl() {
 		return prodImgUrl;
 	}

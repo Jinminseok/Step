@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -149,6 +150,7 @@ textarea.fi{resize:vertical;min-height:72px}
     </div>
   </div>
 
+
   <div class="body-wrap">
 
     <div class="list-panel" id="listPanel">
@@ -212,11 +214,11 @@ textarea.fi{resize:vertical;min-height:72px}
                     <c:set var="bdgTxt"  value="${p.stockQty == 0 ? '품절' : p.prodStatus == 2 ? '숨김' : pct < 20 ? '주의' : '판매중'}"/>
                     
                     <tr class="prod-row" data-id="${p.prodNum}"
-                        data-desc="${p.prodText}"
-                        data-colors="${p.colorList}"
-                        data-sizes="${p.sizeList}"
-                        data-img="${p.prodImgUrl}"
-                        onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
+					    data-desc="${p.prodText}"
+					    data-colors="${p.colorList}"
+					    data-sizes="${p.sizeList}"
+					    data-img="${p.prodImgUrl}"
+					    data-regdate="${p.prodCreatedAt}"  onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
                         
                       <td onclick="event.stopPropagation()">
                         <input type="checkbox" class="row-chk" onchange="updateSelCount()">
@@ -453,6 +455,9 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
 
     var desc = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
     document.getElementById('fi-desc').value = desc;
+    
+    var regDate = rowEl ? (rowEl.getAttribute('data-regdate') || '') : '';
+    document.getElementById('fi-regdate').value = regDate.substring(0, 10); // 년-월-일만 깔끔하게 자르기
 
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
     if(rowEl) rowEl.classList.add('selected');
