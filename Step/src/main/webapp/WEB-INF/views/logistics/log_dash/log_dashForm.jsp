@@ -196,7 +196,7 @@
               <tbody>
                 <c:forEach var="i" items="${recentInboundList}">
                   <tr>
-                    <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">${i.inTime}</td>
+                    <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3)">${i.inDate}<br>${i.inTime}</td>
                     <td>${i.prodName}</td>
                     <td><span class="bdg bdg-gray">${i.sizeVal}mm / ${i.color}</span></td>
                     <td><span class="bdg bdg-blue">${i.inQty}개</span></td>

@@ -359,22 +359,41 @@ public class Log_ProdDAO {
 	}
 
 	// ── 상품 삭제 ─────────────────────────────────────────────────────────
+	// Log_ProdDAO.java - deleteProd() 교체
 	public int deleteProd(int prodNum) throws Exception {
-		int result = 0;
-		Connection conn  = null;
-		PreparedStatement pstmt = null;
+	    Connection conn = null; PreparedStatement pstmt = null;
+	    int result = 0;
+	    try {
+	        conn = DBUtil.getConnection();
+	        conn.setAutoCommit(false);
 
-		String sql = "DELETE FROM PRODUCTS WHERE PROD_NUM = ?";
+	        // ① STOCK 삭제 (OPT_NUM 기준)
+	        String sql1 = "DELETE FROM STOCK WHERE OPT_NUM IN "
+	                    + "(SELECT OPT_NUM FROM PROD_OPTIONS WHERE PROD_NUM = ?)";
+	        pstmt = conn.prepareStatement(sql1);
+	        pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
 
-		try {
-			conn  = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, prodNum);
-			result = pstmt.executeUpdate();
-		} finally {
-			DBUtil.executeClose(null, pstmt, conn);
-		}
-		return result;
+	        // ② PROD_OPTIONS 삭제
+	        String sql2 = "DELETE FROM PROD_OPTIONS WHERE PROD_NUM = ?";
+	        pstmt = conn.prepareStatement(sql2);
+	        pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
+
+	        // ③ PROD_IMGS 삭제
+	        String sql3 = "DELETE FROM PROD_IMGS WHERE PROD_NUM = ?";
+	        pstmt = conn.prepareStatement(sql3);
+	        pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
+
+	        // ④ PRODUCTS 삭제
+	        String sql4 = "DELETE FROM PRODUCTS WHERE PROD_NUM = ?";
+	        pstmt = conn.prepareStatement(sql4);
+	        pstmt.setInt(1, prodNum); result = pstmt.executeUpdate();
+
+	        conn.commit();
+	    } catch (Exception e) {
+	        if (conn != null) conn.rollback();
+	        throw e;
+	    } finally { DBUtil.executeClose(null, pstmt, conn); }
+	    return result;
 	}
 
 	// ── 브랜드 목록 조회 ──────────────────────────────────────────────────

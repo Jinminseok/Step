@@ -10,11 +10,13 @@ public class Log_StkDAO {
     public static Log_StkDAO getInstance() { return instance; }
     private Log_StkDAO() {}
 
-    // ① 전체 재고 합계
     public int getTotalStock() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
-        String sql = "SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK";
+        String sql = "SELECT NVL(SUM(s.STOCK_QTY), 0) FROM STOCK s "
+                   + "JOIN PROD_OPTIONS po ON s.OPT_NUM = po.OPT_NUM "
+                   + "JOIN PRODUCTS p ON po.PROD_NUM = p.PROD_NUM "
+                   + "WHERE po.PROD_USE_YN = 'Y'";
         try {
             conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery(); if (rs.next()) total = rs.getInt(1);
@@ -22,11 +24,13 @@ public class Log_StkDAO {
         return total;
     }
 
-    // ② 재고 부족 옵션 수 (10개 미만, 0 제외)
     public int getLowStockCount() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
-        String sql = "SELECT COUNT(*) FROM STOCK WHERE STOCK_QTY > 0 AND STOCK_QTY < 10";
+        String sql = "SELECT COUNT(*) FROM STOCK s "
+                   + "JOIN PROD_OPTIONS po ON s.OPT_NUM = po.OPT_NUM "
+                   + "JOIN PRODUCTS p ON po.PROD_NUM = p.PROD_NUM "
+                   + "WHERE po.PROD_USE_YN = 'Y' AND s.STOCK_QTY > 0 AND s.STOCK_QTY < 10";
         try {
             conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery(); if (rs.next()) total = rs.getInt(1);
@@ -34,11 +38,13 @@ public class Log_StkDAO {
         return total;
     }
 
-    // ③ 품절 옵션 수 (재고 0)
     public int getZeroStockCount() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
-        String sql = "SELECT COUNT(*) FROM STOCK WHERE STOCK_QTY = 0";
+        String sql = "SELECT COUNT(*) FROM STOCK s "
+                   + "JOIN PROD_OPTIONS po ON s.OPT_NUM = po.OPT_NUM "
+                   + "JOIN PRODUCTS p ON po.PROD_NUM = p.PROD_NUM "
+                   + "WHERE po.PROD_USE_YN = 'Y' AND s.STOCK_QTY = 0";
         try {
             conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery(); if (rs.next()) total = rs.getInt(1);
@@ -46,11 +52,14 @@ public class Log_StkDAO {
         return total;
     }
 
-    // ④ 정상 재고 옵션 수 (10개 이상)
+
     public int getOkStockCount() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
-        String sql = "SELECT COUNT(*) FROM STOCK WHERE STOCK_QTY >= 10";
+        String sql = "SELECT COUNT(*) FROM STOCK s "
+                   + "JOIN PROD_OPTIONS po ON s.OPT_NUM = po.OPT_NUM "
+                   + "JOIN PRODUCTS p ON po.PROD_NUM = p.PROD_NUM "
+                   + "WHERE po.PROD_USE_YN = 'Y' AND s.STOCK_QTY >= 10";
         try {
             conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery(); if (rs.next()) total = rs.getInt(1);
@@ -58,11 +67,13 @@ public class Log_StkDAO {
         return total;
     }
 
-    // ⑤ 전체 옵션 수
+  
     public int getTotalOptCount() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
-        String sql = "SELECT COUNT(*) FROM STOCK";
+        String sql = "SELECT COUNT(*) FROM STOCK s "
+                   + "JOIN PROD_OPTIONS po ON s.OPT_NUM = po.OPT_NUM "
+                   + "WHERE po.PROD_USE_YN = 'Y'";
         try {
             conn = DBUtil.getConnection(); pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery(); if (rs.next()) total = rs.getInt(1);
@@ -70,16 +81,21 @@ public class Log_StkDAO {
         return total;
     }
 
-    // ⑥ 전체 재고 목록 (상품 단위로 묶음 - 상품마스터관리와 동일 구조)
+  
     public List<Map<String, Object>> getStockList(String keyword, String brandName, String status) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, c.CAT_NAME, ");
-        sql.append("       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, ");
-        sql.append("       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, ");
-        sql.append("       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE ");
+        sql.append("       (SELECT NVL(SUM(s2.STOCK_QTY), 0) FROM STOCK s2 ");
+        sql.append("        JOIN PROD_OPTIONS po2 ON s2.OPT_NUM = po2.OPT_NUM ");
+        sql.append("        WHERE po2.PROD_NUM = p.PROD_NUM ");
+        sql.append("        AND po2.PROD_USE_YN = 'Y') AS STOCK_QTY, ");
+        sql.append("       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS ");
+        sql.append("        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, ");
+        sql.append("       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS ");
+        sql.append("        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE ");
         sql.append("FROM PRODUCTS p ");
         sql.append("LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM ");
         sql.append("LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM ");
@@ -90,11 +106,17 @@ public class Log_StkDAO {
         if (brandName != null && !brandName.trim().isEmpty())
             sql.append("AND b.BRAND_NAME = ? ");
         if ("부족".equals(status))
-            sql.append("AND (SELECT NVL(SUM(STOCK_QTY),0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) BETWEEN 1 AND 9 ");
+            sql.append("AND (SELECT NVL(SUM(s2.STOCK_QTY),0) FROM STOCK s2 "
+                     + "     JOIN PROD_OPTIONS po2 ON s2.OPT_NUM = po2.OPT_NUM "
+                     + "     WHERE po2.PROD_NUM = p.PROD_NUM AND po2.PROD_USE_YN = 'Y') BETWEEN 1 AND 9 ");
         else if ("품절".equals(status))
-            sql.append("AND (SELECT NVL(SUM(STOCK_QTY),0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) = 0 ");
+            sql.append("AND (SELECT NVL(SUM(s2.STOCK_QTY),0) FROM STOCK s2 "
+                     + "     JOIN PROD_OPTIONS po2 ON s2.OPT_NUM = po2.OPT_NUM "
+                     + "     WHERE po2.PROD_NUM = p.PROD_NUM AND po2.PROD_USE_YN = 'Y') = 0 ");
         else if ("정상".equals(status))
-            sql.append("AND (SELECT NVL(SUM(STOCK_QTY),0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) >= 10 ");
+            sql.append("AND (SELECT NVL(SUM(s2.STOCK_QTY),0) FROM STOCK s2 "
+                     + "     JOIN PROD_OPTIONS po2 ON s2.OPT_NUM = po2.OPT_NUM "
+                     + "     WHERE po2.PROD_NUM = p.PROD_NUM AND po2.PROD_USE_YN = 'Y') >= 10 ");
 
         sql.append("ORDER BY p.PROD_NUM DESC");
 
