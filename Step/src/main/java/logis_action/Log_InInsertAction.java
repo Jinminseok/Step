@@ -59,21 +59,14 @@ public class Log_InInsertAction implements Action{
             int optNum = dao.getOptNum(prodNum, sizeVal, color);
             if (optNum == 0) {	//상품 마스터 관리에 등록된 상품이 아닐 경우
                 
-                // 자바스크립트로 알림창 띄우고 돌려보내기
-                response.setContentType("text/html;charset=UTF-8");
-                PrintWriter out = response.getWriter();
-                out.println("<script>");
-                out.println("alert('상품 마스터에 등록되지 않은 사이즈/색상입니다. 마스터 등록을 먼저 확인해주세요!');");
-                out.println("history.back();");
-                out.println("</script>");
-                return null; 
+            	return "redirect:/logistics/log_in/log_inForm.do?result=opt_error";
             }
             
-            dao.insertInbound(optNum, prodNum, inQty, adminNum, inMemo, inDate, supplier);                        
+            dao.insertInbound(optNum, prodNum, inQty, adminNum, inMemo, inDate, supplier);                      
             dao.updateStock(optNum, prodNum, inQty);
             
         }        
-        return "redirect:/logistics/log_in/log_inForm.do";
+        return "redirect:/logistics/log_in/log_inForm.do?result=in_success";
 	}
 	
 }

@@ -906,10 +906,17 @@ function submitInbound() {
     const prodNum = document.getElementById('hidden_prodNum').value;
     const color   = document.getElementById('fi-color').value;
     const qty     = parseInt(document.getElementById('fi-qty').value);
+    const supplier = document.getElementById('fi-supplier').value.trim();
+    const selBrand = document.getElementById('selProdBrand').textContent.trim();
 
     if (!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
     if (!color)   { showToast('⚠ 컬러를 선택해주세요.', true); return; }
     if (selSizes.size === 0) { showToast('⚠ 사이즈를 선택해주세요.', true); return; }
+    if (!supplier) { showToast('⚠ 공급업체를 입력해주세요.', true); return; }
+    if (supplier !== selBrand) {
+        showToast('⚠ 공급업체 이름이 상품 브랜드(' + selBrand + ')와 일치하지 않습니다.', true);
+        return;
+    }
 
     // ── 수량 유효성 검사 ────────────────────────────────────────────
     if (isNaN(qty) || qty < 1) {
@@ -930,8 +937,8 @@ function submitInbound() {
     document.getElementById('hidden_sizes').value = sizeArr.join(',');
 
     if (confirm(`총 ${sizeArr.length}개의 사이즈 옵션에 각각 ${qty}개씩 입고 처리하시겠습니까?`)) {
-        showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
-        setTimeout(function() { document.getElementById('inboundForm').submit(); }, 1500);
+        
+        document.getElementById('inboundForm').submit(); 
     }
 }
 
@@ -1000,7 +1007,7 @@ window.addEventListener('load', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const result = urlParams.get('result');
 
-    if(result === 'deleted' || result === 'updated' || result === 'opt_error') {
+    if(result === 'deleted' || result === 'updated' || result === 'opt_error' || result === 'in_success') {
         const savedSDate = sessionStorage.getItem('log_sDate');
         const savedEDate = sessionStorage.getItem('log_eDate');
         if(savedSDate && savedEDate) {
@@ -1011,22 +1018,27 @@ window.addEventListener('load', function() {
         sessionStorage.removeItem('log_eDate');
     }
 
-    // 💡 두 테이블 모두 렌더링 호출
     renderPendingDashboard();
     searchHistory(); 
 
-    if(result === 'updated') {
-        alert('✅ 수정이 완료되었습니다.');
+    //  (alert 대신 Toast 사용)
+    if(result === 'in_success') {
+        showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        switchMain('hist'); // 성공 시 이력 탭으로 예쁘게 이동
+    } else if (result === 'updated') {
+        showToast('✅ 수정이 완료되었습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     } else if (result === 'deleted') {
-        alert('🗑️ 성공적으로 삭제되었습니다.');
+        showToast('🗑️ 성공적으로 삭제되었습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     } else if (result === 'opt_error') {
-        alert('❌ 선택하신 옵션이 존재하지 않습니다.');
+        // 🚨 백엔드에서 에러가 터졌을 때 보여줄 진짜 에러 메시지
+        showToast('❌ 상품 마스터에 등록되지 않은 사이즈/색상입니다.', true);
         window.history.replaceState({}, document.title, window.location.pathname);
-        switchMain('hist'); 
+        switchMain('reg'); // 에러 났으니 다시 등록 탭 유지
     }
 });
 </script>
