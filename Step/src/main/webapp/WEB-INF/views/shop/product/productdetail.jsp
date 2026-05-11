@@ -8,6 +8,7 @@
 <title>ShoeMall - ${product.prod_name}</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
@@ -115,6 +116,7 @@
             </div>
         </div>
 	</div>
+
 <script>
 const isLogin = ${isLogin}; 
 let selectedColor = "";
@@ -159,11 +161,33 @@ function requireLogin() {
     return true;
 }
 
+// 찜(즐겨찾기) 기능
 function handleWish() {
     if(!requireLogin()) return;
-    alert("관심 상품(찜)에 추가되었습니다!");
+
+    let prod_num = '${product.prod_num}';
+
+    $.ajax({
+    	url: '${pageContext.request.contextPath}/shop/wish/writeWish.do',
+        type: 'post',
+        data: { prod_num: prod_num },
+        dataType: 'json',
+        success: function(param) {
+            if(param.result === 'logout') {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
+            } else if (param.result === 'success') {
+                alert("관심 상품(찜)에 추가되었습니다!");
+                $('.btn-wish-lg').addClass('on'); // 버튼에 불 들어오게 처리
+            }
+        },
+        error: function() {
+            alert("통신 중 오류가 발생했습니다.");
+        }
+    });
 }
 
+// 장바구니, 바로구매
 function handleAction(type) {
     if(!requireLogin()) return;
     
@@ -181,10 +205,39 @@ function handleAction(type) {
         return;
     }
     
+    // 장바구니 담기
     if(type === 'cart') {
-        alert(selectedColor + " 색상, " + selectedSize + " 사이즈가 장바구니에 담겼습니다!");
+        // [임시 처리] 실제로는 색상/사이즈를 바탕으로 옵션 테이블에서 고유 번호(opt_num)를 찾아야 합니다.
+        // 우선 테이블 구조에 맞게 임시 opt_num = 1로 테스트합니다.
+        let opt_num = 1; 
+        let cart_qty = 1; // 수량 기본값
+
+        $.ajax({
+            url: '${pageContext.request.contextPath}/shop/cart/writeCart.do',
+            type: 'post',
+            data: {
+                opt_num: opt_num,
+                cart_qty: cart_qty
+            },
+            dataType: 'json',
+            success: function(param) {
+                if(param.result === 'logout') {
+                    alert("로그인 후 이용 가능합니다.");
+                    location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
+                } else if (param.result === 'success') {
+                    if(confirm(selectedColor + " 색상, " + selectedSize + " 사이즈가 장바구니에 담겼습니다!\n장바구니로 이동하시겠습니까?")) {
+                        location.href = '${pageContext.request.contextPath}/shop/cart/cartList.do';
+                    }
+                }
+            },
+            error: function() {
+                alert("통신 중 오류가 발생했습니다.");
+            }
+        });
+        
     } else if(type === 'buy') {
-        alert("결제 페이지로 이동합니다.");
+        // 바로 구매 시 기존의 폼 전송 사용
+        document.getElementById('orderForm').submit();
     }
 }
 </script>

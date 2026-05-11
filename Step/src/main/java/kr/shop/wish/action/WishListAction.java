@@ -32,6 +32,6 @@ public class WishListAction implements Action {
 		request.setAttribute("wishList", wishList);
 		
 		// 찜 목록으로 이동
-		return "shop/wishlist/wishList.jsp";
+		return "shop/wish/wishList.jsp";
 	}
 }

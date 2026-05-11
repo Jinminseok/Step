@@ -20,17 +20,17 @@ public class WriteCartAction implements Action {
 		HttpSession session = request.getSession();
 		Long user_num = (Long) session.getAttribute("user_num");
 		
+		// 로그인이 안되있는 경우
 		if (user_num == null) {
-			// 로그인이 안 되어있으면 "logout"이라는 결과를 화면에 보냄
 			response.getWriter().print("{\"result\":\"logout\"}");
 			return null; 
 		}
 		
-		// 화면(JSP)에서 넘어온 옵션번호와 수량 데이터 받기
+		// JSP에서 넘어온 옵션번호와 수량 데이터 받기
 		long opt_num = Long.parseLong(request.getParameter("opt_num"));
 		int cart_qty = Integer.parseInt(request.getParameter("cart_qty"));
 		
-		// 4. VO에 담아서 DAO로 DB 저장!
+		// DB에 저장
 		UserCartVO cart = new UserCartVO();
 		cart.setUser_num(user_num);
 		cart.setOpt_num(opt_num);
@@ -38,9 +38,9 @@ public class WriteCartAction implements Action {
 		
 		UserCartDAO.getInstance().insertCart(cart);
 		
-		// 5. 성공했다는 결과를 화면에 보냄
+		// 완료했다는 결과를 화면에 보냄
 		response.getWriter().print("{\"result\":\"success\"}");
 		
-		return null; // AJAX 통신이므로 화면 이동 없음!
+		return null;
 	}
 }
