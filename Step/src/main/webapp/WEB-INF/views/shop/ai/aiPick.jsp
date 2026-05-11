@@ -16,10 +16,8 @@
         <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
             <div class="page-title" style="margin-bottom:0; font-size:24px;">🤖 AI 신발 추천</div>
         </div>
-        
-        <%-- 만들어두신 .ai-wrap 사용 (1fr 1fr 반반 레이아웃) --%>
+
         <div class="ai-wrap">
-            
             <%-- 왼쪽: 챗봇형 영역 --%>
             <div>
                 <div style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--gray2);">💬 챗봇형 - 자유롭게 물어보기</div>

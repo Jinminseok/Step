@@ -25,11 +25,13 @@ public class UserProductDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		AdminProductVO vo = null;
-
-		String sql = "SELECT p.prod_num, p.prod_name, p.sku, p.prod_price, p.sale_rate, p.prod_text, b.brand_name "
-				+ "FROM products p JOIN brands b ON p.brand_num = b.brand_num WHERE p.prod_num = ?";
+		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			sql = """
+					SELECT p.prod_num, p.prod_name, p.sku, p.prod_price, p.sale_rate, p.prod_text, b.brand_name
+					FROM products p JOIN brands b ON p.brand_num = b.brand_num WHERE p.prod_num = ?
+					""";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -56,10 +58,14 @@ public class UserProductDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		// 메인 사진이 제일 먼저 오도록 정렬
-		String sql = "SELECT prod_img_url FROM prod_imgs WHERE prod_num = ? ORDER BY is_main DESC, prod_img_sort_no ASC";
+		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			// 메인 사진이 제일 먼저 오도록 정렬
+			sql = """
+					SELECT prod_img_url FROM prod_imgs WHERE prod_num = ?
+					ORDER BY is_main DESC, prod_img_sort_no ASC
+					""";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -78,9 +84,10 @@ public class UserProductDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "SELECT DISTINCT color FROM prod_options WHERE prod_num = ? AND prod_use_yn = 'Y'";
+		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			sql = "SELECT DISTINCT color FROM prod_options WHERE prod_num = ? AND prod_use_yn = 'Y'";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -100,9 +107,13 @@ public class UserProductDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		// 작은 사이즈부터 오름차순
-		String sql = "SELECT DISTINCT size_val FROM prod_options WHERE prod_num = ? AND prod_use_yn = 'Y' ORDER BY size_val ASC";
+		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			sql = """
+					SELECT DISTINCT size_val FROM prod_options WHERE prod_num = ? AND prod_use_yn = 'Y'
+					ORDER BY size_val ASC
+					""";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -121,9 +132,10 @@ public class UserProductDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "SELECT sum(stock_qty) FROM stock WHERE prod_num = ?";
+		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			sql = "SELECT sum(stock_qty) FROM stock WHERE prod_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -142,7 +154,7 @@ public class UserProductDAO {
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 	    List<AdminProductVO> list = null;
-	    String sql = "";
+	    String sql = null;
 	    String sub_sql = "";
 	    int cnt = 0;
 
@@ -206,5 +218,4 @@ public class UserProductDAO {
 	    }
 	    return list;
 	}
-	
 }

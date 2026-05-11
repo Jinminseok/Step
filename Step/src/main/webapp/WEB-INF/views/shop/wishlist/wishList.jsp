@@ -13,7 +13,7 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
     <div class="wrap">
-        <div class="page-title">찜한 상품 🤍</div>
+        <div class="page-title">찜한 상품</div>
         
         <div class="wish-grid" style="grid-template-columns: repeat(5, 1fr); gap:20px; border:none;">
             <%-- 찜 목록 더미 데이터 --%>

@@ -42,8 +42,7 @@ public class ProductDetailAction implements Action {
 		request.setAttribute("sizeList", sizeList);
 		request.setAttribute("totalStock", totalStock);
 
-		// 4. 할인 가격 계산 (스네이크 케이스 게터 사용)
-		// VO의 prod_price와 sale_rate 필드명을 사용함
+		// 4. 할인 가격 계산
 		int originPrice = product.getProd_price();
 		int saleRate = product.getSale_rate();
 		int salePrice = originPrice - (originPrice * saleRate / 100);
