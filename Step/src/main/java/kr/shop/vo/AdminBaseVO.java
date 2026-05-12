@@ -3,7 +3,7 @@ package kr.shop.vo;
 import java.util.Date;
 
 public class AdminBaseVO {
-	// 6. 기타 및 검색 (공통 영역)
+	// 기타 및 검색
 	private String keyword; // KEYWORD (검색어)
 	private String search_type; // SEARCH_TYPE (검색 조건)
 	private int start_row; // START_ROW (페이징 시작 로우)

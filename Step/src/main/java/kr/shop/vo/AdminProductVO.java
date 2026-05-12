@@ -3,7 +3,7 @@ package kr.shop.vo;
 import java.util.Date;
 
 public class AdminProductVO extends AdminBaseVO {
-	// 3. 상품 (PRODUCTS)
+	// 상품 (PRODUCTS)
 	private int prod_num; // PROD_NUM
 	private String sku; // SKU
 	private String prod_name; // PROD_NAME
@@ -15,26 +15,26 @@ public class AdminProductVO extends AdminBaseVO {
 	private Date prod_created_at; // PROD_CREATED_AT
 	private Date prod_updated_at; // PROD_UPDATED_AT
 
-	// 3. 상품 옵션 (PROD_OPTIONS)
+	// 상품 옵션 (PROD_OPTIONS)
 	private int opt_num; // OPT_NUM
 	private int size_val; // SIZE_VAL
 	private String color; // COLOR
 	private int add_price; // ADD_PRICE
 	private String prod_use_yn; // PROD_USE_YN
 
-	// 3. 상품 이미지 (PROD_IMGS)
+	// 상품 이미지 (PROD_IMGS)
 	private String prod_img_url; // PROD_IMG_URL
 	private String is_main; // IS_MAIN
 	private int prod_img_sort_no; // PROD_IMG_SORT_NO
 
-	// 2. 카테고리 (CATEGORIES)
+	// 카테고리 (CATEGORIES)
 	private int cat_num; // CAT_NUM
 	private String cat_name; // CAT_NAME
 	private String cat_icon; // CAT_ICON
 	private int cat_sort_no; // CAT_SORT_NO
 	private String cat_use_yn; // CAT_USE_YN
 
-	// 2. 브랜드 (BRANDS)
+	// 브랜드 (BRANDS)
 	private int brand_num; // BRAND_NUM
 	private String brand_name; // BRAND_NAME
 	private String brand_use_yn; // BRAND_USE_YN

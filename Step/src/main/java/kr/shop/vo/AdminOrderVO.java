@@ -1,19 +1,19 @@
 package kr.shop.vo;
 
 public class AdminOrderVO extends AdminBaseVO {
-	// 5. 주문 (ORDERS)
+	// 주문 (ORDERS)
 	private int order_num; // ORDER_NUM
 	private int total_price; // TOTAL_PRICE
 	private int disc_price; // DISC_PRICE
 	private int pay_price; // PAY_PRICE
 	private int order_status; // ORDER_STATUS
 
-	// 5. 배송 (DELIVERY)
+	// 배송 (DELIVERY)
 	private String courier; // COURIER
 	private String invoice_no; // INVOICE_NO
 	private int dlv_status; // DLV_STATUS
 
-	// 5. 반품 (RETURNS)
+	// 반품 (RETURNS)
 	private int ret_num; // RET_NUM
 	private int tp; // TP
 	private String reason; // REASON

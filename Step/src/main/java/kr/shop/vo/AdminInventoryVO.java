@@ -3,19 +3,19 @@ package kr.shop.vo;
 import java.util.Date;
 
 public class AdminInventoryVO extends AdminBaseVO {
-	// 4. 재고 (STOCK)
+	// 재고 (STOCK)
 	private int stock_num; // STOCK_NUM
 	private int stock_qty; // STOCK_QTY
 	private int stock_min_qty; // STOCK_MIN_QTY
 	private Date stock_updated_at; // STOCK_UPDATED_AT
 
-	// 4. 입고 (INBOUND)
+	// 입고 (INBOUND)
 	private int in_qty; // IN_QTY
 	private String in_memo; // IN_MEMO
 	private Date in_date; // IN_DATE
 	private long admin_num; // ADMIN_NUM
 
-	// 4. 출고 (OUTBOUND)
+	// 출고 (OUTBOUND)
 	private int out_qty; // OUT_QTY
 	private String out_memo; // OUT_MEMO
 

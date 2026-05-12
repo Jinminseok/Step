@@ -40,7 +40,8 @@ public class AdminMainAction implements Action {
 
 		// 5. 페이징 처리 (PagingUtil 활용)
 		// 10: 한 페이지에 보여줄 게시물 수, 10: 한 화면에 보여줄 페이지 번호 수
-		PagingUtil page = new PagingUtil(search_type, keyword, Integer.parseInt(pageNum), count, 10, 10, "adminMain.do");
+		PagingUtil page = new PagingUtil(search_type, keyword, Integer.parseInt(pageNum), count, 10, 10,
+				"adminMain.do");
 
 		// 6. 시작 로우와 끝 로우를 VO에 세팅 (DAO의 getProductList에서 사용)
 		vo.setStart_row(page.getStartRow());

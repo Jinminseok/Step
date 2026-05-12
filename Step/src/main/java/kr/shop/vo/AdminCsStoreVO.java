@@ -1,19 +1,19 @@
 package kr.shop.vo;
 
 public class AdminCsStoreVO extends AdminBaseVO {
-	// 6. 리뷰 (REVIEWS)
+	// 리뷰 (REVIEWS)
 	private int rating; // RATING
 	private String review_content; // REVIEW_CONTENT
 
-	// 6. 채팅 (CHAT_ROOMS, CHAT_MSGS)
+	// 채팅 (CHAT_ROOMS, CHAT_MSGS)
 	private int room_status; // ROOM_STATUS
 	private String msg_content; // MSG_CONTENT
 	private int is_read; // IS_READ
 
-	// 6. 매장 (STORES)
+	// 매장 (STORES)
 	private int store_num; // STORE_NUM
 	private String store_name; // STORE_NAME
-	private String store_addred; // STORE_ADDR (오타일 수 있으니 DB 확인 필요)
+	private String store_addred; // STORE_ADDR
 	private String open_time; // OPEN_TIME
 
 	public int getRating() {
