@@ -14,6 +14,7 @@ public class CategoryInsertAction implements Action{
         String catUseYn = request.getParameter("catUseYn");
         int catSortNo   = Integer.parseInt(request.getParameter("catSortNo"));
         CategoryDAO.getInstance().insertCategory(catName, catUseYn, catSortNo);
+        
         return "redirect:/shop/category/categoryForm.do?msg=insert_ok";
 	}
 
