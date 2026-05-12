@@ -18,10 +18,18 @@
         <div class="map-layout" style="display: grid; grid-template-columns: 400px 1fr; gap: 20px;">
             <%-- 왼쪽: 매장 리스트 --%>
             <div class="store-list" style="height: 600px; overflow-y:auto; padding-right:10px;">
-                <div class="hdr-search" style="max-width:100%; margin:0 0 16px 0;">
-                    <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" style="border:1px solid var(--border); width:80%; padding:10px; border-radius:4px;">
-                    <button class="hdr-search-btn" onclick="filterList()" style="padding:10px;">🔍</button>
-                </div>
+				<div style="display:flex; gap:8px; margin-bottom:16px;">
+				    
+				    <div class="hdr-search" style="flex:1; margin:0;">
+				        <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" style="border-color:var(--border); color:var(--black); background:var(--white); width:100%;">
+				        <button class="hdr-search-btn" onclick="filterList()">🔍</button>
+				    </div>
+				    
+				    <button onclick="resetList()" style="white-space:nowrap; padding:0 15px; border:1px solid var(--border); background:var(--white); border-radius:4px; cursor:pointer; font-size:13px; color:var(--black);">
+				        🔄 초기화
+				    </button>
+				    
+				</div>
                 
                 <div id="storeCardContainer">
                     <c:forEach var="s" items="${storeList}" varStatus="status">
@@ -46,7 +54,7 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=여기에_발급받은_자바스크립트_키를_넣으십쇼&libraries=services"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
 
     <script>
     // ── 1. 지도 초기화 ──────────────────────────────────────────
@@ -109,15 +117,26 @@
     });
 
     // ── 4. 리스트 클릭 시 해당 위치로 이동 ───────────────────────────
-    function panToStore(addr, index) {
+	function panToStore(addr, index) {
         geocoder.addressSearch(addr, function(result, status) {
+            
+            // 주소 검색에 성공했을 때
             if (status === kakao.maps.services.Status.OK) {
                 var moveLatLon = new kakao.maps.LatLng(result[0].y, result[0].x);
                 map.panTo(moveLatLon); // 부드럽게 이동
                 
                 closeAllInfoWindows();
-                infowindows[index].open(map, markers[index]);
+                
+                // 혹시라도 해당 인덱스의 정보창/마커가 없어서 나는 JS 에러 방지
+                if(infowindows[index] && markers[index]) {
+                    infowindows[index].open(map, markers[index]);
+                }
+                
                 highlightCard(index);
+            } 
+            // 카카오맵이 주소를 인식하지 못했을 때의 처리!
+            else {
+                alert("카카오맵에서 다음 주소를 찾을 수 없습니다: \n[" + addr + "]\nDB에 저장된 주소를 확인해 주세요!");
             }
         });
     }
@@ -144,6 +163,17 @@
             var name = card.querySelector('.store-nm').innerText.toLowerCase();
             var addr = card.querySelector('.store-addr').innerText.toLowerCase();
             card.style.display = (name.includes(val) || addr.includes(val)) ? '' : 'none';
+        });
+    }
+    
+ //  검색 초기화 기능
+    function resetList() {
+        // 1. 검색 입력창 텍스트 싹 비우기
+        document.getElementById('storeSearch').value = '';
+        
+        // 2. 숨겨졌던 모든 매장 카드를 다시 보이게 처리
+        document.querySelectorAll('.store-card').forEach(card => {
+            card.style.display = '';
         });
     }
     </script>
