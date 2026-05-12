@@ -7,8 +7,22 @@ public class UserStoreVO {
     private String storePhone;     // STORE_PHONE
     private String openTime;       // OPEN_TIME
     private String storeUseYn;     // STORE_USE_YN (기본값 'Y')
+    private int brandNum;
+    private String brandName;
     
     
+	public int getBrandNum() {
+		return brandNum;
+	}
+	public void setBrandNum(int brandNum) {
+		this.brandNum = brandNum;
+	}
+	public String getBrandName() {
+		return brandName;
+	}
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
 	public int getStoreNum() {
 		return storeNum;
 	}

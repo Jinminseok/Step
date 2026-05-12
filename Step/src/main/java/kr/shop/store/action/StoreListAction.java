@@ -18,6 +18,11 @@ public class StoreListAction implements Action{
 	        UserStoreDAO dao = UserStoreDAO.getInstance();
 	        List<UserStoreVO> storeList = dao.getStoreList();
 	        
+//			브랜드 DAO 완성 시 추가. (메서드 이름 등 확인하고 추가 해야 함.)	        
+//	        BrandDAO brandDao = BrandDAO.getInstance();
+//	        List<BrandVO> brandList = brandDao.getBrandList(); 
+//	        request.setAttribute("brandList", brandList);
+	        
 	        // 🚨 2. 제일 중요한 부분! JSP에서 쓸 수 있도록 request에 담아줍니다.
 	        // JSP 파일의 <c:forEach items="${storeList}"> 부분과 이름이 똑같아야 합니다!
 	        request.setAttribute("storeList", storeList);

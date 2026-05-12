@@ -10,7 +10,7 @@ import kr.shop.vo.UserStoreVO;
 import kr.util.DBUtil;
 
 
-public class UserStoreDAO {
+	public class UserStoreDAO {
     
     // ── 싱글톤 패턴 ──
     private static UserStoreDAO instance = new UserStoreDAO();
@@ -27,10 +27,12 @@ public class UserStoreDAO {
         ResultSet rs = null;
 
         // 사용 중인(Y) 매장만 최신순으로 가져옵니다
-        String sql = "SELECT STORE_NUM, STORE_NAME, STORE_ADDR, STORE_PHONE, OPEN_TIME, STORE_USE_YN "
-                   + "FROM STORES "
-                   + "WHERE STORE_USE_YN = 'Y' "
-                   + "ORDER BY STORE_NUM DESC";
+        String sql = "SELECT S.STORE_NUM, S.BRAND_NUM, B.BRAND_NAME, "
+                + "S.STORE_NAME, S.STORE_ADDR, S.STORE_PHONE, S.OPEN_TIME, S.STORE_USE_YN "
+                + "FROM STORES S "
+                + "JOIN BRANDS B ON S.BRAND_NUM = B.BRAND_NUM "
+                + "WHERE S.STORE_USE_YN = 'Y' AND B.BRAND_USE_YN = 'Y' "
+                + "ORDER BY S.STORE_NUM DESC";
 
         try {
             conn = DBUtil.getConnection();
@@ -42,7 +44,9 @@ public class UserStoreDAO {
                 
                 // DB에서 꺼내서 UserStoreVO 그릇에 예쁘게 담습니다
                 vo.setStoreNum(rs.getInt("STORE_NUM"));
-                vo.setStoreName(rs.getString("STORE_NAME"));
+                vo.setBrandNum(rs.getInt("BRAND_NUM"));
+                vo.setBrandName(rs.getString("BRAND_NAME"));
+                vo.setStoreName(rs.getString("STORE_NAME"));                
                 vo.setStoreAddr(rs.getString("STORE_ADDR"));
                 vo.setStorePhone(rs.getString("STORE_PHONE"));
                 vo.setOpenTime(rs.getString("OPEN_TIME"));

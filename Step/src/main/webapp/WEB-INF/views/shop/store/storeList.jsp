@@ -18,17 +18,22 @@
         <div class="map-layout" style="display: grid; grid-template-columns: 400px 1fr; gap: 20px;">
             <%-- 왼쪽: 매장 리스트 --%>
             <div class="store-list" style="height: 600px; overflow-y:auto; padding-right:10px;">
-				<div style="display:flex; gap:8px; margin-bottom:16px;">
-				    
+				<div style="display:flex; gap:8px; margin-bottom:16px;">				    
 				    <div class="hdr-search" style="flex:1; margin:0;">
 				        <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" style="border-color:var(--border); color:var(--black); background:var(--white); width:100%;">
 				        <button class="hdr-search-btn" onclick="filterList()">🔍</button>
-				    </div>
-				    
+				    </div>				    
 				    <button onclick="resetList()" style="white-space:nowrap; padding:0 15px; border:1px solid var(--border); background:var(--white); border-radius:4px; cursor:pointer; font-size:13px; color:var(--black);">
 				        🔄 초기화
-				    </button>
+				    </button>				    
+				</div>
+				
+				<div class="brand-tabs" style="display:flex; gap:6px; margin-bottom:16px; overflow-x:auto; padding-bottom:5px;">
 				    
+				    <button class="brand-btn" onclick="selectBrand('ALL', this)" style="padding:6px 14px; border:1px solid var(--black); background:var(--black); color:var(--white); border-radius:20px; font-size:13px; cursor:pointer; white-space:nowrap;">전체</button>				   			    
+				    <c:forEach var="brand" items="${brandList}">
+				        <button class="brand-btn" onclick="selectBrand('${brand.brandName}', this)" style="padding:6px 14px; border:1px solid var(--border); background:var(--white); color:var(--black); border-radius:20px; font-size:13px; cursor:pointer; white-space:nowrap;">${brand.brandName}</button>
+				    </c:forEach>
 				</div>
                 
                 <div id="storeCardContainer">
@@ -57,7 +62,7 @@
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
 
     <script>
-    // ── 1. 지도 초기화 ──────────────────────────────────────────
+ // ── 1. 지도 초기화 ──────────────────────────────────────────
     var mapContainer = document.getElementById('map'); 
     var mapOption = { 
         center: new kakao.maps.LatLng(37.566826, 126.978656), // 기본 서울 중심
@@ -65,8 +70,8 @@
     };
     var map = new kakao.maps.Map(mapContainer, mapOption); 
     var geocoder = new kakao.maps.services.Geocoder();
-    var markers = []; // 마커 관리를 위한 배열
-    var infowindows = []; // 정보창 관리를 위한 배열
+    var markers = []; 
+    var infowindows = []; 
 
     // ── 2. 서버에서 넘어온 데이터를 JS 배열로 변환 ─────────────────────
     var stores = [
@@ -91,7 +96,7 @@
                     position: coords
                 });
                 
-                markers[index] = marker; // 인덱스에 맞춰 마커 저장
+                markers[index] = marker; 
 
                 var content = '<div style="padding:15px; width:200px; font-family:sans-serif;">' +
                               '  <div style="font-weight:bold; margin-bottom:5px;">' + store.name + '</div>' +
@@ -110,43 +115,36 @@
                     highlightCard(index);
                 });
 
-                // 첫 번째 매장으로 지도 중심 이동
                 if (index === 0) map.setCenter(coords);
             }
         });
     });
 
     // ── 4. 리스트 클릭 시 해당 위치로 이동 ───────────────────────────
-	function panToStore(addr, index) {
+    function panToStore(addr, index) {
         geocoder.addressSearch(addr, function(result, status) {
-            
-            // 주소 검색에 성공했을 때
             if (status === kakao.maps.services.Status.OK) {
                 var moveLatLon = new kakao.maps.LatLng(result[0].y, result[0].x);
-                map.panTo(moveLatLon); // 부드럽게 이동
+                map.panTo(moveLatLon); 
                 
                 closeAllInfoWindows();
                 
-                // 혹시라도 해당 인덱스의 정보창/마커가 없어서 나는 JS 에러 방지
                 if(infowindows[index] && markers[index]) {
                     infowindows[index].open(map, markers[index]);
                 }
                 
                 highlightCard(index);
             } 
-            // 카카오맵이 주소를 인식하지 못했을 때의 처리!
             else {
                 alert("카카오맵에서 다음 주소를 찾을 수 없습니다: \n[" + addr + "]\nDB에 저장된 주소를 확인해 주세요!");
             }
         });
     }
 
-    // 모든 정보창 닫기
     function closeAllInfoWindows() {
         infowindows.forEach(function(iw) { if(iw) iw.close(); });
     }
 
-    // 클릭한 카드 강조 효과
     function highlightCard(index) {
         document.querySelectorAll('.store-card').forEach(c => c.style.borderColor = 'var(--gray6)');
         var activeCard = document.getElementById('card-' + index);
@@ -156,25 +154,58 @@
         }
     }
 
-    // 간단한 리스트 필터링 (검색)
+    // ── 5. 브랜드 탭 다중 필터링 (새로 추가된 핵심 로직!) ───────────────
+    var currentBrand = 'ALL'; // 현재 선택된 브랜드 기억하기
+
+    function selectBrand(brand, btnElement) {
+        currentBrand = brand;
+
+        // 형님이 설정하신 인라인 스타일에 맞춰서 모든 버튼을 기본(흰 바탕)으로 초기화
+        document.querySelectorAll('.brand-btn').forEach(btn => {
+            btn.style.background = 'var(--white)';
+            btn.style.color = 'var(--black)';
+            btn.style.borderColor = 'var(--border)';
+        });
+        
+        // 클릭한 버튼만 까만색으로 강조 (형님 스타일 그대로!)
+        btnElement.style.background = 'var(--black)';
+        btnElement.style.color = 'var(--white)';
+        btnElement.style.borderColor = 'var(--black)';
+
+        // 탭을 바꿨으니 필터링 다시 실행
+        filterList();
+    }
+
     function filterList() {
-        var val = document.getElementById('storeSearch').value.toLowerCase();
+        var searchVal = document.getElementById('storeSearch').value.toLowerCase();
+        
         document.querySelectorAll('.store-card').forEach(card => {
-            var name = card.querySelector('.store-nm').innerText.toLowerCase();
-            var addr = card.querySelector('.store-addr').innerText.toLowerCase();
-            card.style.display = (name.includes(val) || addr.includes(val)) ? '' : 'none';
+            var name = card.querySelector('.store-nm').innerText;
+            var nameLower = name.toLowerCase();
+            var addrLower = card.querySelector('.store-addr').innerText.toLowerCase();
+            
+            // 🌟 형님 아이디어 적용: 매장 이름(store-nm)에 '나이키'가 포함되어 있는지 검사!
+            var isBrandMatch = (currentBrand === 'ALL' || name.includes(currentBrand));
+            
+            // 검색어 검사
+            var isSearchMatch = (nameLower.includes(searchVal) || addrLower.includes(searchVal));
+            
+            // 두 조건 모두 맞을 때만 보여주기
+            if (isBrandMatch && isSearchMatch) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
         });
     }
     
- //  검색 초기화 기능
+    // ── 6. 검색 초기화 기능 ────────────────────────────────────────
     function resetList() {
-        // 1. 검색 입력창 텍스트 싹 비우기
         document.getElementById('storeSearch').value = '';
         
-        // 2. 숨겨졌던 모든 매장 카드를 다시 보이게 처리
-        document.querySelectorAll('.store-card').forEach(card => {
-            card.style.display = '';
-        });
+        // 모든 카드를 무식하게 다 띄우는 게 아니라, 
+        // "현재 선택된 브랜드 탭 안에서" 텍스트 검색만 초기화합니다!
+        filterList(); 
     }
     </script>
 </body>
