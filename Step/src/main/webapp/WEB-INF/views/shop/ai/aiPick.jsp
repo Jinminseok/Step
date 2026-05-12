@@ -216,11 +216,11 @@
 
                 <%-- 추천 예시 칩 --%>
                 <div class="guide-chips">
-                    <div class="guide-chip" onclick="setMsg('등산용으로 15만원 이내 추천해줘')">🏔️ 등산용 15만원 이내</div>
+                    <div class="guide-chip" onclick="setMsg('축구화를 15만원 이내 추천해줘')">🏔️ 축구화 15만원 이내</div>
                     <div class="guide-chip" onclick="setMsg('일상에서 신기 편한 운동화 추천해줘')">👟 편한 일상 운동화</div>
-                    <div class="guide-chip" onclick="setMsg('여성용 캐주얼 신발 추천해줘')">👩 여성 캐주얼</div>
-                    <div class="guide-chip" onclick="setMsg('러닝화 추천해줘')">🏃 러닝화</div>
-                    <div class="guide-chip" onclick="setMsg('10만원 이하 남성 운동화 추천해줘')">💰 10만원 이하 남성</div>
+                    <div class="guide-chip" onclick="setMsg('편한 신발 추천해줘')">편한 샌들</div>
+                    <div class="guide-chip" onclick="setMsg('슬리퍼 추천해줘')">슬리퍼</div>
+                    <div class="guide-chip" onclick="setMsg('10만원 이하 남녀공용 운동화 추천해줘')">💰 10만원 이하 남여공용</div>
                 </div>
 
                 <%-- 입력창 --%>
