@@ -55,9 +55,7 @@
 			<span class="nav-icon">👤</span>회원 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/couponList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'coupon') ? 'active' : ''}">
-			<span class="nav-icon">🎫</span>쿠폰 관리
-		</a> <a href="${pageContext.request.contextPath}/shop/admin/chatList.do"
-			class="nav-item ${fn:contains(pageContext.request.servletPath, 'chat') ? 'active' : ''}">
+		
 			<span class="nav-icon">💬</span>채팅 문의<span class="nav-badge">3</span>
 		</a>
 
