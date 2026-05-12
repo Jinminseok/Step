@@ -64,7 +64,7 @@
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/store/storeList.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/userstore/userStoreList.do'">
 	        <span class="hdr-btn-icon">🗺️</span>
 	        <span class="hdr-btn-label">매장찾기</span>
 	      </button>
@@ -93,7 +93,7 @@
           	<span class="hdr-btn-icon">🤖</span>
           	<span class="hdr-btn-label">AI추천</span>
           </button>
-          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/store/storeList.do'">
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/userstore/userStoreList.do'">
 	        <span class="hdr-btn-icon">🗺️</span>
 	        <span class="hdr-btn-label">매장찾기</span>
 	      </button>

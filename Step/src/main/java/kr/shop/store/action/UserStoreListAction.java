@@ -10,7 +10,7 @@ import kr.shop.dao.BrandDAO;
 import kr.shop.dao.UserStoreDAO;
 import kr.shop.vo.UserStoreVO;
 
-public class StoreListAction implements Action{
+public class UserStoreListAction implements Action{
 
 	@Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -29,7 +29,7 @@ public class StoreListAction implements Action{
         request.setAttribute("brandList", brandList); // 주석 해제 및 담기 완료!
         
         // 4. 매장 찾기 JSP 페이지로 포워딩
-        return "/shop/store/storeList.jsp"; 
+        return "/shop/userstore/userStoreList.jsp"; 
     }
 
 }
