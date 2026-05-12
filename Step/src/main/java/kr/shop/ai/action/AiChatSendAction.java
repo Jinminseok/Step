@@ -51,7 +51,7 @@ public class AiChatSendAction implements Action {
             }
             productContext = productText.toString();
         } catch (Exception e) {
-            productContext = "(상품 목록 조회 실패)";
+            productContext = "(상품 목록 조회 실패: " + e.getMessage() + ")";
         }
 
         // 5. 시스템 프롬프트
