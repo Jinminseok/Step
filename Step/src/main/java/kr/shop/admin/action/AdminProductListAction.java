@@ -14,26 +14,11 @@ public class AdminProductListAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		// 1. 관리자 권한 체크 (요구사항 C-1 관리자 로그인 필수)
+		// 1. 관리자 권한 체크
 		HttpSession session = request.getSession();
-
-		// 세션에서 Object로 가져온 뒤 Number로 캐스팅하여 int 값 추출 (Long/Integer 호환)
-		Object user_num_obj = session.getAttribute("user_num");
 		Object user_auth_obj = session.getAttribute("user_auth");
 
-		Integer user_num = null;
-		Integer user_auth = null;
-
-		if (user_num_obj != null) {
-			user_num = ((Number) user_num_obj).intValue();
-		}
-		if (user_auth_obj != null) {
-			user_auth = ((Number) user_auth_obj).intValue();
-		}
-
-		// 관리자 권한 체크 (로그인 안 되어 있거나 권한이 9가 아닌 경우)
-		if (user_num == null || user_auth == null || user_auth != 9) {
+		if (user_auth_obj == null || ((Number) user_auth_obj).intValue() != 9) {
 			return "redirect:/member/login.do";
 		}
 
@@ -52,16 +37,13 @@ public class AdminProductListAction implements Action {
 
 		AdminProductDAO dao = AdminProductDAO.getInstance();
 
-		// 4. 전체 상품 개수 조회
+		// 4. 전체 상품 개수 조회 (예외는 프론트 컨트롤러에서 처리하도록 던짐)
 		int count = dao.getProductTotalCount(vo);
 
-		// 5. 페이징 처리
-		String addKey = "";
-		if (keyword != null && !"".equals(keyword)) {
-			addKey = "&search_type=" + search_type + "&keyword=" + keyword;
-		}
-
-		PagingUtil page = new PagingUtil(Integer.parseInt(pageNum), count, 10, 10, "adminProductList.do", addKey);
+		// 5. 페이징 처리 (일관성 있는 생성자 사용)
+		// search_type, keyword를 생성자에 바로 넣으면 PagingUtil이 알아서 쿼리스트링을 만들어줌
+		PagingUtil page = new PagingUtil(search_type, keyword, Integer.parseInt(pageNum), count, 10, 10,
+				"adminProductList.do");
 
 		// 6. 상품 목록 데이터 가져오기
 		List<AdminProductVO> list = null;

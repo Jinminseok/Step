@@ -6,79 +6,141 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상품 관리 목록</title>
+<title>상품 관리 리스트</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/style.css">
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/js/jquery-3.7.1.min.js"></script>
+	href="${pageContext.request.contextPath}/css/KM_style.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script type="text/javascript">
+	function go(menu) {
+		if (menu === 'dashboard')
+			location.href = 'main.do';
+		else if (menu === 'product')
+			location.href = 'productList.do';
+	}
+</script>
 </head>
 <body>
-	<div class="page-main">
-		<h2>상품 관리 목록</h2>
 
-		<form action="adminProductList.do" id="search_form" method="get"
-			style="margin-bottom: 20px;">
-			<select name="search_type">
-				<option value="prod_name"
-					${param.search_type == 'prod_name' ? 'selected' : ''}>상품명</option>
-				<option value="sku" ${param.search_type == 'sku' ? 'selected' : ''}>품번(SKU)</option>
-			</select> <input type="search" name="keyword" id="keyword"
-				value="${param.keyword}"> <input type="submit" value="검색">
-			<input type="button" value="목록"
-				onclick="location.href='adminProductList.do'">
-		</form>
-
-		<div class="result-display">
-			표시할 상품 수: <b>${count}</b>건
+	<aside class="sidebar">
+		<!-- 사이드바 내용은 Main과 동일 (통합 레이아웃 사용 권장) -->
+		<div class="sb-logo">
+			<div class="sb-logo-mark">A</div>
+			<div class="sb-logo-txt">
+				Shoe<span>Mall</span>
+			</div>
 		</div>
+		<nav class="nav">
+			<div class="nav-item" onclick="go('dashboard')">
+				<span class="nav-icon">📊</span>통계 / 대시보드
+			</div>
+			<div class="nav-item active" onclick="go('product')">
+				<span class="nav-icon">👟</span>상품 관리
+			</div>
+		</nav>
+	</aside>
 
-		<c:if test="${count == 0}">
-			<div class="result-none">등록된 상품이 없습니다.</div>
-		</c:if>
+	<div class="main">
+		<header class="topbar">
+			<div class="breadcrumb">Admin > Product Management</div>
+		</header>
 
-		<c:if test="${count > 0}">
-			<table border="1" style="width: 100%; border-collapse: collapse;">
-				<thead>
-					<tr>
-						<th>상품번호</th>
-						<th>이미지</th>
-						<th>브랜드</th>
-						<th>상품명</th>
-						<th>가격</th>
-						<th>상태</th>
-						<th>등록일</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="product" items="${list}">
-						<tr align="center">
-							<td>${product.prod_num}</td>
-							<td><img
-								src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
-								width="50" height="50"></td>
-							<td>${product.brand_name}</td>
-							<td align="left"><a
-								href="adminProductDetail.do?prod_num=${product.prod_num}">${product.prod_name}</a>
-							</td>
-							<td><fmt:formatNumber value="${product.prod_price}" />원</td>
-							<td><c:choose>
-									<c:when test="${product.prod_status == 1}">판매중</c:when>
-									<c:when test="${product.prod_status == 2}">판매중단</c:when>
-									<c:otherwise>기타</c:otherwise>
-								</c:choose></td>
-							<td>${product.prod_created_at}</td>
+		<main class="content">
+			<div class="page-hdr">
+				<h1 class="page-hdr-title">상품 리스트 (${count})</h1>
+				<button class="btn btn-black"
+					onclick="location.href='productInsert.do'">상품 등록</button>
+			</div>
+
+			<!-- 검색 필터 영역 -->
+			<div class="search-area"
+				style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+				<form action="productList.do" method="get"
+					style="display: flex; gap: 10px; align-items: center;">
+					<select name="search_type" class="input-select"
+						style="width: 120px;">
+						<option value="prod_name"
+							<c:if test="${param.search_type == 'prod_name'}">selected</c:if>>상품명</option>
+						<option value="sku"
+							<c:if test="${param.search_type == 'sku'}">selected</c:if>>SKU(품번)</option>
+					</select> <input type="text" name="keyword" value="${param.keyword}"
+						class="input-txt" placeholder="검색어를 입력하세요" style="flex: 1;">
+					<button type="submit" class="btn btn-black">조회</button>
+					<button type="button" class="btn btn-outline"
+						onclick="location.href='productList.do'">초기화</button>
+				</form>
+			</div>
+
+			<div class="tbl-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th width="60">번호</th>
+							<th width="100">이미지</th>
+							<th>상품 정보(명/SKU)</th>
+							<th>카테고리/브랜드</th>
+							<th>판매가</th>
+							<th>상태</th>
+							<th width="100">관리</th>
 						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<c:if test="${count == 0}">
+							<tr>
+								<td colspan="7" style="padding: 50px 0;">검색 결과가 없음</td>
+							</tr>
+						</c:if>
+						<c:forEach var="product" items="${list}">
+							<tr>
+								<td>${product.prod_num}</td>
+								<td><c:if test="${!empty product.prod_img_url}">
+										<img
+											src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
+											width="60" height="60"
+											style="object-fit: cover; border-radius: 5px;">
+									</c:if> <c:if test="${empty product.prod_img_url}">
+										<div
+											style="width: 60px; height: 60px; background: #eee; line-height: 60px; font-size: 11px; color: #aaa; border-radius: 5px;">No
+											Image</div>
+									</c:if></td>
+								<td style="text-align: left;">
+									<div style="font-weight: bold;">${product.prod_name}</div>
+									<div style="font-size: 0.85em; color: #888; margin-top: 4px;">${product.sku}</div>
+								</td>
+								<td>${product.cat_name}/${product.brand_name}</td>
+								<td><fmt:formatNumber value="${product.prod_price}"
+										pattern="#,###" />원 <c:if test="${product.sale_rate > 0}">
+										<div style="color: red; font-size: 0.8em;">${product.sale_rate}%
+											OFF</div>
+									</c:if></td>
+								<td><c:choose>
+										<c:when test="${product.prod_status == 1}">
+											<span class="badge"
+												style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px;">판매중</span>
+										</c:when>
+										<c:when test="${product.prod_status == 2}">
+											<span class="badge"
+												style="background: #fff3e0; color: #fb8c00; padding: 4px 8px; border-radius: 4px;">품절</span>
+										</c:when>
+										<c:otherwise>
+											<span class="badge"
+												style="background: #f5f5f5; color: #9e9e9e; padding: 4px 8px; border-radius: 4px;">숨김</span>
+										</c:otherwise>
+									</c:choose></td>
+								<td>
+									<button class="btn btn-outline" style="font-size: 0.9em;"
+										onclick="location.href='productUpdate.do?prod_num=${product.prod_num}'">수정</button>
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
 
-			<div class="align-center" style="margin-top: 15px;">${page}</div>
-		</c:if>
-
-		<div class="align-right" style="margin-top: 15px;">
-			<input type="button" value="상품 등록"
-				onclick="location.href='adminProductWrite.do'">
-		</div>
+			<div class="paging-area"
+				style="margin-top: 30px; text-align: center;">${page}</div>
+		</main>
 	</div>
+
 </body>
 </html>
