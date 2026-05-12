@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <aside class="sidebar">
 	<div class="sb-logo">
@@ -15,57 +16,60 @@
 	<nav class="nav">
 		<div class="nav-section">대시보드</div>
 		<a href="${pageContext.request.contextPath}/shop/admin/main.do"
-			class="nav-item ${pageContext.request.servletPath.contains('adminMain') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'adminMain') ? 'active' : ''}">
 			<span class="nav-icon">📊</span>통계 / 대시보드
 		</a>
 
 		<div class="nav-section">상품</div>
 		<a href="${pageContext.request.contextPath}/shop/admin/productList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('Product') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'Product') ? 'active' : ''}">
 			<span class="nav-icon">👟</span>상품 관리
 		</a> <a
 			href="${pageContext.request.contextPath}/shop/admin/categoryList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('category') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'category') ? 'active' : ''}">
 			<span class="nav-icon">🏷️</span>카테고리 관리
-		</a> </a> <a href="${pageContext.request.contextPath}/shop/adminBrandList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('brand') ? 'active' : ''}">
+		</a> <a href="${pageContext.request.contextPath}/shop/admin/brandList.do"
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'brand') ? 'active' : ''}">
 			<span class="nav-icon">🏷️</span>브랜드 관리
 		</a>
 
 		<div class="nav-section">재고 / 물류</div>
 		<a href="${pageContext.request.contextPath}/shop/admin/stockList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('stock') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'stock') ? 'active' : ''}">
 			<span class="nav-icon">📦</span>재고 관리<span class="nav-badge">2</span>
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/orderList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('order') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'order') ? 'active' : ''}">
 			<span class="nav-icon">🧾</span>주문 관리
 		</a> <a
 			href="${pageContext.request.contextPath}/shop/admin/deliveryList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('delivery') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'delivery') ? 'active' : ''}">
 			<span class="nav-icon">🚚</span>배송 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/returnList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('return') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'return') ? 'active' : ''}">
 			<span class="nav-icon">↩️</span>반품/교환 관리
 		</a>
 
 		<div class="nav-section">고객</div>
 		<a href="${pageContext.request.contextPath}/shop/admin/memberList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('member') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'member') ? 'active' : ''}">
 			<span class="nav-icon">👤</span>회원 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/couponList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('coupon') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'coupon') ? 'active' : ''}">
+			<span class="nav-icon">🎫</span>쿠폰 관리
+		</a> <a href="${pageContext.request.contextPath}/shop/admin/chatList.do"
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'chat') ? 'active' : ''}">
 			<span class="nav-icon">💬</span>채팅 문의<span class="nav-badge">3</span>
 		</a>
 
 		<div class="nav-section">운영</div>
 		<a href="${pageContext.request.contextPath}/shop/admin/bannerList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('banner') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'banner') ? 'active' : ''}">
 			<span class="nav-icon">🖼️</span>UI / 배너 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/storeList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('store') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'store') ? 'active' : ''}">
 			<span class="nav-icon">🗺️</span>매장 정보 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/notifyList.do"
-			class="nav-item ${pageContext.request.servletPath.contains('notify') ? 'active' : ''}">
+			class="nav-item ${fn:contains(pageContext.request.servletPath, 'notify') ? 'active' : ''}">
 			<span class="nav-icon">🔔</span>알림 발송 관리
 		</a>
 	</nav>
