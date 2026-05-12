@@ -19,7 +19,7 @@ public class StoreListAction implements Action{
         UserStoreDAO dao = UserStoreDAO.getInstance();
         List<UserStoreVO> storeList = dao.getStoreList();
         
-        // 2. 브랜드 리스트 가져오기 (형님 DAO에 맞춰서 Map으로 받습니다!)
+        // 2. 브랜드 리스트 가져오기 
         BrandDAO branddao = BrandDAO.getInstance();
         // 검색어(keyword)는 없으니 null, 사용자 화면이므로 사용중인('Y') 브랜드만 가져오게 세팅!
         List<Map<String, Object>> brandList = branddao.getBrandList(null, "Y");
