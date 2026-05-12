@@ -22,7 +22,7 @@ public class WriteWishAction implements Action {
 		
 		// 로그인이 안되있는 경우
 		if (user_num == null) {
-			response.getWriter().print("{\"result\":\"logout\"}");
+			request.setAttribute("ajaxData", "{\"result\":\"logout\"}");
 			return null; 
 		}
 		
@@ -37,8 +37,7 @@ public class WriteWishAction implements Action {
 		UserWishListDAO.getInstance().insertWish(wish);
 		
 		// 완료했다는 결과를 화면에 보냄
-		response.getWriter().print("{\"result\":\"success\"}");
-		
-		return null;
+		request.setAttribute("ajaxData", "{\"result\":\"success\"}");
+		return "common/ajax_view.jsp";
 	}
 }

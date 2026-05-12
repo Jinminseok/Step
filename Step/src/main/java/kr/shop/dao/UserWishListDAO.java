@@ -22,7 +22,7 @@ public class UserWishListDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			sql = "INSERT INTO wishList (wish_num, user_num, prod_num) VALUES (wish_seq.nextval, ?, ?)";
+			sql = "INSERT INTO wishList (wish_num, user_num, prod_num) VALUES (wishlist_seq.nextval, ?, ?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, wish.getUser_num());
 			pstmt.setLong(2, wish.getProd_num());

@@ -165,7 +165,7 @@ function requireLogin() {
 function handleWish() {
     if(!requireLogin()) return;
 
-    let prod_num = '${product.prod_num}';
+    let prod_num = $('input[name="prod_num"]').val();
 
     $.ajax({
     	url: '${pageContext.request.contextPath}/shop/wish/writeWish.do',
@@ -181,7 +181,8 @@ function handleWish() {
                 $('.btn-wish-lg').addClass('on'); // 버튼에 불 들어오게 처리
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.log("에러 상태:", xhr.status, xhr.responseText);
             alert("통신 중 오류가 발생했습니다.");
         }
     });
@@ -191,32 +192,24 @@ function handleWish() {
 function handleAction(type) {
     if(!requireLogin()) return;
     
-    if(type === 'restock') {
-        alert("재입고 알림 신청이 완료되었습니다.");
-        return;
-    }
+    if(type === 'restock') { alert("재입고 알림 신청이 완료되었습니다."); return; }
+    if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
+    if(selectedSize === "") { alert("상품의 사이즈를 선택해 주세요."); return; }
     
-    if(selectedColor === "") {
-        alert("상품의 색상을 선택해 주세요.");
-        return;
-    }
-    if(selectedSize === "") {
-        alert("상품의 사이즈를 선택해 주세요.");
-        return;
-    }
-    
-    // 장바구니 담기
     if(type === 'cart') {
-        // [임시 처리] 실제로는 색상/사이즈를 바탕으로 옵션 테이블에서 고유 번호(opt_num)를 찾아야 합니다.
-        // 우선 테이블 구조에 맞게 임시 opt_num = 1로 테스트합니다.
-        let opt_num = 1; 
-        let cart_qty = 1; // 수량 기본값
+        // 유저가 진짜 선택한 정보들 수집
+        let prod_num = $('input[name="prod_num"]').val();
+        let color = $('#input_color').val();
+        let size = $('#input_size').val();
+        let cart_qty = 1; // 기본 수량
 
         $.ajax({
             url: '${pageContext.request.contextPath}/shop/cart/writeCart.do',
             type: 'post',
             data: {
-                opt_num: opt_num,
+                prod_num: prod_num,
+                color: color,
+                size: size,
                 cart_qty: cart_qty
             },
             dataType: 'json',
@@ -230,13 +223,13 @@ function handleAction(type) {
                     }
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.log("에러 상태:", xhr.status, xhr.responseText);
                 alert("통신 중 오류가 발생했습니다.");
             }
         });
         
     } else if(type === 'buy') {
-        // 바로 구매 시 기존의 폼 전송 사용
         document.getElementById('orderForm').submit();
     }
 }

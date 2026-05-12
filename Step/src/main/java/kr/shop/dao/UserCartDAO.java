@@ -23,19 +23,24 @@ public class UserCartDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
-		long cart_num = 0;
 		int cnt = 0;
 		
 		try {
 			conn = DBUtil.getConnection();
+			// 🌟 서브쿼리: prod_num, color, size_val을 조합해 진짜 opt_num을 찾아서 넣음!
 			sql = """
 					INSERT INTO cart (cart_num, user_num, opt_num, cart_qty, cart_created_at)
-					VALUES (cart_seq.nextval, ?, ?, ?, SYSDATE)
+					VALUES (cart_seq.nextval, ?, 
+					       (SELECT opt_num FROM prod_options WHERE prod_num = ? AND color = ? AND size_val = ?), 
+					       ?, SYSDATE)
 					""";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(++cnt, cart.getUser_num());
-			pstmt.setLong(++cnt, cart.getOpt_num());
+			pstmt.setInt(++cnt, cart.getProd_num());
+			pstmt.setString(++cnt, cart.getColor());
+			pstmt.setInt(++cnt, cart.getSize_val());
 			pstmt.setInt(++cnt, cart.getCart_qty());
+            
 			pstmt.executeUpdate();
 		} catch(Exception e) {
 			throw new Exception(e);

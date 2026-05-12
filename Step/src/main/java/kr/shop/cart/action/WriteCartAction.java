@@ -22,25 +22,29 @@ public class WriteCartAction implements Action {
 		
 		// 로그인이 안되있는 경우
 		if (user_num == null) {
-			response.getWriter().print("{\"result\":\"logout\"}");
-			return null; 
+			request.setAttribute("ajaxData", "{\"result\":\"logout\"}");
+			return "common/ajax_view.jsp";
 		}
 		
-		// JSP에서 넘어온 옵션번호와 수량 데이터 받기
-		long opt_num = Long.parseLong(request.getParameter("opt_num"));
+		// 데이터 받기
+		int prod_num = Integer.parseInt(request.getParameter("prod_num"));
+		String color = request.getParameter("color");
+		int size_val = Integer.parseInt(request.getParameter("size"));
 		int cart_qty = Integer.parseInt(request.getParameter("cart_qty"));
 		
-		// DB에 저장
 		UserCartVO cart = new UserCartVO();
 		cart.setUser_num(user_num);
-		cart.setOpt_num(opt_num);
+		cart.setProd_num(prod_num);
+		cart.setColor(color);
+		cart.setSize_val(size_val);
 		cart.setCart_qty(cart_qty);
 		
+		// DB 저장
 		UserCartDAO.getInstance().insertCart(cart);
 		
 		// 완료했다는 결과를 화면에 보냄
-		response.getWriter().print("{\"result\":\"success\"}");
+		request.setAttribute("ajaxData", "{\"result\":\"success\"}");
 		
-		return null;
+		return "common/ajax_view.jsp";
 	}
 }
