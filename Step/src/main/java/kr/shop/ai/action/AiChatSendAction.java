@@ -138,7 +138,10 @@ public class AiChatSendAction implements Action {
 
             // 상태 코드 오류 처리
             if (statusCode != 200) {
-                return "AI 오류 (코드: " + statusCode + "): " + json;
+                if (statusCode == 429) {
+                    return "현재 AI 추천 서비스 이용자가 많아 잠시 후 다시 시도해주세요. 😊";
+                }
+                return "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
             }
 
             // ── Gemini 응답 텍스트 추출 ──────────────────────────────
