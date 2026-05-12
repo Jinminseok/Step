@@ -28,7 +28,7 @@
 			href="${pageContext.request.contextPath}/shop/admin/categoryList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'category') ? 'active' : ''}">
 			<span class="nav-icon">🏷️</span>카테고리 관리
-		</a> <a href="${pageContext.request.contextPath}/shop/admin/brandList.do"
+		</a> <a href="${pageContext.request.contextPath}/shop/brand/brandForm.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'brand') ? 'active' : ''}">
 			<span class="nav-icon">🏷️</span>브랜드 관리
 		</a>
