@@ -23,60 +23,7 @@
 </script>
 </head>
 <body>
-
-	<aside class="sidebar">
-		<div class="sb-logo">
-			<div class="sb-logo-mark">A</div>
-			<div>
-				<div class="sb-logo-txt">
-					Shoe<span>Mall</span>
-				</div>
-				<div class="sb-logo-badge">Admin Panel</div>
-			</div>
-		</div>
-		<nav class="nav">
-			<div class="nav-section">대시보드</div>
-			<div class="nav-item active" onclick="go('dashboard')">
-				<span class="nav-icon">📊</span>통계 / 대시보드
-			</div>
-
-			<div class="nav-section">상품</div>
-			<div class="nav-item" onclick="go('product')">
-				<span class="nav-icon">👟</span>상품 관리
-			</div>
-			<div class="nav-item" onclick="go('category')">
-				<span class="nav-icon">🏷️</span>카테고리 관리
-			</div>
-
-			<div class="nav-section">재고 / 물류</div>
-			<div class="nav-item" onclick="go('stock')">
-				<span class="nav-icon">📦</span>재고 관리<span class="nav-badge">2</span>
-			</div>
-			<div class="nav-item" onclick="go('order')">
-				<span class="nav-icon">🧾</span>주문 관리
-			</div>
-
-			<div class="nav-section">고객</div>
-			<div class="nav-item" onclick="go('member')">
-				<span class="nav-icon">👤</span>회원 관리
-			</div>
-			<div class="nav-item" onclick="go('chat')">
-				<span class="nav-icon">💬</span>채팅 문의<span class="nav-badge">3</span>
-			</div>
-		</nav>
-		<div class="sb-footer">
-			<div class="admin-row">
-				<div class="admin-av">관</div>
-				<div>
-					<div class="admin-name">최슈퍼</div>
-					<div class="admin-role">super admin</div>
-				</div>
-				<div class="logout-btn"
-					onclick="location.href='${pageContext.request.contextPath}/member/logout.do'">로그아웃</div>
-			</div>
-		</div>
-	</aside>
-
+	<%@ include file="../../common/shopAdminHeader.jsp"%>
 	<div class="main">
 		<header class="topbar">
 			<div class="breadcrumb">Admin > Dashboard</div>

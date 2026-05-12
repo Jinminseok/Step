@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -12,33 +13,17 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script type="text/javascript">
-	function go(menu) {
-		if (menu === 'dashboard')
-			location.href = 'main.do';
-		else if (menu === 'product')
-			location.href = 'productList.do';
-	}
-</script>
+		function go(menu) {
+			if (menu === 'dashboard')
+				location.href = 'main.do';
+			else if (menu === 'product')
+				location.href = 'productList.do';
+		}
+	</script>
 </head>
 <body>
 
-	<aside class="sidebar">
-		<!-- 사이드바 내용은 Main과 동일 (통합 레이아웃 사용 권장) -->
-		<div class="sb-logo">
-			<div class="sb-logo-mark">A</div>
-			<div class="sb-logo-txt">
-				Shoe<span>Mall</span>
-			</div>
-		</div>
-		<nav class="nav">
-			<div class="nav-item" onclick="go('dashboard')">
-				<span class="nav-icon">📊</span>통계 / 대시보드
-			</div>
-			<div class="nav-item active" onclick="go('product')">
-				<span class="nav-icon">👟</span>상품 관리
-			</div>
-		</nav>
-	</aside>
+	<%@ include file="../../common/shopAdminHeader.jsp"%>
 
 	<div class="main">
 		<header class="topbar">
