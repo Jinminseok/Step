@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <!DOCTYPE html>
 <html>
@@ -85,8 +86,15 @@
 
 
             <%-- 우측 상품 리스트 영역 --%>
-            <div class="prod-wrap" style="flex:1; margin:0; padding:0; max-width: none;">
-                <div class="prod-title" style="text-align: left;">✨ NEW ARRIVALS</div>
+            <div class="prod-wrap" id="prod-list-area" style="flex:1; margin:0; padding:0; max-width: none;">
+                <div class="sort-header">
+                    <div class="sort-tabs">
+                        <a href="#" data-sort="recommend" class="sort-tab ${param.sort == 'recommend' || empty param.sort ? 'active' : ''}">추천순</a>
+                        <a href="#" data-sort="popular" class="sort-tab ${param.sort == 'popular' ? 'active' : ''}">인기순</a>
+                        <a href="#" data-sort="new" class="sort-tab ${param.sort == 'new' ? 'active' : ''}">최신순</a>
+                    </div>
+                    <div class="total-count">총 ${productList.size()}개</div>
+                </div>
                 
                 <div class="prod-grid">
                     <c:forEach var="product" items="${productList}">
@@ -110,9 +118,76 @@
                         </div>
                     </c:if>
                 </div>
+                <%-- 하단 페이징 영역 --%>
+                <div class="pagination">
+                    <c:if test="${count > 0}">
+                        <%-- '이전 블록' 화살표 --%>
+                        <c:if test="${startPage > 1}">
+                            <a href="#" data-page="${startPage - 1}" class="page-btn">◀</a>
+                        </c:if>
+
+                        <%-- 번호 찍어주기 --%>
+                        <c:forEach var="i" begin="${startPage}" end="${endPage}">
+                            <a href="#" data-page="${i}" class="page-btn ${currentPage == i ? 'active' : ''}">${i}</a>
+                        </c:forEach>
+
+                        <%-- '다음 블록' 화살표 --%>
+                        <c:if test="${endPage < totalPage}">
+                            <a href="#" data-page="${endPage + 1}" class="page-btn">▶</a>
+                        </c:if>
+                    </c:if>
+                </div>
             </div>
             <%-- 우측 상품 리스트 영역 끝 --%>
         </div>
     </div>
+    
+<script>
+// 정렬 탭
+$(document).ready(function() {
+    $('.sort-tab').click(function(e) {
+        e.preventDefault();
+
+        // 1. 클릭한 탭으로 까만 밑줄 옮기기
+        $('.sort-tab').removeClass('active');
+        $(this).addClass('active');
+
+        // 2. 어떤 정렬 방식을 눌렀는지 가져오기 (recommend, popular, new)
+        let sortType = $(this).data('sort');
+
+        // 3. 좌측 필터(카테고리, 브랜드) 값을 그대로 가져와서 정렬 조건과 합치기
+        let formData = $('#filterForm').serialize();
+        let targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + formData + '&sort=' + sortType;
+
+        // 4. 로딩 중 시각적 효과
+        $('.prod-grid').css('opacity', '0.4');
+
+        // 5. 서버의 메인 화면을 백그라운드로 몰래 호출한 뒤, 
+        // 그 중에서 '.prod-grid' 안에 있는 상품 카드들만 호출해여 현재 화면을 교체
+        $('.prod-grid').load(targetUrl + ' .prod-grid > *', function() {
+            $('.prod-grid').css('opacity', '1');
+        });
+    });
+    
+    // 하단 페이징 버튼을 눌렀을 때
+    $(document).on('click', '.page-btn', function(e) {
+        e.preventDefault();
+        let pageNum = $(this).data('page'); // 누른 페이지 번호
+        
+        let sortType = $('.sort-tab.active').data('sort'); // 현재 눌려있는 탭 기준 기억하기
+        if(!sortType) sortType = 'recommend'; // 기본값
+        
+        let formData = $('#filterForm').serialize();
+        let targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + formData + '&sort=' + sortType + '&pageNum=' + pageNum;
+
+        $('#prod-list-area').css('opacity', '0.4');
+        $('#prod-list-area').load(targetUrl + ' #prod-list-area > *', function() {
+            $('#prod-list-area').css('opacity', '1');
+            // 스크롤을 살짝 위로 올려주고 싶다면 아래 줄의 주석을 푸세요!
+            // window.scrollTo({top: 400, behavior: 'smooth'}); 
+        });
+    });
+});
+</script>
 </body>
 </html>

@@ -27,7 +27,6 @@ public class UserCartDAO {
 		
 		try {
 			conn = DBUtil.getConnection();
-			// 🌟 서브쿼리: prod_num, color, size_val을 조합해 진짜 opt_num을 찾아서 넣음!
 			sql = """
 					INSERT INTO cart (cart_num, user_num, opt_num, cart_qty, cart_created_at)
 					VALUES (cart_seq.nextval, ?, 
@@ -60,7 +59,7 @@ public class UserCartDAO {
 		try {
 			conn = DBUtil.getConnection();
 			sql = """
-					SELECT c.cart_num, c.user_num, c.opt_num, c.cart_qty, 
+					SELECT c.cart_num, c.user_num, c.opt_num, c.cart_qty, c.cart_created_at, 
 					p.prod_num, p.prod_name, p.prod_price, 
 					i.prod_img_url, b.brand_name, o.color, o.size_val 
 					FROM CART c 
@@ -80,6 +79,7 @@ public class UserCartDAO {
 				cart.setUser_num(rs.getLong("user_num"));
 				cart.setOpt_num(rs.getLong("opt_num"));
 				cart.setCart_qty(rs.getInt("cart_qty"));
+				cart.setCart_created_at(rs.getDate("cart_created_at"));
 				cart.setProd_num(rs.getInt("prod_num"));
 				cart.setProd_name(rs.getString("prod_name"));
 				cart.setProd_price(rs.getInt("prod_price"));
@@ -103,7 +103,7 @@ public class UserCartDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			sql = "DELETE FROM CART WHERE cart_num = ?";
+			sql = "DELETE FROM cart WHERE cart_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, cart_num);
 			pstmt.executeUpdate();
@@ -111,5 +111,7 @@ public class UserCartDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
+	
+	// 장바
 		
 }

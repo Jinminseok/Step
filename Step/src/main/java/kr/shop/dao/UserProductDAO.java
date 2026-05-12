@@ -218,4 +218,57 @@ public class UserProductDAO {
 	    }
 	    return list;
 	}
+	
+	// 메인페이지 하단 페이징
+	public int getMainProductCount(AdminProductVO filter) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int count = 0;
+		String sql = null;
+		String sub_sql = "";
+		int cnt = 0;
+		
+		try {
+			conn = DBUtil.getConnection();
+			// 1. 필터 조건 조립
+			if(filter.getCat_num() > 0) {
+				sub_sql += " AND cat_num = ? ";
+			}
+			if(filter.getBrand_num() > 0) {
+				sub_sql += " AND brand_num = ? ";
+			}
+			if(filter.getGender() != -1) {
+				sub_sql += " AND gender = ? ";
+			}
+			
+			// 2. 전체 상품 개수(판매중인 상품) 
+			sql = "SELECT COUNT(*) FROM PRODUCTS WHERE prod_status = 1 " + sub_sql;
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			// 3. ?에 데이터 바인딩
+			if(filter.getCat_num() > 0) {
+				pstmt.setInt(++cnt, filter.getCat_num());
+			}
+			if(filter.getBrand_num() > 0) {
+				pstmt.setInt(++cnt, filter.getBrand_num());
+			}
+			if(filter.getGender() != -1) {
+				pstmt.setInt(++cnt, filter.getGender());
+			}
+			
+			// 4. 쿼리 실행 및 결과 가져오기
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch(Exception e) {
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		
+		return count;
+	}
 }

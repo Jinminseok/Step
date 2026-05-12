@@ -17,10 +17,10 @@
     <div class="wrap">
         <div class="page-title">찜한 상품 🤍</div>
         
-        <%-- 메인 화면과 동일한 prod-grid 클래스 사용 --%>
+        <%-- 메인 화면과 동일하게 --%>
         <div class="prod-grid">
             
-            <%-- 찜한 상품이 없을 때 보여줄 화면 --%>
+            <%-- 찜한 상품이 없을 경우 --%>
             <c:if test="${empty wishList}">
                 <div style="grid-column: 1 / -1; padding: 120px 0; text-align: center; color: var(--gray4); font-size: 15px;">
                     아직 찜한 상품이 없습니다. 마음에 드는 상품에 하트를 눌러보세요!
@@ -48,9 +48,6 @@
                         <div class="prod-name">${wish.prod_name}</div>
                         <div class="prod-price"><fmt:formatNumber value="${wish.prod_price}" pattern="#,###"/>원</div>
                         
-                        <%-- 편의성을 위해 '옵션 선택하기' 버튼 추가 (누르면 상세페이지로 감) --%>
-                        <button class="btn btn-outline btn-full btn-sm" style="margin-top:14px;" 
-                                onclick="event.stopPropagation(); location.href='${pageContext.request.contextPath}/shop/product/productdetail.do?prod_num=${wish.prod_num}'">옵션 선택하기</button>
                     </div>
                     
                 </div>
@@ -62,10 +59,23 @@
 <script>
 // 찜 해제(삭제)
 function removeWish(prod_num) {
-    if(confirm("이 상품을 찜 목록에서 삭제하시겠습니까?")) {
-        // 나중에 여기에 deleteWish.do 로 보내는 AJAX 통신을 넣으면 됩니다!
-        alert("백엔드(삭제 Action) 연동 후 작동할 기능입니다.");
-    }
+    if(!confirm("이 상품을 찜 목록에서 삭제하시겠습니까?")) return;
+
+    $.ajax({
+        url: '${pageContext.request.contextPath}/shop/wish/deleteWish.do',
+        type: 'post',
+        data: { prod_num: prod_num },
+        dataType: 'json',
+        success: function(param) {
+            if(param.result === 'logout') {
+                alert("로그인이 필요합니다.");
+            } else if (param.result === 'success') {
+                alert("찜 목록에서 삭제되었습니다.");
+                location.reload();
+            }
+        },
+        error: function() { alert("통신 오류가 발생했습니다."); }
+    });
 }
 </script>
 </body>
