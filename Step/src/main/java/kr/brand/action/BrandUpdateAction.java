@@ -10,7 +10,7 @@ public class BrandUpdateAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
-        int    brandNum   = Integer.parseInt(request.getParameter("brandNum"));
+        int brandNum   = Integer.parseInt(request.getParameter("brandNum"));
         String brandName  = request.getParameter("brandName");
         String brandUseYn = request.getParameter("brandUseYn");
 

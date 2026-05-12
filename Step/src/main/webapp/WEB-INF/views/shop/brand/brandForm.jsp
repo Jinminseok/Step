@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <title>ShoeMall - 브랜드 관리</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/KM_style.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -15,27 +16,6 @@
   --red:#ff0000; --blue:#0057ff; --orange:#ff6b00; --green:#008000;
 }
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--black);display:flex;min-height:100vh;font-size:14px}
-
-/* SIDEBAR */
-.sidebar{width:220px;background:var(--black);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100}
-.sb-logo{padding:20px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:10px}
-.sb-logo-mark{width:28px;height:28px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
-.sb-logo-txt{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.5px}
-.sb-logo-txt span{color:#ff4d4d}
-.sb-logo-badge{font-size:9px;color:#555;margin-top:2px;letter-spacing:.15em;text-transform:uppercase}
-.nav{flex:1;padding:10px 0;overflow-y:auto}
-.nav-section{padding:8px 16px 4px;font-size:9px;font-weight:700;color:#444;letter-spacing:.15em;text-transform:uppercase;margin-top:4px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;color:#888;transition:all .18s;font-size:13px;border-left:2px solid transparent;text-decoration:none}
-.nav-item:hover{color:#ddd;background:rgba(255,255,255,.04)}
-.nav-item.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--red)}
-.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
-.sb-footer{padding:14px 16px;border-top:1px solid #1a1a1a}
-.admin-row{display:flex;align-items:center;gap:9px}
-.admin-av{width:30px;height:30px;border-radius:2px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
-.admin-name{font-size:12px;font-weight:700;color:#fff}
-.admin-role{font-size:10px;color:#555}
-.logout-btn{margin-left:auto;font-size:10px;color:#555;cursor:pointer;padding:3px 7px;border:1px solid #333;border-radius:2px}
-.logout-btn:hover{color:#fff;border-color:#666}
 
 /* MAIN */
 .main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
@@ -69,30 +49,26 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 .sel{padding:9px 12px;border:1px solid var(--border);background:var(--white);font-size:12px;font-family:inherit;outline:none;color:var(--gray2);cursor:pointer}
 
 /* BUTTONS */
-.btn{padding:9px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.02em}
+.btn{padding:9px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.02em;white-space:nowrap;}
 .btn-black{background:var(--black);color:#fff}
 .btn-black:hover{background:#333}
-.btn-red{background:var(--red);color:#fff}
-.btn-red:hover{background:#cc0000}
 .btn-outline{background:var(--white);color:var(--gray2);border:1px solid var(--border)}
 .btn-outline:hover{border-color:var(--black);color:var(--black)}
 .btn-danger{background:#fff0f0;color:var(--red);border:1px solid #ffd0d0}
 .btn-danger:hover{background:var(--red);color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
-.btn-xs{padding:3px 8px;font-size:10px}
+.btn-xs{padding:3px 8px;font-size:10px;white-space:nowrap;}
 
 /* BADGE */
 .badge{display:inline-flex;align-items:center;padding:2px 7px;font-size:10px;font-weight:700}
-.b-black{background:var(--black);color:#fff}
 .b-green{background:#e8f5e8;color:var(--green)}
-.b-red{background:#fff0f0;color:var(--red)}
 .b-gray{background:var(--gray7);color:var(--gray3)}
 
 /* TABLE */
 .tbl-wrap{overflow-x:auto;background:var(--white);border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse}
 th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--gray4);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;background:var(--white)}
-td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray2);vertical-align:middle}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray2);vertical-align:middle;white-space:nowrap;}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafafa}
 
@@ -122,50 +98,12 @@ tr:hover td{background:#fafafa}
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sb-logo">
-    <div class="sb-logo-mark">A</div>
-    <div>
-      <div class="sb-logo-txt">Shoe<span>Mall</span></div>
-      <div class="sb-logo-badge">Admin Panel</div>
-    </div>
-  </div>
-  <nav class="nav">
-    <div class="nav-section">대시보드</div>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/dashboard.do"><span class="nav-icon">📊</span>통계 / 대시보드</a>
+<%@ include file="../../common/shopAdminHeader.jsp"%>
 
-    <div class="nav-section">상품</div>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/product.do"><span class="nav-icon">👟</span>상품 관리</a>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/category.do"><span class="nav-icon">🏷️</span>카테고리 관리</a>
-    <a class="nav-item active" href="${pageContext.request.contextPath}/shop/brand/brandForm.do"><span class="nav-icon">🎯</span>브랜드 관리</a>
-
-    <div class="nav-section">재고 / 물류</div>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/stock.do"><span class="nav-icon">📦</span>재고 관리</a>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/order.do"><span class="nav-icon">🧾</span>주문 관리</a>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/delivery.do"><span class="nav-icon">🚚</span>배송 관리</a>
-
-    <div class="nav-section">고객</div>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/member.do"><span class="nav-icon">👤</span>회원 관리</a>
-    <a class="nav-item" href="${pageContext.request.contextPath}/admin/coupon.do"><span class="nav-icon">🎫</span>쿠폰 관리</a>
-  </nav>
-  <div class="sb-footer">
-    <div class="admin-row">
-      <div class="admin-av">관</div>
-      <div>
-        <div class="admin-name">관리자</div>
-        <div class="admin-role">super admin</div>
-      </div>
-      <div class="logout-btn">로그아웃</div>
-    </div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
+<div class="main">
   <div class="topbar">
     <div class="topbar-title">브랜드 관리</div>
-    <div class="topbar-path">/ brand</div>
+    <div class="topbar-path">Admin > 브랜드 관리</div>
     <div class="topbar-right">
       <div class="t-btn">🔔</div>
       <div class="t-btn">⚙️</div>
@@ -175,24 +113,24 @@ tr:hover td{background:#fafafa}
   <div class="content">
 
     <c:if test="${not empty msg}">
-  <c:choose>
-    <c:when test="${msg eq 'insert_ok'}">
-      <script>window.onload = function(){ showToast('브랜드가 등록되었습니다.'); }</script>
-    </c:when>
-    <c:when test="${msg eq 'update_ok'}">
-      <script>window.onload = function(){ showToast('브랜드가 수정되었습니다.'); }</script>
-    </c:when>
-    <c:when test="${msg eq 'delete_ok'}">
-      <script>window.onload = function(){ showToast('브랜드가 삭제되었습니다.'); }</script>
-    </c:when>
-    <c:when test="${msg eq 'toggle_ok'}">
-      <script>window.onload = function(){ showToast('상태가 변경되었습니다.'); }</script>
-    </c:when>
-    <c:when test="${msg eq 'duplicate'}">
-  <script>window.onload = function(){ showToast('이미 존재하는 브랜드명입니다.'); }</script>
-</c:when>
-  </c:choose>
-</c:if>
+      <c:choose>
+        <c:when test="${msg eq 'insert_ok'}">
+          <script>window.onload = function(){ showToast('브랜드가 등록되었습니다.'); }</script>
+        </c:when>
+        <c:when test="${msg eq 'update_ok'}">
+          <script>window.onload = function(){ showToast('브랜드가 수정되었습니다.'); }</script>
+        </c:when>
+        <c:when test="${msg eq 'delete_ok'}">
+          <script>window.onload = function(){ showToast('브랜드가 삭제되었습니다.'); }</script>
+        </c:when>
+        <c:when test="${msg eq 'toggle_ok'}">
+          <script>window.onload = function(){ showToast('상태가 변경되었습니다.'); }</script>
+        </c:when>
+        <c:when test="${msg eq 'duplicate'}">
+          <script>window.onload = function(){ showToast('이미 존재하는 브랜드명입니다.'); }</script>
+        </c:when>
+      </c:choose>
+    </c:if>
 
     <div class="page-hdr">
       <div>
@@ -248,7 +186,7 @@ tr:hover td{background:#fafafa}
             <th>브랜드명</th>
             <th style="width:100px">상태</th>
             <th style="width:120px">상품마스터 반영</th>
-            <th style="width:180px">관리</th>
+            <th style="width:220px">관리</th>
           </tr>
         </thead>
         <tbody>
@@ -313,7 +251,7 @@ tr:hover td{background:#fafafa}
     </div>
 
   </div>
-</main>
+</div>
 
 <!-- 브랜드 등록 모달 -->
 <div class="modal-overlay" id="modal-add">
