@@ -63,7 +63,7 @@
 		<a href="${pageContext.request.contextPath}/shop/admin/bannerList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'banner') ? 'active' : ''}">
 			<span class="nav-icon">🖼️</span>UI / 배너 관리
-		</a> <a href="${pageContext.request.contextPath}/shop/admin/storeList.do"
+		</a> <a href="${pageContext.request.contextPath}/shop/admin/adminStoreList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'store') ? 'active' : ''}">
 			<span class="nav-icon">🗺️</span>매장 정보 관리
 		</a> <a href="${pageContext.request.contextPath}/shop/admin/notifyList.do"
