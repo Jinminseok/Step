@@ -106,7 +106,6 @@ tr:hover td{background:#fafafa}
     <div class="topbar-path">Admin > 브랜드 관리</div>
     <div class="topbar-right">
       <div class="t-btn">🔔</div>
-      <div class="t-btn">⚙️</div>
     </div>
   </div>
 

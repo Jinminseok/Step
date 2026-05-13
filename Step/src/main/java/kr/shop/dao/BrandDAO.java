@@ -76,16 +76,29 @@ public class BrandDAO {
 
     // 브랜드 등록
     public void insertBrand(String brandName, String brandUseYn) throws Exception {
-        Connection conn = null; PreparedStatement pstmt = null;
-        String sql = "INSERT INTO BRANDS (BRAND_NUM, BRAND_NAME, BRAND_USE_YN) "
-                   + "VALUES (BRANDS_SEQ.NEXTVAL, ?, ?)";
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         try {
             conn = DBUtil.getConnection();
+
+            // 현재 최대 번호 조회
+            String maxSql = "SELECT NVL(MAX(BRAND_NUM), 0) + 1 FROM BRANDS";
+            pstmt = conn.prepareStatement(maxSql);
+            rs = pstmt.executeQuery();
+            int nextNum = 1;
+            if (rs.next()) nextNum = rs.getInt(1);
+            rs.close();
+            pstmt.close();
+
+            // MAX+1 번호로 INSERT
+            String sql = "INSERT INTO BRANDS (BRAND_NUM, BRAND_NAME, BRAND_USE_YN) "
+                       + "VALUES (?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, brandName);
-            pstmt.setString(2, brandUseYn);
+            pstmt.setInt(1, nextNum);
+            pstmt.setString(2, brandName);
+            pstmt.setString(3, brandUseYn);
             pstmt.executeUpdate();
-        } finally { DBUtil.executeClose(null, pstmt, conn); }
+
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
     }
  // 브랜드명 중복 체크
     public boolean isBrandNameDuplicate(String brandName) throws Exception {

@@ -178,9 +178,9 @@ public class Log_ProdDAO {
 
 	        // ④ 이미지 있을 때만 PROD_IMGS INSERT + IMG_NUM 업데이트 ← 여기가 빠져있었음
 	        if (vo.getProdImgUrl() != null && !vo.getProdImgUrl().isEmpty()) {
-	            String imgSql = "INSERT INTO PROD_IMGS "
-	                          + "(PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
-	                          + "VALUES (PROD_IMGS_SEQ.NEXTVAL, ?, ?, 'Y', 1)";
+	        	String imgSql = "INSERT INTO PROD_IMGS "
+	                    + "(PROD_IMG_NUM, PROD_NUM, PROD_IMG_URL, IS_MAIN, PROD_IMG_SORT_NO) "
+	                    + "VALUES ((SELECT NVL(MAX(PROD_IMG_NUM), 0) + 1 FROM PROD_IMGS), ?, ?, 'Y', 1)";
 
 	            pstmt = conn.prepareStatement(imgSql, new String[]{"PROD_IMG_NUM"});
 	            pstmt.setInt   (1, newProdNum);
