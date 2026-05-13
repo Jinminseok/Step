@@ -12,57 +12,151 @@
 	href="${pageContext.request.contextPath}/css/KM_style.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	<style type="text/css">
-.topbar {
-	height: 54px;
-	border-bottom: 1px solid #1a1a1a;
-	display: flex;
-	align-items: center;
-	padding: 0 24px;
-	gap: 12px;
-	background: var(--black);
-	position: sticky;
-	top: 0;
-	z-index: 50
+<style type="text/css">
+/* 기본 배경 및 컨텐츠 영역 */
+.content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
-.topbar-title {
-	font-family: 'Space Grotesk', sans-serif;
-	font-size: 14px;
-	font-weight: 700;
-	color: #fff;
-	letter-spacing: .02em
+/* 상단 헤더 영역 */
+.page-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f1f1f1;
+    padding-bottom: 15px;
 }
 
-.topbar-path {
-	font-size: 11px;
-	color: #999
+.page-hdr-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
 }
 
-.topbar-right {
-	margin-left: auto;
-	display: flex;
-	align-items: center;
-	gap: 8px
+/* 폼 컨테이너 */
+.form-container {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef0f2;
 }
 
-.t-btn {
-	width: 32px;
-	height: 32px;
-	border: 1px solid #333;
-	background: transparent;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	font-size: 14px;
-	color: #888;
-	border-radius: 2px
+/* 섹션 타이틀 */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #444;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 4px solid #000;
 }
 
-.t-btn:hover {
-	border-color: #555;
-	color: #fff
+.section-title:first-of-type {
+    margin-top: 0;
+}
+
+/* 폼 그룹 레이아웃 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* 입력 필드 스타일링 */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #000;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 파일 업로드 특수 스타일 */
+input[type="file"] {
+    background: #f8f9fa;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+}
+
+/* 버튼 스타일 */
+.btn-area {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 16px;
+    border: none;
+}
+
+.btn-black {
+    background: #111;
+    color: #fff;
+}
+
+.btn-black:hover {
+    background: #333;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.btn-outline:hover {
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* 반응형을 위한 플렉스 그리드 수정 */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 5px;
+}
+
+.form-row > .form-group {
+    flex: 1;
+}
+
+/* 텍스트 영역 */
+textarea {
+    resize: none;
+    line-height: 1.6;
 }
 </style>
 <script type="text/javascript">
