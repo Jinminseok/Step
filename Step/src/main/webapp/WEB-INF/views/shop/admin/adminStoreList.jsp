@@ -48,8 +48,8 @@
         padding: 14px; border-bottom: 1px solid #eee; vertical-align: middle; 
         color: #555; white-space: nowrap; /* 줄바꿈 절대 방지 */
     }
-    /* 주소는 너무 길면 칸을 뚫고 나가니 주소만 자동 줄바꿈 허용 */
-    .admin-table td.addr-cell { white-space: normal; text-align: left; font-size: 13px; line-height: 1.4; }
+    /* 주소 */
+    .admin-table td.addr-cell {text-align: left; font-size: 13px; line-height: 1.4; }
 
     .admin-table tbody tr { cursor: pointer; transition: 0.1s; }
     .admin-table tbody tr:hover { background: #f0f4ff; }
