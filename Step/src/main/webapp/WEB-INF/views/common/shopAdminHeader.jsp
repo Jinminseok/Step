@@ -53,7 +53,7 @@
 			</a>
 
 			<div class="nav-section">고객</div>
-			<a href="${pageContext.request.contextPath}/shop/admin/memberList.do"
+			<a href="${pageContext.request.contextPath}/shop/member/memberForm.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'member') ? 'active' : ''}">
 				<span class="nav-icon">👤</span>회원 관리
 			</a> <a
