@@ -35,7 +35,7 @@
 
 .topbar-path {
 	font-size: 11px;
-	color: #444
+	color: #999
 }
 
 .topbar-right {
@@ -79,8 +79,7 @@
 	<%@ include file="../../common/shopAdminHeader.jsp"%>
 
 <div class="main">
-
-   <%@ include file="../../common/sub_title.jsp"%>
+   <jsp:include page="/WEB-INF/views/common/sub_title.jsp"/>
    <div class="content">
 		<div class="page-hdr">
 			<h1 class="page-hdr-title">쇼핑몰 운영 현황</h1>

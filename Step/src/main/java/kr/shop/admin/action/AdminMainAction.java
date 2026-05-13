@@ -17,7 +17,7 @@ public class AdminMainAction implements Action {
 		Object user_auth_obj = session.getAttribute("user_auth");
 
 		if (user_auth_obj == null || ((Number) user_auth_obj).intValue() != 9) {
-			return "redirect:/member/login.do";
+			return "redirect:/shop/user/loginForm.do";
 		}
 
 		// 2. 대시보드용 요약 데이터 수집
@@ -33,6 +33,7 @@ public class AdminMainAction implements Action {
 
 		// 3. 데이터 바인딩
 		request.setAttribute("totalProductCount", totalProductCount);
+		request.setAttribute("app_title","통계 / 대시보드");
 
 		// 4. 뷰 경로 반환 (대시보드 전용 JSP)
 		return "shop/admin/adminMain.jsp";

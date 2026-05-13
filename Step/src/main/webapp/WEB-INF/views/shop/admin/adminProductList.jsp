@@ -12,6 +12,59 @@
 	href="${pageContext.request.contextPath}/css/KM_style.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<style type="text/css">
+.topbar {
+	height: 54px;
+	border-bottom: 1px solid #1a1a1a;
+	display: flex;
+	align-items: center;
+	padding: 0 24px;
+	gap: 12px;
+	background: var(--black);
+	position: sticky;
+	top: 0;
+	z-index: 50
+}
+
+.topbar-title {
+	font-family: 'Space Grotesk', sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: .02em
+}
+
+.topbar-path {
+	font-size: 11px;
+	color: #999
+}
+
+.topbar-right {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 8px
+}
+
+.t-btn {
+	width: 32px;
+	height: 32px;
+	border: 1px solid #333;
+	background: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-size: 14px;
+	color: #888;
+	border-radius: 2px
+}
+
+.t-btn:hover {
+	border-color: #555;
+	color: #fff
+}
+</style>
 <script type="text/javascript">
 		function go(menu) {
 			if (menu === 'dashboard')
@@ -26,11 +79,8 @@
 	<%@ include file="../../common/shopAdminHeader.jsp"%>
 
 	<div class="main">
-		<header class="topbar">
-			<div class="breadcrumb">Admin > Product Management</div>
-		</header>
-
-		<main class="content">
+	<jsp:include page="/WEB-INF/views/common/sub_title.jsp"/>
+		<div class="content">
 			<div class="page-hdr">
 				<h1 class="page-hdr-title">상품 리스트 (${count})</h1>
 				<button class="btn btn-black"
@@ -124,7 +174,7 @@
 
 			<div class="paging-area"
 				style="margin-top: 30px; text-align: center;">${page}</div>
-		</main>
+		</div>
 	</div>
 
 </body>

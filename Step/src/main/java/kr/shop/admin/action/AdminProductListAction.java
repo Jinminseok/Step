@@ -19,7 +19,7 @@ public class AdminProductListAction implements Action {
 		Object user_auth_obj = session.getAttribute("user_auth");
 
 		if (user_auth_obj == null || ((Number) user_auth_obj).intValue() != 9) {
-			return "redirect:/member/login.do";
+			return "redirect:/shop/user/loginForm.do";
 		}
 
 		// 2. 파라미터 수집
@@ -57,6 +57,7 @@ public class AdminProductListAction implements Action {
 		request.setAttribute("count", count);
 		request.setAttribute("list", list);
 		request.setAttribute("page", page.getPage());
+		request.setAttribute("app_title","상품 관리");
 
 		// 8. 뷰 경로 반환
 		return "shop/admin/adminProductList.jsp";
