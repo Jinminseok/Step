@@ -22,14 +22,15 @@ public class MemberDAO {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT USER_NUM, USER_NAME, EMAIL, PHONE, ");
-        sql.append("       GRADE, USER_CREATED_AT, LAST_LOGIN ");
-        sql.append("FROM USERS_DETAIL WHERE 1=1 ");
+        sql.append("SELECT u.USER_ID, u.AUTH, d.USER_NUM, d.USER_NAME, d.EMAIL, d.PHONE, ");
+        sql.append("       d.GRADE, d.USER_CREATED_AT, d.LAST_LOGIN ");
+        sql.append("FROM USERS_DETAIL d JOIN USERS u ON u.USER_NUM = d.USER_NUM ");
+        sql.append("WHERE 1=1 ");
         if (keyword != null && !keyword.trim().isEmpty())
-            sql.append("AND (USER_NAME LIKE ? OR EMAIL LIKE ? OR PHONE LIKE ?) ");
+            sql.append("AND (d.USER_NAME LIKE ? OR d.EMAIL LIKE ? OR d.PHONE LIKE ?) ");
         if (grade != null && !grade.trim().isEmpty())
-            sql.append("AND GRADE = ? ");
-        sql.append("ORDER BY USER_CREATED_AT DESC");
+            sql.append("AND d.GRADE = ? ");
+        sql.append("ORDER BY d.USER_CREATED_AT DESC");
 
         try {
             conn = DBUtil.getConnection();
@@ -46,6 +47,8 @@ public class MemberDAO {
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
+                map.put("userId",    rs.getString("USER_ID"));
+                map.put("auth",      rs.getInt("AUTH"));
                 map.put("userNum",   rs.getInt("USER_NUM"));
                 map.put("userName",  rs.getString("USER_NAME"));
                 map.put("email",     rs.getString("EMAIL"));
@@ -63,15 +66,18 @@ public class MemberDAO {
     public Map<String, Object> getMemberDetail(int userNum) throws Exception {
         Map<String, Object> map = new HashMap<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
-        String sql = "SELECT USER_NUM, USER_NAME, EMAIL, PHONE, "
-                   + "ZIPCODE, ADDR1, ADDR2, GRADE, USER_CREATED_AT, LAST_LOGIN "
-                   + "FROM USERS_DETAIL WHERE USER_NUM = ?";
+        String sql = "SELECT u.USER_ID, u.AUTH, d.USER_NUM, d.USER_NAME, d.EMAIL, d.PHONE, "
+                   + "d.ZIPCODE, d.ADDR1, d.ADDR2, d.GRADE, d.USER_CREATED_AT, d.LAST_LOGIN "
+                   + "FROM USERS_DETAIL d JOIN USERS u ON u.USER_NUM = d.USER_NUM "
+                   + "WHERE d.USER_NUM = ?";
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userNum);
             rs = pstmt.executeQuery();
             if (rs.next()) {
+                map.put("userId",    rs.getString("USER_ID"));
+                map.put("auth",      rs.getInt("AUTH"));
                 map.put("userNum",   rs.getInt("USER_NUM"));
                 map.put("userName",  rs.getString("USER_NAME"));
                 map.put("email",     rs.getString("EMAIL"));
@@ -87,16 +93,21 @@ public class MemberDAO {
         return map;
     }
 
-    // 등급 변경
+ // 등급 변경
     public void updateGrade(int userNum, int grade) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null;
         String sql = "UPDATE USERS_DETAIL SET GRADE = ? WHERE USER_NUM = ?";
         try {
             conn = DBUtil.getConnection();
+            conn.setAutoCommit(false);          // ← 추가
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, grade);
             pstmt.setInt(2, userNum);
             pstmt.executeUpdate();
+            conn.commit();                      // ← 추가
+        } catch (Exception e) {
+            if (conn != null) conn.rollback();  // ← 추가
+            throw e;
         } finally { DBUtil.executeClose(null, pstmt, conn); }
     }
 
@@ -114,7 +125,7 @@ public class MemberDAO {
             pstmt.close();
 
             // USERS 삭제
-            pstmt = conn.prepareStatement("DELETE FROM USERS WHERE USER_ID = ?");
+            pstmt = conn.prepareStatement("DELETE FROM USERS WHERE USER_NUM = ?");
             pstmt.setInt(1, userNum);
             pstmt.executeUpdate();
 

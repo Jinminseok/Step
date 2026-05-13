@@ -24,13 +24,12 @@ public class UserDAO {
 		PreparedStatement pstmt3 = null;
 		ResultSet rs = null;
 		String sql = null;
-		long user_num = 0; // 시퀀스 번호 저장
+		long user_num = 0;
 		int cnt = 0;
 		
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
-			// 회원번호 생성
 			sql = "SELECT users_seq.nextval FROM dual";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
@@ -61,11 +60,8 @@ public class UserDAO {
 			pstmt3.setString(++cnt, user.getAddr2());
 			
 			pstmt3.executeUpdate();
-			
-			// SQL문 실행시 모두 성공하면 커밋
 			conn.commit();
 		} catch(Exception e) {
-			// 하나라도 실패시 롤백
 			conn.rollback();
 			throw new Exception(e);
 		} finally {
@@ -98,8 +94,7 @@ public class UserDAO {
 				user.setUser_num(rs.getLong("user_num"));
 				user.setUser_id(rs.getString("user_id"));
 				user.setAuth(rs.getInt("auth"));
-				user.setPwd(rs.getString("pwd"));;
-				// 회원탈퇴시 필요
+				user.setPwd(rs.getString("pwd"));
 				user.setEmail(rs.getString("email"));
 			}
 		} catch(Exception e) {
@@ -108,6 +103,24 @@ public class UserDAO {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return user;
+	}
+
+	// 마지막 로그인 시간 업데이트
+	public void updateLastLogin(long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = "UPDATE USERS_DETAIL SET LAST_LOGIN = SYSDATE WHERE USER_NUM = ?";
+		try {
+			conn = DBUtil.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
 	}
 	
 	// 마이페이지 회원 상세 정보 전체 가져오기
@@ -183,29 +196,33 @@ public class UserDAO {
 		
 	// 마이페이지 누적 금액에 따른 회원 등급 갱신
 	public void updateUserGrade(long user_num) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			conn = DBUtil.getConnection();
-			// 구간별로 등급을 자동 판별
-			String sql = "UPDATE users_detail SET grade = CASE "
-					   + "  WHEN total_amount >= 500000 THEN 4 " // 50만 원 이상: VIP(4)
-					   + "  WHEN total_amount >= 300000 THEN 3 " // 30만 원 이상: GOLD(3)
-					   + "  WHEN total_amount >= 100000 THEN 2 " // 10만 원 이상: SILVER(2)
-					   + "  ELSE 1 "                             // 그 외: BRONZE(1)
-					   + "END WHERE user_num = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, user_num);
-			pstmt.executeUpdate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			DBUtil.executeClose(null, pstmt, conn);
-		}
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    
+	    try {
+	        conn = DBUtil.getConnection();
+	        // total_amount 기준 자동 계산 등급과 현재 등급 중 높은 값 유지
+	        String sql = "UPDATE users_detail SET grade = CASE "
+	                   + "  WHEN total_amount >= 500000 THEN "
+	                   + "    CASE WHEN grade > 4 THEN grade ELSE 4 END "
+	                   + "  WHEN total_amount >= 300000 THEN "
+	                   + "    CASE WHEN grade > 3 THEN grade ELSE 3 END "
+	                   + "  WHEN total_amount >= 100000 THEN "
+	                   + "    CASE WHEN grade > 2 THEN grade ELSE 2 END "
+	                   + "  ELSE "
+	                   + "    CASE WHEN grade > 1 THEN grade ELSE 1 END "
+	                   + "END WHERE user_num = ?";
+	        
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setLong(1, user_num);
+	        pstmt.executeUpdate();
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new Exception(e);
+	    } finally {
+	        DBUtil.executeClose(null, pstmt, conn);
+	    }
 	}
 	
 }

@@ -159,6 +159,7 @@ tr:hover td{background:#fafafa}
         <thead>
           <tr>
             <th style="width:60px">번호</th>
+            <th style="width:100px">아이디</th>
             <th>이름</th>
             <th>이메일</th>
             <th style="width:130px">전화번호</th>
@@ -172,6 +173,7 @@ tr:hover td{background:#fafafa}
           <c:forEach var="m" items="${memberList}">
             <tr>
               <td style="color:var(--gray4);font-size:12px">${m.userNum}</td>
+              <td style="font-size:12px;color:var(--gray3)">${m.userId}</td>
               <td style="font-weight:700">${m.userName}</td>
               <td style="color:var(--gray3)">${m.email}</td>
               <td>${m.phone}</td>
@@ -189,7 +191,7 @@ tr:hover td{background:#fafafa}
                 <div style="display:flex;gap:6px">
                   <button class="btn btn-blue btn-xs"
                     onclick="openDetailModal(
-                      ${m.userNum}, '${m.userName}',
+                      ${m.userNum}, '${m.userId}', '${m.userName}',
                       '${m.email}', '${m.phone}', ${m.grade},
                       '${m.createdAt}', '${m.lastLogin}'
                     )">👤 상세</button>
@@ -201,7 +203,7 @@ tr:hover td{background:#fafafa}
           </c:forEach>
           <c:if test="${empty memberList}">
             <tr>
-              <td colspan="8" style="text-align:center;padding:40px;color:var(--gray4)">
+              <td colspan="9" style="text-align:center;padding:40px;color:var(--gray4)">
                 📭 등록된 회원이 없습니다.
               </td>
             </tr>
@@ -232,19 +234,23 @@ tr:hover td{background:#fafafa}
               <input class="f-input" type="text" id="detailNum" readonly>
             </div>
             <div class="form-group">
-              <label class="f-label">이름</label>
-              <input class="f-input" type="text" id="detailName" readonly>
+              <label class="f-label">아이디</label>
+              <input class="f-input" type="text" id="detailId" readonly>
             </div>
           </div>
           <div class="f-row">
             <div class="form-group">
-              <label class="f-label">이메일</label>
-              <input class="f-input" type="text" id="detailEmail" readonly>
+              <label class="f-label">이름</label>
+              <input class="f-input" type="text" id="detailName" readonly>
             </div>
             <div class="form-group">
               <label class="f-label">전화번호</label>
               <input class="f-input" type="text" id="detailPhone" readonly>
             </div>
+          </div>
+          <div class="form-group">
+            <label class="f-label">이메일</label>
+            <input class="f-input" type="text" id="detailEmail" readonly>
           </div>
           <div class="f-row">
             <div class="form-group">
@@ -288,9 +294,10 @@ tr:hover td{background:#fafafa}
 <div class="toast" id="toast"></div>
 
 <script>
-function openDetailModal(userNum, userName, email, phone, grade, createdAt, lastLogin) {
+function openDetailModal(userNum, userId, userName, email, phone, grade, createdAt, lastLogin) {
     document.getElementById('detailUserNum').value = userNum;
     document.getElementById('detailNum').value     = userNum;
+    document.getElementById('detailId').value      = userId;
     document.getElementById('detailName').value    = userName;
     document.getElementById('detailEmail').value   = email;
     document.getElementById('detailPhone').value   = phone;
