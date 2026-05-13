@@ -29,15 +29,6 @@
     .btn-register { background: #000; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
     .btn-register:hover { background: #333; }
 
-    /* ── 브랜드 필터 탭 ── */
-    .brand-filter-area { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .btn-brand-tab { 
-        padding: 8px 18px; border: 1px solid #ddd; background: #fff; 
-        border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 500; color: #666; transition: 0.2s;
-    }
-    .btn-brand-tab:hover { background: #f8f9fa; border-color: #000; color: #000; }
-    .btn-brand-tab.active { background: #000; color: #fff; border-color: #000; font-weight: 700; }
-
     /* ── 상세 검색 바 ── */
     .search-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
     .search-select { padding: 9px; border: 1px solid #ddd; border-radius: 4px; outline: none; background: #fff; }
@@ -108,29 +99,30 @@
 
 <div class="admin-dashboard">
         <div class="admin-header">
-            <h2 class="admin-title">🏢 오프라인 매장 관리 대시보드</h2>
+            <h2 class="admin-title">🏢 오프라인 매장 관리</h2>
             <button class="btn-register" onclick="openInsertModal()">＋ 새 매장 등록</button>
         </div>
 
-        <div class="brand-filter-area">
-            <button class="btn-brand-tab active" onclick="filterByBrand('ALL', this)">전체보기</button>
-            <c:forEach var="brand" items="${brandList}">
-                <button class="btn-brand-tab" onclick="filterByBrand('${brand.brandName}', this)">${brand.brandName}</button>
-            </c:forEach>
-        </div>
-
-        <div class="search-bar">
+		<div class="search-bar">        
+            <select id="brandFilter" class="search-select" onchange="adminSearch()">
+                <option value="ALL">전체 브랜드</option>
+                <c:forEach var="brand" items="${brandList}">
+                    <option value="${brand.brandName}">${brand.brandName}</option>
+                </c:forEach>
+            </select>
+            
             <select id="searchType" class="search-select">
-                <option value="brand">브랜드</option>
                 <option value="name">매장명</option>
                 <option value="addr">주소</option>
                 <option value="status">상태 (Y/N)</option>
-            </select>
+            </select>           
+
             <input type="text" id="searchKeyword" class="search-input" placeholder="검색어를 입력하세요..." onkeyup="if(event.keyCode==13) adminSearch();">
+            
             <button class="btn-search" onclick="adminSearch()">🔍 검색</button>
             <button class="btn-reset" onclick="adminReset()">🔄 초기화</button>
         </div>
-
+        
         <div class="admin-content">
             <div class="table-container">
                 <table class="admin-table">
@@ -289,7 +281,7 @@
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
     <script>
-    /* 1. 모달 제어 로직 */
+    /* 모달 제어 로직 */
     function openInsertModal() { document.getElementById('insertModal').style.display = 'flex'; }
     function closeInsertModal() { document.getElementById('insertModal').style.display = 'none'; document.getElementById('insertForm').reset(); }
     
@@ -311,7 +303,7 @@
         if (event.target == document.getElementById('modifyModal')) closeModifyModal();
     }
 
-    /* 2. 주소 검색 (다음 API) */
+    /* 주소 검색 (다음 API) */
     function searchAddress(inputId) {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -321,7 +313,7 @@
         }).open();
     }
 
-    /* 3. 삭제 처리 */
+    /* 삭제 처리 */
     function adminDeleteStore() {
         var storeNum = document.getElementById('modStoreNum').value;
         if(confirm("정말로 이 매장 정보를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) {
@@ -329,38 +321,7 @@
         }
     }
 
-    /* 4. 필터 및 검색 로직 */
-    function filterByBrand(brandName, btn) {
-        document.querySelectorAll('.btn-brand-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('searchKeyword').value = ''; // 검색어 초기화
-
-        var rows = document.querySelectorAll('.store-row');
-        rows.forEach(row => {
-            var rowBrand = row.getAttribute('data-brand');
-            row.style.display = (brandName === 'ALL' || rowBrand === brandName) ? '' : 'none';
-        });
-    }
-
-    function adminSearch() {
-        // 검색 시 브랜드 탭은 '전체'로 초기화
-        document.querySelectorAll('.btn-brand-tab').forEach(b => b.classList.remove('active'));
-        document.querySelector('.btn-brand-tab:first-child').classList.add('active');
-
-        var type = document.getElementById('searchType').value; 
-        var key = document.getElementById('searchKeyword').value.toLowerCase().trim(); 
-        document.querySelectorAll('.store-row').forEach(row => {
-            var val = row.getAttribute('data-' + type).toLowerCase();
-            row.style.display = val.includes(key) ? '' : 'none';
-        });
-    }
-
-    function adminReset() {
-        document.getElementById('searchKeyword').value = '';
-        filterByBrand('ALL', document.querySelector('.btn-brand-tab:first-child'));
-    }
-
-    /* 5. 카카오 지도 로직 */
+    /* 카카오 지도 로직 */
     var mapContainer = document.getElementById('adminMap'); 
     var mapOption = { center: new kakao.maps.LatLng(37.566826, 126.978656), level: 4 };
     var map = new kakao.maps.Map(mapContainer, mapOption); 
@@ -389,6 +350,43 @@
             }
         });
     });
+    
+    function adminSearch() {
+        // 1. 선택된 브랜드 값 가져오기
+        var selectedBrand = document.getElementById('brandFilter').value; 
+        // 2. 검색 조건(매장명, 주소 등)과 입력한 키워드 가져오기
+        var searchType = document.getElementById('searchType').value; 
+        var keyword = document.getElementById('searchKeyword').value.toLowerCase().trim(); 
+
+        var rows = document.querySelectorAll('.store-row');
+        
+        rows.forEach(row => {
+            var rowBrand = row.getAttribute('data-brand'); // 표에 숨겨진 브랜드명
+            var rowTargetText = row.getAttribute('data-' + searchType).toLowerCase(); // 표에 숨겨진 검색 대상(매장명 등)
+            
+            // 조건 A: 브랜드가 '전체'이거나, 선택한 브랜드와 일치하는가?
+            var isBrandMatch = (selectedBrand === 'ALL' || rowBrand === selectedBrand);
+            
+            // 조건 B: 검색어가 포함되어 있는가?
+            var isKeywordMatch = rowTargetText.includes(keyword);
+
+            // 두 조건을 모두 만족(AND)할 때만 보여줌!
+            if (isBrandMatch && isKeywordMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // ── 🌟 검색 초기화 ──
+    function adminReset() {
+        document.getElementById('brandFilter').value = 'ALL'; // 브랜드 전체로 원복
+        document.getElementById('searchType').value = 'name'; // 매장명으로 원복
+        document.getElementById('searchKeyword').value = '';  // 검색창 비우기
+        
+        adminSearch(); // 초기화된 상태로 다시 전체 목록 띄우기
+    }
 
     function focusStore(addr, idx) {
         document.querySelectorAll('.store-row').forEach(r => r.classList.remove('active-row'));
