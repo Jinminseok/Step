@@ -271,4 +271,39 @@ public class UserProductDAO {
 		
 		return count;
 	}
+	
+	// 자바스크립트용 옵션별 재고표 생성 메서드
+	public String getOptionStockJson(int prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder json = new StringBuilder("[");
+		String sql = null;
+		try {
+			conn = DBUtil.getConnection();
+			sql = """
+					SELECT o.color, o.size_val, NVL(s.stock_qty, 0) as stock_qty 
+					FROM prod_options o LEFT JOIN stock s ON o.opt_num = s.opt_num 
+					WHERE o.prod_num = ? AND o.prod_use_yn = 'Y'
+				  """;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, prod_num);
+			rs = pstmt.executeQuery();
+			
+			boolean first = true;
+			while (rs.next()) {
+				if (!first) json.append(",");
+				json.append("{")
+					.append("\"color\":\"").append(rs.getString("color")).append("\",")
+					.append("\"size\":").append(rs.getInt("size_val")).append(",")
+					.append("\"stock\":").append(rs.getInt("stock_qty"))
+					.append("}");
+				first = false;
+			}
+			json.append("]");
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return json.toString();
+	}
 }

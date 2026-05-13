@@ -99,26 +99,20 @@
                     <input type="hidden" name="size" id="input_size" value="">
                 </form>
 
+                <%-- 초기 버튼 상태 (비활성화) --%>
                 <div class="detail-btns">
                     <button class="btn-wish-lg" onclick="handleWish()">🤍</button>
-                    
-                    <c:choose>
-                        <c:when test="${totalStock > 0}">
-                            <button class="btn btn-gray" onclick="handleAction('cart')" style="font-size: 14px; padding: 14px;">장바구니</button>
-                            <button class="btn btn-black" onclick="handleAction('buy')" style="font-size: 14px; padding: 14px;">바로 구매</button>
-                        </c:when>
-                        <c:otherwise>
-                            <button class="btn btn-gray" disabled style="cursor:not-allowed; opacity:0.6; font-size: 14px; padding: 14px;">품절</button>
-                            <button class="btn btn-black" onclick="handleAction('restock')" style="font-size: 14px; padding: 14px;">재입고 알림</button>
-                        </c:otherwise>
-                    </c:choose>
+                    <button id="cartBtn" class="btn btn-gray" disabled style="cursor:not-allowed; opacity:0.6; font-size: 14px; padding: 14px;">옵션을 선택해 주세요</button>
+                    <button id="buyBtn" class="btn btn-black" disabled style="cursor:not-allowed; opacity:0.6; font-size: 14px; padding: 14px;">옵션을 선택해 주세요</button>
                 </div>
             </div>
         </div>
 	</div>
 
 <script>
-const isLogin = ${isLogin}; 
+const isLogin = ${isLogin};
+const stockData = ${empty optionJson ? '[]' : optionJson};
+
 let selectedColor = "";
 let selectedSize = "";
 
@@ -134,22 +128,46 @@ function selectColor(element, color) {
     selectedColor = color;
     document.getElementById('selectedColorText').innerText = "(" + color + ")";
     document.getElementById('input_color').value = color;
+    
+    checkOptionStock(); // 색상을 누를 때마다 검사
 }
 
 function selectSize(element, size) {
-    if(element.classList.contains('sold')) return;
     document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('on'));
     element.classList.add('on');
     selectedSize = size;
     document.getElementById('selectedSizeText').innerText = "(" + size + ")";
     document.getElementById('input_size').value = size;
+    
+    checkOptionStock(); // 사이즈를 누를 때마다 검사
 }
 
-function changeTab(element, tabId) {
-    document.querySelectorAll('.bt-tab').forEach(t => t.classList.remove('on'));
-    element.classList.add('on');
-    document.querySelectorAll('.bt-content').forEach(c => c.classList.remove('on'));
-    document.getElementById(tabId).classList.add('on');
+function checkOptionStock() {
+    // 1. 색상과 사이즈 둘 다 골랐을 때만 작동
+    if(selectedColor === "" || selectedSize === "") return;
+
+    // 2. 재고표에서 지금 고른 조합 찾기
+    let matchedOption = stockData.find(opt => opt.color === selectedColor && opt.size === selectedSize);
+    
+    // 3. 재고량 파악
+    let currentStock = matchedOption ? matchedOption.stock : 0;
+
+    let $cartBtn = $('#cartBtn');
+    let $buyBtn = $('#buyBtn');
+
+    if (currentStock > 0) {
+        // 재고가 있을 때: 장바구니 / 바로구매 활성화
+        $cartBtn.text('장바구니').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1'})
+                .attr('onclick', "handleAction('cart')");
+        $buyBtn.text('바로 구매').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1', 'background-color':'var(--black)'})
+               .attr('onclick', "handleAction('buy')");
+    } else {
+        // 품절일 때: 장바구니 막기 / 재입고 알림 신청 활성화
+        $cartBtn.text('품절').prop('disabled', true).css({'cursor':'not-allowed', 'opacity':'0.6'})
+                .removeAttr('onclick');
+        $buyBtn.text('재입고 알림 신청').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1', 'background-color':'#d32f2f'}) // 빨간 버튼으로 변경!
+               .attr('onclick', "handleAction('restock')");
+    }
 }
 
 function requireLogin() {

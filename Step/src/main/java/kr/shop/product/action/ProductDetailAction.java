@@ -34,6 +34,9 @@ public class ProductDetailAction implements Action {
 		List<String> colorList = dao.getProductColors(prod_num);
 		List<Integer> sizeList = dao.getProductSizes(prod_num);
 		int totalStock = dao.getProductTotalStock(prod_num);
+		
+		String optionJson = dao.getOptionStockJson(prod_num);
+		request.setAttribute("optionJson", optionJson);
 
 		// 3. JSP 전송을 위한 세팅
 		request.setAttribute("product", product);
