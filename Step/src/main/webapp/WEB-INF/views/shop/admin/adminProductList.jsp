@@ -34,7 +34,7 @@
 			<div class="page-hdr">
 				<h1 class="page-hdr-title">상품 리스트 (${count})</h1>
 				<button class="btn btn-black"
-					onclick="location.href='productInsert.do'">상품 등록</button>
+					onclick="location.href='productInsertForm.do'">상품 등록</button>
 			</div>
 
 			<!-- 검색 필터 영역 -->
