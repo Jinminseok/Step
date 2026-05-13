@@ -10,7 +10,7 @@
     </div>
     <div class="hdr-actions">
       <c:choose>
-        <%-- 1. 로그인 상태일 때 --%>
+        <%-- 로그인 상태일 때 --%>
         <c:when test="${!empty sessionScope.user_num}">
           
           <div class="noti-wrap">
@@ -61,18 +61,21 @@
             </div>
           </div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/ai/aiPick.do'">
-          	<span class="hdr-btn-icon">🤖</span>
-          	<span class="hdr-btn-label">AI추천</span>
+            <span class="hdr-btn-icon">🤖</span>
+            <span class="hdr-btn-label">AI추천</span>
           </button>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/userstore/userStoreList.do'">
-	        <span class="hdr-btn-icon">🗺️</span>
-	        <span class="hdr-btn-label">매장찾기</span>
-	      </button>
-	      <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/wish/wishList.do'">
-	        <span class="hdr-btn-icon">🤍</span>
-	        <span class="hdr-btn-label">찜</span>
-	        <span class="hdr-badge" style="background:#4d94ff">2</span>
-	      </button>
+            <span class="hdr-btn-icon">🗺️</span>
+            <span class="hdr-btn-label">매장찾기</span>
+          </button>
+          
+          <%-- 찜 버튼 --%>
+          <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/wish/wishList.do'">
+            <span class="hdr-btn-icon">🤍</span>
+            <span class="hdr-btn-label">찜</span>
+            <span class="hdr-badge" id="headerWishBadge" style="background:#4d94ff; display:none;">0</span>
+          </button>
+          
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/cart/cartList.do'">
             <span class="hdr-btn-icon">🛒</span>
             <span class="hdr-btn-label">장바구니</span>
@@ -87,16 +90,16 @@
           </button>
         </c:when>
         
-        <%-- 2. 비로그인 상태일 때 --%>
+        <%-- 비로그인 상태일 때 --%>
         <c:otherwise>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/ai/aiPick.do'">
-          	<span class="hdr-btn-icon">🤖</span>
-          	<span class="hdr-btn-label">AI추천</span>
+            <span class="hdr-btn-icon">🤖</span>
+            <span class="hdr-btn-label">AI추천</span>
           </button>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/userstore/userStoreList.do'">
-	        <span class="hdr-btn-icon">🗺️</span>
-	        <span class="hdr-btn-label">매장찾기</span>
-	      </button>
+            <span class="hdr-btn-icon">🗺️</span>
+            <span class="hdr-btn-label">매장찾기</span>
+          </button>
           <div style="width:1px;height:28px;background:#333;margin:0 4px"></div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'" style="color:#fff;background:rgba(255,255,255,.08);border-radius:3px;padding:6px 14px;">
             <span class="hdr-btn-label" style="font-size:12px;font-weight:700">로그인</span>
@@ -112,26 +115,21 @@
 
 <div class="cat-nav">
   <div class="cat-nav-inner">
-    <%-- 선택된 카테고리가 0이거나 없을 때 '전체' 탭 활성화 --%>
     <div class="cat-item ${empty param.cat_num or param.cat_num == '0' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">전체</div>
-         
     <div class="cat-item ${param.cat_num == '1' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=1'">👟 운동화</div>
-         
     <div class="cat-item ${param.cat_num == '2' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=2'">👡 샌들</div>
-         
     <div class="cat-item ${param.cat_num == '3' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=3'">⚽ 축구화</div>
-         
     <div class="cat-item ${param.cat_num == '4' ? 'active' : ''}" 
          onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=4'">🩴 슬리퍼</div>
   </div>
 </div>
 
 <script>
-// 종 모양 버튼 클릭 시 알림창 열기/닫기
+// 알림 모달 스크립트
 function toggleNoti(e) {
   e.stopPropagation();
   const modal = document.getElementById('notiModal');
@@ -139,8 +137,6 @@ function toggleNoti(e) {
       modal.classList.toggle('show');
   }
 }
-
-// 화면 빈 곳 클릭 시 알림창 닫기
 document.addEventListener('click', function(e) {
   const modal = document.getElementById('notiModal');
   if (modal && modal.classList.contains('show') && !e.target.closest('.noti-wrap')) {
@@ -148,4 +144,31 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// 찜 개수 불러오기
+<c:if test="${!empty sessionScope.user_num}">
+$(document).ready(function() {
+    updateWishBadge();
+});
+
+function updateWishBadge() {
+    $.ajax({
+        url: '${pageContext.request.contextPath}/shop/wish/getWishCount.do',
+        type: 'get',
+        dataType: 'json',
+        success: function(param) {
+            let count = param.count;
+            if(count > 0) {
+                // 1개 이상이면 뱃지 보이기 (파란색 유지)
+                $('#headerWishBadge').text(count).show();
+            } else {
+                // 0개면 숨기기
+                $('#headerWishBadge').hide();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log("찜 개수 불러오기 실패:", error);
+        }
+    });
+}
+</c:if>
 </script>
