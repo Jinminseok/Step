@@ -18,7 +18,7 @@
         
         <div class="detail-layout">
             
-            <%-- 1. 왼쪽: 다중 이미지 영역 (DB 연동) --%>
+            <%-- 왼쪽: 다중 이미지 영역 --%>
             <div class="detail-imgs-wrap">
                 <div class="thumb-list">
                     <%-- DB에 저장된 사진 개수만큼 반복해서 썸네일 생성 --%>
@@ -29,12 +29,12 @@
                     </c:forEach>
                 </div>
                 <div class="main-img-box">
-                    <%-- 메인 이미지는 리스트의 첫 번째 사진으로 세팅 --%>
+                    <%-- 메인 이미지는 리스트의 첫 번째 사진 --%>
                     <img id="mainImage" src="${pageContext.request.contextPath}/upload/${imgList[0]}" alt="${product.prod_name}">
                 </div>
             </div>
 
-            <%-- 2. 오른쪽: 상품 정보 및 옵션 영역 (DB 연동) --%>
+            <%-- 2. 오른쪽: 상품 정보 및 옵션 --%>
             <div class="detail-info-wrap">
                 <div class="detail-brand">${product.brand_name}</div>
                 <div class="detail-name">${product.prod_name}</div>
@@ -66,7 +66,7 @@
                     </div>
                 </c:if>
 
-                <%-- ★ 색상 선택 (DB 연동) --%>
+                <%-- 색상 선택 --%>
                 <div class="color-label">
                     <div>색상 선택 <span id="selectedColorText" style="color:var(--blue); font-weight:500; margin-left:4px;"></span></div>
                 </div>
@@ -81,7 +81,7 @@
                     </c:forEach>
                 </div>
 
-                <%-- ★ 사이즈 선택 (DB 연동) --%>
+                <%-- 사이즈 선택 --%>
                 <div class="size-label">
                     <div>사이즈 선택 <span id="selectedSizeText" style="color:var(--blue); font-weight:500; margin-left:4px;"></span></div>
                 </div>
@@ -93,7 +93,7 @@
                 
                 <div style="font-size:12px; color:var(--gray4); margin-bottom: 24px;">현재 선택 가능한 재고 : ${totalStock}개</div>
 
-                <form id="orderForm" action="${pageContext.request.contextPath}/shop/cart/add.do" method="post">
+                <form id="orderPageForm" action="${pageContext.request.contextPath}/shop/order/orderPageForm.do" method="post">
                     <input type="hidden" name="prod_num" value="${product.prod_num}">
                     <input type="hidden" name="color" id="input_color" value="">
                     <input type="hidden" name="size" id="input_size" value="">
@@ -215,7 +215,7 @@ function handleAction(type) {
     if(selectedSize === "") { alert("상품의 사이즈를 선택해 주세요."); return; }
     
     if(type === 'cart') {
-        // 유저가 진짜 선택한 정보들 수집
+        // 선택한 정보들 수집
         let prod_num = $('input[name="prod_num"]').val();
         let color = $('#input_color').val();
         let size = $('#input_size').val();
@@ -248,7 +248,7 @@ function handleAction(type) {
         });
         
     } else if(type === 'buy') {
-        document.getElementById('orderForm').submit();
+        document.getElementById('orderPageForm').submit();
     }
 }
 </script>

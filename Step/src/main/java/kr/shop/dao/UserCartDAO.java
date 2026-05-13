@@ -112,6 +112,59 @@ public class UserCartDAO {
 		}
 	}
 	
-	// 장바
+	// 선택된 장바구니 상품 목록 가져오기
+	public List<UserCartVO> getOrderCartList(String[] cartNums) throws Exception {
+		List<UserCartVO> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			// ?개수를 장바구니 크기만큼 생성
+			String placeholders = "";
+			for(int i = 0; i < cartNums.length; i++) {
+				placeholders += "?";
+				if(i < cartNums.length - 1) placeholders += ",";
+			}
+			
+			// 장바구니, 상품, 이미지 정보 가져오기
+			String sql = "SELECT c.cart_num, c.cart_qty, "
+					   + "o.color, o.size_val, "
+					   + "p.prod_num, p.prod_name, p.prod_price, i.prod_img_url "
+					   + "FROM cart c "
+					   + "JOIN prod_options o ON c.opt_num = o.opt_num "
+					   + "JOIN products p ON o.prod_num = p.prod_num "
+					   + "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
+					   + "WHERE c.cart_num IN (" + placeholders + ")";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			// ?에 cart_num 값들을 세팅
+			for(int i = 0; i < cartNums.length; i++) {
+				pstmt.setLong(i + 1, Long.parseLong(cartNums[i]));
+			}
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				UserCartVO cart = new UserCartVO();
+				cart.setCart_num(rs.getLong("cart_num"));
+				cart.setCart_qty(rs.getInt("cart_qty"));
+				cart.setColor(rs.getString("color"));
+				cart.setSize_val(rs.getInt("size_val"));
+				cart.setProd_num(rs.getInt("prod_num"));
+				cart.setProd_name(rs.getString("prod_name"));
+				cart.setProd_price(rs.getInt("prod_price"));
+				cart.setProd_img_url(rs.getString("prod_img_url"));
+				
+				list.add(cart);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
 		
 }

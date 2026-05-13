@@ -79,8 +79,7 @@
                     <div class="cs-row"><span>배송비</span> <span>무료</span></div>
                     <div class="cs-row" style="color:var(--red);"><span>할인 금액</span> <span>-0원</span></div>
                     <div class="cs-total"><span>총 결제 예상 금액</span> <span style="color:var(--blue);" id="finalTotalPrice">0원</span></div>
-                    <button class="btn btn-black btn-full" style="margin-top:20px; height:52px; font-size:15px;" onclick="location.href='${pageContext.request.contextPath}/shop/orderpage/orderForm.do'">구매하기</button>
-                    <p class="pay-note">쿠폰 및 적립금은 주문서에서 적용 가능합니다.</p>
+                    <button class="btn btn-black btn-full" style="margin-top:20px; height:52px; font-size:15px;" onclick="goOrder()">구매하기</button>
                 </div>
             </div>
         </div>
@@ -145,6 +144,29 @@ function deleteCartItem(cart_num) {
             alert("통신 오류가 발생했습니다.");
         }
     });
+}
+
+// 장바구니에서 선택한 상품만 주문서로 전송
+function goOrder() {
+    let checkedCarts = $('.cart-checkbox:checked');
+    
+    if(checkedCarts.length === 0) {
+        alert("주문할 상품을 선택해 주세요.");
+        return;
+    }
+
+    // 폼을 만들어 전송
+    let form = $('<form></form>');
+    form.attr('action', '${pageContext.request.contextPath}/shop/order/orderPageForm.do');
+    form.attr('method', 'post');
+
+    // 체크된 장바구니 번호들을 히든으로 폼에 담기
+    checkedCarts.each(function() {
+        form.append($('<input/>', {type: 'hidden', name: 'cart_num', value: $(this).val()}));
+    });
+
+    form.appendTo('body');
+    form.submit();
 }
 </script>
 </body>
