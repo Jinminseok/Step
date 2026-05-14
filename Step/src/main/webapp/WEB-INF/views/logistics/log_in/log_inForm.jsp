@@ -527,6 +527,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
           <!-- 3. 사이즈 & 컬러 -->
           <div class="fg"><label>사이즈 (mm)</label>
             <select class="fi" id="upd_size" name="sizeVal">
+              <option value="220">220</option>
               <option value="225">225</option>
               <option value="230">230</option>
               <option value="235">235</option>
@@ -539,6 +540,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <option value="270">270</option>
               <option value="275">275</option>
               <option value="280">280</option>
+              <option value="285">285</option>
             </select>
           </div>
           <div class="fg"><label>컬러</label>
