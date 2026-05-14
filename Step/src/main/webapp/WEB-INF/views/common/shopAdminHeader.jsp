@@ -64,7 +64,7 @@
 			</a>
 
 			<div class="nav-section">운영</div>
-			<a href="${pageContext.request.contextPath}/shop/admin/bannerList.do"
+			<a href="${pageContext.request.contextPath}/shop/banner/bannerList.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'banner') ? 'active' : ''}">
 				<span class="nav-icon">🖼️</span>UI / 배너 관리
 			</a> <a
