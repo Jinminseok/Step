@@ -25,7 +25,7 @@ public class Log_AdminDAO {
 			ResultSet rs = null;
 			Log_AdminVO user = null;
 			String sql = null;
-			
+			     
 			try {
 				conn = DBUtil.getConnection();
 				sql = """
