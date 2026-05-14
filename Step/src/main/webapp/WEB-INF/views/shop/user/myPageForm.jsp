@@ -26,6 +26,7 @@
                 <div class="my-menu-item" onclick="setMy(this,'my-restock')">⏰ 재입고 알림</div>
                 <div class="my-menu-item" onclick="setMy(this,'my-info')">👤 내 정보 수정</div>
                 <div class="my-menu-item" onclick="setMy(this,'my-return')">↩️ 반품/교환</div>
+                <div class="my-menu-item" onclick="setMy(this,'my-deleteuser')">🚫 회원 탈퇴</div>
             </div>
             
             <%-- 오른쪽 본문 영역 --%>
@@ -260,6 +261,49 @@
                         <button class="btn btn-black" style="margin-top:4px; width:100%">신청하기</button>
                     </div>
                 </div>
+                
+                <!-- 6. 회원 탈퇴 탭 -->
+                <div class="my-sub" id="my-deleteuser">
+                    <div class="sec-title" style="margin-bottom:16px; color:var(--red);">회원 탈퇴</div>
+                    
+                    <%-- 경고 메시지 박스 --%>
+                    <div style="background:#ffebee; color:#b71c1c; padding:20px; border-radius:4px; margin-bottom:24px; font-size:13px; line-height:1.6;">
+                        <strong>⚠️ 탈퇴 전 반드시 확인해 주세요!</strong><br>
+                        - 탈퇴 시 구매 내역, 장바구니, 찜 목록 등 모든 이용 정보가 삭제되며 복구할 수 없습니다.<br>
+                        - 부정 이용 방지를 위해 <strong>동일한 아이디로는 다시 가입할 수 없습니다.</strong><br>
+                        - 정보 확인을 위해 본인의 아이디, 이메일, 비밀번호를 정확히 입력해 주세요.
+                    </div>
+
+                    <%-- 탈퇴 폼 (제출 전 자바스크립트로 검사) --%>
+                    <form action="${pageContext.request.contextPath}/shop/user/deleteUser.do" method="post" id="deleteForm" onsubmit="return checkDelete()">
+                        <div class="form-sec" style="border:none;padding:0;max-width:100%">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">아이디 확인</label>
+                                    <input class="form-input" type="text" id="del_id" name="id" placeholder="아이디 입력">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">이메일 확인</label>
+                                    <input class="form-input" type="email" id="del_email" name="email" placeholder="등록된 이메일 입력">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">비밀번호</label>
+                                    <input class="form-input" type="password" id="del_pwd" name="passwd" placeholder="현재 비밀번호 입력">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">비밀번호 확인</label>
+                                    <input class="form-input" type="password" id="del_pwd_confirm" placeholder="비밀번호 재입력">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-red" style="margin-top:10px; width:100%; height:52px; font-size:15px;">안내사항을 확인하였으며, 탈퇴에 동의합니다</button>
+                        </div>
+                    </form>
+                </div>
 
             </div>
         </div>
@@ -280,6 +324,45 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', funct
     this.closest('.tabs').querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
     this.classList.add('on');
 }));
+
+//회원 탈퇴 유효성 체크
+function checkDelete() {
+    const inputId = document.getElementById('del_id').value;
+    const inputEmail = document.getElementById('del_email').value;
+    const inputPwd = document.getElementById('del_pwd').value;
+    const inputPwdConfirm = document.getElementById('del_pwd_confirm').value;
+
+    // 회원 정보
+    const realId = '${user.user_id}';
+    const realEmail = '${user.email}';
+
+    if(inputId !== realId) {
+        alert("입력하신 아이디가 로그인된 아이디와 일치하지 않습니다.");
+        document.getElementById('del_id').focus();
+        return false;
+    }
+    
+    if(inputEmail !== realEmail) {
+        alert("입력하신 이메일이 등록된 이메일과 일치하지 않습니다.");
+        document.getElementById('del_email').focus();
+        return false;
+    }
+    
+    if(inputPwd === "") {
+        alert("비밀번호를 입력해주세요.");
+        document.getElementById('del_pwd').focus();
+        return false;
+    }
+    
+    if(inputPwd !== inputPwdConfirm) {
+        alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        document.getElementById('del_pwd_confirm').focus();
+        return false;
+    }
+
+    // 모든 확인을 마치면 마지막으로 의사 묻기
+    return confirm("정말로 ShoeMall에서 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없습니다.");
+}
 </script>
 </body>
 </html>
