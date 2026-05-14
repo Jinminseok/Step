@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -7,197 +6,242 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상품 관리 리스트</title>
+<title>상품 관리</title>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/KM_style.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style type="text/css">
-/* 기본 배경 및 컨텐츠 영역 */
+body {
+	background-color: #f5f5f5;
+	margin: 0;
+	font-family: 'Pretendard', sans-serif;
+}
+
+/* 화면을 꽉 채우기 위해 max-width를 해제하고 여백 조정 */
 .content {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 20px;
+	width: 98%; /* 좌우 약간의 여백만 남기고 꽉 채움 */
+	max-width: none; /* 기존 1200px 제한 해제 */
+	margin: 0 auto;
+	padding: 20px 0;
 }
 
-/* 상단 헤더 영역 */
-.page-hdr {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    border-bottom: 2px solid #f1f1f1;
-    padding-bottom: 15px;
+/* 상단 탭 메뉴 */
+.tab-menu {
+	display: flex;
+	gap: 30px;
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 20px;
+	padding-left: 10px;
+	background: #fff; /* 탭 영역 구분 */
 }
 
-.page-hdr-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #333;
+.tab-item {
+	padding: 15px 10px;
+	cursor: pointer;
+	color: #888;
+	font-weight: 500;
+	font-size: 15px;
+	border-bottom: 3px solid transparent;
 }
 
-/* 폼 컨테이너 */
-.form-container {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eef0f2;
+.tab-item.active {
+	color: #000;
+	border-bottom: 3px solid #000;
+	font-weight: bold;
 }
 
-/* 섹션 타이틀 */
-.section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #444;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    padding-left: 10px;
-    border-left: 4px solid #000;
+/* 검색 영역: 양 끝으로 배치 */
+.search-box {
+	background: #fff;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: space-between; /* 검색창과 등록버튼 양 끝 정렬 */
+	align-items: center;
+	border: 1px solid #eee;
+	margin-bottom: 20px;
 }
 
-.section-title:first-of-type {
-    margin-top: 0;
+.search-input-wrapper {
+	position: relative;
+	width: 400px; /* 검색창 너비 확장 */
 }
 
-/* 폼 그룹 레이아웃 */
-.form-group {
-    margin-bottom: 20px;
+.search-input-wrapper i {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #aaa;
 }
 
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 8px;
-}
-
-/* 입력 필드 스타일링 */
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    background-color: #fafafa;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #000;
-    background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
-}
-
-/* 파일 업로드 특수 스타일 */
-input[type="file"] {
-    background: #f8f9fa;
-    border: 1px dashed #ccc;
-    cursor: pointer;
+.search-input-wrapper input {
+	width: 100%;
+	padding: 10px 10px 10px 40px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-sizing: border-box;
 }
 
 /* 버튼 스타일 */
-.btn-area {
-    margin-top: 50px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+.btn-insert {
+	background: #000;
+	color: #fff;
+	padding: 12px 25px; /* 버튼 크기 키움 */
+	border-radius: 4px;
+	border: none;
+	font-size: 14px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: background 0.2s;
 }
 
-.btn {
-    padding: 14px 30px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 16px;
-    border: none;
+.btn-insert:hover {
+	background: #333;
 }
 
-.btn-black {
-    background: #111;
-    color: #fff;
+/* 테이블 스타일: 너비 100% 사용 */
+.tbl-wrap {
+	background: #fff;
+	border: 1px solid #eee;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.btn-black:hover {
-    background: #333;
-    transform: translateY(-2px);
+table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: center;
+	font-size: 14px;
 }
 
-.btn-outline {
-    background: #fff;
-    color: #666;
-    border: 1px solid #ddd;
+thead {
+	background: #fcfcfc;
+	border-bottom: 2px solid #eee;
 }
 
-.btn-outline:hover {
-    background: #f8f9fa;
-    color: #333;
+th {
+	padding: 18px 10px;
+	color: #333;
+	font-weight: 600;
 }
 
-/* 반응형을 위한 플렉스 그리드 수정 */
-.form-row {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 5px;
+td {
+	padding: 15px 10px;
+	border-bottom: 1px solid #f2f2f2;
 }
 
-.form-row > .form-group {
-    flex: 1;
+.prod-img {
+	width: 60px; /* 이미지 크기 살짝 키움 */
+	height: 60px;
+	object-fit: cover;
+	border: 1px solid #eee;
+	border-radius: 4px;
 }
 
-/* 텍스트 영역 */
-textarea {
-    resize: none;
-    line-height: 1.6;
+.prod-info {
+	text-align: left;
+	padding-left: 20px;
+}
+
+.prod-name {
+	font-weight: bold;
+	font-size: 15px;
+	display: block;
+	margin-bottom: 6px;
+}
+
+.prod-sku {
+	color: #999;
+	font-size: 12px;
+}
+
+/* 상태 배지 */
+.status-badge {
+	display: inline-block;
+	min-width: 60px;
+	padding: 5px 8px;
+	border-radius: 20px; /* 둥근 형태로 변경 */
+	font-size: 12px;
+}
+
+.status-sale {
+	color: #2ecc71;
+	background: #eafaf1;
+	border: 1px solid #2ecc71;
+}
+
+.status-soldout {
+	color: #e67e22;
+	background: #fdf2e9;
+	border: 1px solid #e67e22;
+}
+
+.status-hide {
+	color: #95a5a6;
+	background: #f4f6f7;
+	border: 1px solid #95a5a6;
+}
+
+/* 관리 버튼 */
+.btn-group {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+.btn-edit, .btn-del {
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.btn-edit {
+	border: 1px solid #ddd;
+	background: #fff;
+	color: #555;
+}
+
+.btn-del {
+	border: 1px solid #e74c3c;
+	background: #fff;
+	color: #e74c3c;
 }
 </style>
-<script type="text/javascript">
-		function go(menu) {
-			if (menu === 'dashboard')
-				location.href = 'main.do';
-			else if (menu === 'product')
-				location.href = 'productList.do';
-		}
-	</script>
 </head>
 <body>
 
 	<%@ include file="../../common/shopAdminHeader.jsp"%>
 
 	<div class="main">
-	<jsp:include page="/WEB-INF/views/common/sub_title.jsp"/>
+		<jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
+
 		<div class="content">
-			<div class="page-hdr">
-				<h1 class="page-hdr-title">상품 리스트 (${count})</h1>
-				<button class="btn btn-black"
-					onclick="location.href='productInsertForm.do'">상품 등록</button>
+			<div class="tab-menu">
+				<div class="${currentStatus == 'sale' ? 'active' : ''}">전체 상품</div>
+				<div class="">판매중</div>
+				<div class="">숨김/품절</div>
 			</div>
 
-			<!-- 검색 필터 영역 -->
-			<div class="search-area"
-				style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+			<div class="search-box">
 				<form action="productList.do" method="get"
-					style="display: flex; gap: 10px; align-items: center;">
-					<select name="search_type" class="input-select"
-						style="width: 120px;">
-						<option value="prod_name"
-							<c:if test="${param.search_type == 'prod_name'}">selected</c:if>>상품명</option>
-						<option value="sku"
-							<c:if test="${param.search_type == 'sku'}">selected</c:if>>SKU(품번)</option>
-					</select> <input type="text" name="keyword" value="${param.keyword}"
-						class="input-txt" placeholder="검색어를 입력하세요" style="flex: 1;">
-					<button type="submit" class="btn btn-black">조회</button>
-					<button type="button" class="btn btn-outline"
-						onclick="location.href='productList.do'">초기화</button>
+					style="display: flex; align-items: center; gap: 15px;">
+					<select name="search_status"
+						style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+						<option value="">상태 전체</option>
+					</select>
+					<div class="search-input-wrapper">
+						<i class="fa fa-search"></i> <input type="text" name="keyword"
+							placeholder="상품명 또는 상품코드 검색..." value="${param.keyword}">
+					</div>
+					<button type="submit" style="display: none;"></button>
 				</form>
+
+				<button type="button" class="btn-insert"
+					onclick="location.href='productInsertForm.do'">
+					<i class="fa fa-plus"></i> 신규 상품 등록
+				</button>
 			</div>
 
 			<div class="tbl-wrap">
@@ -206,17 +250,20 @@ textarea {
 						<tr>
 							<th width="60">번호</th>
 							<th width="100">이미지</th>
-							<th>상품 정보(명/SKU)</th>
-							<th>카테고리/브랜드</th>
-							<th>판매가</th>
-							<th>상태</th>
-							<th width="100">관리</th>
+							<th style="text-align: left; padding-left: 20px;">상품정보</th>
+							<th width="150">판매가</th>
+							<th width="100">재고</th>
+							<th width="120">상태</th>
 						</tr>
 					</thead>
 					<tbody>
 						<c:if test="${count == 0}">
 							<tr>
-								<td colspan="7" style="padding: 50px 0;">검색 결과가 없음</td>
+								<td colspan="7"
+									style="padding: 150px 0; color: #999; font-size: 16px;"><i
+									class="fa fa-info-circle"
+									style="display: block; font-size: 40px; margin-bottom: 15px;"></i>
+									등록된 상품이 없습니다.</td>
 							</tr>
 						</c:if>
 						<c:forEach var="product" items="${list}">
@@ -225,41 +272,29 @@ textarea {
 								<td><c:if test="${!empty product.prod_img_url}">
 										<img
 											src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
-											width="60" height="60"
-											style="object-fit: cover; border-radius: 5px;">
+											class="prod-img">
 									</c:if> <c:if test="${empty product.prod_img_url}">
-										<div
-											style="width: 60px; height: 60px; background: #eee; line-height: 60px; font-size: 11px; color: #aaa; border-radius: 5px;">No
+										<div class="no-img"
+											style="width: 60px; height: 60px; line-height: 60px; background: #f9f9f9; border: 1px solid #eee; display: inline-block; border-radius: 4px; color: #ccc; font-size: 11px;">No
 											Image</div>
 									</c:if></td>
-								<td style="text-align: left;">
-									<div style="font-weight: bold;">${product.prod_name}</div>
-									<div style="font-size: 0.85em; color: #888; margin-top: 4px;">${product.sku}</div>
-								</td>
-								<td>${product.cat_name}/${product.brand_name}</td>
-								<td><fmt:formatNumber value="${product.prod_price}"
-										pattern="#,###" />원 <c:if test="${product.sale_rate > 0}">
-										<div style="color: red; font-size: 0.8em;">${product.sale_rate}%
-											OFF</div>
-									</c:if></td>
+								<td class="prod-info"><span class="prod-name">${product.prod_name}</span>
+									<span class="prod-sku">SKU: ${product.sku}</span></td>
+								<td><strong><fmt:formatNumber
+											value="${product.prod_price}" pattern="#,###" />원</strong></td>
+								<td>42</td>
 								<td><c:choose>
 										<c:when test="${product.prod_status == 1}">
-											<span class="badge"
-												style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px;">판매중</span>
+											<span class="status-badge status-sale">판매중</span>
 										</c:when>
 										<c:when test="${product.prod_status == 2}">
-											<span class="badge"
-												style="background: #fff3e0; color: #fb8c00; padding: 4px 8px; border-radius: 4px;">품절</span>
+											<span class="status-badge status-soldout">품절</span>
 										</c:when>
 										<c:otherwise>
-											<span class="badge"
-												style="background: #f5f5f5; color: #9e9e9e; padding: 4px 8px; border-radius: 4px;">숨김</span>
+											<span class="status-badge status-hide">숨김</span>
 										</c:otherwise>
 									</c:choose></td>
-								<td>
-									<button class="btn btn-outline" style="font-size: 0.9em;"
-										onclick="location.href='productUpdate.do?prod_num=${product.prod_num}'">수정</button>
-								</td>
+							
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -267,7 +302,7 @@ textarea {
 			</div>
 
 			<div class="paging-area"
-				style="margin-top: 30px; text-align: center;">${page}</div>
+				style="margin-top: 40px; text-align: center;">${page}</div>
 		</div>
 	</div>
 

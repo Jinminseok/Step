@@ -20,14 +20,13 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
-	// 1. 전체상품 개수 구하기
+	// 1. 전체 상품 개수 (검색 포함)
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = null;
-		StringBuilder sub_sql = new StringBuilder();
-		int cnt = 0;
+		String sql = "";
+		String sub_sql = "";
 		int count = 0;
 
 		try {
@@ -35,73 +34,84 @@ public class AdminProductDAO {
 
 			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
 				if ("prod_name".equals(vo.getSearch_type())) {
-					sub_sql.append(" WHERE prod_name LIKE '%' || ? || '%'");
+					sub_sql = " WHERE prod_name LIKE '%' || ? || '%'";
 				} else if ("sku".equals(vo.getSearch_type())) {
-					sub_sql.append(" WHERE sku LIKE '%' || ? || '%'");
+					sub_sql = " WHERE sku LIKE '%' || ? || '%'";
 				}
 			}
 
-			sql = "SELECT COUNT(*) FROM products" + sub_sql.toString();
+			sql = "SELECT COUNT(*) FROM products" + sub_sql;
 			pstmt = conn.prepareStatement(sql);
 
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				pstmt.setString(++cnt, vo.getKeyword());
+			if (!sub_sql.isEmpty()) {
+				pstmt.setString(1, vo.getKeyword());
 			}
 
 			rs = pstmt.executeQuery();
-			if (rs.next()) {
+			if (rs.next())
 				count = rs.getInt(1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return count;
 	}
 
-	// 2. 상품 목록 불러오기
+	// 2. 상품 목록 조회 (페이징)
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = new ArrayList<>();
-		String sql = null;
-		StringBuilder sub_sql = new StringBuilder();
-		int cnt = 0;
+		String sql = "";
+		String sub_sql = "";
 
 		try {
 			conn = DBUtil.getConnection();
 
+			// 1. 검색 조건 설정 (테이블 별칭 p. 추가)
 			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
 				if ("prod_name".equals(vo.getSearch_type())) {
-					sub_sql.append(" WHERE p.prod_name LIKE '%' || ? || '%'");
+					sub_sql = " WHERE p.prod_name LIKE '%' || ? || '%' ";
 				} else if ("sku".equals(vo.getSearch_type())) {
-					sub_sql.append(" WHERE p.sku LIKE '%' || ? || '%'");
+					sub_sql = " WHERE p.sku LIKE '%' || ? || '%' ";
 				}
 			}
 
-			sql = "SELECT * FROM ( " + "    SELECT a.*, ROWNUM rnum FROM ( "
-					+ "        SELECT p.PROD_NUM, p.SKU, p.PROD_NAME, p.PROD_PRICE, p.PROD_STATUS, "
-					+ "               p.PROD_CREATED_AT, i.PROD_IMG_URL, " + "               b.brand_name, c.cat_name "
-					+ "        FROM PRODUCTS p " + "        LEFT JOIN brands b ON p.BRAND_NUM = b.BRAND_NUM "
-					+ "        LEFT JOIN categories c ON p.CAT_NUM = c.CAT_NUM "
-					+ "        LEFT JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y' "
-					+ sub_sql.toString() + "        ORDER BY p.PROD_NUM DESC " + "    ) a "
-					+ ") WHERE rnum >= ? AND rnum <= ?";
+			// 2. SQL 쿼리 조립 (텍스트 블록과 변수 결합)
+			sql = """
+					SELECT * FROM (
+					    SELECT a.*, ROWNUM rnum FROM (
+					        SELECT
+					            p.PROD_NUM,
+					            p.SKU,
+					            p.PROD_NAME,
+					            p.PROD_PRICE,
+					            p.PROD_STATUS,
+					            p.PROD_CREATED_AT,
+					            i.PROD_IMG_URL,
+					            b.brand_name,
+					            c.cat_name
+					        FROM PRODUCTS p
+					        LEFT JOIN brands b ON p.BRAND_NUM = b.BRAND_NUM
+					        LEFT JOIN categories c ON p.CAT_NUM = c.CAT_NUM
+					        LEFT JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y'
+					""" + sub_sql + """
+					        ORDER BY p.PROD_NUM DESC
+					    ) a
+					) WHERE rnum >= ? AND rnum <= ?
+					""";
 
 			pstmt = conn.prepareStatement(sql);
 
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				pstmt.setString(++cnt, vo.getKeyword());
+			// 3. 파라미터 세팅
+			int n = 0;
+			if (!sub_sql.isEmpty()) {
+				pstmt.setString(++n, vo.getKeyword());
 			}
-
-			pstmt.setInt(++cnt, vo.getStart_row());
-			pstmt.setInt(++cnt, vo.getEnd_row());
+			pstmt.setInt(++n, vo.getStart_row());
+			pstmt.setInt(++n, vo.getEnd_row());
 
 			rs = pstmt.executeQuery();
-
 			while (rs.next()) {
 				AdminProductVO product = new AdminProductVO();
 				product.setProd_num(rs.getInt("PROD_NUM"));
@@ -110,15 +120,11 @@ public class AdminProductDAO {
 				product.setProd_price(rs.getInt("PROD_PRICE"));
 				product.setProd_status(rs.getInt("PROD_STATUS"));
 				product.setProd_created_at(rs.getDate("PROD_CREATED_AT"));
-				product.setProd_img_url(rs.getString("PROD_IMG_URL"));
+				product.setProd_img_url(rs.getString("PROD_IMG_URL")); // 조인된 테이블의 컬럼명
 				product.setBrand_name(rs.getString("brand_name"));
 				product.setCat_name(rs.getString("cat_name"));
-
 				list.add(product);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
@@ -131,18 +137,15 @@ public class AdminProductDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		AdminProductVO product = null;
-		String sql = null;
 
 		try {
 			conn = DBUtil.getConnection();
-
-			sql = "SELECT p.*, b.brand_name, c.cat_name " + "FROM products p "
+			String sql = "SELECT p.*, b.brand_name, c.cat_name " + "FROM products p "
 					+ "LEFT JOIN brands b ON p.brand_num = b.brand_num "
 					+ "LEFT JOIN categories c ON p.cat_num = c.cat_num " + "WHERE p.prod_num = ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
-
 			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
@@ -163,77 +166,85 @@ public class AdminProductDAO {
 				product.setProd_created_at(rs.getDate("prod_created_at"));
 				product.setProd_updated_at(rs.getDate("prod_updated_at"));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return product;
 	}
 
-	// 4. 상품 및 옵션 등록 (트랜잭션 유지)
+	// 4. 상품 등록 (트랜잭션: 상품 + 옵션 + 메인이미지)
 	public void insertProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
-		String sql = null;
+		PreparedStatement pstmt3 = null;
+		ResultSet rs = null;
+		String sql = "";
+		int prod_num = 0;
 
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 
-			sql = "INSERT INTO products (prod_num, sku, prod_name, gender, "
-					+ "brand_num, cat_num, prod_price, sale_rate, prod_status, prod_text, prod_img_url) "
-					+ "VALUES (PRODUCTS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+			// 4-1. 상품 시퀀스 번호 미리 따오기 (옵션/이미지 테이블 연결용)
+			sql = "SELECT PRODUCTS_SEQ.NEXTVAL FROM DUAL";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, vo.getSku());
-			pstmt.setString(2, vo.getProd_name());
-			pstmt.setInt(3, vo.getGender());
-			pstmt.setInt(4, vo.getBrand_num());
-			pstmt.setInt(5, vo.getCat_num());
-			pstmt.setInt(6, vo.getProd_price());
-			pstmt.setInt(7, vo.getSale_rate());
-			pstmt.setInt(8, vo.getProd_status());
-			pstmt.setString(9, vo.getProd_text());
-			pstmt.setString(10, vo.getProd_img_url());
-			pstmt.executeUpdate();
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				prod_num = rs.getInt(1);
 
-			sql = "INSERT INTO prod_options (opt_num, prod_num, size_val, color, add_price) "
-					+ "VALUES (PROD_OPTIONS_SEQ.NEXTVAL, PRODUCTS_SEQ.CURRVAL, ?, ?, ?)";
+			// 4-2. 상품 본체 등록
+			sql = "INSERT INTO products (prod_num, sku, prod_name, gender, brand_num, cat_num, "
+					+ "prod_price, sale_rate, prod_status, prod_text, prod_img_url) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			pstmt2 = conn.prepareStatement(sql);
-			pstmt2.setInt(1, vo.getSize_val());
-			pstmt2.setString(2, vo.getColor());
-			pstmt2.setInt(3, vo.getAdd_price());
+			pstmt2.setInt(1, prod_num);
+			pstmt2.setString(2, vo.getSku());
+			pstmt2.setString(3, vo.getProd_name());
+			pstmt2.setInt(4, vo.getGender());
+			pstmt2.setInt(5, vo.getBrand_num());
+			pstmt2.setInt(6, vo.getCat_num());
+			pstmt2.setInt(7, vo.getProd_price());
+			pstmt2.setInt(8, vo.getSale_rate());
+			pstmt2.setInt(9, vo.getProd_status());
+			pstmt2.setString(10, vo.getProd_text());
+			pstmt2.setString(11, vo.getProd_img_url());
 			pstmt2.executeUpdate();
+
+			// 4-3. 상품 옵션 등록 (기본 1개 우선 등록 구조)
+			sql = "INSERT INTO prod_options (opt_num, prod_num, size_val, color, add_price) "
+					+ "VALUES (PROD_OPTIONS_SEQ.NEXTVAL, ?, ?, ?, ?)";
+			pstmt3 = conn.prepareStatement(sql);
+			pstmt3.setInt(1, prod_num);
+			pstmt3.setInt(2, vo.getSize_val());
+			pstmt3.setString(3, vo.getColor());
+			pstmt3.setInt(4, vo.getAdd_price());
+			pstmt3.executeUpdate();
+
+			// 4-4. (선택사항) 이미지 테이블 연동이 필요하다면 여기서 추가 실행
 
 			conn.commit();
 		} catch (Exception e) {
 			if (conn != null)
-				try {
-					conn.rollback();
-				} catch (Exception ex) {
-				}
-			e.printStackTrace();
+				conn.rollback();
 			throw e;
 		} finally {
+			DBUtil.executeClose(null, pstmt3, null);
 			DBUtil.executeClose(null, pstmt2, null);
-			DBUtil.executeClose(null, pstmt, conn);
+			DBUtil.executeClose(rs, pstmt, conn);
 		}
 	}
 
-	// 5. 상품 수정
+	// 5. 상품 수정 (본체 수정 + 옵션은 별도 관리 권장)
 	public void updateProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = null;
 
 		try {
 			conn = DBUtil.getConnection();
-			sql = "UPDATE products SET sku=?, prod_name=?, gender=?, "
-					+ "brand_num=?, cat_num=?, prod_price=?, sale_rate=?, prod_status=?, prod_text=?, "
-					+ "prod_img_url=?, prod_updated_at=SYSDATE WHERE prod_num=?";
+			String sql = "UPDATE products SET sku=?, prod_name=?, gender=?, brand_num=?, cat_num=?, "
+					+ "prod_price=?, sale_rate=?, prod_status=?, prod_text=?, prod_img_url=?, "
+					+ "prod_updated_at=SYSDATE WHERE prod_num=?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, vo.getSku());
@@ -247,11 +258,7 @@ public class AdminProductDAO {
 			pstmt.setString(9, vo.getProd_text());
 			pstmt.setString(10, vo.getProd_img_url());
 			pstmt.setInt(11, vo.getProd_num());
-
 			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
@@ -263,16 +270,17 @@ public class AdminProductDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = new ArrayList<>();
-		String sql = "SELECT * FROM prod_options WHERE prod_num = ? ORDER BY size_val";
 
 		try {
 			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM prod_options WHERE prod_num = ? ORDER BY opt_num ASC";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				AdminProductVO option = new AdminProductVO();
 				option.setOpt_num(rs.getInt("opt_num"));
+				option.setProd_num(rs.getInt("prod_num"));
 				option.setSize_val(rs.getInt("size_val"));
 				option.setColor(rs.getString("color"));
 				option.setAdd_price(rs.getInt("add_price"));
@@ -284,7 +292,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// 7. 상품 삭제
+	// 7. 상품 삭제 (트랜잭션: 옵션 먼저 -> 상품 나중)
 	public void deleteProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt1 = null;
@@ -294,24 +302,20 @@ public class AdminProductDAO {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 
-			String sql1 = "DELETE FROM prod_options WHERE prod_num=?";
-			pstmt1 = conn.prepareStatement(sql1);
+			// 옵션 삭제
+			pstmt1 = conn.prepareStatement("DELETE FROM prod_options WHERE prod_num=?");
 			pstmt1.setInt(1, prod_num);
 			pstmt1.executeUpdate();
 
-			String sql2 = "DELETE FROM products WHERE prod_num=?";
-			pstmt2 = conn.prepareStatement(sql2);
+			// 상품 삭제
+			pstmt2 = conn.prepareStatement("DELETE FROM products WHERE prod_num=?");
 			pstmt2.setInt(1, prod_num);
 			pstmt2.executeUpdate();
 
 			conn.commit();
 		} catch (Exception e) {
 			if (conn != null)
-				try {
-					conn.rollback();
-				} catch (Exception ex) {
-				}
-			e.printStackTrace();
+				conn.rollback();
 			throw e;
 		} finally {
 			DBUtil.executeClose(null, pstmt2, null);
@@ -319,56 +323,46 @@ public class AdminProductDAO {
 		}
 	}
 
-	// 8. 브랜드 목록 조회 (사용 가능한 브랜드만)
+	// 8. 브랜드 리스트 (Y인 것만)
 	public List<AdminProductVO> getBrandList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = new ArrayList<>();
-		String sql = "SELECT brand_num, brand_name FROM brands WHERE brand_use_yn = 'Y' ORDER BY brand_name ASC";
-
 		try {
 			conn = DBUtil.getConnection();
+			String sql = "SELECT brand_num, brand_name FROM brands WHERE brand_use_yn = 'Y' ORDER BY brand_name";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-
 			while (rs.next()) {
-				AdminProductVO brand = new AdminProductVO();
-				brand.setBrand_num(rs.getInt("brand_num"));
-				brand.setBrand_name(rs.getString("brand_name"));
-				list.add(brand);
+				AdminProductVO vo = new AdminProductVO();
+				vo.setBrand_num(rs.getInt(1));
+				vo.setBrand_name(rs.getString(2));
+				list.add(vo);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return list;
 	}
 
-	// 9. 카테고리 목록 조회 (사용 가능한 카테고리만)
+	// 9. 카테고리 리스트 (Y인 것만)
 	public List<AdminProductVO> getCategoryList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = new ArrayList<>();
-		String sql = "SELECT cat_num, cat_name FROM categories WHERE cat_use_yn = 'Y' ORDER BY cat_sort_no ASC, cat_name ASC";
-
 		try {
 			conn = DBUtil.getConnection();
+			String sql = "SELECT cat_num, cat_name FROM categories WHERE cat_use_yn = 'Y' ORDER BY cat_sort_no";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-
 			while (rs.next()) {
-				AdminProductVO cat = new AdminProductVO();
-				cat.setCat_num(rs.getInt("cat_num"));
-				cat.setCat_name(rs.getString("cat_name"));
-				list.add(cat);
+				AdminProductVO vo = new AdminProductVO();
+				vo.setCat_num(rs.getInt(1));
+				vo.setCat_name(rs.getString(2));
+				list.add(vo);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
