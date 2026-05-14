@@ -9,37 +9,23 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/YH_style.css" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* 기본 레이아웃 */
 .main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
 .body-wrap{flex:1;display:flex;overflow:hidden;position:relative}
-
-/* 🚀 수정됨: list-panel에 24px 여백 추가 및 카드형 간격(gap) 설정 */
-.list-panel{display:flex;flex-direction:column;background:var(--bg);transition:width .3s cubic-bezier(.4,0,.2,1);width:100%;overflow:hidden;flex-shrink:0; padding:24px; gap:16px;}
+.list-panel{display:flex;flex-direction:column;background:var(--bg);transition:width .3s cubic-bezier(.4,0,.2,1);width:100%;overflow:hidden;flex-shrink:0;padding:24px;gap:16px;}
 .list-panel.shrunk{width:calc(100% - 560px)}
-
-/* 🚀 수정됨: 검색바(toolbar) 꽉 차는 배경 제거 후 여백 핏으로 통일 */
 .toolbar{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
-
-/* 검색 & 필터 */
 .search-wrap{position:relative;flex:1;min-width:180px;max-width:260px}
 .search-wrap input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--gray5);background:var(--white);border-radius:6px;font-size:12.5px;color:var(--gray1);font-family:'Pretendard',sans-serif;outline:none;transition:border .15s;}
 .search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,228,.08)}
 .search-wrap input::placeholder{color:var(--gray4)}
 .search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:13px}
 .sel{padding:7px 10px;border:1px solid var(--gray5);background:var(--white);font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none;border-radius:6px;cursor:pointer;}
-
-/* 버튼 */
 .btn{padding:7px 14px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
 .btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:var(--navy2)}
 .btn-outline{background:var(--white);color:var(--gray2);border:1px solid var(--gray5)}.btn-outline:hover{border-color:var(--gray3);color:var(--gray1)}
 .btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #FECACA}.btn-danger:hover{background:var(--red);color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-xs{padding:3px 8px;font-size:10px}
-
-/* 🚀 수정됨: 테이블을 감싸는 화이트 카드(tbl-card) 영역 추가 */
+.btn-sm{padding:5px 10px;font-size:11px}.btn-xs{padding:3px 8px;font-size:10px}
 .tbl-card{background:var(--white);border:1px solid var(--gray6);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(15,32,68,.06);display:flex;flex-direction:column;flex:1;min-height:0;}
-
-/* 테이블 */
 .tbl-outer{flex:1;overflow-y:auto}
 .tbl-outer::-webkit-scrollbar{width:4px}
 .tbl-outer::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:2px}
@@ -53,31 +39,21 @@ tr:last-child td{border-bottom:none}
 .prod-row.selected td{background:var(--blue-lt)}
 .prod-row.selected td:first-child{border-left:3px solid var(--blue);padding-left:11px;}
 td:first-child{border-left:3px solid transparent;padding-left:11px}
-
-/* 배지 & 프로그레스 바 */
 .bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap;}
-.bdg-green{background:var(--green-lt);color:#065F46}
-.bdg-amber{background:var(--amber-lt);color:#92400E}
-.bdg-red{background:var(--red-lt);color:#991B1B}
-.bdg-gray{background:var(--gray7);color:var(--gray3)}
-.bdg-blue{background:var(--blue-lt);color:var(--blue)}
+.bdg-green{background:var(--green-lt);color:#065F46}.bdg-amber{background:var(--amber-lt);color:#92400E}
+.bdg-red{background:var(--red-lt);color:#991B1B}.bdg-gray{background:var(--gray7);color:var(--gray3)}.bdg-blue{background:var(--blue-lt);color:var(--blue)}
 .prog-wrap{display:flex;align-items:center;gap:6px}
 .prog-track{flex:1;height:4px;background:var(--gray6);border-radius:2px;overflow:hidden;min-width:50px}
 .prog-fill{height:100%;border-radius:2px}
 .prog-ok{background:var(--blue)}.prog-warn{background:var(--amber)}.prog-low{background:var(--red)}
 .prog-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray3);width:30px;text-align:right;flex-shrink:0}
-
-/* 페이징 전용 스타일 */
 .pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--gray6);background:var(--white);flex-shrink:0;}
-.page-info{font-size:12px;color:var(--gray3)}
-.page-info strong{color:var(--gray1)}
+.page-info{font-size:12px;color:var(--gray3)}.page-info strong{color:var(--gray1)}
 .page-btns{display:flex;gap:4px}
 .pg-btn{width:30px;height:30px;border:1.5px solid var(--gray5);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray3);background:var(--white);transition:all .15s}
 .pg-btn:hover{border-color:var(--blue);color:var(--blue)}
 .pg-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 .pg-btn.disabled{opacity:0.4;cursor:not-allowed}
-
-/* 우측 상세 패널 */
 .detail-panel{width:0;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--gray6);background:var(--white);transition:width .3s cubic-bezier(.4,0,.2,1);position:relative;}
 .detail-panel.open{width:560px}
 .dp-hdr{height:50px;background:var(--navy);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;white-space:nowrap;overflow:hidden;}
@@ -88,30 +64,23 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .dp-close:hover{background:rgba(255,255,255,.16);color:#fff}
 .dp-tabs{display:flex;border-bottom:2px solid var(--gray6);flex-shrink:0;background:var(--bg2);overflow:hidden;}
 .dp-tab{padding:9px 16px;font-size:11.5px;font-weight:600;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
-.dp-tab.on{color:var(--blue);border-bottom-color:var(--blue)}
-.dp-tab:hover{color:var(--gray2)}
+.dp-tab.on{color:var(--blue);border-bottom-color:var(--blue)}.dp-tab:hover{color:var(--gray2)}
 .dp-body{flex:1;overflow-y:auto;padding:20px}
-.dp-body::-webkit-scrollbar{width:4px}
-.dp-body::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:2px}
+.dp-body::-webkit-scrollbar{width:4px}.dp-body::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:2px}
 .dp-section{margin-bottom:22px}
 .dp-section-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gray7);display:flex;align-items:center;gap:6px;}
 .dp-section-title::before{content:'';width:3px;height:12px;background:var(--blue);border-radius:2px;display:inline-block;}
-
-/* 입력 폼 그리드 */
 .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fg-full{grid-column:1/-1}
 .fg{display:flex;flex-direction:column;gap:5px}
 .fg label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em}
 .fi{padding:9px 11px;border:1px solid var(--gray5);background:var(--white);border-radius:6px;font-size:12.5px;font-family:'Pretendard',sans-serif;color:var(--gray1);outline:none;width:100%;transition:border .15s;}
 .fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,228,.08)}
-.fi::placeholder{color:var(--gray4)}
-.fi:read-only{background:var(--gray7);color:var(--gray3);cursor:default}
+.fi::placeholder{color:var(--gray4)}.fi:read-only{background:var(--gray7);color:var(--gray3);cursor:default}
 select.fi option{background:var(--white)}
 textarea.fi{resize:vertical;min-height:72px}
-
-/* 이미지 및 옵션 칩 */
-.img-zone{border:2px dashed var(--gray5);border-radius:8px;height:64px;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .18s;background:var(--bg2);}
-.img-zone:hover{border-color:var(--blue);background:var(--blue-lt)}
+.img-zone-btn{border:2px dashed var(--gray5);border-radius:8px;padding:8px 16px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all .18s;background:var(--bg2);font-size:12px;color:var(--gray4);}
+.img-zone-btn:hover{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
 .img-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .img-thumb{width:64px;height:64px;border-radius:6px;background:var(--gray7);border:1px solid var(--gray5);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;overflow:hidden;transition:border .15s;}
 .img-thumb.main-img{border:2px solid var(--blue)}
@@ -122,19 +91,13 @@ textarea.fi{resize:vertical;min-height:72px}
 .chip:hover:not(.on){border-color:var(--gray3);color:var(--gray2)}
 .chip.color-chip{display:flex;align-items:center;gap:5px}
 .color-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.1);flex-shrink:0}
-
-/* 상세 하단 버튼 & 기타 */
 .dp-footer{padding:12px 20px;border-top:1px solid var(--gray6);background:var(--bg2);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
-.dp-tab-content{display:none}
-.dp-tab-content.active{display:block}
+.dp-tab-content{display:none}.dp-tab-content.active{display:block}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.desc-toggle-btn {font-size:10px; color:var(--blue); background:none; border:none; cursor:pointer; padding:0; font-weight:600; font-family:'Pretendard',sans-serif;}
-.desc-toggle-btn:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
-
 <jsp:include page="/WEB-INF/views/common/log_header.jsp" />
 
 <main class="main">
@@ -150,95 +113,76 @@ textarea.fi{resize:vertical;min-height:72px}
     </div>
   </div>
 
-
   <div class="body-wrap">
-
     <div class="list-panel" id="listPanel">
-      
-      <!-- 🚀 수정됨: toolbar 클래스로 심플하게 변경 -->
-      <form id="searchForm" class="toolbar" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do" method="get">
-          <div class="search-wrap">
-              <span class="search-ico">🔍</span>
-              <input type="text" id="searchInput" name="keyword" value="${keyword}" placeholder="품번·상품명·브랜드 검색">
-          </div>
-          <select class="sel" name="brand" id="brandFilter">
-              <option value="">전체 브랜드</option>
-              <c:forEach var="b" items="${brandList}">
-                  <option value="${b.brandName}" ${brandSel eq b.brandName ? 'selected' : ''}>${b.brandName}</option>
-              </c:forEach>
-          </select>
-          <select class="sel" name="status" id="statusFilter">
-              <option value="">전체 상태</option>
-              <option value="판매중" ${statusSel eq '판매중' ? 'selected' : ''}>판매중</option>
-              <option value="주의"   ${statusSel eq '주의'   ? 'selected' : ''}>주의</option>
-              <option value="품절"   ${statusSel eq '품절'   ? 'selected' : ''}>품절</option>
-              <option value="숨김"   ${statusSel eq '숨김'   ? 'selected' : ''}>숨김</option>
-          </select>
-
-          <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
-              <div style="display:flex;gap:7px;">
-                  <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
-                  <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
-              </div>
-          </div>
+      <form class="toolbar" action="${pageContext.request.contextPath}/logistics/log_prod/log_prodForm.do" method="get">
+        <div class="search-wrap">
+          <span class="search-ico">🔍</span>
+          <input type="text" name="keyword" value="${keyword}" placeholder="품번·상품명·브랜드 검색">
+        </div>
+        <select class="sel" name="brand">
+          <option value="">전체 브랜드</option>
+          <c:forEach var="b" items="${brandList}">
+            <option value="${b.brandName}" ${brandSel eq b.brandName ? 'selected':''}>${b.brandName}</option>
+          </c:forEach>
+        </select>
+        <select class="sel" name="status">
+          <option value="">전체 상태</option>
+          <option value="판매중" ${statusSel eq '판매중' ? 'selected':''}>판매중</option>
+          <option value="주의"   ${statusSel eq '주의'   ? 'selected':''}>주의</option>
+          <option value="품절"   ${statusSel eq '품절'   ? 'selected':''}>품절</option>
+          <option value="숨김"   ${statusSel eq '숨김'   ? 'selected':''}>숨김</option>
+        </select>
+        <div style="margin-left:auto;display:flex;gap:7px;">
+          <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
+          <button type="button" class="btn btn-blue btn-sm" onclick="openNew()">＋ 상품 등록</button>
+        </div>
       </form>
 
-      <!-- 🚀 수정됨: 둥근 모서리의 카드 영역(tbl-card)으로 테이블과 페이징을 감쌈 -->
       <div class="tbl-card">
         <div class="tbl-outer">
-          <table id="prodTable">
+          <table>
             <thead>
               <tr>
                 <th style="width:36px"><input type="checkbox" onchange="toggleAll(this)"></th>
-                <th>이미지</th>
-                <th>품번 (SKU)</th>
-                <th>브랜드</th>
-                <th>상품명</th>
-                <th>카테고리</th>
-                <th>사이즈 범위</th>
-                <th>컬러</th>
-                <th>총 재고</th>
-                <th>재고율</th>
-                <th>상태</th>
-                <th>관리</th>
+                <th>이미지</th><th>품번(SKU)</th><th>브랜드</th><th>상품명</th>
+                <th>카테고리</th><th>사이즈 범위</th><th>컬러</th>
+                <th>총 재고</th><th>재고율</th><th>상태</th><th>관리</th>
               </tr>
             </thead>
             <tbody id="prodTbody">
               <c:choose>
                 <c:when test="${not empty list}">
                   <c:forEach var="p" items="${list}">
-                    <c:set var="maxStk" value="${p.maxStock > 0 ? p.maxStock : 100}"/>
-                    <c:set var="pct"    value="${p.stockQty * 100 / maxStk}"/>
-                    <c:set var="progCls" value="${p.stockQty == 0 ? 'prog-low' : pct < 15 ? 'prog-low' : pct < 30 ? 'prog-warn' : 'prog-ok'}"/>
-                    <c:set var="bdgCls"  value="${p.stockQty == 0 ? 'bdg-red' : p.prodStatus == 2 ? 'bdg-gray' : pct < 20 ? 'bdg-amber' : 'bdg-green'}"/>
-                    <c:set var="bdgTxt"  value="${p.stockQty == 0 ? '품절' : p.prodStatus == 2 ? '숨김' : pct < 20 ? '주의' : '판매중'}"/>
+                    <c:set var="maxStk"  value="${p.maxStock > 0 ? p.maxStock : 100}"/>
+                    <c:set var="pct"     value="${p.stockQty * 100 / maxStk}"/>
+                    <c:set var="progCls" value="${p.stockQty==0?'prog-low':pct<15?'prog-low':pct<30?'prog-warn':'prog-ok'}"/>
+                    <c:set var="bdgCls"  value="${p.stockQty==0?'bdg-red':p.prodStatus==2?'bdg-gray':pct<20?'bdg-amber':'bdg-green'}"/>
+                    <c:set var="bdgTxt"  value="${p.stockQty==0?'품절':p.prodStatus==2?'숨김':pct<20?'주의':'판매중'}"/>
                     
                     <tr class="prod-row" data-id="${p.prodNum}"
-					    data-desc="${p.prodText}"
-					    data-colors="${p.colorList}"
-					    data-sizes="${p.sizeList}"
-					    data-img="${p.prodImgUrl}"
-					    data-regdate="${p.prodCreatedAt}"  onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
-                        
-                      <td onclick="event.stopPropagation()">
-                        <input type="checkbox" class="row-chk" onchange="updateSelCount()">
-                      </td>
-                      
+                        data-desc="${p.prodText}" data-colors="${p.colorList}"
+                        data-sizes="${p.sizeList}" data-img="${p.prodImgUrl}"
+                        data-imgs="${p.prodImgListStr}"
+                        data-regdate="${p.prodCreatedAt}"
+                        onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
+                      <td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" onchange="updateSelCount()"></td>
                       <td>
-                        <c:if test="${!empty p.prodImgUrl}">
+                        <c:choose>
+                          <c:when test="${not empty p.prodImgUrl}">
                             <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
-                        </c:if>
-                        <c:if test="${empty p.prodImgUrl}">
+                          </c:when>
+                          <c:otherwise>
                             <div style="width:36px;height:36px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray6);font-size:16px;">👟</div>
-                        </c:if>
+                          </c:otherwise>
+                        </c:choose>
                       </td>
-
                       <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray3);">${p.sku}</td>
                       <td>${p.brandName}</td>
                       <td style="font-weight:600;color:var(--gray1);">${p.prodName}</td>
                       <td><span class="bdg bdg-gray">${p.catName}</span></td>
                       <td style="font-family:'DM Mono',monospace;font-size:11px;">${not empty p.sizeRange ? p.sizeRange : '-'}</td>
-                      <td style="text-align:center;">${p.colorCnt > 0 ? p.colorCnt : '-'} <c:if test="${p.colorCnt > 0}">색</c:if></td>
+                      <td style="text-align:center;">${p.colorCnt>0?p.colorCnt:'-'}<c:if test="${p.colorCnt>0}">색</c:if></td>
                       <td style="font-family:'DM Mono',monospace;font-weight:600;">${p.stockQty}</td>
                       <td style="min-width:100px;">
                         <div class="prog-wrap">
@@ -255,35 +199,31 @@ textarea.fi{resize:vertical;min-height:72px}
                   </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray4);">📭 등록된 상품이 없습니다.</td></tr>
+                  <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray4);">📭 등록된 상품이 없습니다.</td></tr>
                 </c:otherwise>
               </c:choose>
             </tbody>
           </table>
         </div>
-
         <div class="pagination-wrap" id="prodPagination" style="display:none;">
-          <div class="page-info" id="prodPageInfo">총 <strong>0</strong>개 상품 · 선택 <strong id="selCount">0</strong>개 · 0 - 0 / 0건</div>
+          <div class="page-info" id="prodPageInfo">총 <strong>0</strong>개 · 선택 <strong id="selCount">0</strong>개</div>
           <div class="page-btns" id="prodPageBtns"></div>
         </div>
       </div>
-
-    </div><%-- /list-panel --%>
+    </div>
 
     <div class="detail-panel" id="detailPanel">
       <div class="dp-hdr">
         <div class="dp-hdr-ico" id="dpIco">📑</div>
         <div class="dp-hdr-title" id="dpTitle">상품 상세정보</div>
-        <div class="dp-hdr-sku" id="dpSku"></div>
+        <div class="dp-hdr-sku"   id="dpSku"></div>
         <button class="dp-close" onclick="closeDetail()">✕</button>
       </div>
       <div class="dp-tabs">
         <div class="dp-tab on" onclick="switchTab(this,'tab-info')">기본 정보</div>
-        <div class="dp-tab" onclick="switchTab(this,'tab-stock')">옵션 / 재고</div>
+        <div class="dp-tab"    onclick="switchTab(this,'tab-stock')">옵션 / 재고</div>
       </div>
-
       <form id="prodRegForm" action="" method="post" enctype="multipart/form-data" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-
         <input type="hidden" id="h-prodNum"  name="prodNum"  value="">
         <input type="hidden" id="h-catNum"   name="catNum"   value="">
         <input type="hidden" id="h-brandNum" name="brandNum" value="">
@@ -291,20 +231,33 @@ textarea.fi{resize:vertical;min-height:72px}
         <input type="hidden" id="h-sizes"    name="sizes"    value="">
 
         <div class="dp-body">
-
           <div class="dp-tab-content active" id="tab-info">
+
+            <%-- 이미지 섹션 --%>
             <div class="dp-section">
-              <div class="dp-section-title">상품 이미지</div>
+              <div class="dp-section-title">상품 이미지 (최대 5장 · 한 번에 여러 장을 드래그하여 선택하세요)</div>
+
               <div class="img-previews" id="imgPreviews">
-                <div id="imagePreviewBox" class="img-thumb main-img">
-                  <span id="previewEmoji" style="font-size:22px;">👟</span>
-                </div>
-                <div class="img-zone" onclick="document.getElementById('fileInput').click()">
-                  <span style="color:var(--gray4);font-size:20px">＋</span>
+                <div class="img-thumb main-img">
+                  <span style="font-size:22px;">👟</span>
+                  <div class="img-main-badge">대표</div>
                 </div>
               </div>
-              <div style="font-size:10px;color:var(--gray4);margin-top:6px">첫 번째 이미지가 대표 이미지로 설정됩니다.</div>
-              <input type="file" id="fileInput" name="uploadFile" accept="image/*" style="display:none" onchange="previewImage(this)">
+
+              <div style="margin-top:10px;display:flex;align-items:center;gap:10px;">
+                <div class="img-zone-btn" onclick="document.getElementById('fileInput').click()">
+                  <span style="font-size:16px;">＋</span> 이미지 추가 (최대 5장)
+                </div>
+                <span style="font-size:11px;color:var(--gray4);" id="imgCount">0 / 5장</span>
+              </div>
+              <div style="font-size:10px;color:var(--gray4);margin-top:6px;">
+                첫 번째 이미지가 대표입니다. 이미지를 다시 선택하면 전체 교체됩니다.
+              </div>
+
+              <%-- multiple 속성 유지 --%>
+              <input type="file" id="fileInput" name="uploadFile"
+                     accept="image/*" multiple style="display:none"
+                     onchange="previewImages(this)">
             </div>
 
             <div class="dp-section">
@@ -317,9 +270,8 @@ textarea.fi{resize:vertical;min-height:72px}
                     <button type="button" class="btn btn-outline" style="flex-shrink:0;padding:9px 12px;" onclick="generateSKU()">자동 생성</button>
                   </div>
                 </div>
-                <div class="fg"><label>품번 등록일</label><input class="fi" id="fi-regdate" readonly style="background:var(--gray7);color:var(--gray3)"></div>
+                <div class="fg"><label>품번 등록일</label><input class="fi" id="fi-regdate" readonly></div>
                 <div class="fg fg-full"><label>상품명 <span style="color:var(--red)">*</span></label><input class="fi" id="fi-name" name="prodName" placeholder="상품명을 입력하세요"></div>
-                
                 <div class="fg">
                   <label>브랜드 <span style="color:var(--red)">*</span></label>
                   <select class="fi" id="fi-brand">
@@ -334,7 +286,6 @@ textarea.fi{resize:vertical;min-height:72px}
                     <c:forEach var="c" items="${catList}"><option value="${c.catName}" data-num="${c.catNum}">${c.catName}</option></c:forEach>
                   </select>
                 </div>
-                
                 <div class="fg"><label>정가 (원) <span style="color:var(--red)">*</span></label><input class="fi" id="fi-price" name="prodPrice" type="number" placeholder="0"></div>
                 <div class="fg"><label>할인율 (%)</label><input class="fi" id="fi-sale" name="saleRate" type="number" placeholder="0" min="0" max="100"></div>
                 <div class="fg">
@@ -346,10 +297,7 @@ textarea.fi{resize:vertical;min-height:72px}
                   <select class="fi" id="fi-status" name="prodStatus"><option value="1">판매중</option><option value="2">숨김</option><option value="3">품절</option></select>
                 </div>
                 <div class="fg fg-full">
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <label>상품 설명</label>
-                    <button type="button" class="desc-toggle-btn" id="descToggleBtn" onclick="toggleDesc()">▲ 접기</button>
-                  </div>
+                  <label>상품 설명</label>
                   <textarea class="fi" id="fi-desc" name="prodText" placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
                 </div>
               </div>
@@ -380,10 +328,11 @@ textarea.fi{resize:vertical;min-height:72px}
                 <div class="chip" onclick="this.classList.toggle('on')">280</div><div class="chip" onclick="this.classList.toggle('on')">285</div>
               </div>
             </div>
+
           </div><%-- /tab-info --%>
 
           <div class="dp-tab-content" id="tab-stock">
-             <div style="padding:40px;text-align:center;color:var(--gray4);font-size:12px;">옵션/재고 관리 기능 준비중</div>
+            <div style="padding:40px;text-align:center;color:var(--gray4);font-size:12px;">옵션/재고 관리 기능 준비중</div>
           </div>
         </div><%-- /dp-body --%>
 
@@ -394,9 +343,8 @@ textarea.fi{resize:vertical;min-height:72px}
             <button type="button" class="btn btn-blue" id="dpSaveBtn" onclick="submitProd()">저장</button>
           </div>
         </div>
-
       </form>
-    </div><%-- /detail-panel --%>
+    </div>
   </div>
 </main>
 
@@ -408,117 +356,184 @@ var isNew      = false;
 
 function updateClock() {
     var now = new Date();
-    var s = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,'0') + "-" + String(now.getDate()).padStart(2,'0') + "  "
+    var s = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,'0') + "-"
+          + String(now.getDate()).padStart(2,'0') + "  "
           + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
     var el = document.getElementById("realTimeClock");
-    if(el) el.innerText = s;
+    if (el) el.innerText = s;
 }
 updateClock(); setInterval(updateClock, 60000);
 
 function showToast(msg) {
-    var t = document.getElementById('toast');
-    if(!t) return;
+    var t = document.getElementById('toast'); if (!t) return;
     t.textContent = msg; t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
+// ── 이미지 미리보기 ─────────────────────
+function previewImages(input) {
+    if (!input.files || input.files.length === 0) return;
+
+    var files = Array.from(input.files);
+    if (files.length > 5) {
+        showToast('⚠ 이미지는 한 번에 최대 5장까지만 선택 가능합니다.');
+        return;
+    }
+
+    var container = document.getElementById('imgPreviews');
+    container.innerHTML = '';
+
+    files.forEach(function(file, idx) {
+        if (!file.type.startsWith('image/')) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var div = document.createElement('div');
+            div.className = 'img-thumb' + (idx === 0 ? ' main-img' : '');
+            div.innerHTML = '<img src="' + e.target.result
+                + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">'
+                + (idx === 0 ? '<div class="img-main-badge">대표</div>' : '');
+            container.appendChild(div);
+
+            // 헤더 아이콘 → 첫 번째 이미지
+            if (idx === 0) {
+                document.getElementById('dpIco').innerHTML =
+                    '<img src="' + e.target.result
+                    + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">';
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('imgCount').textContent = files.length + ' / 5장';
+    showToast('✅ ' + files.length + '장 선택되었습니다. 저장 시 교체 반영됩니다.');
+}
+
+function resetImages() {
+    document.getElementById('fileInput').value = '';
+    document.getElementById('imgPreviews').innerHTML =
+        '<div class="img-thumb main-img">'
+        + '<span style="font-size:22px;">👟</span>'
+        + '<div class="img-main-badge">대표</div></div>';
+    document.getElementById('imgCount').textContent = '0 / 5장';
+    document.getElementById('dpIco').innerHTML = '📑';
+}
+
+// ── 상세 패널 (기존 상품 다중 이미지 파싱 적용) ──────────────────────────────────
 function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPrice, prodStatus, rowEl) {
-    isNew      = false;
-    selectedId = prodNum;
+    isNew = false; selectedId = prodNum;
+    resetImages();
 
-    var imgUrl = rowEl ? (rowEl.getAttribute('data-img') || '') : '';
     var cp = '${pageContext.request.contextPath}';
-    var dpIco = document.getElementById('dpIco');
-    var previewBox = document.getElementById('imagePreviewBox');
+    
+    // 다중 이미지 문자열 가져오기
+    var imgsStr = rowEl ? (rowEl.getAttribute('data-imgs') || '') : '';
+    
+    var container = document.getElementById('imgPreviews');
+    container.innerHTML = ''; // 초기화
 
-    if (imgUrl && imgUrl !== 'null' && imgUrl.trim() !== '') {
-        var imgSrc = cp + '/upload/' + imgUrl;
-        dpIco.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">';
-        previewBox.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
-                             + '<div class="img-main-badge">대표</div>';
+    // 다중 이미지가 존재하면 반복해서 썸네일 생성
+    if (imgsStr && imgsStr !== 'null' && imgsStr.trim() !== '') {
+        var imgArr = imgsStr.split(',');
+        
+        imgArr.forEach(function(imgName, idx) {
+            if(!imgName.trim()) return;
+            var imgSrc = cp + '/upload/' + imgName.trim();
+            
+            var div = document.createElement('div');
+            div.className = 'img-thumb' + (idx === 0 ? ' main-img' : '');
+            div.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;" onerror="this.src=\'\'">' // 에러시 빈화면처리
+                + (idx === 0 ? '<div class="img-main-badge">대표</div>' : '');
+            container.appendChild(div);
+
+            // 헤더의 쪼그만 아이콘 갱신 (첫 번째 이미지만)
+            if (idx === 0) {
+                document.getElementById('dpIco').innerHTML = 
+                    '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;" onerror="this.src=\'\'">';
+            }
+        });
+        document.getElementById('imgCount').textContent = imgArr.length + ' / 5장';
     } else {
-        dpIco.innerHTML = '📑';
-        previewBox.innerHTML = '<span id="previewEmoji" style="font-size:22px;">👟</span><div class="img-main-badge">대표</div>';
+        // 이미지 없을 때 빈 틀 보여주기
+        resetImages();
     }
 
     document.getElementById('dpTitle').textContent       = prodName;
     document.getElementById('dpSku').textContent         = sku;
     document.getElementById('dpSaveBtn').textContent     = '수정 저장';
     document.getElementById('dpDeleteBtn').style.display = '';
-
     document.getElementById('fi-sku').value    = sku;
     document.getElementById('fi-name').value   = prodName;
     document.getElementById('fi-brand').value  = brandName;
     document.getElementById('fi-cat').value    = catName;
     document.getElementById('fi-price').value  = prodPrice;
     document.getElementById('fi-status').value = prodStatus;
-
-    var desc = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
-    document.getElementById('fi-desc').value = desc;
+    document.getElementById('fi-desc').value   = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
     
     var regDate = rowEl ? (rowEl.getAttribute('data-regdate') || '') : '';
-    document.getElementById('fi-regdate').value = regDate.substring(0, 10); // 년-월-일만 깔끔하게 자르기
+    document.getElementById('fi-regdate').value = regDate.substring(0, 10);
 
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
-    if(rowEl) rowEl.classList.add('selected');
-
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    if (rowEl) rowEl.classList.add('selected');
     
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+
     var colorArr = rowEl ? (rowEl.getAttribute('data-colors') || '').split(',') : [];
     document.querySelectorAll('#colorChips .chip').forEach(function(c) {
-        if(colorArr.includes(c.innerText.trim())) c.classList.add('on');
+        if (colorArr.includes(c.innerText.trim())) c.classList.add('on');
     });
-
+    
     var sizeArr = rowEl ? (rowEl.getAttribute('data-sizes') || '').split(',') : [];
     document.querySelectorAll('#sizeChips .chip').forEach(function(c) {
-        if(sizeArr.includes(c.innerText.trim())) c.classList.add('on');
+        if (sizeArr.includes(c.innerText.trim())) c.classList.add('on');
     });
 
     switchTabById('tab-info');
     openPanel();
 }
 
+// ── 신규 등록 ─────────────────────────────────────────────────────────────
 function openNew() {
-    isNew      = true;
-    selectedId = null;
-    document.getElementById('dpIco').innerHTML = '＋';
-    document.getElementById('dpTitle').textContent = '신규 상품 등록';
+    isNew = true; selectedId = null;
+    resetImages();
+    document.getElementById('dpIco').innerHTML       = '＋';
+    document.getElementById('dpTitle').textContent   = '신규 상품 등록';
     document.getElementById('dpSaveBtn').textContent = '등록';
     document.getElementById('dpDeleteBtn').style.display = 'none';
-    
-    var previewBox = document.getElementById('imagePreviewBox');
-    previewBox.innerHTML = '<span id="previewEmoji" style="font-size:22px;">👟</span><div class="img-main-badge">대표</div>';
-    document.getElementById('fileInput').value = ''; 
-    ['fi-sku','fi-regdate','fi-name','fi-price','fi-desc'].forEach(id => {
-        const el = document.getElementById(id); if(el) el.value = '';
+    ['fi-sku','fi-regdate','fi-name','fi-price','fi-sale','fi-desc'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
     });
     document.getElementById('fi-brand').value  = '';
     document.getElementById('fi-cat').value    = '';
+    document.getElementById('fi-gender').value = '0';
+    document.getElementById('fi-status').value = '1';
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-
-    switchTabById('tab-info'); 
+    switchTabById('tab-info');
     openPanel();
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
 }
 
+// ── 저장 ──────────────────────────────────────────────────────────────────
 function submitProd() {
-    var sku = document.getElementById('fi-sku').value.trim();
+    var sku  = document.getElementById('fi-sku').value.trim();
     var name = document.getElementById('fi-name').value.trim();
-    if(!sku || !name) { alert('필수 항목을 입력하세요.'); return; }
+    if (!sku || !name) { alert('필수 항목을 입력하세요.'); return; }
 
     var brandSel = document.getElementById('fi-brand');
     var catSel   = document.getElementById('fi-cat');
     document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
-    document.getElementById('h-catNum').value = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
+    document.getElementById('h-catNum').value   = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
 
-    var colors = []; document.querySelectorAll('#colorChips .chip.on').forEach(c => colors.push(c.innerText.trim()));
+    var colors = [];
+    document.querySelectorAll('#colorChips .chip.on').forEach(c => colors.push(c.innerText.trim()));
     document.getElementById('h-colors').value = colors.join(',');
-    var sizes = []; document.querySelectorAll('#sizeChips .chip.on').forEach(c => sizes.push(c.innerText.trim()));
+
+    var sizes = [];
+    document.querySelectorAll('#sizeChips .chip.on').forEach(c => sizes.push(c.innerText.trim()));
     document.getElementById('h-sizes').value = sizes.join(',');
 
     var form = document.getElementById('prodRegForm');
-    var cp = '${pageContext.request.contextPath}';
-    if(isNew) {
+    var cp   = '${pageContext.request.contextPath}';
+    if (isNew) {
         document.getElementById('h-prodNum').value = '';
         form.action = cp + '/logistics/log_prod/log_prodReg.do';
     } else {
@@ -533,106 +548,42 @@ function deleteProd() {
     location.href = '${pageContext.request.contextPath}/logistics/log_prod/log_prodDel.do?prodNum=' + selectedId;
 }
 
-function openPanel() { document.getElementById('detailPanel').classList.add('open'); document.getElementById('listPanel').classList.add('shrunk'); }
-function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); document.getElementById('listPanel').classList.remove('shrunk'); document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected')); selectedId = null; isNew = false; }
-function switchTab(el, tabId) { el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(t => t.classList.remove('on')); el.classList.add('on'); switchTabById(tabId); }
-function switchTabById(tabId) { document.querySelectorAll('.dp-tab-content').forEach(t => t.classList.remove('active')); document.getElementById(tabId).classList.add('active'); }
-function toggleAll(cb) { document.querySelectorAll('.prod-row:not([style*="display: none"]) .row-chk').forEach(c => c.checked = cb.checked); updateSelCount(); }
-function updateSelCount() { document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length; }
-
-let currentProdPage = 1;
-const prodItemsPerPage = 10;
-let allProdRows = []; 
-
-window.addEventListener('load', function() {
-    const tbody = document.getElementById('prodTbody');
-    if(tbody) {
-        allProdRows = Array.from(tbody.querySelectorAll('.prod-row'));
-        if(allProdRows.length > 0) { renderProdTable(); }
-        else { document.getElementById('prodPagination').style.display = 'none'; }
-    }
-});
-
-function renderProdTable() {
-    allProdRows.forEach(row => row.style.display = 'none');
-    const start = (currentProdPage - 1) * prodItemsPerPage;
-    const end = start + prodItemsPerPage;
-    for(let i = start; i < end && i < allProdRows.length; i++) {
-        allProdRows[i].style.display = '';
-    }
-    renderProdPagination();
+function openPanel() {
+    document.getElementById('detailPanel').classList.add('open');
+    document.getElementById('listPanel').classList.add('shrunk');
 }
-
-function renderProdPagination() {
-    const totalPages = Math.ceil(allProdRows.length / prodItemsPerPage);
-    const paginWrap = document.getElementById('prodPagination');
-    const pageInfo = document.getElementById('prodPageInfo');
-    const pageBtns = document.getElementById('prodPageBtns');
-    if (!paginWrap || !pageBtns) return;
-    paginWrap.style.display = 'flex';
-
-    const startNum = (currentProdPage - 1) * prodItemsPerPage + 1;
-    const endNum = Math.min(currentProdPage * prodItemsPerPage, allProdRows.length);
-    pageInfo.innerHTML = `총 <strong style="color:var(--gray1)">\${allProdRows.length}</strong>개 상품 · 선택 <strong id="selCount" style="color:var(--gray1)">0</strong>개 · \${startNum} - \${endNum} / \${allProdRows.length}건`;
-
-    let btnsHTML = '';
-    btnsHTML += `<div class="pg-btn \${currentProdPage === 1 ? 'disabled' : ''}" onclick="changeProdPage(\${currentProdPage - 1})">‹</div>`;
-    for (let i = 1; i <= totalPages; i++) {
-        btnsHTML += `<div class="pg-btn \${i === currentProdPage ? 'on' : ''}" onclick="changeProdPage(\${i})">\${i}</div>`;
-    }
-    btnsHTML += `<div class="pg-btn \${currentProdPage === totalPages ? 'disabled' : ''}" onclick="changeProdPage(\${currentProdPage + 1})">›</div>`;
-    pageBtns.innerHTML = btnsHTML;
+function closeDetail() {
+    document.getElementById('detailPanel').classList.remove('open');
+    document.getElementById('listPanel').classList.remove('shrunk');
+    document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
+    selectedId = null; isNew = false;
+    resetImages();
 }
-
-function changeProdPage(page) {
-    const totalPages = Math.ceil(allProdRows.length / prodItemsPerPage);
-    if (page < 1 || page > totalPages) return; 
-    currentProdPage = page;
-    renderProdTable();
-    document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
+function switchTab(el, tabId) {
+    el.closest('.dp-tabs').querySelectorAll('.dp-tab').forEach(t => t.classList.remove('on'));
+    el.classList.add('on'); switchTabById(tabId);
+}
+function switchTabById(tabId) {
+    document.querySelectorAll('.dp-tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+}
+function toggleAll(cb) {
+    document.querySelectorAll('.prod-row:not([style*="display: none"]) .row-chk').forEach(c => c.checked = cb.checked);
     updateSelCount();
 }
-//── 이미지 미리보기 ────────────────────────────────────
-function previewImage(input) {
-    if (!input.files || !input.files[0]) return;
-
-    var file = input.files[0];
-
-    // 이미지 파일만 허용
-    if (!file.type.startsWith('image/')) {
-        showToast('⚠ 이미지 파일만 업로드 가능합니다.');
-        input.value = '';
-        return;
-    }
-
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        // 미리보기 박스 교체
-        var previewBox = document.getElementById('imagePreviewBox');
-        previewBox.innerHTML = '<img src="' + e.target.result + '" '
-            + 'style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
-            + '<div class="img-main-badge">대표</div>';
-
-        // 헤더 아이콘도 동일하게 교체
-        var dpIco = document.getElementById('dpIco');
-        dpIco.innerHTML = '<img src="' + e.target.result + '" '
-            + 'style="width:100%;height:100%;object-fit:cover;border-radius:5px;">';
-
-        showToast('✅ 이미지가 선택되었습니다. 저장 시 반영됩니다.');
-    };
-    reader.readAsDataURL(file);
+function updateSelCount() {
+    document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length;
 }
+
+// ── SKU 자동 생성 ─────────────────────────────────────────────────────────
 function generateSKU() {
     var brand = document.getElementById('fi-brand').value;
     if (!brand) { alert("브랜드를 먼저 선택해 주세요."); return; }
-
     function makePrefix(name) {
         var result = '';
         var choMap = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-        var engMap = {'ㄱ':'G','ㄲ':'G','ㄴ':'N','ㄷ':'D','ㄸ':'D','ㄹ':'R','ㅁ':'M',
-                      'ㅂ':'B','ㅃ':'B','ㅅ':'S','ㅆ':'S','ㅇ':'Y','ㅈ':'J','ㅉ':'J',
-                      'ㅊ':'C','ㅋ':'K','ㅌ':'T','ㅍ':'P','ㅎ':'H'};
-
+        var engMap = {'ㄱ':'G','ㄲ':'G','ㄴ':'N','ㄷ':'D','ㄸ':'D','ㄹ':'R','ㅁ':'M','ㅂ':'B','ㅃ':'B',
+                      'ㅅ':'S','ㅆ':'S','ㅇ':'Y','ㅈ':'J','ㅉ':'J','ㅊ':'C','ㅋ':'K','ㅌ':'T','ㅍ':'P','ㅎ':'H'};
         for (var i = 0; i < name.length && result.length < 2; i++) {
             var code = name.charCodeAt(i);
             if (code >= 65 && code <= 90) { result += name[i]; }
@@ -645,21 +596,64 @@ function generateSKU() {
         while (result.length < 2) result += 'X';
         return result.toUpperCase();
     }
-
     var prefix = makePrefix(brand);
-    var now    = new Date();
-    var rand   = '';
-    var chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var now = new Date();
+    var rand = '';
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     for (var i = 0; i < 4; i++) rand += chars.charAt(Math.floor(Math.random() * chars.length));
-
     document.getElementById('fi-sku').value =
-        prefix + "-"
-        + String(now.getFullYear()).slice(2)
-        + String(now.getMonth() + 1).padStart(2, '0')
-        + String(now.getDate()).padStart(2, '0')
-        + "-" + rand;
-
+        prefix + "-" + String(now.getFullYear()).slice(2)
+        + String(now.getMonth()+1).padStart(2,'0')
+        + String(now.getDate()).padStart(2,'0') + "-" + rand;
     showToast('상품 고유코드가 자동 생성되었습니다. (' + prefix + ')');
+}
+
+// ── 페이징 ────────────────────────────────────────────────────────────────
+let currentProdPage = 1;
+const prodItemsPerPage = 10;
+let allProdRows = [];
+
+window.addEventListener('load', function() {
+    var tbody = document.getElementById('prodTbody');
+    if (tbody) {
+        allProdRows = Array.from(tbody.querySelectorAll('.prod-row'));
+        if (allProdRows.length > 0) { renderProdTable(); }
+        else { document.getElementById('prodPagination').style.display = 'none'; }
+    }
+});
+
+function renderProdTable() {
+    allProdRows.forEach(r => r.style.display = 'none');
+    var start = (currentProdPage - 1) * prodItemsPerPage;
+    var end   = start + prodItemsPerPage;
+    for (var i = start; i < end && i < allProdRows.length; i++) allProdRows[i].style.display = '';
+    renderProdPagination();
+}
+
+function renderProdPagination() {
+    var tot = Math.ceil(allProdRows.length / prodItemsPerPage);
+    var pw  = document.getElementById('prodPagination');
+    var pi  = document.getElementById('prodPageInfo');
+    var pb  = document.getElementById('prodPageBtns');
+    if (!pw || !pb) return;
+    pw.style.display = 'flex';
+    var sn = (currentProdPage - 1) * prodItemsPerPage + 1;
+    var en = Math.min(currentProdPage * prodItemsPerPage, allProdRows.length);
+    pi.innerHTML = `총 <strong style="color:var(--gray1)">\${allProdRows.length}</strong>개 · 선택 <strong id="selCount">0</strong>개 · \${sn}-\${en}`;
+    var h = `<div class="pg-btn \${currentProdPage===1?'disabled':''}" onclick="changeProdPage(\${currentProdPage-1})">‹</div>`;
+    for (var i = 1; i <= tot; i++)
+        h += `<div class="pg-btn \${i===currentProdPage?'on':''}" onclick="changeProdPage(\${i})">\${i}</div>`;
+    h += `<div class="pg-btn \${currentProdPage===tot?'disabled':''}" onclick="changeProdPage(\${currentProdPage+1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeProdPage(p) {
+    var tot = Math.ceil(allProdRows.length / prodItemsPerPage);
+    if (p < 1 || p > tot) return;
+    currentProdPage = p;
+    renderProdTable();
+    document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
+    updateSelCount();
 }
 </script>
 </body>

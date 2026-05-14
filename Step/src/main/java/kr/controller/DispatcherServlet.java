@@ -22,7 +22,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,  // 1MB
     maxFileSize = 1024 * 1024 * 10,       // 10MB
-    maxRequestSize = 1024 * 1024 * 15     // 15MB
+    maxRequestSize = 1024 * 1024 * 50     // 15MB
 )
 public class DispatcherServlet extends HttpServlet{
 	private static final long serialVersionUID = 4068304416616773907L;

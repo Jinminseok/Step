@@ -99,14 +99,14 @@ public class MemberDAO {
         String sql = "UPDATE USERS_DETAIL SET GRADE = ? WHERE USER_NUM = ?";
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false);          // ← 추가
+            conn.setAutoCommit(false);         
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, grade);
             pstmt.setInt(2, userNum);
             pstmt.executeUpdate();
-            conn.commit();                      // ← 추가
+            conn.commit();                     
         } catch (Exception e) {
-            if (conn != null) conn.rollback();  // ← 추가
+            if (conn != null) conn.rollback();  
             throw e;
         } finally { DBUtil.executeClose(null, pstmt, conn); }
     }
