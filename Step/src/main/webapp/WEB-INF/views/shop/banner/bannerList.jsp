@@ -21,6 +21,12 @@
 .modal-box{background:var(--white);width:500px;border:1px solid var(--border)}
 .modal-hdr{padding:18px 22px;background:var(--black);color:#fff;display:flex;justify-content:space-between;align-items:center;}
 .f-input{padding:10px; border:1px solid var(--border); width:100%; margin-bottom:15px; outline:none;}
+
+/* 버튼 스타일 추가 */
+.btn-blue { background:#e8f0ff; color:var(--blue); border:1px solid #c0d0ff; padding:5px 10px; font-size:11px; cursor:pointer; font-weight:700;}
+.btn-danger { background:#fff0f0; color:var(--red); border:1px solid #ffd0d0; padding:5px 10px; font-size:11px; cursor:pointer; font-weight:700;}
+.btn-blue:hover { background:var(--blue); color:#fff; }
+.btn-danger:hover { background:var(--red); color:#fff; }
 </style>
 </head>
 <body>
@@ -33,7 +39,8 @@
                 <h2 style="font-size:24px; font-weight:900;">메인 배너 관리</h2>
                 <p style="color:var(--gray4); font-size:13px;">메인 슬라이드 배너의 이미지와 연결 상품을 관리합니다.</p>
             </div>
-            <button class="btn btn-black" onclick="document.getElementById('modal-reg').classList.add('open')" style="padding:10px 20px; cursor:pointer; background:var(--black); color:#fff; border:none; font-weight:700;">＋ 배너 등록</button>
+            <%-- [수정] openRegModal() 함수를 호출하도록 변경 --%>
+            <button class="btn btn-black" onclick="openRegModal()" style="padding:10px 20px; cursor:pointer; background:var(--black); color:#fff; border:none; font-weight:700;">＋ 배너 등록</button>
         </div>
         <div class="tbl-wrap">
             <table style="width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--border);">
@@ -44,6 +51,7 @@
                         <th style="padding:12px; border-bottom:1px solid var(--border);">배너 제목</th>
                         <th style="padding:12px; border-bottom:1px solid var(--border);">상품번호</th>
                         <th style="padding:12px; border-bottom:1px solid var(--border);">상태</th>
+                        <th style="padding:12px; border-bottom:1px solid var(--border);">관리</th> <%-- [추가] 관리 헤더 --%>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,18 +67,31 @@
                                     <c:otherwise><span class="badge b-silver">숨김</span></c:otherwise>
                                 </c:choose>
                             </td>
+                            <%-- [추가] 수정 및 삭제 버튼 영역 --%>
+                            <td>
+                                <div style="display:flex; gap:6px; justify-content:center;">
+                                    <button type="button" class="btn-blue" 
+                                        onclick="openModModal(${b.banner_num}, '${b.banner_title}', ${b.prod_num}, ${b.banner_sort_no}, '${b.banner_use_yn}')">수정</button>
+                                    <button type="button" class="btn-danger" 
+                                        onclick="if(confirm('정말 삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/shop/banner/bannerDelete.do?banner_num=${b.banner_num}'">삭제</button>
+                                </div>
+                            </td>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty bannerList}">
+                        <tr><td colspan="6" style="padding:40px; color:#999;">등록된 배너가 없습니다.</td></tr>
+                    </c:if>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<%-- 모달 영역은 형님 코드 그대로 유지 (id="modal-reg") --%>
 <div class="modal-overlay" id="modal-reg">
     <div class="modal-box">
         <div class="modal-hdr">
-            <span style="font-weight:700;">배너 등록</span>
+            <span class="modal-title" style="font-weight:700;">배너 등록</span>
             <button onclick="document.getElementById('modal-reg').classList.remove('open')" style="background:none; border:none; color:#fff; cursor:pointer; font-size:20px;">✕</button>
         </div>
         <form action="${pageContext.request.contextPath}/shop/banner/bannerInsert.do" method="post" enctype="multipart/form-data" style="padding:20px;">
@@ -95,9 +116,48 @@
             </div>
             <label style="font-size:12px; font-weight:700; color:#666;">이미지 파일</label>
             <input type="file" name="uploadFile" class="f-input" required>
-            <button type="submit" style="width:100%; padding:12px; margin-top:10px; cursor:pointer; background:var(--black); color:#fff; border:none; font-weight:700;">배너 저장하기</button>
+            <button type="submit" style="width:100%; padding:12px; margin-top:10px; cursor:pointer; background:var(--black); color:#fff; border:none; font-weight:700;">저장하기</button>
         </form>
     </div>
 </div>
+
+<script>
+function openModModal(num, title, prodNum, sortNo, useYn) {
+    const form = document.querySelector('#modal-reg form');
+    form.action = '${pageContext.request.contextPath}/shop/banner/bannerUpdate.do';
+    
+    let numInput = form.querySelector('input[name="banner_num"]');
+    if(!numInput) {
+        numInput = document.createElement('input');
+        numInput.type = 'hidden';
+        numInput.name = 'banner_num';
+        form.appendChild(numInput);
+    }
+    numInput.value = num;
+
+    form.querySelector('input[name="banner_title"]').value = title;
+    form.querySelector('input[name="prod_num"]').value = prodNum;
+    form.querySelector('input[name="banner_sort_no"]').value = sortNo;
+    form.querySelector('select[name="banner_use_yn"]').value = useYn;
+    
+    document.querySelector('.modal-title').innerText = '배너 수정';
+    form.querySelector('input[type="file"]').required = false;
+
+    document.getElementById('modal-reg').classList.add('open');
+}
+
+function openRegModal() {
+    const form = document.querySelector('#modal-reg form');
+    form.reset();
+    form.action = '${pageContext.request.contextPath}/shop/banner/bannerInsert.do';
+    document.querySelector('.modal-title').innerText = '신규 배너 등록';
+    form.querySelector('input[type="file"]').required = true;
+    
+    const numInput = form.querySelector('input[name="banner_num"]');
+    if(numInput) numInput.remove();
+
+    document.getElementById('modal-reg').classList.add('open');
+}
+</script>
 </body>
 </html>
