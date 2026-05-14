@@ -44,7 +44,8 @@
             <%-- 좌측 필터 사이드바 --%>
             <div class="filter-side">
                 <form id="filterForm" action="${pageContext.request.contextPath}/shop/user/main.do" method="get">
-                    
+                	<%-- 헤더 탭 기억하기 --%>
+                    <input type="hidden" name="cat_num" value="${empty cat_num ? '0' : cat_num}">
                     <%-- 1. 카테고리 필터--%>
                     <div class="filter-box">
                         <div class="filter-title">카테고리 ▾</div>
@@ -93,7 +94,6 @@
                         <a href="#" data-sort="popular" class="sort-tab ${param.sort == 'popular' ? 'active' : ''}">인기순</a>
                         <a href="#" data-sort="new" class="sort-tab ${param.sort == 'new' ? 'active' : ''}">최신순</a>
                     </div>
-                    <div class="total-count">총 ${productList.size()}개</div>
                 </div>
                 
                 <div class="prod-grid">
@@ -148,22 +148,21 @@ $(document).ready(function() {
     $('.sort-tab').click(function(e) {
         e.preventDefault();
 
-        // 1. 클릭한 탭으로 까만 밑줄 옮기기
+        // 클릭한 탭으로 까만 밑줄 옮기기
         $('.sort-tab').removeClass('active');
         $(this).addClass('active');
 
-        // 2. 어떤 정렬 방식을 눌렀는지 가져오기 (recommend, popular, new)
+        // 무슨 탭인지 가져오기 (recommend, popular, new)
         let sortType = $(this).data('sort');
 
-        // 3. 좌측 필터(카테고리, 브랜드) 값을 그대로 가져와서 정렬 조건과 합치기
+        // 좌측 필터(카테고리, 브랜드) 값과 합치기
         let formData = $('#filterForm').serialize();
         let targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + formData + '&sort=' + sortType;
 
-        // 4. 로딩 중 시각적 효과
+        // 로딩 중 시각적 효과
         $('.prod-grid').css('opacity', '0.4');
 
-        // 5. 서버의 메인 화면을 백그라운드로 몰래 호출한 뒤, 
-        // 그 중에서 '.prod-grid' 안에 있는 상품 카드들만 호출해여 현재 화면을 교체
+        // 서버의 메인 화면을 호출한 뒤, 탭에 맞는 상품들만 호출하여 현재 화면을 교체
         $('.prod-grid').load(targetUrl + ' .prod-grid > *', function() {
             $('.prod-grid').css('opacity', '1');
         });
@@ -174,7 +173,7 @@ $(document).ready(function() {
         e.preventDefault();
         let pageNum = $(this).data('page'); // 누른 페이지 번호
         
-        let sortType = $('.sort-tab.active').data('sort'); // 현재 눌려있는 탭 기준 기억하기
+        let sortType = $('.sort-tab.active').data('sort');
         if(!sortType) sortType = 'recommend'; // 기본값
         
         let formData = $('#filterForm').serialize();
@@ -183,8 +182,6 @@ $(document).ready(function() {
         $('#prod-list-area').css('opacity', '0.4');
         $('#prod-list-area').load(targetUrl + ' #prod-list-area > *', function() {
             $('#prod-list-area').css('opacity', '1');
-            // 스크롤을 살짝 위로 올려주고 싶다면 아래 줄의 주석을 푸세요!
-            // window.scrollTo({top: 400, behavior: 'smooth'}); 
         });
     });
 });

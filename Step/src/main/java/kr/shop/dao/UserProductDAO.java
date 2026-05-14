@@ -172,15 +172,22 @@ public class UserProductDAO {
 	            else sub_sql += "WHERE ";
 	            sub_sql += "p.prod_name LIKE ? ";
 	        }
+	        
+	        // 카테고리 필터링
+	        if (filter.getCat_num() > 0) {
+	            if (sub_sql.contains("WHERE")) sub_sql += "AND ";
+	            else sub_sql += "WHERE ";
+	            sub_sql += "p.cat_num = ? ";
+	        }
 
 	        // 메인 화면용 쿼리: 상품 + 브랜드명 + 대표이미지 조인
 	        sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
-	            + "(SELECT p.PROD_NUM, p.PROD_NAME, p.PROD_PRICE, p.GENDER, p.PROD_STATUS, p.PROD_CREATED_AT, "
-	            + "b.BRAND_NAME, i.PROD_IMG_URL " 
-	            + "FROM PRODUCTS p "
-	            + "LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM "
-	            + "LEFT JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y' "
-	            + sub_sql + " ORDER BY p.PROD_CREATED_AT DESC) a) " 
+	            + "(SELECT p.prod_num, p.prod_name, p.prod_price, p.gender, p.prod_status, p.prod_created_at, p.cat_num, "
+	            + "b.brand_name, i.prod_img_url " 
+	            + "FROM products p "
+	            + "LEFT JOIN brands b ON p.brand_num = b.brand_num "
+	            + "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
+	            + sub_sql + " ORDER BY p.prod_created_at DESC) a) " 
 	            + "WHERE rnum >= ? AND rnum <= ?";
 
 	        pstmt = conn.prepareStatement(sql);
@@ -191,6 +198,9 @@ public class UserProductDAO {
 	        }
 	        if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
 	            pstmt.setString(++cnt, "%" + filter.getKeyword() + "%");
+	        }
+	        if (filter.getCat_num() > 0) {
+	        	pstmt.setInt(++cnt, filter.getCat_num());
 	        }
 	        
 	        // 페이징 번호 세팅
