@@ -8,12 +8,23 @@ import kr.controller.Action;
 import kr.shop.dao.UserProductDAO;
 import kr.shop.vo.AdminProductVO;
 
+// [추가] 배너 DAO와 VO를 사용하기 위해 import 합니다.
+import kr.shop.dao.BannerDAO;
+import kr.shop.vo.BannerVO;
+
 public class MainAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		UserProductDAO dao = UserProductDAO.getInstance();
+
+
+		// 메인 화면 슬라이드 배너 가져오기
+		BannerDAO bannerDao = BannerDAO.getInstance();
+		List<BannerVO> mainBannerList = bannerDao.getMainBanners();
+		request.setAttribute("mainBannerList", mainBannerList);
+		// =========================================================
 
 		// 사용자가 누른 페이지 번호 받기
 		String pageNumStr = request.getParameter("pageNum");
