@@ -20,13 +20,13 @@ public class Log_ProdRegAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
 
-        String savePath = request.getServletContext().getRealPath("/upload");
+        // [수정] 외부 절대 경로 사용
+        String savePath = "C:/shop_upload";
         File uploadDir = new File(savePath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
         List<String> savedFileNames = new ArrayList<>();
         Collection<Part> parts = request.getParts();
-        int imgIndex = 0;
 
         for (Part part : parts) {
             if (!"uploadFile".equals(part.getName())) continue;
@@ -35,12 +35,8 @@ public class Log_ProdRegAction implements Action {
             String originName = getFileName(part);
             if (originName == null || originName.trim().isEmpty()) continue;
 
-            String ext = "";
-            int dotIdx = originName.lastIndexOf(".");
-            if (dotIdx >= 0) ext = originName.substring(dotIdx);
-
-            String savedName = "prod_" + System.currentTimeMillis() + "_" + imgIndex + ext;
-            imgIndex++;
+            // [수정] 형님 요청대로 원본 파일 이름을 그대로 사용
+            String savedName = originName;
 
             File saveFile = new File(savePath, savedName);
             try (InputStream is = part.getInputStream();
@@ -51,9 +47,10 @@ public class Log_ProdRegAction implements Action {
                     fos.write(buffer, 0, read);
                 }
             }
+            // 리스트에 원본 이름(저장된 이름)을 담아 DB로 보냄
             savedFileNames.add(savedName);
 
-            if (imgIndex >= 5) break;
+            if (savedFileNames.size() >= 5) break;
         }
 
         int catNum    = parseParam(request.getParameter("catNum"),    0);
@@ -76,7 +73,6 @@ public class Log_ProdRegAction implements Action {
         vo.setColors   (request.getParameter("colors"));
         vo.setSizes    (request.getParameter("sizes"));
 
-        // 사진 세팅
         vo.setProdImgUrls(savedFileNames);
         if (!savedFileNames.isEmpty()) {
             vo.setProdImgUrl(savedFileNames.get(0));

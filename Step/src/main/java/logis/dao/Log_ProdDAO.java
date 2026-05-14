@@ -8,12 +8,12 @@ import kr.util.DBUtil;
 public class Log_ProdDAO {
 
     // ── 공통 SQL 조각 ──────────────────────────────────────────────────────
-    private static final String SELECT_BASE =
+	private static final String SELECT_BASE =
             "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, p.PROD_CREATED_AT,"
           + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
           + "       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK "
           + "        WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, "
-          + "       i.PROD_IMG_URL, "
+          + "       (SELECT MIN(PROD_IMG_URL) FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND IS_MAIN = 'Y') AS PROD_IMG_URL, "
           + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
           + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
           + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
@@ -29,10 +29,8 @@ public class Log_ProdDAO {
           + "        WHERE PROD_NUM = p.PROD_NUM) AS IMG_LIST "
           + "FROM   PRODUCTS p "
           + "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
-          + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM "
-          + "LEFT JOIN PROD_IMGS  i ON p.PROD_NUM  = i.PROD_NUM AND i.IS_MAIN = 'Y' ";
+          + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM ";
 
-    // ── ResultSet → VO 변환 ────────────────────────────────────────────────
     private Log_ProdVO toVO(ResultSet rs) throws SQLException {
         Log_ProdVO vo = new Log_ProdVO();
         vo.setProdNum   (rs.getInt   ("PROD_NUM"));
@@ -55,39 +53,28 @@ public class Log_ProdDAO {
         return vo;
     }
 
-    // ── 상품 목록 조회 (전체) ──────────────────────────────────────────────
-    public List<Log_ProdVO> getProdList() throws Exception {
-        return getProdList(null, null, null);
-    }
-
-    // ── 상품 목록 조회 (검색/필터) ────────────────────────────────────────
     public List<Log_ProdVO> getProdList(String keyword, String brandName, String status) throws Exception {
         List<Log_ProdVO> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
-
         StringBuilder sql = new StringBuilder(SELECT_BASE);
         sql.append("WHERE 1=1 ");
-        if (keyword != null && !keyword.trim().isEmpty())
-            sql.append("AND (p.SKU LIKE ? OR p.PROD_NAME LIKE ?) ");
-        if (brandName != null && !brandName.trim().isEmpty())
-            sql.append("AND b.BRAND_NAME = ? ");
+        if (keyword != null && !keyword.trim().isEmpty()) sql.append("AND (p.SKU LIKE ? OR p.PROD_NAME LIKE ?) ");
+        if (brandName != null && !brandName.trim().isEmpty()) sql.append("AND b.BRAND_NAME = ? ");
         if (status != null && !status.trim().isEmpty()) {
-            if      (status.equals("판매중")) sql.append("AND p.PROD_STATUS = 1 ");
-            else if (status.equals("숨김"))   sql.append("AND p.PROD_STATUS = 2 ");
-            else if (status.equals("품절"))   sql.append("AND p.PROD_STATUS = 3 ");
+            if (status.equals("판매중")) sql.append("AND p.PROD_STATUS = 1 ");
+            else if (status.equals("숨김")) sql.append("AND p.PROD_STATUS = 2 ");
+            else if (status.equals("품절")) sql.append("AND p.PROD_STATUS = 3 ");
         }
         sql.append("ORDER BY p.PROD_NUM DESC");
-
         try {
-            conn  = DBUtil.getConnection();
+            conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql.toString());
             int idx = 1;
             if (keyword != null && !keyword.trim().isEmpty()) {
                 pstmt.setString(idx++, "%" + keyword.trim() + "%");
                 pstmt.setString(idx++, "%" + keyword.trim() + "%");
             }
-            if (brandName != null && !brandName.trim().isEmpty())
-                pstmt.setString(idx++, brandName.trim());
+            if (brandName != null && !brandName.trim().isEmpty()) pstmt.setString(idx++, brandName.trim());
             rs = pstmt.executeQuery();
             while (rs.next()) list.add(toVO(rs));
         } finally { DBUtil.executeClose(rs, pstmt, conn); }

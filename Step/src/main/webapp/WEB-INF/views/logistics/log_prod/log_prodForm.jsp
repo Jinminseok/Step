@@ -170,6 +170,7 @@ textarea.fi{resize:vertical;min-height:72px}
                       <td>
                         <c:choose>
                           <c:when test="${not empty p.prodImgUrl}">
+                            <%-- 톰캣 매핑 경로 /upload 가 작동하도록 contextPath/upload 구조 유지 --%>
                             <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
                           </c:when>
                           <c:otherwise>
@@ -254,7 +255,6 @@ textarea.fi{resize:vertical;min-height:72px}
                 첫 번째 이미지가 대표입니다. 이미지를 다시 선택하면 전체 교체됩니다.
               </div>
 
-              <%-- multiple 속성 유지 --%>
               <input type="file" id="fileInput" name="uploadFile"
                      accept="image/*" multiple style="display:none"
                      onchange="previewImages(this)">
@@ -329,12 +329,12 @@ textarea.fi{resize:vertical;min-height:72px}
               </div>
             </div>
 
-          </div><%-- /tab-info --%>
+          </div>
 
           <div class="dp-tab-content" id="tab-stock">
             <div style="padding:40px;text-align:center;color:var(--gray4);font-size:12px;">옵션/재고 관리 기능 준비중</div>
           </div>
-        </div><%-- /dp-body --%>
+        </div>
 
         <div class="dp-footer">
           <button type="button" class="btn btn-danger btn-sm" id="dpDeleteBtn" onclick="deleteProd()">삭제</button>
@@ -370,19 +370,15 @@ function showToast(msg) {
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
-// ── 이미지 미리보기 ─────────────────────
 function previewImages(input) {
     if (!input.files || input.files.length === 0) return;
-
     var files = Array.from(input.files);
     if (files.length > 5) {
         showToast('⚠ 이미지는 한 번에 최대 5장까지만 선택 가능합니다.');
         return;
     }
-
     var container = document.getElementById('imgPreviews');
     container.innerHTML = '';
-
     files.forEach(function(file, idx) {
         if (!file.type.startsWith('image/')) return;
         var reader = new FileReader();
@@ -393,8 +389,6 @@ function previewImages(input) {
                 + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">'
                 + (idx === 0 ? '<div class="img-main-badge">대표</div>' : '');
             container.appendChild(div);
-
-            // 헤더 아이콘 → 첫 번째 이미지
             if (idx === 0) {
                 document.getElementById('dpIco').innerHTML =
                     '<img src="' + e.target.result
@@ -403,7 +397,6 @@ function previewImages(input) {
         };
         reader.readAsDataURL(file);
     });
-
     document.getElementById('imgCount').textContent = files.length + ' / 5장';
     showToast('✅ ' + files.length + '장 선택되었습니다. 저장 시 교체 반영됩니다.');
 }
@@ -418,34 +411,25 @@ function resetImages() {
     document.getElementById('dpIco').innerHTML = '📑';
 }
 
-// ── 상세 패널 (기존 상품 다중 이미지 파싱 적용) ──────────────────────────────────
 function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPrice, prodStatus, rowEl) {
     isNew = false; selectedId = prodNum;
     resetImages();
-
     var cp = '${pageContext.request.contextPath}';
-    
-    // 다중 이미지 문자열 가져오기
     var imgsStr = rowEl ? (rowEl.getAttribute('data-imgs') || '') : '';
-    
     var container = document.getElementById('imgPreviews');
-    container.innerHTML = ''; // 초기화
+    container.innerHTML = '';
 
-    // 다중 이미지가 존재하면 반복해서 썸네일 생성
     if (imgsStr && imgsStr !== 'null' && imgsStr.trim() !== '') {
         var imgArr = imgsStr.split(',');
-        
         imgArr.forEach(function(imgName, idx) {
             if(!imgName.trim()) return;
+            // [수정] 톰캣 매핑 경로를 타도록 cp + /upload/ 구조 유지
             var imgSrc = cp + '/upload/' + imgName.trim();
-            
             var div = document.createElement('div');
             div.className = 'img-thumb' + (idx === 0 ? ' main-img' : '');
-            div.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;" onerror="this.src=\'\'">' // 에러시 빈화면처리
+            div.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;" onerror="this.src=\'\'">'
                 + (idx === 0 ? '<div class="img-main-badge">대표</div>' : '');
             container.appendChild(div);
-
-            // 헤더의 쪼그만 아이콘 갱신 (첫 번째 이미지만)
             if (idx === 0) {
                 document.getElementById('dpIco').innerHTML = 
                     '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover;border-radius:5px;" onerror="this.src=\'\'">';
@@ -453,7 +437,6 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
         });
         document.getElementById('imgCount').textContent = imgArr.length + ' / 5장';
     } else {
-        // 이미지 없을 때 빈 틀 보여주기
         resetImages();
     }
 
@@ -468,30 +451,23 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
     document.getElementById('fi-price').value  = prodPrice;
     document.getElementById('fi-status').value = prodStatus;
     document.getElementById('fi-desc').value   = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
-    
     var regDate = rowEl ? (rowEl.getAttribute('data-regdate') || '') : '';
     document.getElementById('fi-regdate').value = regDate.substring(0, 10);
-
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
     if (rowEl) rowEl.classList.add('selected');
-    
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-
     var colorArr = rowEl ? (rowEl.getAttribute('data-colors') || '').split(',') : [];
     document.querySelectorAll('#colorChips .chip').forEach(function(c) {
         if (colorArr.includes(c.innerText.trim())) c.classList.add('on');
     });
-    
     var sizeArr = rowEl ? (rowEl.getAttribute('data-sizes') || '').split(',') : [];
     document.querySelectorAll('#sizeChips .chip').forEach(function(c) {
         if (sizeArr.includes(c.innerText.trim())) c.classList.add('on');
     });
-
     switchTabById('tab-info');
     openPanel();
 }
 
-// ── 신규 등록 ─────────────────────────────────────────────────────────────
 function openNew() {
     isNew = true; selectedId = null;
     resetImages();
@@ -512,25 +488,20 @@ function openNew() {
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
 }
 
-// ── 저장 ──────────────────────────────────────────────────────────────────
 function submitProd() {
     var sku  = document.getElementById('fi-sku').value.trim();
     var name = document.getElementById('fi-name').value.trim();
     if (!sku || !name) { alert('필수 항목을 입력하세요.'); return; }
-
     var brandSel = document.getElementById('fi-brand');
     var catSel   = document.getElementById('fi-cat');
     document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
     document.getElementById('h-catNum').value   = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
-
     var colors = [];
     document.querySelectorAll('#colorChips .chip.on').forEach(c => colors.push(c.innerText.trim()));
     document.getElementById('h-colors').value = colors.join(',');
-
     var sizes = [];
     document.querySelectorAll('#sizeChips .chip.on').forEach(c => sizes.push(c.innerText.trim()));
     document.getElementById('h-sizes').value = sizes.join(',');
-
     var form = document.getElementById('prodRegForm');
     var cp   = '${pageContext.request.contextPath}';
     if (isNew) {
@@ -575,7 +546,6 @@ function updateSelCount() {
     document.getElementById('selCount').textContent = document.querySelectorAll('.row-chk:checked').length;
 }
 
-// ── SKU 자동 생성 ─────────────────────────────────────────────────────────
 function generateSKU() {
     var brand = document.getElementById('fi-brand').value;
     if (!brand) { alert("브랜드를 먼저 선택해 주세요."); return; }
@@ -608,7 +578,6 @@ function generateSKU() {
     showToast('상품 고유코드가 자동 생성되었습니다. (' + prefix + ')');
 }
 
-// ── 페이징 ────────────────────────────────────────────────────────────────
 let currentProdPage = 1;
 const prodItemsPerPage = 10;
 let allProdRows = [];

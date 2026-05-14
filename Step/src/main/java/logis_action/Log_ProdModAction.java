@@ -20,7 +20,7 @@ public class Log_ProdModAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
 
-        String savePath = request.getServletContext().getRealPath("/upload");
+        String savePath = "C:/shop_upload";
         File uploadDir = new File(savePath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
