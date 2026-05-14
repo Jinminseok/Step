@@ -170,7 +170,6 @@ textarea.fi{resize:vertical;min-height:72px}
                       <td>
                         <c:choose>
                           <c:when test="${not empty p.prodImgUrl}">
-                            <%-- 톰캣 매핑 경로 /upload 가 작동하도록 contextPath/upload 구조 유지 --%>
                             <img src="${pageContext.request.contextPath}/upload/${p.prodImgUrl}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--gray6);">
                           </c:when>
                           <c:otherwise>
@@ -423,7 +422,7 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
         var imgArr = imgsStr.split(',');
         imgArr.forEach(function(imgName, idx) {
             if(!imgName.trim()) return;
-            // [수정] 톰캣 매핑 경로를 타도록 cp + /upload/ 구조 유지
+            // [복구] 수업 때 쓰던 프로젝트 내부 webapp/upload 경로 방식
             var imgSrc = cp + '/upload/' + imgName.trim();
             var div = document.createElement('div');
             div.className = 'img-thumb' + (idx === 0 ? ' main-img' : '');

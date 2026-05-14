@@ -20,8 +20,8 @@ public class Log_ProdModAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
 
-        // [수정] 저장 경로를 외부 폴더로 고정
-        String savePath = "C:/shop_upload";
+        // [복구] 수업 때 쓰던 프로젝트 내부 webapp/upload 경로 방식
+        String savePath = request.getServletContext().getRealPath("/upload");
         File uploadDir = new File(savePath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
@@ -35,7 +35,7 @@ public class Log_ProdModAction implements Action {
             String originName = getFileName(part);
             if (originName == null || originName.trim().isEmpty()) continue;
 
-            // [수정] 형님 요청대로 수정 시에도 원본 파일 이름 그대로 사용
+            // [수정] 수정 시에도 원본 파일 이름을 그대로 사용 (시간/인덱스 제거)
             String savedName = originName;
 
             File saveFile = new File(savePath, savedName);
@@ -47,12 +47,14 @@ public class Log_ProdModAction implements Action {
                     fos.write(buffer, 0, read);
                 }
             }
+            // 리스트에 원본 이름을 담아 DB 업데이트용으로 전달
             savedFileNames.add(savedName);
 
+            // 최대 5장 제한
             if (savedFileNames.size() >= 5) break;
         }
 
-        // 파라미터 수집 (기존 기능 유지)
+        // --- 파라미터 수집 (기존 기능 100% 유지) ---
         int prodNum   = parseParam(request.getParameter("prodNum"), 0);
         int catNum    = parseParam(request.getParameter("catNum"), 0);
         int brandNum  = parseParam(request.getParameter("brandNum"), 0);
@@ -75,14 +77,14 @@ public class Log_ProdModAction implements Action {
         vo.setColors(request.getParameter("colors"));
         vo.setSizes(request.getParameter("sizes"));
         
-        // [수정] 사진이 새로 들어온 경우에만 세팅 (기존 사진 유지 로직)
+        // 새로운 사진이 업로드된 경우에만 이미지 정보 갱신
         if (!savedFileNames.isEmpty()) {
             vo.setProdImgUrls(savedFileNames);           
             vo.setProdImgUrl(savedFileNames.get(0));     
         }
 
         Log_ProdDAO dao = new Log_ProdDAO();
-        dao.updateProd(vo); // DB 업데이트 실행
+        dao.updateProd(vo);
 
         return "redirect:/logistics/log_prod/log_prodForm.do";
     }
@@ -105,7 +107,11 @@ public class Log_ProdModAction implements Action {
 
     private int parseParam(String param, int defaultVal) {
         if (param != null && !param.trim().isEmpty()) {
-            try { return Integer.parseInt(param.trim()); } catch (Exception e) { return defaultVal; }
+            try {
+                return Integer.parseInt(param.trim());
+            } catch (Exception e) {
+                return defaultVal;
+            }
         }
         return defaultVal;
     }

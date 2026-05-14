@@ -20,8 +20,8 @@ public class Log_ProdRegAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
 
-        // [수정] 외부 절대 경로 사용
-        String savePath = "C:/shop_upload";
+        // [복구] 수업 때 쓰던 방식: 프로젝트 내부 webapp/upload 폴더 경로 찾기
+        String savePath = request.getServletContext().getRealPath("/upload");
         File uploadDir = new File(savePath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
@@ -35,7 +35,7 @@ public class Log_ProdRegAction implements Action {
             String originName = getFileName(part);
             if (originName == null || originName.trim().isEmpty()) continue;
 
-            // [수정] 형님 요청대로 원본 파일 이름을 그대로 사용
+            // [기능 유지] 형님 요청대로 원본 파일 이름을 그대로 사용
             String savedName = originName;
 
             File saveFile = new File(savePath, savedName);
@@ -47,31 +47,24 @@ public class Log_ProdRegAction implements Action {
                     fos.write(buffer, 0, read);
                 }
             }
-            // 리스트에 원본 이름(저장된 이름)을 담아 DB로 보냄
             savedFileNames.add(savedName);
 
             if (savedFileNames.size() >= 5) break;
         }
 
-        int catNum    = parseParam(request.getParameter("catNum"),    0);
-        int brandNum  = parseParam(request.getParameter("brandNum"),  0);
-        int gender    = parseParam(request.getParameter("gender"),    0);
-        int prodPrice = parseParam(request.getParameter("prodPrice"), 0);
-        int saleRate  = parseParam(request.getParameter("saleRate"),  0);
-        int prodStatus= parseParam(request.getParameter("prodStatus"),1);
-
+        // --- 파라미터 수집 및 DAO 호출 (기존 동일) ---
         Log_ProdVO vo = new Log_ProdVO();
-        vo.setCatNum   (catNum);
-        vo.setBrandNum (brandNum);
-        vo.setSku      (request.getParameter("sku"));
-        vo.setProdName (request.getParameter("prodName"));
-        vo.setGender   (gender);
-        vo.setProdPrice(prodPrice);
-        vo.setSaleRate (saleRate);
-        vo.setProdText (request.getParameter("prodText"));
-        vo.setProdStatus(prodStatus);
-        vo.setColors   (request.getParameter("colors"));
-        vo.setSizes    (request.getParameter("sizes"));
+        vo.setCatNum(parseParam(request.getParameter("catNum"), 0));
+        vo.setBrandNum(parseParam(request.getParameter("brandNum"), 0));
+        vo.setSku(request.getParameter("sku"));
+        vo.setProdName(request.getParameter("prodName"));
+        vo.setGender(parseParam(request.getParameter("gender"), 0));
+        vo.setProdPrice(parseParam(request.getParameter("prodPrice"), 0));
+        vo.setSaleRate(parseParam(request.getParameter("saleRate"), 0));
+        vo.setProdText(request.getParameter("prodText"));
+        vo.setProdStatus(parseParam(request.getParameter("prodStatus"), 1));
+        vo.setColors(request.getParameter("colors"));
+        vo.setSizes(request.getParameter("sizes"));
 
         vo.setProdImgUrls(savedFileNames);
         if (!savedFileNames.isEmpty()) {
@@ -90,8 +83,7 @@ public class Log_ProdRegAction implements Action {
         for (String token : contentDisp.split(";")) {
             token = token.trim();
             if (token.startsWith("filename")) {
-                String name = token.substring(token.indexOf("=") + 1).trim();
-                name = name.replace("\"", ""); 
+                String name = token.substring(token.indexOf("=") + 1).trim().replace("\"", ""); 
                 if (name.contains("\\")) name = name.substring(name.lastIndexOf("\\") + 1);
                 if (name.contains("/"))  name = name.substring(name.lastIndexOf("/") + 1);
                 return name.trim();
@@ -101,10 +93,7 @@ public class Log_ProdRegAction implements Action {
     }
 
     private int parseParam(String param, int defaultVal) {
-        if (param != null && !param.trim().isEmpty()) {
-            try { return Integer.parseInt(param.trim()); }
-            catch (NumberFormatException e) { return defaultVal; }
-        }
-        return defaultVal;
+        try { return (param != null && !param.isEmpty()) ? Integer.parseInt(param.trim()) : defaultVal; }
+        catch (Exception e) { return defaultVal; }
     }
 }

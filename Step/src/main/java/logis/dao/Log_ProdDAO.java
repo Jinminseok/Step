@@ -11,45 +11,38 @@ public class Log_ProdDAO {
 	private static final String SELECT_BASE =
             "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, p.PROD_CREATED_AT,"
           + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
-          + "       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK "
-          + "        WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, "
+          + "       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, "
+          + "       /* 메인 이미지를 서브쿼리로 안전하게 추출 */ "
           + "       (SELECT MIN(PROD_IMG_URL) FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND IS_MAIN = 'Y') AS PROD_IMG_URL, "
-          + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS "
-          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
-          + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS "
-          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
-          + "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) "
-          + "        FROM PROD_OPTIONS "
-          + "        WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
-          + "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) "
-          + "        FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS "
-          + "              WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST, "
-          + "       (SELECT LISTAGG(PROD_IMG_URL, ',') WITHIN GROUP (ORDER BY PROD_IMG_SORT_NO) "
-          + "        FROM PROD_IMGS "
-          + "        WHERE PROD_NUM = p.PROD_NUM) AS IMG_LIST "
+          + "       (SELECT COUNT(DISTINCT COLOR) FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_CNT, "
+          + "       (SELECT MIN(SIZE_VAL) || '~' || MAX(SIZE_VAL) FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS SIZE_RANGE, "
+          + "       (SELECT LISTAGG(DISTINCT COLOR, ',') WITHIN GROUP (ORDER BY COLOR) FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y') AS COLOR_LIST, "
+          + "       (SELECT LISTAGG(SIZE_VAL, ',') WITHIN GROUP (ORDER BY SIZE_VAL) FROM (SELECT DISTINCT SIZE_VAL FROM PROD_OPTIONS WHERE PROD_NUM = p.PROD_NUM AND PROD_USE_YN = 'Y')) AS SIZE_LIST, "
+          + "       /* 다중 이미지 상세보기를 위한 파일명 리스트 생성 */ "
+          + "       (SELECT LISTAGG(PROD_IMG_URL, ',') WITHIN GROUP (ORDER BY PROD_IMG_SORT_NO) FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM) AS IMG_LIST "
           + "FROM   PRODUCTS p "
           + "LEFT JOIN BRANDS     b ON p.BRAND_NUM = b.BRAND_NUM "
           + "LEFT JOIN CATEGORIES c ON p.CAT_NUM   = c.CAT_NUM ";
 
     private Log_ProdVO toVO(ResultSet rs) throws SQLException {
         Log_ProdVO vo = new Log_ProdVO();
-        vo.setProdNum   (rs.getInt   ("PROD_NUM"));
-        vo.setSku       (rs.getString("SKU"));
-        vo.setBrandName (rs.getString("BRAND_NAME"));
-        vo.setProdName  (rs.getString("PROD_NAME"));
-        vo.setCatName   (rs.getString("CAT_NAME"));
-        vo.setProdPrice (rs.getInt   ("PROD_PRICE"));
-        vo.setProdStatus(rs.getInt   ("PROD_STATUS"));
-        vo.setProdText  (rs.getString("PROD_TEXT"));
-        vo.setStockQty  (rs.getInt   ("STOCK_QTY"));
-        vo.setColorCnt  (rs.getInt   ("COLOR_CNT"));
-        vo.setSizeRange (rs.getString("SIZE_RANGE"));
-        vo.setColorList (rs.getString("COLOR_LIST"));
-        vo.setSizeList  (rs.getString("SIZE_LIST"));
-        vo.setProdImgUrl(rs.getString("PROD_IMG_URL"));
-        vo.setProdImgListStr(rs.getString("IMG_LIST")); 
+        vo.setProdNum(rs.getInt("PROD_NUM"));
+        vo.setSku(rs.getString("SKU"));
+        vo.setBrandName(rs.getString("BRAND_NAME"));
+        vo.setProdName(rs.getString("PROD_NAME"));
+        vo.setCatName(rs.getString("CAT_NAME"));
+        vo.setProdPrice(rs.getInt("PROD_PRICE"));
+        vo.setProdStatus(rs.getInt("PROD_STATUS"));
+        vo.setProdText(rs.getString("PROD_TEXT"));
+        vo.setStockQty(rs.getInt("STOCK_QTY"));
+        vo.setColorCnt(rs.getInt("COLOR_CNT"));
+        vo.setSizeRange(rs.getString("SIZE_RANGE"));
+        vo.setColorList(rs.getString("COLOR_LIST"));
+        vo.setSizeList(rs.getString("SIZE_LIST"));
+        vo.setProdImgUrl(rs.getString("PROD_IMG_URL")); // 대표이미지
+        vo.setProdImgListStr(rs.getString("IMG_LIST")); // 다중이미지 문자열
         vo.setProdCreatedAt(rs.getDate("PROD_CREATED_AT"));
-        vo.setMaxStock  (100);
+        vo.setMaxStock(100);
         return vo;
     }
 
@@ -61,9 +54,9 @@ public class Log_ProdDAO {
         if (keyword != null && !keyword.trim().isEmpty()) sql.append("AND (p.SKU LIKE ? OR p.PROD_NAME LIKE ?) ");
         if (brandName != null && !brandName.trim().isEmpty()) sql.append("AND b.BRAND_NAME = ? ");
         if (status != null && !status.trim().isEmpty()) {
-            if (status.equals("판매중")) sql.append("AND p.PROD_STATUS = 1 ");
-            else if (status.equals("숨김")) sql.append("AND p.PROD_STATUS = 2 ");
-            else if (status.equals("품절")) sql.append("AND p.PROD_STATUS = 3 ");
+            if      (status.equals("판매중")) sql.append("AND p.PROD_STATUS = 1 ");
+            else if (status.equals("숨김"))   sql.append("AND p.PROD_STATUS = 2 ");
+            else if (status.equals("품절"))   sql.append("AND p.PROD_STATUS = 3 ");
         }
         sql.append("ORDER BY p.PROD_NUM DESC");
         try {
@@ -71,8 +64,8 @@ public class Log_ProdDAO {
             pstmt = conn.prepareStatement(sql.toString());
             int idx = 1;
             if (keyword != null && !keyword.trim().isEmpty()) {
-                pstmt.setString(idx++, "%" + keyword.trim() + "%");
-                pstmt.setString(idx++, "%" + keyword.trim() + "%");
+                String k = "%" + keyword.trim() + "%";
+                pstmt.setString(idx++, k); pstmt.setString(idx++, k);
             }
             if (brandName != null && !brandName.trim().isEmpty()) pstmt.setString(idx++, brandName.trim());
             rs = pstmt.executeQuery();
