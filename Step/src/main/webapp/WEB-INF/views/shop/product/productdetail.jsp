@@ -72,10 +72,15 @@
                 </div>
                 <div class="color-grid">
                     <c:forEach var="color" items="${colorList}">
-                        <%-- 색상 이름이 '블랙'이면 검정색, '화이트'면 흰색으로 UI 표현 처리 (임시) --%>
+                        <%-- 색상 이름이 '블랙'이면 검정색, '화이트'면 흰색으로 UI 표현 처리 --%>
                         <c:set var="bgColor" value="#ccc" />
-                        <c:if test="${color == '블랙' or color == 'Black'}"><c:set var="bgColor" value="#000" /></c:if>
-                        <c:if test="${color == '화이트' or color == 'White'}"><c:set var="bgColor" value="#fff" /></c:if>
+                        <c:if test="${color == '블랙' or color == 'Black'}"><c:set var="bgColor" value="#000000" /></c:if>
+                        <c:if test="${color == '화이트' or color == 'White'}"><c:set var="bgColor" value="#ffffff" /></c:if>
+                        <c:if test="${color == '그레이' or color == 'Gray'}"><c:set var="bgColor" value="#8C8C8C" /></c:if>
+                        <c:if test="${color == '베이지' or color == 'Beige'}"><c:set var="bgColor" value="#D4B886" /></c:if>
+                        <c:if test="${color == '네이비' or color == 'Navy'}"><c:set var="bgColor" value="#13264E" /></c:if>
+                        <c:if test="${color == '레드' or color == 'Red'}"><c:set var="bgColor" value="#FF0000" /></c:if>
+                        <c:if test="${color == '그린' or color == 'Green'}"><c:set var="bgColor" value="#6BEC62" /></c:if>
                         
                         <div class="color-btn" style="background-color: ${bgColor};" onclick="selectColor(this, '${color}')" title="${color}"></div>
                     </c:forEach>
