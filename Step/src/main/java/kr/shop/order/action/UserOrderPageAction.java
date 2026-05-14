@@ -1,4 +1,4 @@
-package kr.shop.order;
+package kr.shop.order.action;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ public class UserOrderPageAction implements Action {
             return "redirect:/shop/user/loginForm.do";
         }
         
-        // 장바구니에서 넘어온 cart_num 배열 받기
+        // 장바구니 번호 받기
         String[] cartNums = request.getParameterValues("cart_num");
         if (cartNums == null || cartNums.length == 0) {
             request.setAttribute("notice_msg", "잘못된 접근입니다.");

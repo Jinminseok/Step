@@ -40,15 +40,26 @@
             
             <%-- 상황에 맞게 버튼을 다르게 --%>
             <c:choose>
+                <%-- 1. 회원 탈퇴 완료 --%>
                 <c:when test="${result_title == '회원 탈퇴 완료'}">
-                    <%-- 탈퇴 완료 시: 메인으로 가기 버튼 딱 1개만 노출 --%>
-                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px;" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">메인 화면으로 돌아가기</button>
+                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px;" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">메인 화면으로 돌아가기</button>
                 </c:when>
                 
+                <%-- 2. 주문 완료 --%>
+                <c:when test="${result_title == '주문 완료'}">
+                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px; margin-bottom:10px;" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">주문 내역 확인하기</button>
+                    <button class="btn btn-outline btn-full" style="height:54px; font-size:15px; border-color:var(--border); color:var(--gray3);" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">계속 쇼핑하기</button>
+                </c:when>
+                
+                <%-- 3. 회원 가입 완료 --%>
                 <c:otherwise>
-                    <%-- 가입 완료 등 일반적인 상황: 로그인 / 메인 2개 노출 --%>
-                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px; margin-bottom:10px;" onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'">지금 로그인하기</button>
-                    <button class="btn btn-outline btn-full" style="height:54px; font-size:15px; border-color:var(--border); color:var(--gray3);" onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">메인 쇼핑몰로 이동</button>
+                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px; margin-bottom:10px;" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'">지금 로그인하기</button>
+                    <button class="btn btn-outline btn-full" style="height:54px; font-size:15px; border-color:var(--border); color:var(--gray3);" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">메인 쇼핑몰로 이동</button>
                 </c:otherwise>
             </c:choose>
 
