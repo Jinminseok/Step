@@ -176,9 +176,23 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 .bdg::before{content:'●';font-size:7px}
 
 /* PAGINATION */
-.pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--gray6)}
-.page-info{font-size:12px;color:var(--gray3)}
-.page-btns{display:flex;gap:4px}
+.pagination-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap !important; /* 전체 박스 줄바꿈 절대 방지 */
+}
+
+.page-info {
+    white-space: nowrap !important; /* 800건, 1000건이 되어도 한 줄로 유지! */
+    flex-shrink: 0; /* 공간 좁아져도 글자 영역 찌그러짐 방지 */
+}
+
+.page-btns {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+}
 .pg-btn{width:30px;height:30px;border:1.5px solid var(--gray5);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray3);background:var(--white);transition:all .15s}
 .pg-btn:hover{border-color:var(--blue);color:var(--blue)}
 .pg-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -660,7 +674,7 @@ function saveSearchState() {
     if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
 }
 
-// ── 4. [페이징 1] 입고 대기 상품 ──────────────────
+//── 4. [페이징 1] 입고 대기 상품 ──────────────────
 let currentPendingPage = 1;
 const pendingItemsPerPage = 10;
 
@@ -669,6 +683,7 @@ function renderPendingDashboard() {
     const cntEl = document.getElementById('pendingTotalCount');
     const paginWrap = document.getElementById('pendingPagination');
     
+    // 🌟 여기서 pendingMasterData를 사용하고 있습니다!
     if(cntEl) cntEl.innerText = pendingMasterData.length + '건';
 
     if(!tbody) return;
@@ -680,6 +695,8 @@ function renderPendingDashboard() {
         if(paginWrap) paginWrap.style.display = 'flex';
         const startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
         const endIndex = startIndex + pendingItemsPerPage;
+        
+        // 🌟 여기서도 pendingMasterData를 자르고 있습니다!
         const paginatedData = pendingMasterData.slice(startIndex, endIndex);
 
         tbody.innerHTML = paginatedData.map(d => `
@@ -691,34 +708,70 @@ function renderPendingDashboard() {
                 <td style="padding:10px;font-size:11px;font-family:'DM Mono',monospace">\${d.size}</td>
                 <td style="padding:10px;text-align:center;"><span class="bdg bdg-amber">대기</span></td>
             </tr>`).join('');
+            
         renderPendingPagination();
     }
 }
 
 function renderPendingPagination() {
-    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
-    const pageInfo = document.getElementById('pendingPageInfo');
-    const pageBtns = document.getElementById('pendingPageBtns');
-    if (!pageInfo || !pageBtns) return;
+    // 🌟 수정 완료: allPendingRows ➡ pendingMasterData 로 변경!
+    var totalItems = pendingMasterData.length; 
+    var totalPages = Math.ceil(totalItems / pendingItemsPerPage); 
+    var pw  = document.getElementById('pendingPagination');
+    var pi  = document.getElementById('pendingPageInfo');
+    var pb  = document.getElementById('pendingPageBtns');
+    
+    if (!pw || !pb) return;
+    pw.style.display = 'flex';
 
-    const startNum = (currentPendingPage - 1) * pendingItemsPerPage + 1;
-    const endNum = Math.min(currentPendingPage * pendingItemsPerPage, pendingMasterData.length);
-    pageInfo.innerText = `\${startNum} - \${endNum} / \${pendingMasterData.length}건`;
+    // ── 1. 왼쪽 정보 텍스트 (줄바꿈 안 되게 처리됨!) ──
+    var startNum = (currentPendingPage - 1) * pendingItemsPerPage + 1;
+    var endNum = Math.min(currentPendingPage * pendingItemsPerPage, totalItems);
+    if(totalItems === 0) { startNum = 0; endNum = 0; }
+    
+    pi.innerHTML = startNum + " - " + endNum + " / <strong style='color:var(--gray1)'>" + totalItems + "</strong>건";
 
-    let btnsHTML = '';
-    btnsHTML += `<div class="pg-btn \${currentPendingPage === 1 ? 'disabled' : ''}" style="\${currentPendingPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage - 1})">‹</div>`;
-    for (let i = 1; i <= totalPages; i++) {
-        btnsHTML += `<div class="pg-btn \${i === currentPendingPage ? 'on' : ''}" style="cursor:pointer;" onclick="changePendingPage(\${i})">\${i}</div>`;
+    // ── 🌟 2. 10개 단위 페이지 블록 계산 🌟 ──
+    var blockSize = 10; // 한 화면에 보여줄 페이지 버튼 개수
+    var currentBlock = Math.ceil(currentPendingPage / blockSize); // 현재 블록
+    var startPage = (currentBlock - 1) * blockSize + 1; // 블록 시작 번호
+    var endPage = Math.min(startPage + blockSize - 1, totalPages); // 블록 끝 번호
+
+    var h = '';
+
+    // [이전 10개] 버튼 (‹)
+    if (startPage > 1) {
+        h += `<div class="pg-btn" onclick="changePendingPage(${startPage - 1})">‹</div>`;
+    } else {
+        h += `<div class="pg-btn disabled">‹</div>`;
     }
-    btnsHTML += `<div class="pg-btn \${currentPendingPage === totalPages ? 'disabled' : ''}" style="\${currentPendingPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage + 1})">›</div>`;
-    pageBtns.innerHTML = btnsHTML;
+
+    // 가운데 페이지 숫자 버튼들 (1~10, 11~20...)
+    for (var i = startPage; i <= endPage; i++) {
+        var onCls = (i === currentPendingPage) ? 'on' : '';
+        h += `<div class="pg-btn ${onCls}" onclick="changePendingPage(${i})">${i}</div>`;
+    }
+
+    // [다음 10개] 버튼 (›)
+    if (endPage < totalPages) {
+        h += `<div class="pg-btn" onclick="changePendingPage(${endPage + 1})">›</div>`;
+    } else {
+        h += `<div class="pg-btn disabled">›</div>`;
+    }
+
+    pb.innerHTML = h;
 }
 
-function changePendingPage(page) {
-    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
-    if (page < 1 || page > totalPages) return; 
-    currentPendingPage = page;
-    renderPendingDashboard();
+// 🌟 추가 완료: 버튼을 클릭했을 때 실제로 페이지를 이동시키는 함수
+function changePendingPage(p) {
+    var totalItems = pendingMasterData.length;
+    var totalPages = Math.ceil(totalItems / pendingItemsPerPage);
+    
+    // 비정상적인 페이지 번호(1보다 작거나 끝 페이지보다 큰 경우)는 무시
+    if (p < 1 || p > totalPages) return; 
+    
+    currentPendingPage = p;
+    renderPendingDashboard(); // 번호 바꾼 후 테이블 다시 그리기!
 }
 
 // ── 5. [페이징 2] 입고 이력 조회 ──────────────────
