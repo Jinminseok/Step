@@ -36,18 +36,18 @@
 			</a>
 
 			<div class="nav-section">재고 / 물류</div>
-			<a href="${pageContext.request.contextPath}/shop/admin/stockList.do"
+			<a href="${pageContext.request.contextPath}/shop/stock/stockList.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'stock') ? 'active' : ''}">
 				<span class="nav-icon">📦</span>재고 관리<span class="nav-badge">2</span>
-			</a> <a href="${pageContext.request.contextPath}/shop/admin/orderList.do"
+			</a> <a href="${pageContext.request.contextPath}/shop/admin_order/adminorderForm.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'order') ? 'active' : ''}">
 				<span class="nav-icon">🧾</span>주문 관리
 			</a> <a
-				href="${pageContext.request.contextPath}/shop/admin/deliveryList.do"
+				href="${pageContext.request.contextPath}/shop/delivery/deliveryForm.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'delivery') ? 'active' : ''}">
 				<span class="nav-icon">🚚</span>배송 관리
 			</a> <a
-				href="${pageContext.request.contextPath}/shop/admin/returnList.do"
+				href="${pageContext.request.contextPath}/shop/return/returnForm.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'return') ? 'active' : ''}">
 				<span class="nav-icon">↩️</span>반품/교환 관리
 			</a>
