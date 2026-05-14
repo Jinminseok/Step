@@ -10,7 +10,7 @@ public class Log_ProdDAO {
     // ── 공통 SQL 조각 ──────────────────────────────────────────────────────
 	private static final String SELECT_BASE =
             "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, p.PROD_CREATED_AT,"
-          + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, "
+          + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, p.GENDER,"
           + "       (SELECT NVL(SUM(STOCK_QTY), 0) FROM STOCK WHERE PROD_NUM = p.PROD_NUM) AS STOCK_QTY, "
           + "       /* 메인 이미지를 서브쿼리로 안전하게 추출 */ "
           + "       (SELECT MIN(PROD_IMG_URL) FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND IS_MAIN = 'Y') AS PROD_IMG_URL, "
@@ -34,6 +34,7 @@ public class Log_ProdDAO {
         vo.setProdPrice(rs.getInt("PROD_PRICE"));
         vo.setProdStatus(rs.getInt("PROD_STATUS"));
         vo.setProdText(rs.getString("PROD_TEXT"));
+        vo.setGender(rs.getInt("GENDER"));
         vo.setStockQty(rs.getInt("STOCK_QTY"));
         vo.setColorCnt(rs.getInt("COLOR_CNT"));
         vo.setSizeRange(rs.getString("SIZE_RANGE"));

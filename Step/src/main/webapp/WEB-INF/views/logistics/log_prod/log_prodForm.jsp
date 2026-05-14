@@ -96,6 +96,7 @@ textarea.fi{resize:vertical;min-height:72px}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
+
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/log_header.jsp" />
@@ -160,11 +161,13 @@ textarea.fi{resize:vertical;min-height:72px}
                     <c:set var="bdgCls"  value="${p.stockQty==0?'bdg-red':p.prodStatus==2?'bdg-gray':pct<20?'bdg-amber':'bdg-green'}"/>
                     <c:set var="bdgTxt"  value="${p.stockQty==0?'품절':p.prodStatus==2?'숨김':pct<20?'주의':'판매중'}"/>
                     
+                    <%-- 🌟 여기에 data-gender="${p.gender}" 를 추가했습니다! --%>
                     <tr class="prod-row" data-id="${p.prodNum}"
                         data-desc="${p.prodText}" data-colors="${p.colorList}"
                         data-sizes="${p.sizeList}" data-img="${p.prodImgUrl}"
                         data-imgs="${p.prodImgListStr}"
                         data-regdate="${p.prodCreatedAt}"
+                        data-gender="${p.gender}"
                         onclick="openDetailFromServer(${p.prodNum},'${p.prodName}','${p.sku}','${p.brandName}','${p.catName}',${p.prodPrice},${p.prodStatus},this)">
                       <td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" onchange="updateSelCount()"></td>
                       <td>
@@ -399,7 +402,6 @@ function previewImages(input) {
     document.getElementById('imgCount').textContent = files.length + ' / 5장';
     showToast('✅ ' + files.length + '장 선택되었습니다. 저장 시 교체 반영됩니다.');
 }
-
 function resetImages() {
     document.getElementById('fileInput').value = '';
     document.getElementById('imgPreviews').innerHTML =
@@ -450,6 +452,11 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
     document.getElementById('fi-price').value  = prodPrice;
     document.getElementById('fi-status').value = prodStatus;
     document.getElementById('fi-desc').value   = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
+    
+    <%-- 🌟 여기에 성별 불러오는 코드가 추가되었습니다! 🌟 --%>
+    var genderVal = rowEl ? (rowEl.getAttribute('data-gender') || '0') : '0';
+    document.getElementById('fi-gender').value = genderVal;
+
     var regDate = rowEl ? (rowEl.getAttribute('data-regdate') || '') : '';
     document.getElementById('fi-regdate').value = regDate.substring(0, 10);
     document.querySelectorAll('.prod-row').forEach(r => r.classList.remove('selected'));
@@ -488,21 +495,71 @@ function openNew() {
 }
 
 function submitProd() {
-    var sku  = document.getElementById('fi-sku').value.trim();
-    var name = document.getElementById('fi-name').value.trim();
-    if (!sku || !name) { alert('필수 항목을 입력하세요.'); return; }
+    var sku      = document.getElementById('fi-sku').value.trim();
+    var name     = document.getElementById('fi-name').value.trim();
+    var price    = document.getElementById('fi-price').value.trim();
     var brandSel = document.getElementById('fi-brand');
     var catSel   = document.getElementById('fi-cat');
-    document.getElementById('h-brandNum').value = brandSel.options[brandSel.selectedIndex].getAttribute('data-num') || 0;
-    document.getElementById('h-catNum').value   = catSel.options[catSel.selectedIndex].getAttribute('data-num') || 0;
+    
+    if (!sku) {
+        alert('상품 고유코드(SKU)를 입력하거나 자동 생성해 주세요.');
+        document.getElementById('fi-sku').focus();
+        return;
+    }
+    if (!name) {
+        alert('상품명을 입력해 주세요.');
+        document.getElementById('fi-name').focus();
+        return;
+    }
+    if (brandSel.selectedIndex <= 0) {
+        alert('브랜드를 선택해 주세요.');
+        brandSel.focus();
+        return;
+    }
+    if (catSel.selectedIndex <= 0) {
+        alert('카테고리를 선택해 주세요.');
+        catSel.focus();
+        return;
+    }
+    if (!price || price <= 0) {
+        alert('정확한 상품 가격을 입력해 주세요.');
+        document.getElementById('fi-price').focus();
+        return;
+    }
+
+    if (isNew) {
+        var fileInput = document.getElementById('fileInput');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('최소 1장 이상의 상품 사진을 등록해야 합니다.');
+            return;
+        }
+    }
+
+    var brandNum = brandSel.options[brandSel.selectedIndex].getAttribute('data-num');
+    var catNum   = catSel.options[catSel.selectedIndex].getAttribute('data-num');
+
+    document.getElementById('h-brandNum').value = brandNum;
+    document.getElementById('h-catNum').value   = catNum;
+
     var colors = [];
     document.querySelectorAll('#colorChips .chip.on').forEach(c => colors.push(c.innerText.trim()));
+    if (colors.length === 0) {
+        alert('최소 하나 이상의 컬러 옵션을 선택해 주세요.');
+        return;
+    }
     document.getElementById('h-colors').value = colors.join(',');
+
     var sizes = [];
     document.querySelectorAll('#sizeChips .chip.on').forEach(c => sizes.push(c.innerText.trim()));
+    if (sizes.length === 0) {
+        alert('최소 하나 이상의 사이즈 옵션을 선택해 주세요.');
+        return;
+    }
     document.getElementById('h-sizes').value = sizes.join(',');
+
     var form = document.getElementById('prodRegForm');
     var cp   = '${pageContext.request.contextPath}';
+    
     if (isNew) {
         document.getElementById('h-prodNum').value = '';
         form.action = cp + '/logistics/log_prod/log_prodReg.do';
@@ -510,7 +567,10 @@ function submitProd() {
         document.getElementById('h-prodNum').value = selectedId;
         form.action = cp + '/logistics/log_prod/log_prodMod.do';
     }
-    form.submit();
+    
+    if(confirm('이대로 저장하시겠습니까?')) {
+        form.submit();
+    }
 }
 
 function deleteProd() {
