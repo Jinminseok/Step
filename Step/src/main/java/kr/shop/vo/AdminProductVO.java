@@ -38,6 +38,17 @@ public class AdminProductVO extends AdminBaseVO {
 	private int brand_num; // BRAND_NUM
 	private String brand_name; // BRAND_NAME
 	private String brand_use_yn; // BRAND_USE_YN
+	
+	//재고(stock)
+	private int stock_qty;
+	
+	public int getStock_qty() {
+		return stock_qty;
+	}
+
+	public void setStock_qty(int stock_qty) {
+		this.stock_qty = stock_qty;
+	}
 
 	public int getProd_num() {
 		return prod_num;

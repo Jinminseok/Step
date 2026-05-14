@@ -18,10 +18,9 @@ body {
 	font-family: 'Pretendard', sans-serif;
 }
 
-/* 화면을 꽉 채우기 위해 max-width를 해제하고 여백 조정 */
 .content {
-	width: 98%; /* 좌우 약간의 여백만 남기고 꽉 채움 */
-	max-width: none; /* 기존 1200px 제한 해제 */
+	width: 98%;
+	max-width: none;
 	margin: 0 auto;
 	padding: 20px 0;
 }
@@ -29,20 +28,25 @@ body {
 /* 상단 탭 메뉴 */
 .tab-menu {
 	display: flex;
-	gap: 30px;
+	gap: 10px;
 	border-bottom: 1px solid #ddd;
-	margin-bottom: 20px;
-	padding-left: 10px;
-	background: #fff; /* 탭 영역 구분 */
+	margin-bottom: 25px;
+	background: #fff;
+	padding: 0 10px;
 }
 
 .tab-item {
-	padding: 15px 10px;
+	padding: 15px 25px;
 	cursor: pointer;
 	color: #888;
 	font-weight: 500;
 	font-size: 15px;
 	border-bottom: 3px solid transparent;
+	transition: all 0.2s;
+}
+
+.tab-item:hover {
+	color: #333;
 }
 
 .tab-item.active {
@@ -51,12 +55,12 @@ body {
 	font-weight: bold;
 }
 
-/* 검색 영역: 양 끝으로 배치 */
+/* 검색 영역 */
 .search-box {
 	background: #fff;
 	padding: 15px 20px;
 	display: flex;
-	justify-content: space-between; /* 검색창과 등록버튼 양 끝 정렬 */
+	justify-content: flex-start; /* 버튼 제거 후 왼쪽 정렬로 변경 */
 	align-items: center;
 	border: 1px solid #eee;
 	margin-bottom: 20px;
@@ -64,7 +68,7 @@ body {
 
 .search-input-wrapper {
 	position: relative;
-	width: 400px; /* 검색창 너비 확장 */
+	width: 400px;
 }
 
 .search-input-wrapper i {
@@ -83,29 +87,26 @@ body {
 	box-sizing: border-box;
 }
 
-/* 버튼 스타일 */
-.btn-insert {
-	background: #000;
-	color: #fff;
-	padding: 12px 25px; /* 버튼 크기 키움 */
+/* 검색 버튼 스타일 */
+.btn-edit {
+	background: #fff;
+	color: #555;
+	padding: 10px 20px;
+	border: 1px solid #ddd;
 	border-radius: 4px;
-	border: none;
-	font-size: 14px;
 	cursor: pointer;
-	font-weight: bold;
-	transition: background 0.2s;
+	font-weight: 500;
 }
 
-.btn-insert:hover {
-	background: #333;
+.btn-edit:hover {
+	background: #f9f9f9;
 }
 
-/* 테이블 스타일: 너비 100% 사용 */
+/* 테이블 스타일 */
 .tbl-wrap {
 	background: #fff;
 	border: 1px solid #eee;
 	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 table {
@@ -123,7 +124,6 @@ thead {
 th {
 	padding: 18px 10px;
 	color: #333;
-	font-weight: 600;
 }
 
 td {
@@ -132,7 +132,7 @@ td {
 }
 
 .prod-img {
-	width: 60px; /* 이미지 크기 살짝 키움 */
+	width: 60px;
 	height: 60px;
 	object-fit: cover;
 	border: 1px solid #eee;
@@ -146,9 +146,8 @@ td {
 
 .prod-name {
 	font-weight: bold;
-	font-size: 15px;
 	display: block;
-	margin-bottom: 6px;
+	margin-bottom: 4px;
 }
 
 .prod-sku {
@@ -160,9 +159,10 @@ td {
 .status-badge {
 	display: inline-block;
 	min-width: 60px;
-	padding: 5px 8px;
-	border-radius: 20px; /* 둥근 형태로 변경 */
+	padding: 5px 10px;
+	border-radius: 20px;
 	font-size: 12px;
+	font-weight: 500;
 }
 
 .status-sale {
@@ -182,32 +182,6 @@ td {
 	background: #f4f6f7;
 	border: 1px solid #95a5a6;
 }
-
-/* 관리 버튼 */
-.btn-group {
-	display: flex;
-	justify-content: center;
-	gap: 5px;
-}
-
-.btn-edit, .btn-del {
-	padding: 6px 12px;
-	border-radius: 4px;
-	font-size: 13px;
-	cursor: pointer;
-}
-
-.btn-edit {
-	border: 1px solid #ddd;
-	background: #fff;
-	color: #555;
-}
-
-.btn-del {
-	border: 1px solid #e74c3c;
-	background: #fff;
-	color: #e74c3c;
-}
 </style>
 </head>
 <body>
@@ -219,70 +193,79 @@ td {
 
 		<div class="content">
 			<div class="tab-menu">
-				<div class="${currentStatus == 'sale' ? 'active' : ''}">전체 상품</div>
-				<div class="">판매중</div>
-				<div class="">숨김/품절</div>
+				<div class="tab-item ${empty param.search_status ? 'active' : ''}"
+					onclick="location.href='productList.do'">전체 상품</div>
+
+				<div class="tab-item ${param.search_status == '1' ? 'active' : ''}"
+					onclick="location.href='productList.do?search_status=1'">판매중</div>
+
+				<div class="tab-item ${param.search_status == '2' ? 'active' : ''}"
+					onclick="location.href='productList.do?search_status=2'">품절</div>
+
+				<div class="tab-item ${param.search_status == '3' ? 'active' : ''}"
+					onclick="location.href='productList.do?search_status=3'">숨김</div>
 			</div>
 
 			<div class="search-box">
 				<form action="productList.do" method="get"
 					style="display: flex; align-items: center; gap: 15px;">
-					<select name="search_status"
-						style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-						<option value="">상태 전체</option>
-					</select>
+					<input type="hidden" name="search_status"
+						value="${param.search_status}">
+
 					<div class="search-input-wrapper">
 						<i class="fa fa-search"></i> <input type="text" name="keyword"
 							placeholder="상품명 또는 상품코드 검색..." value="${param.keyword}">
 					</div>
-					<button type="submit" style="display: none;"></button>
+					<button type="submit" class="btn-edit">검색</button>
 				</form>
-
-				<button type="button" class="btn-insert"
-					onclick="location.href='productInsertForm.do'">
-					<i class="fa fa-plus"></i> 신규 상품 등록
-				</button>
+				<!-- 신규 상품 등록 버튼 제거됨 -->
 			</div>
 
 			<div class="tbl-wrap">
+				<c:if test="${count == 0}">
+					<div align="center">
+								<i
+									class="fa fa-info-circle"
+									style="font-size: 30px; margin-bottom: 10px; display: block;"></i>
+									조회된 상품이 없음</td>
+					<div>
+				</c:if>
+				<c:if test="${count > 0}">
 				<table>
 					<thead>
 						<tr>
-							<th width="60">번호</th>
 							<th width="100">이미지</th>
-							<th style="text-align: left; padding-left: 20px;">상품정보</th>
+							<th style="text-align: left; padding-left: 20px;">상품명</th>
+							<th width="120">카테고리</th>
+							<th width="120">사이즈</th>
+							<th width="120">색깔</th>
 							<th width="150">판매가</th>
-							<th width="100">재고</th>
 							<th width="120">상태</th>
+							<th width="120">판매여부</th>
 						</tr>
 					</thead>
 					<tbody>
-						<c:if test="${count == 0}">
+						<c:forEach var="product" items="${list}" varStatus="status">
 							<tr>
-								<td colspan="7"
-									style="padding: 150px 0; color: #999; font-size: 16px;"><i
-									class="fa fa-info-circle"
-									style="display: block; font-size: 40px; margin-bottom: 15px;"></i>
-									등록된 상품이 없습니다.</td>
-							</tr>
-						</c:if>
-						<c:forEach var="product" items="${list}">
-							<tr>
-								<td>${product.prod_num}</td>
-								<td><c:if test="${!empty product.prod_img_url}">
-										<img
-											src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
-											class="prod-img">
-									</c:if> <c:if test="${empty product.prod_img_url}">
-										<div class="no-img"
-											style="width: 60px; height: 60px; line-height: 60px; background: #f9f9f9; border: 1px solid #eee; display: inline-block; border-radius: 4px; color: #ccc; font-size: 11px;">No
-											Image</div>
-									</c:if></td>
+								<td><c:choose>
+										<c:when test="${!empty product.prod_img_url}">
+											<img
+												src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
+												class="prod-img">
+										</c:when>
+										<c:otherwise>
+											<div
+												style="width: 60px; height: 60px; background: #eee; line-height: 60px; font-size: 10px; color: #aaa; border-radius: 4px; margin: 0 auto;">No
+												Image</div>
+										</c:otherwise>
+									</c:choose></td>
 								<td class="prod-info"><span class="prod-name">${product.prod_name}</span>
 									<span class="prod-sku">SKU: ${product.sku}</span></td>
+								<td align="center">카테고리</td>
+								<td align="center">사이즈</td>
+								<td align="center">색깔</td>	
 								<td><strong><fmt:formatNumber
 											value="${product.prod_price}" pattern="#,###" />원</strong></td>
-								<td>42</td>
 								<td><c:choose>
 										<c:when test="${product.prod_status == 1}">
 											<span class="status-badge status-sale">판매중</span>
@@ -294,15 +277,26 @@ td {
 											<span class="status-badge status-hide">숨김</span>
 										</c:otherwise>
 									</c:choose></td>
-							
+								<td>
+									<c:choose>
+										<c:when test="${product.stock_qty > 0}">
+											<span class="status-badge status-sale">가능</span>
+										</c:when>
+										<c:otherwise>
+											<span class="status-badge status-hide">불가능</span>
+										</c:otherwise>
+									</c:choose>	
+								</td>
 							</tr>
 						</c:forEach>
 					</tbody>
 				</table>
+				<div class="paging-area"
+				style="margin-top: 40px; text-align: center;">${page}</div>
+				</c:if>
 			</div>
 
-			<div class="paging-area"
-				style="margin-top: 40px; text-align: center;">${page}</div>
+			
 		</div>
 	</div>
 

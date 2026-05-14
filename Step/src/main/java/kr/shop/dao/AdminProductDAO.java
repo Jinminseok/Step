@@ -20,31 +20,41 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
-	// 1. 전체 상품 개수 (검색 포함)
+	// 1. 전체 상품 개수 (검색 + 상태 필터링 포함)
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "";
-		String sub_sql = "";
+		StringBuilder sql = new StringBuilder();
 		int count = 0;
 
 		try {
 			conn = DBUtil.getConnection();
 
+			sql.append("SELECT COUNT(*) FROM products WHERE 1=1");
+
+			// -수정- 검색어 조건 추가
 			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
 				if ("prod_name".equals(vo.getSearch_type())) {
-					sub_sql = " WHERE prod_name LIKE '%' || ? || '%'";
+					sql.append(" AND prod_name LIKE '%' || ? || '%'");
 				} else if ("sku".equals(vo.getSearch_type())) {
-					sub_sql = " WHERE sku LIKE '%' || ? || '%'";
+					sql.append(" AND sku LIKE '%' || ? || '%'");
 				}
 			}
 
-			sql = "SELECT COUNT(*) FROM products" + sub_sql;
-			pstmt = conn.prepareStatement(sql);
+			// -수정- 탭 클릭 시 넘어온 상태값(search_status) 조건 추가
+			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
+				sql.append(" AND prod_status = ?");
+			}
 
-			if (!sub_sql.isEmpty()) {
-				pstmt.setString(1, vo.getKeyword());
+			pstmt = conn.prepareStatement(sql.toString());
+
+			int n = 0;
+			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
+				pstmt.setString(++n, vo.getKeyword());
+			}
+			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
+				pstmt.setString(++n, vo.getSearch_status());
 			}
 
 			rs = pstmt.executeQuery();
@@ -56,29 +66,35 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 2. 상품 목록 조회 (페이징)
+	// 2. 상품 목록 조회 (페이징 + 검색 + 상태 필터링)
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = new ArrayList<>();
-		String sql = "";
-		String sub_sql = "";
+		StringBuilder sub_sql = new StringBuilder();
 
 		try {
 			conn = DBUtil.getConnection();
 
-			// 1. 검색 조건 설정 (테이블 별칭 p. 추가)
+			// -수정- 동적 쿼리 구성을 위해 WHERE 1=1 사용
+			sub_sql.append(" WHERE 1=1");
+
+			// 검색어 조건
 			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
 				if ("prod_name".equals(vo.getSearch_type())) {
-					sub_sql = " WHERE p.prod_name LIKE '%' || ? || '%' ";
+					sub_sql.append(" AND p.prod_name LIKE '%' || ? || '%' ");
 				} else if ("sku".equals(vo.getSearch_type())) {
-					sub_sql = " WHERE p.sku LIKE '%' || ? || '%' ";
+					sub_sql.append(" AND p.sku LIKE '%' || ? || '%' ");
 				}
 			}
 
-			// 2. SQL 쿼리 조립 (텍스트 블록과 변수 결합)
-			sql = """
+			// -수정- 상태 필터링 조건 추가
+			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
+				sub_sql.append(" AND p.prod_status = ? ");
+			}
+
+			String sql = """
 					SELECT * FROM (
 					    SELECT a.*, ROWNUM rnum FROM (
 					        SELECT
@@ -90,12 +106,14 @@ public class AdminProductDAO {
 					            p.PROD_CREATED_AT,
 					            i.PROD_IMG_URL,
 					            b.brand_name,
-					            c.cat_name
+					            c.cat_name,
+					            s.stock_qty
 					        FROM PRODUCTS p
+					        LEFT JOIN stock s ON p.prod_num = s.prod_num
 					        LEFT JOIN brands b ON p.BRAND_NUM = b.BRAND_NUM
 					        LEFT JOIN categories c ON p.CAT_NUM = c.CAT_NUM
 					        LEFT JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y'
-					""" + sub_sql + """
+					""" + sub_sql.toString() + """
 					        ORDER BY p.PROD_NUM DESC
 					    ) a
 					) WHERE rnum >= ? AND rnum <= ?
@@ -103,10 +121,13 @@ public class AdminProductDAO {
 
 			pstmt = conn.prepareStatement(sql);
 
-			// 3. 파라미터 세팅
 			int n = 0;
-			if (!sub_sql.isEmpty()) {
+			// -수정- 파라미터 세팅 순서 주의 (검색어 -> 상태값 -> 시작행 -> 끝행)
+			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
 				pstmt.setString(++n, vo.getKeyword());
+			}
+			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
+				pstmt.setString(++n, vo.getSearch_status());
 			}
 			pstmt.setInt(++n, vo.getStart_row());
 			pstmt.setInt(++n, vo.getEnd_row());
@@ -120,9 +141,10 @@ public class AdminProductDAO {
 				product.setProd_price(rs.getInt("PROD_PRICE"));
 				product.setProd_status(rs.getInt("PROD_STATUS"));
 				product.setProd_created_at(rs.getDate("PROD_CREATED_AT"));
-				product.setProd_img_url(rs.getString("PROD_IMG_URL")); // 조인된 테이블의 컬럼명
+				product.setProd_img_url(rs.getString("PROD_IMG_URL"));
 				product.setBrand_name(rs.getString("brand_name"));
 				product.setCat_name(rs.getString("cat_name"));
+				product.setStock_qty(rs.getInt("stock_qty"));
 				list.add(product);
 			}
 		} finally {

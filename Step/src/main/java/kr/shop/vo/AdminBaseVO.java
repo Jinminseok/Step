@@ -6,6 +6,7 @@ public class AdminBaseVO {
 	// 기타 및 검색
 	private String keyword; // KEYWORD (검색어)
 	private String search_type; // SEARCH_TYPE (검색 조건)
+	private String search_status; // SEARCH_STATUS (검색 상태 추가)
 	private int start_row; // START_ROW (페이징 시작 로우)
 	private int end_row; // END_ROW (페이징 끝 로우)
 
@@ -23,6 +24,14 @@ public class AdminBaseVO {
 
 	public void setSearch_type(String search_type) {
 		this.search_type = search_type;
+	}
+
+	public String getSearch_status() {
+		return search_status;
+	}
+
+	public void setSearch_status(String search_status) {
+		this.search_status = search_status;
 	}
 
 	public int getStart_row() {
