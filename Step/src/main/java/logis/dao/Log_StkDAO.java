@@ -251,4 +251,32 @@ public class Log_StkDAO {
         } finally { DBUtil.executeClose(rs, pstmt, conn); }
         return list;
     }
+    
+ // 특정 상품의 상세 옵션별 재고 조회 (쇼핑몰 관리자 재고관리용)
+    public List<Map<String, Object>> getProductOptionStock(int prodNum) throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
+        
+        // 사용 중인 옵션(PROD_USE_YN='Y')만 컬러, 사이즈 순으로 정렬해서 가져옵니다.
+        String sql = "SELECT po.COLOR, po.SIZE_VAL, NVL(s.STOCK_QTY, 0) AS QTY " +
+                     "FROM PROD_OPTIONS po " +
+                     "LEFT JOIN STOCK s ON po.OPT_NUM = s.OPT_NUM " +
+                     "WHERE po.PROD_NUM = ? AND po.PROD_USE_YN = 'Y' " +
+                     "ORDER BY po.COLOR, po.SIZE_VAL";
+                     
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, prodNum);
+            rs = pstmt.executeQuery();
+            while(rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("color", rs.getString("COLOR"));
+                map.put("size",  rs.getInt("SIZE_VAL"));
+                map.put("qty",   rs.getInt("QTY"));
+                list.add(map);
+            }
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
+        return list;
+    }
 }
