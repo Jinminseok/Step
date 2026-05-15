@@ -54,7 +54,7 @@ public class UserOrderDAO {
 			String placeholders = "";
 			for(int i=0; i<cartNums.length; i++) {
 				placeholders += "?";
-				if(i < cartNums.length - 1) placeholders += ",";
+				if(i < cartNums.length) placeholders += ",";
 			}
 
 			// 주문 테이블에 상세 정보 추가
