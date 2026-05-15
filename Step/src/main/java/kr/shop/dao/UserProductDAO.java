@@ -19,7 +19,7 @@ public class UserProductDAO {
 
 	private UserProductDAO() {}
 
-	// 상품 기본 상세 정보 + 브랜드명 가져오기
+	// 상품 기본 상세 정보, 브랜드명 가져오기
 	public AdminProductVO getProductDetail(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -37,7 +37,6 @@ public class UserProductDAO {
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				vo = new AdminProductVO();
-				// 세터 메서드명을 VO에 정의된 스네이크 케이스 기반으로 수정
 				vo.setProd_num(rs.getInt("prod_num"));
 				vo.setProd_name(rs.getString("prod_name"));
 				vo.setSku(rs.getString("sku"));
@@ -61,7 +60,6 @@ public class UserProductDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			// 메인 사진이 제일 먼저 오도록 정렬
 			sql = """
 					SELECT prod_img_url FROM prod_imgs WHERE prod_num = ?
 					ORDER BY is_main DESC, prod_img_sort_no ASC
@@ -106,7 +104,6 @@ public class UserProductDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		// 작은 사이즈부터 오름차순
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
@@ -126,7 +123,7 @@ public class UserProductDAO {
 		return list;
 	}
 
-	// 상품 총 재고량 계산하기
+	// *** 상품 총 재고량 계산 (물리 재고 - 배송 대기 중인 재고) ***
 	public int getProductTotalStock(int prod_num) throws Exception {
 		int total = 0;
 		Connection conn = null;
@@ -135,9 +132,19 @@ public class UserProductDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			sql = "SELECT sum(stock_qty) FROM stock WHERE prod_num = ?";
+			// DUAL 테이블을 이용하여 (실제 재고) - (결제완료 상태인 총 주문량)을 뺌
+			sql = """
+					SELECT 
+					    (SELECT NVL(SUM(stock_qty), 0) FROM stock WHERE prod_num = ?) - 
+					    (SELECT NVL(SUM(oi.order_item_qty), 0) 
+					     FROM order_items oi 
+					     JOIN orders o ON oi.order_num = o.order_num 
+					     WHERE oi.prod_num = ? AND o.order_status = 1) 
+					FROM DUAL
+					""";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
+			pstmt.setInt(2, prod_num);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				total = rs.getInt(1);
@@ -150,83 +157,75 @@ public class UserProductDAO {
 	
 	// 메인 화면용 상품 목록 조회
 	public List<AdminProductVO> getMainProductList(AdminProductVO filter) throws Exception {
-	    Connection conn = null;
-	    PreparedStatement pstmt = null;
-	    ResultSet rs = null;
-	    List<AdminProductVO> list = null;
-	    String sql = null;
-	    String sub_sql = "";
-	    int cnt = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<AdminProductVO> list = null;
+		String sql = null;
+		String sub_sql = "";
+		int cnt = 0;
 
-	    try {
-	        conn = DBUtil.getConnection();
+		try {
+			conn = DBUtil.getConnection();
 
-	        // 성별 필터링 (gender가 -1이 아니면 조건 추가)
-	        if (filter.getGender() != -1) {
-	            sub_sql += "WHERE p.gender = ? ";
-	        }
+			if (filter.getGender() != -1) {
+				sub_sql += "WHERE p.gender = ? ";
+			}
+			if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
+				if (sub_sql.contains("WHERE")) sub_sql += "AND ";
+				else sub_sql += "WHERE ";
+				sub_sql += "p.prod_name LIKE ? ";
+			}
+			if (filter.getCat_num() > 0) {
+				if (sub_sql.contains("WHERE")) sub_sql += "AND ";
+				else sub_sql += "WHERE ";
+				sub_sql += "p.cat_num = ? ";
+			}
 
-	        // 검색어 필터링
-	        if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
-	            if (sub_sql.contains("WHERE")) sub_sql += "AND ";
-	            else sub_sql += "WHERE ";
-	            sub_sql += "p.prod_name LIKE ? ";
-	        }
-	        
-	        // 카테고리 필터링
-	        if (filter.getCat_num() > 0) {
-	            if (sub_sql.contains("WHERE")) sub_sql += "AND ";
-	            else sub_sql += "WHERE ";
-	            sub_sql += "p.cat_num = ? ";
-	        }
+			sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
+				+ "(SELECT p.prod_num, p.prod_name, p.prod_price, p.gender, p.prod_status, p.prod_created_at, p.cat_num, "
+				+ "b.brand_name, i.prod_img_url " 
+				+ "FROM products p "
+				+ "LEFT JOIN brands b ON p.brand_num = b.brand_num "
+				+ "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
+				+ sub_sql + " ORDER BY p.prod_created_at DESC) a) " 
+				+ "WHERE rnum >= ? AND rnum <= ?";
 
-	        // 메인 화면용 쿼리: 상품 + 브랜드명 + 대표이미지 조인
-	        sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
-	            + "(SELECT p.prod_num, p.prod_name, p.prod_price, p.gender, p.prod_status, p.prod_created_at, p.cat_num, "
-	            + "b.brand_name, i.prod_img_url " 
-	            + "FROM products p "
-	            + "LEFT JOIN brands b ON p.brand_num = b.brand_num "
-	            + "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
-	            + sub_sql + " ORDER BY p.prod_created_at DESC) a) " 
-	            + "WHERE rnum >= ? AND rnum <= ?";
+			pstmt = conn.prepareStatement(sql);
 
-	        pstmt = conn.prepareStatement(sql);
+			if (filter.getGender() != -1) {
+				pstmt.setInt(++cnt, filter.getGender());
+			}
+			if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
+				pstmt.setString(++cnt, "%" + filter.getKeyword() + "%");
+			}
+			if (filter.getCat_num() > 0) {
+				pstmt.setInt(++cnt, filter.getCat_num());
+			}
+			
+			pstmt.setInt(++cnt, filter.getStart_row());
+			pstmt.setInt(++cnt, filter.getEnd_row());
 
-	        // 파라미터 바인딩
-	        if (filter.getGender() != -1) {
-	            pstmt.setInt(++cnt, filter.getGender());
-	        }
-	        if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
-	            pstmt.setString(++cnt, "%" + filter.getKeyword() + "%");
-	        }
-	        if (filter.getCat_num() > 0) {
-	        	pstmt.setInt(++cnt, filter.getCat_num());
-	        }
-	        
-	        // 페이징 번호 세팅
-	        pstmt.setInt(++cnt, filter.getStart_row());
-	        pstmt.setInt(++cnt, filter.getEnd_row());
-
-	        rs = pstmt.executeQuery();
-	        list = new ArrayList<AdminProductVO>();
-	        
-	        while (rs.next()) {
-	            AdminProductVO vo = new AdminProductVO();
-	            vo.setProd_num(rs.getInt("prod_num"));
-	            vo.setProd_name(rs.getString("prod_name"));
-	            vo.setProd_price(rs.getInt("prod_price"));
-	            vo.setGender(rs.getInt("gender"));
-	            vo.setProd_status(rs.getInt("prod_status"));
-	            vo.setProd_created_at(rs.getDate("prod_created_at"));
-	            vo.setBrand_name(rs.getString("brand_name"));
-	            vo.setProd_img_url(rs.getString("prod_img_url"));
-	            
-	            list.add(vo);
-	        }
-	    } finally {
-	        DBUtil.executeClose(rs, pstmt, conn);
-	    }
-	    return list;
+			rs = pstmt.executeQuery();
+			list = new ArrayList<AdminProductVO>();
+			
+			while (rs.next()) {
+				AdminProductVO vo = new AdminProductVO();
+				vo.setProd_num(rs.getInt("prod_num"));
+				vo.setProd_name(rs.getString("prod_name"));
+				vo.setProd_price(rs.getInt("prod_price"));
+				vo.setGender(rs.getInt("gender"));
+				vo.setProd_status(rs.getInt("prod_status"));
+				vo.setProd_created_at(rs.getDate("prod_created_at"));
+				vo.setBrand_name(rs.getString("brand_name"));
+				vo.setProd_img_url(rs.getString("prod_img_url"));
+				
+				list.add(vo);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
 	}
 	
 	// 메인페이지 하단 페이징
@@ -241,7 +240,6 @@ public class UserProductDAO {
 		
 		try {
 			conn = DBUtil.getConnection();
-			// 1. 필터 조건 조립
 			if(filter.getCat_num() > 0) {
 				sub_sql += " AND cat_num = ? ";
 			}
@@ -252,12 +250,10 @@ public class UserProductDAO {
 				sub_sql += " AND gender = ? ";
 			}
 			
-			// 2. 전체 상품 개수(판매중인 상품) 
 			sql = "SELECT COUNT(*) FROM PRODUCTS WHERE prod_status = 1 " + sub_sql;
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			// 3. ?에 데이터 바인딩
 			if(filter.getCat_num() > 0) {
 				pstmt.setInt(++cnt, filter.getCat_num());
 			}
@@ -268,7 +264,6 @@ public class UserProductDAO {
 				pstmt.setInt(++cnt, filter.getGender());
 			}
 			
-			// 4. 쿼리 실행 및 결과 가져오기
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				count = rs.getInt(1);
@@ -291,9 +286,17 @@ public class UserProductDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
+			// 각 옵션별로 (실제 재고) - (결제완료 상태인 주문량) 을 빼서 available_stock 이라는 이름으로 가져옴
 			sql = """
-					SELECT o.color, o.size_val, NVL(s.stock_qty, 0) as stock_qty 
-					FROM prod_options o LEFT JOIN stock s ON o.opt_num = s.opt_num 
+					SELECT o.color, o.size_val, 
+					       (NVL(s.stock_qty, 0) - NVL((
+					           SELECT SUM(oi.order_item_qty) 
+					           FROM order_items oi 
+					           JOIN orders od ON oi.order_num = od.order_num 
+					           WHERE oi.opt_num = o.opt_num AND od.order_status = 1
+					       ), 0)) AS available_stock 
+					FROM prod_options o 
+					LEFT JOIN stock s ON o.opt_num = s.opt_num 
 					WHERE o.prod_num = ? AND o.prod_use_yn = 'Y'
 				  """;
 			pstmt = conn.prepareStatement(sql);
@@ -306,7 +309,7 @@ public class UserProductDAO {
 				json.append("{")
 					.append("\"color\":\"").append(rs.getString("color")).append("\",")
 					.append("\"size\":").append(rs.getInt("size_val")).append(",")
-					.append("\"stock\":").append(rs.getInt("stock_qty"))
+					.append("\"stock\":").append(rs.getInt("available_stock")) // 가용 재고로 덮어쓰기
 					.append("}");
 				first = false;
 			}

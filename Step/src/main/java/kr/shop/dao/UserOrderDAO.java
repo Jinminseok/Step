@@ -49,14 +49,14 @@ public class UserOrderDAO {
 			pstmt.setString(9, recvAddr2);
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
-
+			
 			// 동적 쿼리를 위한 세팅
 			String placeholders = "";
 			for(int i=0; i<cartNums.length; i++) {
 				placeholders += "?";
 				if(i < cartNums.length -1) placeholders += ",";
 			}
-
+			
 			// 주문 테이블에 상세 정보 추가
 			String sql2 = "INSERT INTO order_items (item_num, order_num, prod_num, opt_num, order_item_qty, order_item_price) "
 					    + "SELECT order_items_seq.nextval, ?, o.prod_num, c.opt_num, c.cart_qty, p.prod_price "
@@ -71,20 +71,8 @@ public class UserOrderDAO {
 			}
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
-
-			// 재고 차감 - 장바구니 개수만큼 반복 차감 (수정 필요)
-			String sql3 = "UPDATE stock s SET stock_qty = stock_qty - "
-					    + "(SELECT cart_qty FROM cart c WHERE c.opt_num = s.opt_num AND c.cart_num = ?) +1 "
-					    + "WHERE s.opt_num = (SELECT opt_num FROM cart WHERE cart_num = ?)";
-			pstmt = conn.prepareStatement(sql3);
-			for(int i=0; i<cartNums.length; i++) {
-				pstmt.setLong(1, Long.parseLong(cartNums[i]));
-				pstmt.setLong(2, Long.parseLong(cartNums[i]));
-				pstmt.executeUpdate();
-			}
-			DBUtil.executeClose(null, pstmt, null);
-
-			// 테이블에 결제 내역 추가
+			
+			// 테이블에 결제 내역 추가 (PAYMENTS)
 			String sql4 = "INSERT INTO payments (pay_num, order_num, method, amount, pay_status) VALUES (payments_seq.nextval, ?, ?, ?, 1)";
 			pstmt = conn.prepareStatement(sql4);
 			pstmt.setLong(1, orderNum);
@@ -101,7 +89,7 @@ public class UserOrderDAO {
 			}
 			pstmt.executeUpdate();
 
-			// 전부 실행되면 커밋
+			// 전부 성공했다면 커밋
 			conn.commit();
 
 		} catch (Exception e) {
