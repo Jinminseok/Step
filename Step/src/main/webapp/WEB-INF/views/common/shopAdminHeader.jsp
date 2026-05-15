@@ -38,7 +38,7 @@
 			<div class="nav-section">재고 / 물류</div>
 			<a href="${pageContext.request.contextPath}/shop/stock/stockList.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'stock') ? 'active' : ''}">
-				<span class="nav-icon">📦</span>재고 관리<span class="nav-badge">2</span>
+				<span class="nav-icon">📦</span>재고 현황 조회<span class="nav-badge">2</span>
 			</a> <a href="${pageContext.request.contextPath}/shop/admin_order/adminorderForm.do"
 				class="nav-item ${fn:contains(pageContext.request.servletPath, 'order') ? 'active' : ''}">
 				<span class="nav-icon">🧾</span>주문 관리

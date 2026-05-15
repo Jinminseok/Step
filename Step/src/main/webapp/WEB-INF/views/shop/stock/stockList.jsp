@@ -97,8 +97,8 @@
     
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title">재고 관리</div>
-    <div class="topbar-path">Admin > 재고 관리</div>
+    <div class="topbar-title">재고 현황 조회</div>
+    <div class="topbar-path">Admin > 재고 현황 조회</div>
     <div class="topbar-right">
       <div class="t-btn">🔔</div>
     </div>
