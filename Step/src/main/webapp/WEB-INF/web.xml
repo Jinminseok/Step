@@ -40,6 +40,6 @@
   <!--GENMINI API 키 -->
     <context-param>
         <param-name>GEMINI_API_KEY</param-name>
-        <param-value>AIzaSyAmL650GUhsD5AmR6pJpLg_xk2Gg1tp090</param-value>
+        <param-value>AIzaSyAnRJtWPUnn6VIfcqAX_nXN2HowLj1jTJE</param-value>
     </context-param>
 </web-app>

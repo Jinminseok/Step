@@ -28,11 +28,7 @@ public class AiChatSendAction implements Action {
             return "shop/ai/aiPick.jsp";
         }
 
-        // 2. API 키 가져오기 (web.xml에서)
-        ServletContext ctx = request.getServletContext();
-        String apiKey = ctx.getInitParameter("GEMINI_API_KEY");
-
-        // 3. 세션에서 대화 기록 가져오기
+        // 2. 세션에서 대화 기록 가져오기 (API 키 체크보다 먼저)
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
         List<String[]> chatHistory = (List<String[]>) session.getAttribute("chatHistory");
@@ -40,30 +36,52 @@ public class AiChatSendAction implements Action {
             chatHistory = new ArrayList<>();
         }
 
-        // 4. DB에서 상품 목록 조회
+        // 3. API 키 가져오기
+        ServletContext ctx = request.getServletContext();
+        String apiKey = ctx.getInitParameter("GEMINI_API_KEY");
+
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            request.setAttribute("chatHistory", chatHistory);
+            request.setAttribute("aiResponse", "API 키가 설정되지 않았습니다.");
+            return "shop/ai/aiPick.jsp";
+        }
+
+     // 4. DB에서 상품 목록 조회
         String productContext = "";
         try {
             AiChatDAO dao = AiChatDAO.getInstance();
             List<String> productList = dao.getProductListForAI();
+            
+            // ← 추가: 상품 목록 개수 확인
+            System.out.println("[AI] 상품 목록 조회 성공: " + productList.size() + "개");
+            
             StringBuilder productText = new StringBuilder();
             for (String prod : productList) {
                 productText.append("- ").append(prod).append("\n");
             }
             productContext = productText.toString();
         } catch (Exception e) {
+            // ← 수정: 실제 오류 내용 출력
+            System.err.println("[AI] 상품 목록 조회 실패: " + e.getMessage());
+            e.printStackTrace();
             productContext = "(상품 목록 조회 실패: " + e.getMessage() + ")";
         }
 
         // 5. 시스템 프롬프트
         String systemPrompt = "당신은 ShoeMall의 친절한 AI 신발 추천 어시스턴트입니다.\n"
-                + "아래는 현재 판매 중인 상품 목록입니다. 반드시 이 목록에 있는 상품만 추천하세요.\n\n"
+                + "아래는 현재 재고가 있는 판매 중인 상품 목록입니다. 반드시 이 목록에 있는 상품만 추천하세요.\n\n"
                 + "=== 판매 상품 목록 ===\n"
                 + productContext + "\n"
                 + "=== 안내 사항 ===\n"
                 + "1. 목록에 없는 상품은 절대 추천하지 마세요.\n"
-                + "2. 추천 시 상품명, 가격을 명확히 알려주세요.\n"
+                + "2. 추천 시 상품명, 브랜드, 카테고리, 가격을 명확히 알려주세요.\n"
                 + "3. 친절하고 자연스러운 한국어로 답변하세요.\n"
-                + "4. 조건에 맞는 상품이 없으면 솔직하게 없다고 말하세요.";
+                + "4. 조건에 맞는 상품이 없으면 '현재 해당 조건의 재고가 없습니다'라고 안내하세요.\n"
+                + "5. 한 번에 2~3개 상품을 추천하고 각 상품의 특징을 간단히 설명해주세요.\n"
+                + "6. 예산이 명시된 경우 반드시 그 범위 안에서만 추천하세요.\n"
+                + "7. 사용자가 재고를 물어보면 상품 목록의 재고 수량을 알려주세요.\n"
+                + "8. 재고가 10개 미만이면 '품절 임박'이라고 강조해주세요.\n"
+                + "9. 재고 수량은 실시간이 아닌 조회 시점 기준임을 필요 시 안내하세요.";
 
         // 6. Gemini API 요청 JSON 구성
         StringBuilder contentsJson = new StringBuilder();
@@ -105,9 +123,10 @@ public class AiChatSendAction implements Action {
 
     private String callGeminiAPI(String apiKey, String requestBody) {
         try {
-        	String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=" + apiKey;
-
-            URL url = new URL(endpoint);
+        	String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+        	//String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + apiKey;
+        	//String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+        	URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -136,30 +155,34 @@ public class AiChatSendAction implements Action {
 
             String json = sb.toString();
 
-            // 상태 코드 오류 처리
             if (statusCode != 200) {
+                System.err.println("[Gemini 오류] 상태코드: " + statusCode);
+                System.err.println("[Gemini 오류] 응답내용: " + json);
+
                 if (statusCode == 429) {
                     return "현재 AI 추천 서비스 이용자가 많아 잠시 후 다시 시도해주세요. 😊";
                 }
-                return "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+                if (statusCode == 400) {
+                    return "요청 형식 오류가 발생했습니다. (400)\n상세: " + json;
+                }
+                if (statusCode == 403) {
+                    return "API 키가 유효하지 않습니다. web.xml의 GEMINI_API_KEY를 확인하세요. (403)";
+                }
+                return "일시적인 오류가 발생했습니다. (오류코드: " + statusCode + ")\n" + json;
             }
 
-            // ── Gemini 응답 텍스트 추출 ──────────────────────────────
-            // 응답 형식: {"candidates":[{"content":{"parts":[{"text":"..."}]}}]}
-            // "text":" 다음 값을 추출
+            // Gemini 응답 텍스트 추출
             String marker = "\"text\":";
             int start = json.indexOf(marker);
             if (start < 0) {
                 return "응답 파싱 오류. 원본: " + json.substring(0, Math.min(json.length(), 300));
             }
             start += marker.length();
-            // "text": 뒤에 오는 첫 번째 " 찾기 (공백 무시)
             while (start < json.length() && json.charAt(start) != '"') {
                 start++;
             }
             start++;
 
-            // 닫히는 " 찾기 (이스케이프된 \" 제외)
             StringBuilder result = new StringBuilder();
             int i = start;
             while (i < json.length()) {
@@ -174,7 +197,7 @@ public class AiChatSendAction implements Action {
                         default:   result.append(next); i += 2; break;
                     }
                 } else if (c == '"') {
-                    break; // 문자열 끝
+                    break;
                 } else {
                     result.append(c);
                     i++;
