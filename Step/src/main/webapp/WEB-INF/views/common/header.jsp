@@ -79,6 +79,7 @@
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/cart/cartList.do'">
             <span class="hdr-btn-icon">🛒</span>
             <span class="hdr-btn-label">장바구니</span>
+            <span class="hdr-badge" id="headerCartBadge" style="background:var(--red); display:none;">0</span>
           </button>
           <div style="width:1px;height:28px;background:#333;margin:0 4px"></div>
           <button class="hdr-btn" onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">
@@ -144,12 +145,14 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// 찜 개수 불러오기
+// 찜, 장바구니 개수 불러오기
 <c:if test="${!empty sessionScope.user_num}">
 $(document).ready(function() {
     updateWishBadge();
+    updateCartBadge();
 });
 
+// 찜 개수 업데이트
 function updateWishBadge() {
     $.ajax({
         url: '${pageContext.request.contextPath}/shop/wish/getWishCount.do',
@@ -158,7 +161,7 @@ function updateWishBadge() {
         success: function(param) {
             let count = param.count;
             if(count > 0) {
-                // 1개 이상이면 뱃지 보이기 (파란색 유지)
+                // 1개 이상이면 뱃지 표시
                 $('#headerWishBadge').text(count).show();
             } else {
                 // 0개면 숨기기
@@ -167,6 +170,28 @@ function updateWishBadge() {
         },
         error: function(xhr, status, error) {
             console.log("찜 개수 불러오기 실패:", error);
+        }
+    });
+}
+
+// 장바구니 개수 업데이트
+function updateCartBadge() {
+    $.ajax({
+        url: '${pageContext.request.contextPath}/shop/cart/getCartCount.do',
+        type: 'get',
+        dataType: 'json',
+        success: function(param) {
+            let count = param.count;
+            if(count > 0) {
+                // 1개 이상이면 뱃지 표시
+                $('#headerCartBadge').text(count).show();
+            } else {
+            	// 0개면 숨기기
+                $('#headerCartBadge').hide();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log("장바구니 개수 불러오기 실패:", error);
         }
     });
 }

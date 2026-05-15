@@ -1,5 +1,8 @@
 package kr.shop.wish.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -7,14 +10,14 @@ import jakarta.servlet.http.HttpSession;
 import kr.controller.Action;
 import kr.shop.dao.UserWishListDAO;
 import kr.shop.vo.UserWishListVO;
+import kr.util.StringUtil;
 
 public class WriteWishAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		// 브라우저에 JSON 형식으로 응답할 것이라고 알려줌
-		response.setContentType("application/json;charset=utf-8");
+		Map<String, String> mapAjax = new HashMap<String, String>();
 		
 		// 로그인 여부 확인
 		HttpSession session = request.getSession();
@@ -22,22 +25,23 @@ public class WriteWishAction implements Action {
 		
 		// 로그인이 안되있는 경우
 		if (user_num == null) {
-			request.setAttribute("ajaxData", "{\"result\":\"logout\"}");
-			return null; 
+			mapAjax.put("result", "logout");
+		} else {
+			int prod_num = Integer.parseInt(request.getParameter("prod_num"));
+			
+			// DB에 저장
+			UserWishListVO wish = new UserWishListVO();
+			wish.setUser_num(user_num);
+			wish.setProd_num(prod_num);
+			
+			UserWishListDAO dao = UserWishListDAO.getInstance();
+			dao.insertWish(wish);
+			
+			mapAjax.put("result", "success");
+			
 		}
 		
-		// JSP에서 넘어온 옵션번호와 수량 데이터 받기
-		int prod_num = Integer.parseInt(request.getParameter("prod_num"));
-		
-		// DB에 저장
-		UserWishListVO wish = new UserWishListVO();
-		wish.setUser_num(user_num);
-		wish.setProd_num(prod_num);
-		
-		UserWishListDAO.getInstance().insertWish(wish);
-		
-		// 완료했다는 결과를 화면에 보냄
-		request.setAttribute("ajaxData", "{\"result\":\"success\"}");
-		return "common/ajax_view.jsp";
+		// JSON 데이터 반환
+		return StringUtil.parseJSON(request, mapAjax);
 	}
 }

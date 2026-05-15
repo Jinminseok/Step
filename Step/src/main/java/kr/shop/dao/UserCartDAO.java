@@ -166,5 +166,69 @@ public class UserCartDAO {
 		}
 		return list;
 	}
+	
+	// 바로 구매하기
+	public Long insertDirectCart(Long user_num, int prod_num, String color, int size, int cart_qty) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Long cart_num = 0L;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			// 시퀀스 번호 가져오기
+			pstmt = conn.prepareStatement("SELECT CART_SEQ.NEXTVAL FROM DUAL");
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				cart_num = rs.getLong(1);
+			}
+			DBUtil.executeClose(rs, pstmt, null);
+			
+			// 장바구니에 바로 넣기
+			String sql = "INSERT INTO CART (CART_NUM, USER_NUM, OPT_NUM, CART_QTY) "
+					   + "VALUES (?, ?, (SELECT OPT_NUM FROM PROD_OPTIONS WHERE PROD_NUM=? AND COLOR=? AND SIZE_VAL=?), ?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, cart_num);
+			pstmt.setLong(2, user_num);
+			pstmt.setInt(3, prod_num);
+			pstmt.setString(4, color);
+			pstmt.setInt(5, size);
+			pstmt.setInt(6, cart_qty);
+			
+			pstmt.executeUpdate();
+			
+		} finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
+		
+		return cart_num;
+	}
+	
+	
+	// 장바구니 전체 개수 가져오기
+	public int getCartCount(Long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int count = 0;
+		String sql = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			sql = "SELECT COUNT(*) FROM CART WHERE USER_NUM = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				count = rs.getInt(1);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		
+		return count;
+	}
 		
 }

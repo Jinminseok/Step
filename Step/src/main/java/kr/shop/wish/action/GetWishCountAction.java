@@ -1,35 +1,35 @@
 package kr.shop.wish.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import kr.controller.Action;
 import kr.shop.dao.UserWishListDAO;
+import kr.util.StringUtil;
 
 public class GetWishCountAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		// JSON 응답 설정
-		response.setContentType("application/json;charset=utf-8");
+		Map<String, String> mapAjax = new HashMap<String, String>();
 		
 		HttpSession session = request.getSession();
 		Long user_num = (Long) session.getAttribute("user_num");
 		
-		// 로그인 확인
-		if (user_num == null) {
-            request.setAttribute("ajaxData", "{\"result\":\"logout\"}");
-            return "common/ajax_view.jsp";
-        }
+		if(user_num == null) {
+			mapAjax.put("count", "0");
+		} else {
+			UserWishListDAO dao = UserWishListDAO.getInstance();
+			int count = dao.getWishCount(user_num);
+			
+			// 숫자(int)를 문자열(String)로 바꿔서 Map에 담습니다.
+			mapAjax.put("count", String.valueOf(count));
+		}
 		
-		// DAO 호출해서 개수 가져오기
-		UserWishListDAO dao = UserWishListDAO.getInstance();
-		int count = dao.getWishCount(user_num);
-		
-		request.setAttribute("ajaxData", "{\"count\":" + count + "}");
-		
-		return "common/ajax_view.jsp";
+		return StringUtil.parseJSON(request, mapAjax);
 	}
 }

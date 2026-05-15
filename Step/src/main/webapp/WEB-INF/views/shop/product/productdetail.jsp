@@ -211,7 +211,7 @@ function handleWish() {
     });
 }
 
-// 장바구니, 바로구매
+//장바구니, 바로구매
 function handleAction(type) {
     if(!requireLogin()) return;
     
@@ -219,22 +219,17 @@ function handleAction(type) {
     if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
     if(selectedSize === "") { alert("상품의 사이즈를 선택해 주세요."); return; }
     
+    // 장바구니 버튼
     if(type === 'cart') {
-        // 선택한 정보들 수집
         let prod_num = $('input[name="prod_num"]').val();
         let color = $('#input_color').val();
         let size = $('#input_size').val();
-        let cart_qty = 1; // 기본 수량
+        let cart_qty = 1; 
 
         $.ajax({
             url: '${pageContext.request.contextPath}/shop/cart/writeCart.do',
             type: 'post',
-            data: {
-                prod_num: prod_num,
-                color: color,
-                size: size,
-                cart_qty: cart_qty
-            },
+            data: { prod_num: prod_num, color: color, size: size, cart_qty: cart_qty },
             dataType: 'json',
             success: function(param) {
                 if(param.result === 'logout') {
@@ -246,14 +241,15 @@ function handleAction(type) {
                     }
                 }
             },
-            error: function(xhr, status, error) {
-                console.log("에러 상태:", xhr.status, xhr.responseText);
-                alert("통신 중 오류가 발생했습니다.");
-            }
+            error: function() { alert("통신 중 오류가 발생했습니다."); }
         });
         
-    } else if(type === 'buy') {
-        document.getElementById('orderPageForm').submit();
+    } 
+    // 바로구매 버튼
+    else if(type === 'buy') {
+        let form = document.getElementById('orderPageForm');
+        form.action = '${pageContext.request.contextPath}/shop/order/directBuy.do';
+        form.submit();
     }
 }
 </script>
