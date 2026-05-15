@@ -54,7 +54,7 @@ public class UserOrderDAO {
 			String placeholders = "";
 			for(int i=0; i<cartNums.length; i++) {
 				placeholders += "?";
-				if(i < cartNums.length) placeholders += ",";
+				if(i < cartNums.length -1) placeholders += ",";
 			}
 
 			// 주문 테이블에 상세 정보 추가
@@ -72,9 +72,9 @@ public class UserOrderDAO {
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
 
-			// 재고 차감 - 장바구니 개수만큼 반복 차감
+			// 재고 차감 - 장바구니 개수만큼 반복 차감 (수정 필요)
 			String sql3 = "UPDATE stock s SET stock_qty = stock_qty - "
-					    + "(SELECT cart_qty FROM cart c WHERE c.opt_num = s.opt_num AND c.cart_num = ?) "
+					    + "(SELECT cart_qty FROM cart c WHERE c.opt_num = s.opt_num AND c.cart_num = ?) +1 "
 					    + "WHERE s.opt_num = (SELECT opt_num FROM cart WHERE cart_num = ?)";
 			pstmt = conn.prepareStatement(sql3);
 			for(int i=0; i<cartNums.length; i++) {

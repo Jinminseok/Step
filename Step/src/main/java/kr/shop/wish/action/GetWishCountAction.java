@@ -26,7 +26,7 @@ public class GetWishCountAction implements Action {
 			UserWishListDAO dao = UserWishListDAO.getInstance();
 			int count = dao.getWishCount(user_num);
 			
-			// 숫자(int)를 문자열(String)로 바꿔서 Map에 담습니다.
+			//int를 String으로 바꿔 담기
 			mapAjax.put("count", String.valueOf(count));
 		}
 		
