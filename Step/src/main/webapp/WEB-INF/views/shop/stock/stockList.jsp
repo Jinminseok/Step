@@ -106,7 +106,7 @@
 
 <div class="admin-dashboard">
         <div class="admin-header">
-            <h2 class="admin-title">📊 쇼핑몰 실시간 재고 현황</h2>
+            <h2 class="admin-title">📊 재고 현황</h2>
             <div style="font-size: 13px; color: #666;">* 재고 수정은 물류 관리 시스템에서만 가능합니다.</div>
         </div>
 
