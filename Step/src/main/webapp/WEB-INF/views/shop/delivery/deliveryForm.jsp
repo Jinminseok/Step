@@ -20,8 +20,6 @@
 .page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
 .page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
-
-/* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-bottom:20px;border:1px solid var(--border)}
 .stat-card{background:var(--white);padding:16px 18px;cursor:pointer;transition:background .15s}
 .stat-card:hover{background:#f5f5f5}
@@ -31,16 +29,12 @@
 .stat-label{font-size:10px;font-weight:700;color:var(--gray4);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
 .stat-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;letter-spacing:-1px}
 .stat-change{font-size:11px;margin-top:5px;color:var(--gray4)}
-
-/* TOOLBAR */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .search-wrap{position:relative;flex:1;max-width:300px}
 .search-wrap input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black)}
 .search-wrap input:focus{border-color:var(--black)}
 .search-wrap input::placeholder{color:var(--gray5)}
 .search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:14px}
-
-/* BUTTONS */
 .btn{padding:9px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .btn-black{background:var(--black);color:#fff}
 .btn-black:hover{background:#333}
@@ -50,26 +44,22 @@
 .btn-danger:hover{background:var(--red);color:#fff}
 .btn-blue{background:#e8f0ff;color:var(--blue);border:1px solid #c0d0ff}
 .btn-blue:hover{background:var(--blue);color:#fff}
+.btn-green{background:#e8f5e8;color:#155724;border:1px solid #c3e6cb}
+.btn-green:hover{background:#155724;color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
 .btn-xs{padding:3px 8px;font-size:10px;white-space:nowrap}
-
-/* BADGE */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;font-size:11px;font-weight:700;border-radius:20px}
 .b-wait{background:#fff3cd;color:#856404}
 .b-ready{background:#cfe2ff;color:#0a58ca}
 .b-shipping{background:#d1ecf1;color:#0c5460}
 .b-done{background:#d4edda;color:#155724}
 .b-cancel{background:#f8d7da;color:#721c24}
-
-/* TABLE */
 .tbl-wrap{overflow-x:auto;background:var(--white);border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse}
 th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--gray4);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;background:var(--white)}
 td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray2);vertical-align:middle;white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafafa}
-
-/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal-box{background:var(--white);width:560px;max-height:90vh;display:flex;flex-direction:column;border:1px solid var(--border)}
@@ -79,8 +69,6 @@ tr:hover td{background:#fafafa}
 .modal-close:hover{color:#fff}
 .modal-body{padding:22px;overflow-y:auto;flex:1}
 .modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--gray7)}
-
-/* FORM */
 .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .f-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em}
 .f-input{padding:10px 12px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black);width:100%}
@@ -89,13 +77,11 @@ tr:hover td{background:#fafafa}
 .f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .info-section{background:#f9f9f9;border:1px solid var(--border);padding:14px 16px;margin-bottom:14px;border-radius:4px}
 .info-section-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
-
-/* 배송 추적 스텝 */
 .dlv-track-wrap{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px}
 .dlv-track-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:20px}
 .dlv-track{display:flex;align-items:flex-start;justify-content:center;position:relative}
 .dlv-step{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;position:relative;z-index:1;cursor:pointer}
-.dlv-step-icon{width:52px;height:52px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #e5e7eb;transition:all .25s;position:relative}
+.dlv-step-icon{width:52px;height:52px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #e5e7eb;transition:all .25s}
 .dlv-step-label{font-size:11px;font-weight:700;color:#9ca3af;text-align:center;transition:all .25s;line-height:1.4}
 .dlv-step.done .dlv-step-icon{background:#111;border-color:#111}
 .dlv-step.done .dlv-step-label{color:#555}
@@ -103,12 +89,22 @@ tr:hover td{background:#fafafa}
 .dlv-step.active .dlv-step-label{color:#111;font-weight:900}
 .dlv-step:hover .dlv-step-icon{transform:scale(1.12)}
 .dlv-step.active:hover .dlv-step-icon{transform:scale(1.15)}
-.dlv-connector{flex:1;height:3px;background:#e5e7eb;margin-top:25px;transition:background .25s;position:relative;z-index:0}
+.dlv-connector{flex:1;height:3px;background:#e5e7eb;margin-top:25px;transition:background .25s;z-index:0}
 .dlv-connector.done{background:#111}
-.dlv-step-current-badge{position:absolute;top:-8px;right:-4px;background:#ff4d4d;color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:10px;white-space:nowrap}
 .dlv-status-label{text-align:center;margin-top:16px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:14px;font-weight:700;color:#111}
-
-/* TOAST */
+/* 상품 카드 */
+.item-card{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.item-card:last-child{border-bottom:none}
+.item-img{width:72px;height:72px;object-fit:cover;border:1px solid var(--border);border-radius:6px;flex-shrink:0;background:#f5f5f5}
+.item-img-placeholder{width:72px;height:72px;border:1px solid var(--border);border-radius:6px;flex-shrink:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:28px}
+.item-info{flex:1;min-width:0}
+.item-name{font-weight:700;font-size:14px;color:#111;margin-bottom:3px;white-space:normal}
+.item-brand{font-size:11px;color:var(--gray4);margin-bottom:7px}
+.item-opts{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.item-opt-badge{padding:2px 8px;background:#fff;border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--gray2)}
+.item-price-row{display:flex;align-items:center;justify-content:space-between}
+.item-qty{font-size:12px;color:var(--gray4)}
+.item-price{font-weight:900;font-size:15px;color:#111}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -144,7 +140,7 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- 상태별 통계 카드 -->
+    <!-- 통계 카드 -->
     <div class="stats-row">
       <div class="stat-card ${statusSel == null || statusSel eq '' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do'">
@@ -204,7 +200,7 @@ tr:hover td{background:#fafafa}
             <th style="width:90px">택배사</th>
             <th style="width:140px">송장번호</th>
             <th style="width:130px">주문일시</th>
-            <th style="width:160px">관리</th>
+            <th style="width:210px">관리</th>
           </tr>
         </thead>
         <tbody>
@@ -228,8 +224,19 @@ tr:hover td{background:#fafafa}
               <td style="font-size:12px;color:var(--gray3)">${d.invoiceNo}</td>
               <td style="font-size:12px;color:var(--gray4)">${d.orderCreatedAt}</td>
               <td>
-                <c:if test="${d.dlvStatus != 5}">
-                  <div style="display:flex;gap:6px">
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                  <%-- 상세 버튼: 항상 표시 --%>
+                  <button class="btn btn-green btn-xs"
+                    onclick="openDetailModal(
+                      ${d.orderNum},
+                      '${d.recvName}',
+                      '${d.orderCreatedAt}',
+                      ${d.payPrice})">
+                    📋 상세
+                  </button>
+
+                  <%-- 수정/취소: 취소 아닐 때만 --%>
+                  <c:if test="${d.dlvStatus ne 5}">
                     <button class="btn btn-blue btn-xs"
                       onclick="openUpdateModal(
                         ${d.dlvNum}, ${d.dlvStatus},
@@ -238,17 +245,18 @@ tr:hover td{background:#fafafa}
                         '${d.recvAddr1}')">
                       ✏️ 수정
                     </button>
-                    <c:if test="${d.dlvStatus == 1}">
+                    <c:if test="${d.dlvStatus eq 1}">
                       <button class="btn btn-danger btn-xs"
                         onclick="cancelOrder(${d.dlvNum}, ${d.orderNum}, ${d.userNum}, '${d.recvName}')">
                         🚫 취소
                       </button>
                     </c:if>
-                  </div>
-                </c:if>
-                <c:if test="${d.dlvStatus == 5}">
-                  <span style="font-size:11px;color:var(--gray4)">처리완료</span>
-                </c:if>
+                  </c:if>
+
+                  <c:if test="${d.dlvStatus eq 5}">
+                    <span style="font-size:11px;color:var(--gray4)">처리완료</span>
+                  </c:if>
+                </div>
               </td>
             </tr>
           </c:forEach>
@@ -266,6 +274,47 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
+<!-- ===== 주문 상세 모달 ===== -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-box" style="width:620px">
+    <div class="modal-hdr">
+      <div class="modal-title">📋 주문 상품 상세</div>
+      <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="info-section">
+        <div class="info-section-title">주문 정보</div>
+        <div class="f-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="f-label">수령인</label>
+            <input class="f-input" type="text" id="detailRecvName" readonly>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="f-label">주문일시</label>
+            <input class="f-input" type="text" id="detailOrderDate" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section" style="margin-bottom:0">
+        <div class="info-section-title">주문 상품 목록</div>
+        <div id="detailItemList">
+          <div style="text-align:center;padding:30px;color:var(--gray4)">🔄 불러오는 중...</div>
+        </div>
+        <div style="border-top:2px solid #111;padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12px;color:var(--gray4)">총 결제금액</span>
+          <span id="detailTotalPrice" style="font-size:20px;font-weight:900;color:#111"></span>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-black" onclick="closeModal('modal-detail')">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 배송 수정 모달 ===== -->
 <div class="modal-overlay" id="modal-update">
   <div class="modal-box">
@@ -274,46 +323,36 @@ tr:hover td{background:#fafafa}
       <button class="modal-close" onclick="closeModal('modal-update')">✕</button>
     </div>
     <form action="${pageContext.request.contextPath}/shop/delivery/deliveryUpdate.do" method="post">
-      <input type="hidden" name="dlvNum"     id="updateDlvNum">
-      <input type="hidden" name="dlvStatus"  id="updateDlvStatus" value="1">
+      <input type="hidden" name="dlvNum"    id="updateDlvNum">
+      <input type="hidden" name="dlvStatus" id="updateDlvStatus" value="1">
       <div class="modal-body">
 
-        <!-- 배송 추적 스텝 UI -->
         <div class="dlv-track-wrap">
           <div class="dlv-track-title">📦 배송 단계 선택 (클릭하여 변경)</div>
           <div class="dlv-track">
-
             <div class="dlv-step" id="step1" onclick="setStep(1)">
               <div class="dlv-step-icon">📦</div>
               <div class="dlv-step-label">배송<br>대기</div>
             </div>
-
             <div class="dlv-connector" id="line1"></div>
-
             <div class="dlv-step" id="step2" onclick="setStep(2)">
               <div class="dlv-step-icon">🏭</div>
               <div class="dlv-step-label">배송<br>준비중</div>
             </div>
-
             <div class="dlv-connector" id="line2"></div>
-
             <div class="dlv-step" id="step3" onclick="setStep(3)">
               <div class="dlv-step-icon">🚚</div>
               <div class="dlv-step-label">배송중</div>
             </div>
-
             <div class="dlv-connector" id="line3"></div>
-
             <div class="dlv-step" id="step4" onclick="setStep(4)">
               <div class="dlv-step-icon">✅</div>
               <div class="dlv-step-label">배송<br>완료</div>
             </div>
-
           </div>
           <div class="dlv-status-label" id="stepLabel">📦 배송대기</div>
         </div>
 
-        <!-- 배송지 정보 -->
         <div class="info-section">
           <div class="info-section-title">📍 배송지 정보</div>
           <div class="f-row">
@@ -332,7 +371,6 @@ tr:hover td{background:#fafafa}
           </div>
         </div>
 
-        <!-- 택배 정보 -->
         <div class="info-section" style="margin-bottom:0">
           <div class="info-section-title">📮 택배 정보</div>
           <div class="f-row">
@@ -352,7 +390,6 @@ tr:hover td{background:#fafafa}
               <input class="f-input" type="text" name="invoiceNo" id="updateInvoiceNo" placeholder="송장번호 입력">
             </div>
           </div>
-          <!-- 배송 조회 버튼 (배송중 이상일 때 표시) -->
           <div id="trackBtnWrap" style="display:none;margin-top:4px">
             <button type="button" class="btn btn-outline btn-sm" style="width:100%" onclick="trackDelivery()">
               🔍 네이버 배송 조회
@@ -379,6 +416,8 @@ tr:hover td{background:#fafafa}
 <div class="toast" id="toast"></div>
 
 <script>
+var ctxPath = '${pageContext.request.contextPath}';
+
 var stepLabels = {
     1: '📦 배송대기 — 상품이 출고 대기 중입니다.',
     2: '🏭 배송준비중 — 택배사에 상품을 전달 중입니다.',
@@ -413,6 +452,55 @@ function openUpdateModal(dlvNum, dlvStatus, courier, invoiceNo, recvName, recvPh
     document.getElementById('updateAddr').value      = addr      || '';
     setStep(dlvStatus || 1);
     document.getElementById('modal-update').classList.add('open');
+}
+
+function openDetailModal(orderNum, recvName, orderDate, payPrice) {
+    document.getElementById('detailRecvName').value  = recvName  || '';
+    document.getElementById('detailOrderDate').value = orderDate || '';
+    document.getElementById('detailTotalPrice').textContent =
+        Number(payPrice).toLocaleString() + '원';
+    document.getElementById('detailItemList').innerHTML =
+        '<div style="text-align:center;padding:30px;color:#9ca3af">🔄 불러오는 중...</div>';
+    document.getElementById('modal-detail').classList.add('open');
+
+    fetch(ctxPath + '/shop/delivery/deliveryDetail.do?orderNum=' + orderNum)
+        .then(function(res) { return res.json(); })
+        .then(function(items) {
+            if (!items || items.length === 0) {
+                document.getElementById('detailItemList').innerHTML =
+                    '<div style="text-align:center;padding:30px;color:#9ca3af">📭 상품 정보가 없습니다.</div>';
+                return;
+            }
+            var html = '';
+            items.forEach(function(item) {
+                var imgHtml = (item.prodImgUrl && item.prodImgUrl !== '')
+                    ? '<img class="item-img" src="' + ctxPath + item.prodImgUrl + '" onerror="this.outerHTML=\'<div class=item-img-placeholder>👟</div>\'">'
+                    : '<div class="item-img-placeholder">👟</div>';
+
+                var totalItemPrice = Number(item.itemPrice) * Number(item.qty);
+
+                html += '<div class="item-card">';
+                html +=   imgHtml;
+                html +=   '<div class="item-info">';
+                html +=     '<div class="item-name">' + (item.prodName || '') + '</div>';
+                html +=     '<div class="item-brand">' + (item.brandName || '') + (item.catName ? ' · ' + item.catName : '') + '</div>';
+                html +=     '<div class="item-opts">';
+                html +=       '<span class="item-opt-badge">📏 ' + (item.sizeVal || '') + 'mm</span>';
+                html +=       '<span class="item-opt-badge">🎨 ' + (item.color || '') + '</span>';
+                html +=     '</div>';
+                html +=     '<div class="item-price-row">';
+                html +=       '<span class="item-qty">수량: ' + (item.qty || 0) + '개</span>';
+                html +=       '<span class="item-price">' + totalItemPrice.toLocaleString() + '원</span>';
+                html +=     '</div>';
+                html +=   '</div>';
+                html += '</div>';
+            });
+            document.getElementById('detailItemList').innerHTML = html;
+        })
+        .catch(function() {
+            document.getElementById('detailItemList').innerHTML =
+                '<div style="text-align:center;padding:30px;color:red">❌ 상품 정보 조회에 실패했습니다.</div>';
+        });
 }
 
 function closeModal(id) {
