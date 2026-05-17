@@ -20,6 +20,143 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
+	// ==================================
+	// [리팩토링] 메인 대시보드 통계용 메서드들
+	// ==================================
+
+	// 1. 오늘 신규 주문 건수 조회 (TRUNC 함수 적용)
+	public int getTodayOrderCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql = "SELECT COUNT(*) FROM ORDERS WHERE TRUNC(ORDER_CREATED_AT) = TRUNC(SYSDATE)";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	// 2. 미결제 (결제 대기중) 건수 조회 (ORDER_STATUS = 1)
+	public int getPendingPaymentCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql = "SELECT COUNT(*) FROM ORDERS WHERE ORDER_STATUS = 1";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	// 3. 배송 준비중 건수 조회 (ORDER_STATUS = 2)
+	public int getReadyForShippingCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql = "SELECT COUNT(*) FROM ORDERS WHERE ORDER_STATUS = 2";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	// 4. 취소/반품/교환 요청 건수 조회 (ORDER_STATUS = 5)
+	public int getCancelRequestCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql = "SELECT COUNT(*) FROM ORDERS WHERE ORDER_STATUS = 5";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	// 5. 품절 임박 상품 건수 조회 (재고 5개 미만)
+	public int getLowStockCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder sql = new StringBuilder();
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql.append("SELECT COUNT(DISTINCT o.opt_num) FROM PRODUCTS p ");
+			sql.append("JOIN PROD_OPTIONS o ON p.prod_num = o.prod_num ");
+			sql.append("JOIN STOCK S ON o.opt_num = s.opt_num ");
+			sql.append("WHERE s.stock_qty < 5 ");
+			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2)");
+			pstmt = conn.prepareStatement(sql.toString());
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	// [수정된 6번 메서드] 대시보드 전용 전체 등록 상품 수 조회 (매개변수 제거 및 리네이밍)
+	public int getDashboardProductTotalCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder sql = new StringBuilder();
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			sql.append("SELECT COUNT(*) FROM products p ");
+			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
+			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
+			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
+
+			pstmt = conn.prepareStatement(sql.toString());
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+	
+	//============================
+	//대쉬보드용메서드끝
+	//============================
+
 	// 1. 입고 완료(IN_STATUS=2) 상태인 총 상품 데이터 개수 조회
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;

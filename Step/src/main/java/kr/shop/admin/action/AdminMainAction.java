@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 
 import kr.controller.Action;
 import kr.shop.dao.AdminProductDAO;
-import kr.shop.vo.AdminProductVO;
 
 public class AdminMainAction implements Action {
 
@@ -20,22 +19,27 @@ public class AdminMainAction implements Action {
 			return "redirect:/shop/user/loginForm.do";
 		}
 
-		// 2. 대시보드용 요약 데이터 수집
 		AdminProductDAO dao = AdminProductDAO.getInstance();
 
-		// 검색 조건 없는 기본 VO로 전체 상품 수 조회
-		int totalProductCount = dao.getProductTotalCount(new AdminProductVO());
+		// [수정] 중복 해결을 위해 리네이밍된 대시보드 전용 메서드 호출 (인자값 없음)
+		int totalProductCount = dao.getDashboardProductTotalCount();
 
-		/*
-		 * 향후 추가 권장: int todayOrderCount = dao.getTodayOrderCount(); int lowStockCount =
-		 * dao.getLowStockCount();
-		 */
+		int todayOrderCount = dao.getTodayOrderCount();
+		int pendingPaymentCount = dao.getPendingPaymentCount();
+		int readyForShippingCount = dao.getReadyForShippingCount();
+		int cancelRequestCount = dao.getCancelRequestCount();
+		int lowStockCount = dao.getLowStockCount();
 
-		// 3. 데이터 바인딩
+		// JSP 레이아웃용 속성 세팅 (기본 Key값은 그대로 유지해서 JSP 수정 필요 없음)
 		request.setAttribute("totalProductCount", totalProductCount);
-		request.setAttribute("app_title","통계 / 대시보드");
+		request.setAttribute("todayOrderCount", todayOrderCount);
+		request.setAttribute("pendingPaymentCount", pendingPaymentCount);
+		request.setAttribute("readyForShippingCount", readyForShippingCount);
+		request.setAttribute("cancelRequestCount", cancelRequestCount);
+		request.setAttribute("lowStockCount", lowStockCount);
 
-		// 4. 뷰 경로 반환 (대시보드 전용 JSP)
+		request.setAttribute("app_title", "통계 / 대시보드");
+
 		return "shop/admin/adminMain.jsp";
 	}
 }
