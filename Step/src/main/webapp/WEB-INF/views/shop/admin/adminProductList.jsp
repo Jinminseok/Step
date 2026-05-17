@@ -13,9 +13,10 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style type="text/css">
 body {
-	background-color: #f5f5f5;
+	background-color: #f8f9fa;
 	margin: 0;
 	font-family: 'Pretendard', sans-serif;
+	color: #333;
 }
 
 .content {
@@ -25,11 +26,10 @@ body {
 	padding: 20px 0;
 }
 
-/* 상단 탭 메뉴 */
 .tab-menu {
 	display: flex;
 	gap: 10px;
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #e9ecef;
 	margin-bottom: 25px;
 	background: #fff;
 	padding: 0 10px;
@@ -38,7 +38,7 @@ body {
 .tab-item {
 	padding: 15px 25px;
 	cursor: pointer;
-	color: #888;
+	color: #868e96;
 	font-weight: 500;
 	font-size: 15px;
 	border-bottom: 3px solid transparent;
@@ -46,141 +46,127 @@ body {
 }
 
 .tab-item:hover {
-	color: #333;
+	color: #212529;
 }
 
 .tab-item.active {
-	color: #000;
-	border-bottom: 3px solid #000;
+	color: #1a73e8;
+	border-bottom: 3px solid #1a73e8;
 	font-weight: bold;
 }
 
-/* 검색 영역 */
-.search-box {
-	background: #fff;
-	padding: 15px 20px;
-	display: flex;
-	justify-content: flex-start; /* 버튼 제거 후 왼쪽 정렬로 변경 */
-	align-items: center;
-	border: 1px solid #eee;
-	margin-bottom: 20px;
-}
-
-.search-input-wrapper {
-	position: relative;
-	width: 400px;
-}
-
-.search-input-wrapper i {
-	position: absolute;
-	left: 12px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: #aaa;
-}
-
-.search-input-wrapper input {
-	width: 100%;
-	padding: 10px 10px 10px 40px;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	box-sizing: border-box;
-}
-
-/* 검색 버튼 스타일 */
-.btn-edit {
-	background: #fff;
-	color: #555;
-	padding: 10px 20px;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	cursor: pointer;
-	font-weight: 500;
-}
-
-.btn-edit:hover {
-	background: #f9f9f9;
-}
-
-/* 테이블 스타일 */
 .tbl-wrap {
 	background: #fff;
-	border: 1px solid #eee;
-	border-radius: 4px;
+	border: 1px solid #e9ecef;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	margin-top: 10px;
 }
 
 table {
 	width: 100%;
 	border-collapse: collapse;
-	text-align: center;
 	font-size: 14px;
 }
 
 thead {
-	background: #fcfcfc;
-	border-bottom: 2px solid #eee;
+	background: #f8f9fa;
+	border-bottom: 1px solid #e9ecef;
 }
 
 th {
-	padding: 18px 10px;
-	color: #333;
+	padding: 16px 12px;
+	color: #495057;
+	font-weight: 600;
+	text-align: center;
+	font-size: 13px;
 }
 
 td {
-	padding: 15px 10px;
-	border-bottom: 1px solid #f2f2f2;
+	padding: 14px 12px;
+	border-bottom: 1px solid #f1f3f5;
+	vertical-align: middle;
+	text-align: center;
+	color: #343a40;
+}
+
+.td-img {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .prod-img {
-	width: 60px;
-	height: 60px;
+	width: 55px;
+	height: 55px;
 	object-fit: cover;
-	border: 1px solid #eee;
-	border-radius: 4px;
+	border: 1px solid #e9ecef;
+	border-radius: 6px;
+	background: #fff;
 }
 
-.prod-info {
+.no-img {
+	width: 55px;
+	height: 55px;
+	background: #f1f3f5;
+	line-height: 55px;
+	font-size: 10px;
+	color: #868e96;
+	border-radius: 6px;
+}
+
+.sku-text {
+	font-family: 'Courier New', monospace;
+	font-weight: 500;
+	color: #495057;
+}
+
+.prod-name-cell {
 	text-align: left;
-	padding-left: 20px;
+	padding-left: 15px;
+	font-weight: 600;
+	color: #121212;
 }
 
-.prod-name {
-	font-weight: bold;
-	display: block;
-	margin-bottom: 4px;
-}
-
-.prod-sku {
-	color: #999;
-	font-size: 12px;
-}
-
-/* 상태 배지 */
-.status-badge {
+.cat-badge {
 	display: inline-block;
-	min-width: 60px;
-	padding: 5px 10px;
-	border-radius: 20px;
-	font-size: 12px;
+	background: #f1f3f5;
+	color: #495057;
+	padding: 4px 12px;
+	border-radius: 12px;
+	font-size: 13px;
 	font-weight: 500;
 }
 
-.status-sale {
-	color: #2ecc71;
-	background: #eafaf1;
-	border: 1px solid #2ecc71;
+.status-badge {
+	display: inline-block;
+	min-width: 60px;
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	text-align: center;
 }
 
-.status-soldout {
-	color: #e67e22;
-	background: #fdf2e9;
-	border: 1px solid #e67e22;
+.status-sale {
+	color: #0ca678;
+	background: #e6fcf5;
 }
 
 .status-hide {
-	color: #95a5a6;
-	background: #f4f6f7;
-	border: 1px solid #95a5a6;
+	color: #748ffc;
+	background: #edf2ff;
+}
+
+.status-soldout {
+	color: #f03e3e;
+	background: #fff5f5;
+}
+
+.status-attention {
+	color: #d9480f;
+	background: #fff4e6;
 }
 </style>
 </head>
@@ -195,108 +181,94 @@ td {
 			<div class="tab-menu">
 				<div class="tab-item ${empty param.search_status ? 'active' : ''}"
 					onclick="location.href='productList.do'">전체 상품</div>
-
 				<div class="tab-item ${param.search_status == '1' ? 'active' : ''}"
 					onclick="location.href='productList.do?search_status=1'">판매중</div>
-
 				<div class="tab-item ${param.search_status == '2' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=2'">품절</div>
-
+					onclick="location.href='productList.do?search_status=2'">숨김</div>
 				<div class="tab-item ${param.search_status == '3' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=3'">숨김</div>
-			</div>
-
-			<div class="search-box">
-				<form action="productList.do" method="get"
-					style="display: flex; align-items: center; gap: 15px;">
-					<input type="hidden" name="search_status"
-						value="${param.search_status}">
-
-					<div class="search-input-wrapper">
-						<i class="fa fa-search"></i> <input type="text" name="keyword"
-							placeholder="상품명 또는 상품코드 검색..." value="${param.keyword}">
-					</div>
-					<button type="submit" class="btn-edit">검색</button>
-				</form>
-				<!-- 신규 상품 등록 버튼 제거됨 -->
+					onclick="location.href='productList.do?search_status=3'">품절</div>
+				<div class="tab-item ${param.search_status == '4' ? 'active' : ''}"
+					onclick="location.href='productList.do?search_status=4'">주의</div>
 			</div>
 
 			<div class="tbl-wrap">
 				<c:if test="${count == 0}">
-					<div align="center">
-								<i
-									class="fa fa-info-circle"
-									style="font-size: 30px; margin-bottom: 10px; display: block;"></i>
-									조회된 상품이 없음</td>
-					<div>
+					<div align="center" style="padding: 50px 0;">
+						<i class="fa fa-info-circle"
+							style="font-size: 30px; margin-bottom: 10px; display: block; color: #ccc;"></i>
+						조건에 매칭되는 입고 완료 상품 내역이 존재하지 않습니다.
+					</div>
 				</c:if>
 				<c:if test="${count > 0}">
-				<table>
-					<thead>
-						<tr>
-							<th width="100">이미지</th>
-							<th style="text-align: left; padding-left: 20px;">상품명</th>
-							<th width="120">카테고리</th>
-							<th width="120">사이즈</th>
-							<th width="120">색깔</th>
-							<th width="150">판매가</th>
-							<th width="120">상태</th>
-							<th width="120">판매여부</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach var="product" items="${list}" varStatus="status">
+					<table>
+						<thead>
 							<tr>
-								<td><c:choose>
-										<c:when test="${!empty product.prod_img_url}">
-											<img
-												src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
-												class="prod-img">
-										</c:when>
-										<c:otherwise>
-											<div
-												style="width: 60px; height: 60px; background: #eee; line-height: 60px; font-size: 10px; color: #aaa; border-radius: 4px; margin: 0 auto;">No
-												Image</div>
-										</c:otherwise>
-									</c:choose></td>
-								<td class="prod-info"><span class="prod-name">${product.prod_name}</span>
-									<span class="prod-sku">SKU: ${product.sku}</span></td>
-								<td align="center">카테고리</td>
-								<td align="center">사이즈</td>
-								<td align="center">색깔</td>	
-								<td><strong><fmt:formatNumber
-											value="${product.prod_price}" pattern="#,###" />원</strong></td>
-								<td><c:choose>
-										<c:when test="${product.prod_status == 1}">
-											<span class="status-badge status-sale">판매중</span>
-										</c:when>
-										<c:when test="${product.prod_status == 2}">
-											<span class="status-badge status-soldout">품절</span>
-										</c:when>
-										<c:otherwise>
-											<span class="status-badge status-hide">숨김</span>
-										</c:otherwise>
-									</c:choose></td>
-								<td>
-									<c:choose>
-										<c:when test="${product.stock_qty > 0}">
-											<span class="status-badge status-sale">가능</span>
-										</c:when>
-										<c:otherwise>
-											<span class="status-badge status-hide">불가능</span>
-										</c:otherwise>
-									</c:choose>	
-								</td>
+								<th width="80">사진</th>
+								<th width="150">품번 (SKU)</th>
+								<th width="100">브랜드</th>
+								<th style="text-align: left; padding-left: 15px;">상품명</th>
+								<th width="120">카테고리</th>
+								<th width="90">색상</th>
+								<th width="90">사이즈</th>
+								<th width="130">판매가</th>
+								<th width="100">상태</th>
 							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
-				<div class="paging-area"
-				style="margin-top: 40px; text-align: center;">${page}</div>
+						</thead>
+						<tbody>
+							<c:forEach var="product" items="${list}">
+								<tr>
+									<td>
+										<div class="td-img">
+											<c:choose>
+												<c:when test="${!empty product.prod_img_url}">
+													<img
+														src="${pageContext.request.contextPath}/upload/${product.prod_img_url}"
+														class="prod-img">
+												</c:when>
+												<c:otherwise>
+													<div class="no-img">No Image</div>
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</td>
+									<td class="sku-text">${product.sku}</td>
+									<td>${empty product.brand_name ? '-' : product.brand_name}</td>
+									<td class="prod-name-cell">${product.prod_name}</td>
+									<td><span class="cat-badge"> <i
+											class="fa-regular fa-circle"
+											style="font-size: 8px; margin-right: 4px; vertical-align: middle; color: #868e96;"></i>
+											${empty product.cat_name ? '미지정' : product.cat_name}
+									</span></td>
+									<td>${empty product.color ? '-' : product.color}</td>
+									<td>${product.size_val == 0 ? '-' : product.size_val}</td>
+									<td><strong><fmt:formatNumber
+												value="${product.prod_price}" pattern="#,###" />원</strong></td>
+									<td><c:choose>
+											<c:when test="${product.prod_status == 1}">
+												<span class="status-badge status-sale">• 판매중</span>
+											</c:when>
+											<c:when test="${product.prod_status == 2}">
+												<span class="status-badge status-hide">• 숨김</span>
+											</c:when>
+											<c:when test="${product.prod_status == 3}">
+												<span class="status-badge status-soldout">• 품절</span>
+											</c:when>
+											<c:when test="${product.prod_status == 4}">
+												<span class="status-badge status-attention">• 주의</span>
+											</c:when>
+											<c:otherwise>
+												<span class="status-badge"
+													style="background: #f1f3f5; color: #868e96;">• 미지정</span>
+											</c:otherwise>
+										</c:choose></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+					<div class="paging-area"
+						style="margin-top: 40px; margin-bottom: 20px; text-align: center;">${page}</div>
 				</c:if>
 			</div>
-
-			
 		</div>
 	</div>
 

@@ -20,7 +20,7 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
-	// 1. 전체 상품 개수 (검색 + 상태 필터링 포함)
+	// 1. 입고 완료(IN_STATUS=2) 상태인 총 상품 데이터 개수 조회
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -31,42 +31,34 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			sql.append("SELECT COUNT(*) FROM products WHERE 1=1");
+			sql.append("SELECT COUNT(*) FROM products p ");
+			sql.append("JOIN stock s ON p.prod_num = s.prod_num ");
+			sql.append("JOIN inbound i ON p.prod_num = i.prod_num ");
+			sql.append("LEFT JOIN prod_options o ON s.opt_num = o.opt_num ");
+			sql.append("WHERE i.in_status = 2");
 
-			// -수정- 검색어 조건 추가
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				if ("prod_name".equals(vo.getSearch_type())) {
-					sql.append(" AND prod_name LIKE '%' || ? || '%'");
-				} else if ("sku".equals(vo.getSearch_type())) {
-					sql.append(" AND sku LIKE '%' || ? || '%'");
-				}
-			}
-
-			// -수정- 탭 클릭 시 넘어온 상태값(search_status) 조건 추가
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
-				sql.append(" AND prod_status = ?");
+				sql.append(" AND p.prod_status = ?");
 			}
 
 			pstmt = conn.prepareStatement(sql.toString());
 
 			int n = 0;
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				pstmt.setString(++n, vo.getKeyword());
-			}
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				pstmt.setString(++n, vo.getSearch_status());
 			}
 
 			rs = pstmt.executeQuery();
-			if (rs.next())
+			if (rs.next()) {
 				count = rs.getInt(1);
+			}
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return count;
 	}
 
-	// 2. 상품 목록 조회 (페이징 + 검색 + 상태 필터링)
+	// 2. 입고 완료(IN_STATUS=2) 상태인 상품 및 옵션 색상별 이미지 매칭 목록 조회
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -77,19 +69,8 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			// -수정- 동적 쿼리 구성을 위해 WHERE 1=1 사용
-			sub_sql.append(" WHERE 1=1");
+			sub_sql.append(" WHERE i.in_status = 2");
 
-			// 검색어 조건
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				if ("prod_name".equals(vo.getSearch_type())) {
-					sub_sql.append(" AND p.prod_name LIKE '%' || ? || '%' ");
-				} else if ("sku".equals(vo.getSearch_type())) {
-					sub_sql.append(" AND p.sku LIKE '%' || ? || '%' ");
-				}
-			}
-
-			// -수정- 상태 필터링 조건 추가
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sub_sql.append(" AND p.prod_status = ? ");
 			}
@@ -104,17 +85,35 @@ public class AdminProductDAO {
 					            p.PROD_PRICE,
 					            p.PROD_STATUS,
 					            p.PROD_CREATED_AT,
-					            i.PROD_IMG_URL,
 					            b.brand_name,
 					            c.cat_name,
-					            s.stock_qty
+					            s.stock_qty,
+					            o.size_val,
+					            o.color,
+					            COALESCE(
+					                (SELECT PROD_IMG_URL
+					                 FROM PROD_IMGS
+					                 WHERE PROD_NUM = p.PROD_NUM
+					                   AND LOWER(PROD_IMG_URL) LIKE '%' ||
+					                       CASE
+					                           WHEN o.color = '블랙' THEN 'black'
+					                           WHEN o.color = '화이트' THEN 'white'
+					                           WHEN o.color = '레드' THEN 'red'
+					                           WHEN o.color = '블루' THEN 'blue'
+					                           WHEN o.color = '그레이' THEN 'gray'
+					                           ELSE LOWER(o.color)
+					                       END || '%'
+					                   AND ROWNUM = 1),
+					                (SELECT PROD_IMG_URL FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND ROWNUM = 1)
+					            ) AS PROD_IMG_URL
 					        FROM PRODUCTS p
-					        LEFT JOIN stock s ON p.prod_num = s.prod_num
+					        JOIN stock s ON p.prod_num = s.prod_num
+					        JOIN inbound i ON p.prod_num = i.prod_num
+					        LEFT JOIN prod_options o ON s.opt_num = o.opt_num
 					        LEFT JOIN brands b ON p.BRAND_NUM = b.BRAND_NUM
 					        LEFT JOIN categories c ON p.CAT_NUM = c.CAT_NUM
-					        LEFT JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y'
 					""" + sub_sql.toString() + """
-					        ORDER BY p.PROD_NUM DESC
+					        ORDER BY p.PROD_NUM DESC, o.color ASC, o.size_val ASC
 					    ) a
 					) WHERE rnum >= ? AND rnum <= ?
 					""";
@@ -122,10 +121,6 @@ public class AdminProductDAO {
 			pstmt = conn.prepareStatement(sql);
 
 			int n = 0;
-			// -수정- 파라미터 세팅 순서 주의 (검색어 -> 상태값 -> 시작행 -> 끝행)
-			if (vo.getKeyword() != null && !"".equals(vo.getKeyword())) {
-				pstmt.setString(++n, vo.getKeyword());
-			}
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				pstmt.setString(++n, vo.getSearch_status());
 			}
@@ -145,6 +140,9 @@ public class AdminProductDAO {
 				product.setBrand_name(rs.getString("brand_name"));
 				product.setCat_name(rs.getString("cat_name"));
 				product.setStock_qty(rs.getInt("stock_qty"));
+				product.setSize_val(rs.getInt("size_val"));
+				product.setColor(rs.getString("color"));
+
 				list.add(product);
 			}
 		} finally {
