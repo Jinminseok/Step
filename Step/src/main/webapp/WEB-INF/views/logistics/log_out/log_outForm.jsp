@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/YH_style.css" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ══ 처음 보여준 스타일과 동일하게 통일된 기본 레이아웃 ══ */
+/* ══ 기본 레이아웃 ══ */
 .main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
 .content{flex:1;overflow-y:auto;padding:24px}
 .content::-webkit-scrollbar{width:5px}
@@ -167,10 +167,6 @@ tr:last-child td{border-bottom:none}
     </div>
 
     <div id="sec-out">
-      <div class="alert alert-amber" id="waitAlert">
-        <span class="alert-ico">⚠</span>
-        <div>출고 대기 주문이 <strong id="waitNum">${pendingList.size()}</strong>건 있습니다. 출고 처리 시 주문 상태가 <strong>'배송 중'</strong>으로 변경되며 재고가 자동 차감됩니다.</div>
-      </div>
 
       <div class="kpi-row">
         <div class="kpi amber">
@@ -184,13 +180,13 @@ tr:last-child td{border-bottom:none}
           <div class="kpi-sub">완료된 주문 건수</div>
         </div>
         <div class="kpi blue">
-          <div class="kpi-label">배송 중 (기능 연동 필요)</div>
-          <div class="kpi-val c-blue">0</div>
+          <div class="kpi-label">배송 중</div>
+          <div class="kpi-val c-blue">${shippingCnt != null ? shippingCnt : 0}</div>
           <div class="kpi-sub">진행 중인 배송</div>
         </div>
         <div class="kpi gray">
-          <div class="kpi-label">배송 완료 (기능 연동 필요)</div>
-          <div class="kpi-val c-gray">0</div>
+          <div class="kpi-label">배송 완료</div>
+          <div class="kpi-val c-gray">${deliveredCnt != null ? deliveredCnt : 0}</div>
           <div class="kpi-sub">도착 완료</div>
         </div>
       </div>
@@ -497,6 +493,7 @@ function updateSel() {
   if(document.getElementById('chkAll')) document.getElementById('chkAll').checked = (n > 0 && n === document.querySelectorAll('.row-chk').length);
 }
 
+// 🌟 단일 출고 모달 열기 (택배사 선택 및 운송장 기입 폼)
 function openSingle(id) {
   const o = orders.find(x => x.id === id);
   if(!o) return;
@@ -505,24 +502,90 @@ function openSingle(id) {
       showToast(`⚠ 재고(${o.stock}개)가 주문 수량(${o.qty}개)보다 부족합니다.`, true);
       return;
   }
-  const couriers = ['CJ대한통운','롯데택배','한진택배','우체국택배'];
-  const courierOptions = couriers.map(c => '<option>' + c + '</option>').join('');
+  
   document.getElementById('singleBody').innerHTML = 
       '<div class="sec-title">주문 정보</div>'
     + '<div class="dr"><div class="dk">주문번호</div><div class="dv"><b>' + o.id + '</b></div></div>'
     + '<div class="dr"><div class="dk">상품명</div><div class="dv">' + o.name + '</div></div>'
     + '<div class="dr"><div class="dk">수량</div><div class="dv"><b>' + o.qty + '개</b></div></div>'
     + '<hr style="border:0;border-top:1px solid var(--gray6);margin:15px 0">'
+    + '<div class="sec-title">배송 정보 입력</div>'
+    + '<div class="dr">'
+    +   '<div class="dk">택배사</div>'
+    +   '<div class="dv">'
+    +     '<select id="modal-courier" class="modal-input" style="padding:8px 12px; cursor:pointer;">'
+    +       '<option value="">택배사를 선택해주세요</option>'
+    +       '<option value="CJ대한통운">CJ대한통운</option>'
+    +       '<option value="롯데택배">롯데택배</option>'
+    +       '<option value="한진택배">한진택배</option>'
+    +       '<option value="우체국택배">우체국택배</option>'
+    +     '</select>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="dr">'
+    +   '<div class="dk">운송장 번호</div>'
+    +   '<div class="dv" style="display:flex; gap:8px;">'
+    +     '<input type="text" id="modal-invoice" class="modal-input" placeholder="운송장 번호 (자동생성 가능)" readonly style="background-color: var(--gray7);">'
+    +     '<button type="button" class="btn btn-outline btn-sm" onclick="generateInvoice()" style="white-space:nowrap;">운송장번호 기입</button>'
+    +   '</div>'
+    + '</div>';
+    
   document.getElementById('singleModal').classList.add('open');
+}
+
+// 🌟 직관적인 운송장 번호 랜덤 생성 로직
+function generateInvoice() {
+    const courier = document.getElementById('modal-courier').value;
+    if (!courier) {
+        showToast('⚠ 택배사를 먼저 선택해주세요.');
+        document.getElementById('modal-courier').focus();
+        return;
+    }
+
+    // 오늘 날짜를 YYYYMMDD 포맷으로 만들기
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const dateStr = yyyy + mm + dd;
+
+    // 택배사별 직관적인 영문 프리픽스 설정
+    let prefix = "";
+    if(courier === 'CJ대한통운') prefix = "CJ";
+    else if(courier === '롯데택배') prefix = "LOTTE";
+    else if(courier === '한진택배') prefix = "HJ";
+    else if(courier === '우체국택배') prefix = "POST";
+
+    // 랜덤 4자리 숫자 생성 (0000 ~ 9999)
+    const randomNum = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+
+    // 최종 운송장 번호 조합 (예: CJ-20260517-1234)
+    const invoiceStr = prefix + "-" + dateStr + "-" + randomNum;
+
+    document.getElementById('modal-invoice').value = invoiceStr;
+    showToast('✅ 운송장 번호가 기입되었습니다.');
 }
 
 function closeSingle(){ document.getElementById('singleModal').classList.remove('open'); }
 
+// 출고 확정 전 유효성 검사
 function confirmSingle() {
     const o = orders.find(x => x.id === currentSingleId);
     if(!o) return;
+    
     const courier = document.getElementById('modal-courier') ? document.getElementById('modal-courier').value : '';
     const invoice = document.getElementById('modal-invoice') ? document.getElementById('modal-invoice').value : '';
+    
+    if (!courier) {
+        showToast('⚠ 택배사를 선택해주세요.');
+        document.getElementById('modal-courier').focus();
+        return;
+    }
+    if (!invoice) {
+        showToast('⚠ 운송장 번호를 기입해주세요.');
+        return;
+    }
+
     const form = document.getElementById('outboundForm');
     form.innerHTML = '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
                    + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
@@ -655,7 +718,7 @@ function cancelHistory(outNum, orderNum) {
     if(!confirm("이 출고 이력을 삭제하고 다시 대기 상태로 되돌리시겠습니까?")) return;
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = '${pageContext.request.contextPath}/logistics/log_out/log_outCancel.do';
+    form.action = '${pageContext.request.contextPath}/logistics/log_out/log_outDelete.do';
     form.innerHTML = '<input type="hidden" name="outNum" value="' + outNum + '"><input type="hidden" name="orderNum" value="' + orderNum + '">';
     document.body.appendChild(form);
     form.submit();

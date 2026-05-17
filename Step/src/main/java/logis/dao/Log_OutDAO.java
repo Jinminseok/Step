@@ -192,7 +192,7 @@ public class Log_OutDAO {
             String dateStr = new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date());
 
             for (Log_OutVO vo : list) {
-                // [A] OUTBOUND (트리거 TRG_OUTBOUND_INSERT가 STOCK 자동 차감)
+                // [A] OUTBOUND
                 pstmtOut.setInt(1, vo.getOrderNum());
                 pstmtOut.setInt(2, vo.getOptNum());
                 pstmtOut.setInt(3, vo.getOrderItemQty());
@@ -200,20 +200,22 @@ public class Log_OutDAO {
                 pstmtOut.setString(5, vo.getOutMemo());
                 pstmtOut.addBatch();
 
-                // [B] DELIVERY
+                // 🌟 [B] DELIVERY (형님이 넘겨주신 데이터를 최우선으로 적용!)
+                String courier = (vo.getCourier() != null) ? vo.getCourier() : "CJ대한통운";
+                
+                // 만약 프론트에서 송장번호가 안넘어오면(일괄출고 등) 여기서 생성!
                 int randNum = (int)(Math.random() * 9000) + 1000;
-                String courier     = (vo.getCourier()   != null) ? vo.getCourier()   : "CJ대한통운";
-                String fakeInvoice = (vo.getInvoiceNo() != null) ? vo.getInvoiceNo() : ("CJ-" + dateStr + "-" + randNum);
+                String fakeInvoice = "CJ-" + dateStr + "-" + randNum;
+                String finalInvoice = (vo.getInvoiceNo() != null) ? vo.getInvoiceNo() : fakeInvoice;
+
                 pstmtDlv.setInt(1, vo.getOrderNum());
                 pstmtDlv.setString(2, courier);
-                pstmtDlv.setString(3, fakeInvoice);
+                pstmtDlv.setString(3, finalInvoice);
                 pstmtDlv.addBatch();
 
-                // [C] ORDERS 상태 변경
+                // [C] ORDERS
                 pstmtOrd.setInt(1, vo.getOrderNum());
                 pstmtOrd.addBatch();
-
-                // ← STOCK 처리 불필요: TRG_OUTBOUND_INSERT 트리거가 자동 처리
             }
 
             pstmtOut.executeBatch();
@@ -221,6 +223,7 @@ public class Log_OutDAO {
             pstmtOrd.executeBatch();
 
             conn.commit();
+            System.out.println("✅ DB 반영 완료! 커밋 성공!");
         } catch (Exception e) {
             if (conn != null) conn.rollback();
             throw e;
@@ -272,4 +275,28 @@ public class Log_OutDAO {
             DBUtil.executeClose(null, pstmt3, conn);
         }
     }
+    
+ // ── 6. 상태별 주문 건수 카운트 (KPI 배송중/배송완료 실시간 연동용) ──
+    public int getDeliveryStatusCount(int dlvStatus) throws Exception {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        // 🌟 ORDERS가 아닌 DELIVERY 테이블의 DLV_STATUS를 카운트합니다!
+        String sql = "SELECT COUNT(*) FROM DELIVERY WHERE DLV_STATUS = ?";
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, dlvStatus);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return count;
+    }
+    
 }

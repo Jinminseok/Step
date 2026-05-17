@@ -65,6 +65,14 @@ public class Log_OutFormAction implements Action {
         
         request.setAttribute("pendingList", pendingList);
         request.setAttribute("historyList", historyList);
+        
+        // 상태값: 3(배송중), 4(배송완료)
+        int shippingCnt = dao.getDeliveryStatusCount(3);
+        int deliveredCnt = dao.getDeliveryStatusCount(4);
+        
+        // JSP로 데이터 쏘기
+        request.setAttribute("shippingCnt", shippingCnt);
+        request.setAttribute("deliveredCnt", deliveredCnt);
 
         return "logistics/log_out/log_outForm.jsp"; 
     }
