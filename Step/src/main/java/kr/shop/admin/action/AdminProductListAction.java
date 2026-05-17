@@ -32,7 +32,7 @@ public class AdminProductListAction implements Action {
 
 		AdminProductDAO dao = AdminProductDAO.getInstance();
 
-		// IN_STATUS=2 조건이 반영된 데이터 카운트 호출
+		// IN_STATUS=2 조건 및 정렬 기준이 반영된 카운트 및 리스트 호출
 		int count = dao.getProductTotalCount(vo);
 
 		StringBuilder addKey = new StringBuilder();

@@ -31,11 +31,11 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
+			// 정석적인 조인 트리 구조 형성 및 EXISTS를 통한 중복 방지
 			sql.append("SELECT COUNT(*) FROM products p ");
-			sql.append("JOIN stock s ON p.prod_num = s.prod_num ");
-			sql.append("JOIN inbound i ON p.prod_num = i.prod_num ");
-			sql.append("LEFT JOIN prod_options o ON s.opt_num = o.opt_num ");
-			sql.append("WHERE i.in_status = 2");
+			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
+			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
+			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sql.append(" AND p.prod_status = ?");
@@ -69,7 +69,8 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			sub_sql.append(" WHERE i.in_status = 2");
+			// 중복을 완벽히 차단하는 EXISTS 조건 적용
+			sub_sql.append(" WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sub_sql.append(" AND p.prod_status = ? ");
@@ -107,13 +108,12 @@ public class AdminProductDAO {
 					                (SELECT PROD_IMG_URL FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND ROWNUM = 1)
 					            ) AS PROD_IMG_URL
 					        FROM PRODUCTS p
-					        JOIN stock s ON p.prod_num = s.prod_num
-					        JOIN inbound i ON p.prod_num = i.prod_num
-					        LEFT JOIN prod_options o ON s.opt_num = o.opt_num
-					        LEFT JOIN brands b ON p.BRAND_NUM = b.BRAND_NUM
-					        LEFT JOIN categories c ON p.CAT_NUM = c.CAT_NUM
+					        JOIN PROD_OPTIONS o ON p.PROD_NUM = o.PROD_NUM
+					        JOIN STOCK s ON o.OPT_NUM = s.OPT_NUM
+					        LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM
+					        LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM
 					""" + sub_sql.toString() + """
-					        ORDER BY p.PROD_NUM DESC, o.color ASC, o.size_val ASC
+					        ORDER BY p.PROD_STATUS ASC, p.PROD_NUM DESC, o.color ASC, o.size_val ASC
 					    ) a
 					) WHERE rnum >= ? AND rnum <= ?
 					""";
