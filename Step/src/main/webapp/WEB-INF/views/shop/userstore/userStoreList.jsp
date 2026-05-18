@@ -2,67 +2,252 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall - 매장 찾기</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<style>
+/* --- 🚨 전역 스타일 --- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    color: #333;
+}
+
+/* --- 메인 레이아웃 --- */
+.wrap {
+    max-width: 1280px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: calc(100vh - 100px);
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+/* 2단 그리드 (리스트 / 지도) */
+.map-layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
+}
+
+/* --- 좌측: 매장 리스트 영역 --- */
+.store-list {
+    height: 650px;
+    overflow-y: auto;
+    padding-right: 12px;
+    display: flex;
+    flex-direction: column;
+}
+.store-list::-webkit-scrollbar { width: 6px; }
+.store-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+/* 검색바 영역 */
+.search-area {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+.search-input-wrap {
+    position: relative;
+    flex: 1;
+}
+.search-input-wrap input {
+    width: 100%;
+    height: 44px;
+    padding: 0 40px 0 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+.search-input-wrap input:focus {
+    border-color: #111827;
+    background: #fff;
+}
+.search-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn-reset {
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.btn-reset:hover {
+    background: #f1f5f9;
+    color: #111827;
+}
+
+/* 브랜드 탭 */
+.brand-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    flex-shrink: 0;
+}
+.brand-tabs::-webkit-scrollbar { height: 4px; }
+.brand-tabs::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+
+.brand-btn {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.brand-btn:hover { border-color: #94a3b8; }
+.brand-btn.active {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
+}
+
+/* 매장 카드 */
+.store-card {
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+.store-card:hover {
+    border-color: #94a3b8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.store-card.active {
+    border-color: #3b82f6;
+    background: #eff6ff; /* 파란색 아주 연한 배경 */
+}
+.store-nm {
+    font-weight: 700;
+    font-size: 16px;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+.store-addr {
+    font-size: 13.5px;
+    color: #64748b;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+.store-info {
+    font-size: 12.5px;
+    color: #475569;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.store-info i { width: 16px; color: #94a3b8; }
+
+/* --- 우측: 지도 영역 --- */
+#map {
+    width: 100%;
+    height: 650px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+}
+</style>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
     <div class="wrap">
-        <div class="page-title">매장 찾기</div>
+        <div class="page-title">오프라인 매장 찾기</div>
         
-        <div class="map-layout" style="display: grid; grid-template-columns: 400px 1fr; gap: 20px;">
+        <div class="map-layout">
             <%-- 왼쪽: 매장 리스트 --%>
-            <div class="store-list" style="height: 600px; overflow-y:auto; padding-right:10px;">
-				<div style="display:flex; gap:8px; margin-bottom:16px;">				    
-				    <div class="hdr-search" style="flex:1; margin:0;">
-				        <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" style="border-color:var(--border); color:var(--black); background:var(--white); width:100%;">
-				        <button class="hdr-search-btn" onclick="filterList()">🔍</button>
+            <div class="store-list">
+                <div class="search-area">				    
+				    <div class="search-input-wrap">
+				        <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" onkeyup="if(event.keyCode==13) filterList();">
+				        <button class="search-btn" onclick="filterList()"><i class="fa-solid fa-magnifying-glass"></i></button>
 				    </div>				    
-				    <button onclick="resetList()" style="white-space:nowrap; padding:0 15px; border:1px solid var(--border); background:var(--white); border-radius:4px; cursor:pointer; font-size:13px; color:var(--black);">
-				        🔄 초기화
-				    </button>				    
+				    <button class="btn-reset" onclick="resetList()"><i class="fa-solid fa-rotate-right"></i> 초기화</button>				    
 				</div>
 				
-				<div class="brand-tabs" style="display:flex; gap:6px; margin-bottom:16px; overflow-x:auto; padding-bottom:5px;">
-				    
-				    <button class="brand-btn" onclick="selectBrand('ALL', this)" style="padding:6px 14px; border:1px solid var(--black); background:var(--black); color:var(--white); border-radius:20px; font-size:13px; cursor:pointer; white-space:nowrap;">전체</button>				   			    
+                <div class="brand-tabs">
+				    <button class="brand-btn active" onclick="selectBrand('ALL', this)">전체보기</button>				   			    
 				    <c:forEach var="brand" items="${brandList}">
-				        <button class="brand-btn" onclick="selectBrand('${brand.brandName}', this)" style="padding:6px 14px; border:1px solid var(--border); background:var(--white); color:var(--black); border-radius:20px; font-size:13px; cursor:pointer; white-space:nowrap;">${brand.brandName}</button>
+				        <button class="brand-btn" onclick="selectBrand('${brand.brandName}', this)">${brand.brandName}</button>
 				    </c:forEach>
 				</div>
                 
                 <div id="storeCardContainer">
                     <c:forEach var="s" items="${storeList}" varStatus="status">
-                        <%-- 매장 카드를 누르면 지도가 해당 위치로 이동하도록 onclick 추가 --%>
-                        <div class="store-card" id="card-${status.index}" onclick="panToStore('${s.storeAddr}', ${status.index})" style="cursor:pointer; padding:15px; border:1px solid var(--gray6); border-radius:8px; margin-bottom:12px;">
-                            <div class="store-nm" style="font-weight:700; font-size:16px; margin-bottom:8px;">${s.storeName}</div>
-                            <div class="store-addr" style="font-size:13px; color:var(--gray3); margin-bottom:6px;">${s.storeAddr}</div>
-                            <div class="store-info" style="font-size:12px; color:var(--gray4);">
-                                <span>📞 ${s.storePhone}</span><br>
-                                <span>⏰ ${s.openTime}</span>
+                        <div class="store-card" id="card-${status.index}" onclick="panToStore('${s.storeAddr}', ${status.index})">
+                            <div class="store-nm">${s.storeName}</div>
+                            <div class="store-addr">${s.storeAddr}</div>
+                            <div class="store-info">
+                                <span><i class="fa-solid fa-phone"></i> ${s.storePhone}</span>
+                                <span><i class="fa-regular fa-clock"></i> ${s.openTime}</span>
                             </div>
                         </div>
                     </c:forEach>
                     <c:if test="${empty storeList}">
-                        <div style="text-align:center; padding:50px; color:var(--gray4);">등록된 매장이 없습니다.</div>
+                        <div style="text-align:center; padding:80px 0; color:#94a3b8;">
+                            <i class="fa-solid fa-store-slash" style="font-size:36px; color:#cbd5e1; margin-bottom:12px; display:block;"></i>
+                            등록된 매장이 없습니다.
+                        </div>
                     </c:if>
                 </div>
             </div>
 
             <%-- 오른쪽: 지도 영역 --%>
-            <div id="map" style="height:600px; border-radius:12px; background:var(--bg2);"></div>
+            <div id="map"></div>
         </div>
     </div>
 
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
 
     <script>
- // ── 1. 지도 초기화 ──────────────────────────────────────────
+    // ── 1. 지도 초기화 ──────────────────────────────────────────
     var mapContainer = document.getElementById('map'); 
     var mapOption = { 
         center: new kakao.maps.LatLng(37.566826, 126.978656), // 기본 서울 중심
@@ -98,9 +283,10 @@
                 
                 markers[index] = marker; 
 
-                var content = '<div style="padding:15px; width:200px; font-family:sans-serif;">' +
-                              '  <div style="font-weight:bold; margin-bottom:5px;">' + store.name + '</div>' +
-                              '  <div style="font-size:11px; color:#666;">' + store.addr + '</div>' +
+                // 인포윈도우 디자인 개선
+                var content = '<div style="padding:15px; width:220px; font-family:\'Pretendard\', sans-serif; border-radius:8px; border:none;">' +
+                              '  <div style="font-weight:700; font-size:14px; margin-bottom:6px; color:#111827;">' + store.name + '</div>' +
+                              '  <div style="font-size:12px; color:#64748b; line-height:1.4;">' + store.addr + '</div>' +
                               '</div>';
 
                 var infowindow = new kakao.maps.InfoWindow({
@@ -115,6 +301,7 @@
                     highlightCard(index);
                 });
 
+                // 첫 번째 매장을 중심 좌표로 설정
                 if (index === 0) map.setCenter(coords);
             }
         });
@@ -136,7 +323,7 @@
                 highlightCard(index);
             } 
             else {
-                alert("카카오맵에서 다음 주소를 찾을 수 없습니다: \n[" + addr + "]\nDB에 저장된 주소를 확인해 주세요!");
+                alert("카카오맵에서 해당 주소 좌표를 찾을 수 없습니다.\n(" + addr + ")");
             }
         });
     }
@@ -145,34 +332,26 @@
         infowindows.forEach(function(iw) { if(iw) iw.close(); });
     }
 
+    // 카드 선택(하이라이트) 처리: 인라인 스타일 대신 클래스 사용
     function highlightCard(index) {
-        document.querySelectorAll('.store-card').forEach(c => c.style.borderColor = 'var(--gray6)');
+        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
         var activeCard = document.getElementById('card-' + index);
         if(activeCard) {
-            activeCard.style.borderColor = 'var(--blue)';
+            activeCard.classList.add('active');
             activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }
 
-    // ── 5. 브랜드 탭 다중 필터링 (새로 추가된 핵심 로직!) ───────────────
-    var currentBrand = 'ALL'; // 현재 선택된 브랜드 기억하기
+    // ── 5. 브랜드 탭 다중 필터링 ───────────────────────────────
+    var currentBrand = 'ALL'; 
 
     function selectBrand(brand, btnElement) {
         currentBrand = brand;
 
-        // 형님이 설정하신 인라인 스타일에 맞춰서 모든 버튼을 기본(흰 바탕)으로 초기화
-        document.querySelectorAll('.brand-btn').forEach(btn => {
-            btn.style.background = 'var(--white)';
-            btn.style.color = 'var(--black)';
-            btn.style.borderColor = 'var(--border)';
-        });
-        
-        // 클릭한 버튼만 까만색으로 강조 (형님 스타일 그대로!)
-        btnElement.style.background = 'var(--black)';
-        btnElement.style.color = 'var(--white)';
-        btnElement.style.borderColor = 'var(--black)';
+        // 모든 브랜드 버튼에서 active 클래스 제거 후 클릭한 버튼만 추가
+        document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
 
-        // 탭을 바꿨으니 필터링 다시 실행
         filterList();
     }
 
@@ -184,13 +363,12 @@
             var nameLower = name.toLowerCase();
             var addrLower = card.querySelector('.store-addr').innerText.toLowerCase();
             
-            // 🌟 형님 아이디어 적용: 매장 이름(store-nm)에 '나이키'가 포함되어 있는지 검사!
+            // 매장명에 브랜드 이름 포함 여부 검사
             var isBrandMatch = (currentBrand === 'ALL' || name.includes(currentBrand));
             
             // 검색어 검사
             var isSearchMatch = (nameLower.includes(searchVal) || addrLower.includes(searchVal));
             
-            // 두 조건 모두 맞을 때만 보여주기
             if (isBrandMatch && isSearchMatch) {
                 card.style.display = '';
             } else {
@@ -202,9 +380,6 @@
     // ── 6. 검색 초기화 기능 ────────────────────────────────────────
     function resetList() {
         document.getElementById('storeSearch').value = '';
-        
-        // 모든 카드를 무식하게 다 띄우는 게 아니라, 
-        // "현재 선택된 브랜드 탭 안에서" 텍스트 검색만 초기화합니다!
         filterList(); 
     }
     </script>

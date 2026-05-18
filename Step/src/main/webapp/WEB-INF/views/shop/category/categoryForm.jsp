@@ -5,87 +5,153 @@
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall - 카테고리 관리</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/KM_style.css">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* MAIN */
-.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{height:54px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;padding:0 24px;gap:12px;background:var(--black);position:sticky;top:0;z-index:50}
-.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em}
-.topbar-path{font-size:11px;color:#444}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.t-btn{width:32px;height:32px;border:1px solid #333;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#888;border-radius:2px}
-.t-btn:hover{border-color:#555;color:#fff}
-.content{padding:24px;flex:1}
+/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- 기본 레이아웃 --- */
+body {
+    background-color: #f8f9fa; 
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    color: #333;
+    overflow-y: scroll; 
+}
+
+.main {
+    margin-left: 260px;
+    padding: 30px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+}
 
 /* PAGE HEADER */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
-.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
+.page-hdr {display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.page-hdr-title {font-size:24px;font-weight:bold;margin-bottom:5px;color:#111827;}
+.page-hdr-sub {font-size:14px;color:#666;}
 
 /* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-bottom:20px;border:1px solid var(--border)}
-.stat-card{background:var(--white);padding:16px 18px}
-.stat-label{font-size:10px;font-weight:700;color:var(--gray4);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
-.stat-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;letter-spacing:-1px}
-.stat-change{font-size:11px;margin-top:5px;color:var(--gray4)}
+.stats-row {display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:30px;}
+.stat-card {background:#fff;padding:20px 24px;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,0.02);}
+.stat-label {font-size:12px;font-weight:600;color:#868e96;margin-bottom:8px;}
+.stat-val {font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#212529;}
+.stat-change {font-size:12px;margin-top:8px;color:#adb5bd;}
 
-/* TOOLBAR */
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{position:relative;flex:1;max-width:300px}
-.search-wrap input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black)}
-.search-wrap input:focus{border-color:var(--black)}
-.search-wrap input::placeholder{color:var(--gray5)}
-.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:14px}
-.sel{padding:9px 12px;border:1px solid var(--border);background:var(--white);font-size:12px;font-family:inherit;outline:none;color:var(--gray2);cursor:pointer}
+/* --- 🚨 툴바(검색창 겹침 해결) --- */
+.toolbar {
+    display:flex;
+    align-items:center;
+    gap:12px; 
+    margin-bottom:16px;
+    flex-wrap:wrap;
+}
+.search-wrap {
+    position:relative;
+    width:320px; 
+    flex-shrink:0;
+}
+.search-wrap input {
+    width:100%;
+    height:40px; 
+    padding:0 12px 0 38px;
+    border:1px solid #e2e8f0;
+    border-radius:6px;
+    background:#fff;
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+    color:#333;
+    transition:all 0.2s ease;
+}
+.search-wrap input:focus {border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+.search-wrap input::placeholder {color:#9ca3af;}
+.search-ico {position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:14px;}
+
+.sel {
+    height:40px; 
+    padding:0 30px 0 14px;
+    border:1px solid #e2e8f0;
+    border-radius:6px;
+    background:#fff;
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+    color:#475569;
+    cursor:pointer;
+    flex-shrink:0;
+}
 
 /* BUTTONS */
-.btn{padding:9px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.02em;white-space:nowrap}
-.btn-black{background:var(--black);color:#fff}
-.btn-black:hover{background:#333}
-.btn-outline{background:var(--white);color:var(--gray2);border:1px solid var(--border)}
-.btn-outline:hover{border-color:var(--black);color:var(--black)}
-.btn-danger{background:#fff0f0;color:var(--red);border:1px solid #ffd0d0}
-.btn-danger:hover{background:var(--red);color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-xs{padding:3px 8px;font-size:10px;white-space:nowrap}
+.btn {
+    height:40px; 
+    padding:0 18px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    font-family:inherit;
+    transition:all .2s;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    flex-shrink:0;
+}
+.btn-black {background:#111827;color:#fff;}
+.btn-black:hover {background:#374151;}
+.btn-outline {background:#fff;color:#475569;border:1px solid #e2e8f0;}
+.btn-outline:hover {border-color:#111827;color:#111827;}
+.btn-danger {background:#fef2f2;color:#ef4444;border:1px solid #fecaca;}
+.btn-danger:hover {background:#ef4444;color:#fff;}
+
+.btn-xs {height:28px; padding:0 10px; font-size:11px;} 
 
 /* BADGE */
-.badge{display:inline-flex;align-items:center;padding:2px 7px;font-size:10px;font-weight:700}
-.b-green{background:#e8f5e8;color:var(--green)}
-.b-gray{background:var(--gray7);color:var(--gray3)}
+.badge {display:inline-flex;align-items:center;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+.b-green {background:#dcfce7;color:#059669;}
+.b-gray {background:#f1f5f9;color:#64748b;}
 
 /* TABLE */
-.tbl-wrap{overflow-x:auto;background:var(--white);border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse}
-th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--gray4);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;background:var(--white)}
-td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray2);vertical-align:middle;white-space:nowrap}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafafa}
+.tbl-wrap {background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+table {width:100%;border-collapse:collapse;}
+th {padding:14px 16px;font-size:13px;font-weight:600;color:#475569;border-bottom:1px solid #e2e8f0;background:#f8fafc;text-align:left;}
+td {padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;vertical-align:middle;}
+tr:last-child td {border-bottom:none;}
+tr:hover td {background:#f8fafc;}
 
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--white);width:480px;max-height:90vh;display:flex;flex-direction:column;border:1px solid var(--border)}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);background:var(--black);color:#fff}
-.modal-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:.02em}
-.modal-close{background:none;border:none;color:#888;cursor:pointer;font-size:20px;line-height:1;padding:0}
-.modal-close:hover{color:#fff}
-.modal-body{padding:22px;overflow-y:auto;flex:1}
-.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--gray7)}
+.modal-overlay {display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;}
+.modal-overlay.open {display:flex;}
+.modal-box {background:#fff;width:480px;border-radius:12px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.2);overflow:hidden;}
+.modal-hdr {display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #e2e8f0;background:#fff;}
+.modal-title {font-size:18px;font-weight:700;color:#0f172a;}
+.modal-close {background:none;border:none;color:#94a3b8;cursor:pointer;font-size:22px;padding:0;transition:color 0.2s;}
+.modal-close:hover {color:#ef4444;}
+.modal-body {padding:24px;overflow-y:auto;flex:1;}
+.modal-footer {padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;gap:8px;justify-content:flex-end;background:#f8fafc;}
 
 /* FORM */
-.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
-.f-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em}
-.f-input{padding:10px 12px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black);width:100%}
-.f-input:focus{border-color:var(--black)}
-.f-input::placeholder{color:var(--gray5)}
-.f-hint{font-size:11px;color:var(--gray4);margin-top:3px}
+.form-group {display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.f-label {font-size:13px;font-weight:600;color:#334155;}
+.f-input {height:42px; padding:0 14px; border:1px solid #e2e8f0; border-radius:6px; background:#fff; font-size:14px; outline:none; color:#0f172a; transition:border 0.2s;}
+.f-input:focus {border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+.f-hint {font-size:12px;color:#64748b;}
 
-/* 카테고리 전용 */
-.sort-btns{display:flex;gap:4px}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast {position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.toast.show {opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
@@ -93,14 +159,8 @@ tr:hover td{background:#fafafa}
 <%@ include file="../../common/shopAdminHeader.jsp"%>
 
 <div class="main">
-  <div class="topbar">
-    <div class="topbar-title">카테고리 관리</div>
-    <div class="topbar-path">Admin > 카테고리 관리</div>
-    <div class="topbar-right">
-      <div class="t-btn">🔔</div>
-      <div class="t-btn">⚙️</div>
-    </div>
-  </div>
+    <c:set var="pageTitle" value="카테고리 관리" scope="request" />
+    <jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
 
   <div class="content">
 
@@ -127,9 +187,9 @@ tr:hover td{background:#fafafa}
     <div class="page-hdr">
       <div>
         <div class="page-hdr-title">카테고리 관리</div>
-        <div class="page-hdr-sub">카테고리 등록·수정·순서 변경을 관리합니다. 상품 등록 시 카테고리 목록에 반영됩니다.</div>
+        <div class="page-hdr-sub">카테고리 등록·수정·상태를 관리합니다. 상품 등록 시 카테고리 목록에 반영됩니다.</div>
       </div>
-      <button class="btn btn-black" onclick="openAddModal()">+ 카테고리 등록</button>
+      <button class="btn btn-black" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> 카테고리 등록</button>
     </div>
 
     <div class="stats-row">
@@ -140,86 +200,75 @@ tr:hover td{background:#fafafa}
       </div>
       <div class="stat-card">
         <div class="stat-label">활성 카테고리</div>
-        <div class="stat-val" style="color:var(--green)">${activeCount}</div>
+        <div class="stat-val" style="color:#059669">${activeCount}</div>
         <div class="stat-change">사용 중</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">비활성 카테고리</div>
-        <div class="stat-val" style="color:var(--gray4)">${inactiveCount}</div>
+        <div class="stat-val" style="color:#94a3b8">${inactiveCount}</div>
         <div class="stat-change">숨김 처리됨</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">상품 등록 가능</div>
-        <div class="stat-val" style="color:var(--blue)">${activeCount}</div>
+        <div class="stat-val" style="color:#3b82f6">${activeCount}</div>
         <div class="stat-change">상품마스터 연동</div>
       </div>
     </div>
 
     <form action="${pageContext.request.contextPath}/shop/category/categoryForm.do" method="get" class="toolbar">
       <div class="search-wrap">
-        <span class="search-ico">🔍</span>
+        <span class="search-ico"><i class="fa-solid fa-magnifying-glass"></i></span>
         <input type="text" name="keyword" value="${keyword}" placeholder="카테고리명 검색">
       </div>
       <select class="sel" name="useYn" onchange="this.form.submit()">
-        <option value="">전체 상태</option>
+        <option value="">상태 전체</option>
         <option value="Y" ${useYnSel eq 'Y' ? 'selected':''}>활성</option>
         <option value="N" ${useYnSel eq 'N' ? 'selected':''}>비활성</option>
       </select>
-      <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
+      <button type="submit" class="btn btn-outline"><i class="fa-solid fa-rotate-right"></i> 조회</button>
     </form>
 
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
-            <th style="width:60px">순서</th>
-            <th style="width:60px">번호</th>
+            <th style="width:80px; text-align:center;">순서</th>
+            <th style="width:80px; text-align:center;">번호</th>
             <th>카테고리명</th>
-            <th style="width:100px">상태</th>
-            <th style="width:120px">상품마스터 반영</th>
-            <th style="width:100px">순서 변경</th>
-            <th style="width:220px">관리</th>
+            <th style="width:100px; text-align:center;">상태</th>
+            <th style="width:140px; text-align:center;">상품마스터 반영</th>
+            <th style="width:240px; text-align:center;">관리</th>
           </tr>
         </thead>
         <tbody>
-          <c:forEach var="c" items="${categoryList}" varStatus="vs">
+          <c:forEach var="c" items="${categoryList}">
             <tr>
-              <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--gray3);text-align:center">${c.catSortNo}</td>
-              <td style="color:var(--gray4);font-size:12px">${c.catNum}</td>
-              <td style="font-weight:700;font-size:14px">${c.catName}</td>
-              <td>
+              <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#94a3b8;text-align:center">${c.catSortNo}</td>
+              <td style="color:#64748b;font-size:13px;text-align:center">${c.catNum}</td>
+              <td style="font-weight:600;font-size:15px;color:#0f172a">${c.catName}</td>
+              <td style="text-align:center">
                 <c:choose>
                   <c:when test="${c.catUseYn eq 'Y'}"><span class="badge b-green">● 활성</span></c:when>
                   <c:otherwise><span class="badge b-gray">● 비활성</span></c:otherwise>
                 </c:choose>
               </td>
-              <td style="font-size:12px;color:var(--gray3)">
+              <td style="font-size:13px;color:#475569;text-align:center">
                 <c:choose>
-                  <c:when test="${c.catUseYn eq 'Y'}">✅ 연동됨</c:when>
-                  <c:otherwise>❌ 제외됨</c:otherwise>
+                  <c:when test="${c.catUseYn eq 'Y'}"><i class="fa-solid fa-check" style="color:#059669"></i> 연동됨</c:when>
+                  <c:otherwise><i class="fa-solid fa-xmark" style="color:#ef4444"></i> 제외됨</c:otherwise>
                 </c:choose>
               </td>
-              <td>
-                <div class="sort-btns">
-                  <c:if test="${!vs.first}">
-                    <button class="btn btn-outline btn-xs" onclick="sortCategory(${c.catNum}, 'up')">▲</button>
-                  </c:if>
-                  <c:if test="${!vs.last}">
-                    <button class="btn btn-outline btn-xs" onclick="sortCategory(${c.catNum}, 'down')">▼</button>
-                  </c:if>
-                </div>
-              </td>
-              <td>
-                <div style="display:flex;gap:6px">
+              <td style="text-align:center">
+                <div style="display:flex;gap:6px;justify-content:center;">
                   <button class="btn btn-outline btn-xs"
                     onclick="openEditModal(${c.catNum}, '${c.catName}', '${c.catUseYn}', ${c.catSortNo})">✏️ 수정</button>
                   <c:choose>
                     <c:when test="${c.catUseYn eq 'Y'}">
-                      <button class="btn btn-danger btn-xs" onclick="toggleCategory(${c.catNum}, 'N')">🚫 비활성화</button>
+                      <button class="btn btn-danger btn-xs" onclick="toggleCategory(${c.catNum}, 'N')">🚫 비활성</button>
                     </c:when>
                     <c:otherwise>
                       <button class="btn btn-outline btn-xs" onclick="toggleCategory(${c.catNum}, 'Y')"
-                        style="color:var(--green);border-color:var(--green)">✅ 활성화</button>
+                        style="color:#059669;border-color:#059669">✅ 활성화</button>
                     </c:otherwise>
                   </c:choose>
                   <button class="btn btn-danger btn-xs" onclick="deleteCategory(${c.catNum}, '${c.catName}')">🗑️ 삭제</button>
@@ -228,7 +277,7 @@ tr:hover td{background:#fafafa}
             </tr>
           </c:forEach>
           <c:if test="${empty categoryList}">
-            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray4)">📭 등록된 카테고리가 없습니다.</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:60px 0;color:#94a3b8;"><i class="fa-solid fa-folder-open" style="font-size:32px;margin-bottom:12px;display:block;color:#e2e8f0;"></i> 등록된 카테고리가 없습니다.</td></tr>
           </c:if>
         </tbody>
       </table>
@@ -237,17 +286,16 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- 카테고리 등록 모달 -->
 <div class="modal-overlay" id="modal-add">
   <div class="modal-box">
     <div class="modal-hdr">
       <div class="modal-title">카테고리 등록</div>
-      <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-add')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <form action="${pageContext.request.contextPath}/shop/category/categoryInsert.do" method="post">
       <div class="modal-body">
         <div class="form-group">
-          <label class="f-label">카테고리명 *</label>
+          <label class="f-label">카테고리명 <span style="color:#ef4444">*</span></label>
           <input class="f-input" type="text" name="catName" placeholder="예) 운동화, 샌들, 부츠" required>
           <div class="f-hint">등록 즉시 상품마스터 관리의 카테고리 목록에 반영됩니다.</div>
         </div>
@@ -272,18 +320,17 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- 카테고리 수정 모달 -->
 <div class="modal-overlay" id="modal-edit">
   <div class="modal-box">
     <div class="modal-hdr">
       <div class="modal-title">카테고리 수정</div>
-      <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-edit')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <form action="${pageContext.request.contextPath}/shop/category/categoryUpdate.do" method="post">
       <input type="hidden" name="catNum" id="editCatNum">
       <div class="modal-body">
         <div class="form-group">
-          <label class="f-label">카테고리명 *</label>
+          <label class="f-label">카테고리명 <span style="color:#ef4444">*</span></label>
           <input class="f-input" type="text" name="catName" id="editCatName" required>
         </div>
         <div class="form-group">
@@ -306,17 +353,12 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- hidden 폼 -->
 <form id="toggleForm" action="${pageContext.request.contextPath}/shop/category/categoryToggle.do" method="post">
   <input type="hidden" name="catNum" id="toggleCatNum">
   <input type="hidden" name="catUseYn" id="toggleCatUseYn">
 </form>
 <form id="deleteForm" action="${pageContext.request.contextPath}/shop/category/categoryDelete.do" method="post">
   <input type="hidden" name="catNum" id="deleteCatNum">
-</form>
-<form id="sortForm" action="${pageContext.request.contextPath}/shop/category/categorySort.do" method="post">
-  <input type="hidden" name="catNum" id="sortCatNum">
-  <input type="hidden" name="direction" id="sortDirection">
 </form>
 
 <div class="toast" id="toast"></div>
@@ -345,11 +387,6 @@ function deleteCategory(num, name) {
     if (!confirm('[' + name + '] 카테고리를 삭제합니다.\n이 카테고리에 등록된 상품이 있으면 삭제가 안될 수 있습니다.\n계속하시겠습니까?')) return;
     document.getElementById('deleteCatNum').value = num;
     document.getElementById('deleteForm').submit();
-}
-function sortCategory(num, direction) {
-    document.getElementById('sortCatNum').value = num;
-    document.getElementById('sortDirection').value = direction;
-    document.getElementById('sortForm').submit();
 }
 function showToast(msg) {
     var t = document.getElementById('toast');

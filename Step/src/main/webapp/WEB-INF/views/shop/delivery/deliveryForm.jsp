@@ -6,107 +6,181 @@
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall - 배송 관리</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/KM_style.css">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{height:54px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;padding:0 24px;gap:12px;background:var(--black);position:sticky;top:0;z-index:50}
-.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em}
-.topbar-path{font-size:11px;color:#444}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.t-btn{width:32px;height:32px;border:1px solid #333;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#888;border-radius:2px}
-.t-btn:hover{border-color:#555;color:#fff}
-.content{padding:24px;flex:1}
-.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
-.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
-.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-bottom:20px;border:1px solid var(--border)}
-.stat-card{background:var(--white);padding:16px 18px;cursor:pointer;transition:background .15s}
-.stat-card:hover{background:#f5f5f5}
-.stat-card.active{background:#111}
-.stat-card.active .stat-label{color:rgba(255,255,255,0.6)}
-.stat-card.active .stat-val{color:#fff}
-.stat-label{font-size:10px;font-weight:700;color:var(--gray4);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
-.stat-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;letter-spacing:-1px}
-.stat-change{font-size:11px;margin-top:5px;color:var(--gray4)}
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{position:relative;flex:1;max-width:300px}
-.search-wrap input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black)}
-.search-wrap input:focus{border-color:var(--black)}
-.search-wrap input::placeholder{color:var(--gray5)}
-.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:14px}
-.btn{padding:9px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
-.btn-black{background:var(--black);color:#fff}
-.btn-black:hover{background:#333}
-.btn-outline{background:var(--white);color:var(--gray2);border:1px solid var(--border)}
-.btn-outline:hover{border-color:var(--black);color:var(--black)}
-.btn-danger{background:#fff0f0;color:var(--red);border:1px solid #ffd0d0}
-.btn-danger:hover{background:var(--red);color:#fff}
-.btn-blue{background:#e8f0ff;color:var(--blue);border:1px solid #c0d0ff}
-.btn-blue:hover{background:var(--blue);color:#fff}
-.btn-green{background:#e8f5e8;color:#155724;border:1px solid #c3e6cb}
-.btn-green:hover{background:#155724;color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-xs{padding:3px 8px;font-size:10px;white-space:nowrap}
-.badge{display:inline-flex;align-items:center;padding:3px 9px;font-size:11px;font-weight:700;border-radius:20px}
-.b-wait{background:#fff3cd;color:#856404}
-.b-ready{background:#cfe2ff;color:#0a58ca}
-.b-shipping{background:#d1ecf1;color:#0c5460}
-.b-done{background:#d4edda;color:#155724}
-.b-cancel{background:#f8d7da;color:#721c24}
-.tbl-wrap{overflow-x:auto;background:var(--white);border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse}
-th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--gray4);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;background:var(--white)}
-td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray2);vertical-align:middle;white-space:nowrap}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafafa}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--white);width:560px;max-height:90vh;display:flex;flex-direction:column;border:1px solid var(--border)}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);background:var(--black);color:#fff}
-.modal-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700}
-.modal-close{background:none;border:none;color:#888;cursor:pointer;font-size:20px;line-height:1;padding:0}
-.modal-close:hover{color:#fff}
-.modal-body{padding:22px;overflow-y:auto;flex:1}
-.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--gray7)}
-.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.f-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em}
-.f-input{padding:10px 12px;border:1px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;color:var(--black);width:100%}
-.f-input:focus{border-color:var(--black)}
-.f-input[readonly]{background:#f9f9f9;color:var(--gray3)}
-.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.info-section{background:#f9f9f9;border:1px solid var(--border);padding:14px 16px;margin-bottom:14px;border-radius:4px}
-.info-section-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
-.dlv-track-wrap{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px}
-.dlv-track-title{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:20px}
-.dlv-track{display:flex;align-items:flex-start;justify-content:center;position:relative}
-.dlv-step{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;position:relative;z-index:1;cursor:pointer}
-.dlv-step-icon{width:52px;height:52px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #e5e7eb;transition:all .25s}
-.dlv-step-label{font-size:11px;font-weight:700;color:#9ca3af;text-align:center;transition:all .25s;line-height:1.4}
-.dlv-step.done .dlv-step-icon{background:#111;border-color:#111}
-.dlv-step.done .dlv-step-label{color:#555}
-.dlv-step.active .dlv-step-icon{background:#fff;border-color:#111;box-shadow:0 0 0 5px rgba(0,0,0,0.08);transform:scale(1.1)}
-.dlv-step.active .dlv-step-label{color:#111;font-weight:900}
-.dlv-step:hover .dlv-step-icon{transform:scale(1.12)}
-.dlv-step.active:hover .dlv-step-icon{transform:scale(1.15)}
-.dlv-connector{flex:1;height:3px;background:#e5e7eb;margin-top:25px;transition:background .25s;z-index:0}
-.dlv-connector.done{background:#111}
-.dlv-status-label{text-align:center;margin-top:16px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:14px;font-weight:700;color:#111}
-/* 상품 카드 */
-.item-card{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
-.item-card:last-child{border-bottom:none}
-.item-img{width:72px;height:72px;object-fit:cover;border:1px solid var(--border);border-radius:6px;flex-shrink:0;background:#f5f5f5}
-.item-img-placeholder{width:72px;height:72px;border:1px solid var(--border);border-radius:6px;flex-shrink:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:28px}
-.item-info{flex:1;min-width:0}
-.item-name{font-weight:700;font-size:14px;color:#111;margin-bottom:3px;white-space:normal}
-.item-brand{font-size:11px;color:var(--gray4);margin-bottom:7px}
-.item-opts{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.item-opt-badge{padding:2px 8px;background:#fff;border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--gray2)}
-.item-price-row{display:flex;align-items:center;justify-content:space-between}
-.item-qty{font-size:12px;color:var(--gray4)}
-.item-price{font-weight:900;font-size:15px;color:#111}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:11px 22px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- 기본 레이아웃 --- */
+body {
+    background-color: #f8f9fa; 
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    color: #333;
+    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+}
+
+/* 👇 사이드바 너비만큼 본문을 밀어줍니다 */
+.main {
+    margin-left: 260px;
+    padding: 30px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+}
+
+/* PAGE HEADER */
+.page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
+.page-hdr-sub { font-size: 14px; color: #666; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 30px; }
+.stat-card { background: #fff; padding: 20px 24px; border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer; transition: all 0.2s ease; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+/* 활성화된 탭 카드 스타일 스타일리시하게 변경 */
+.stat-card.active { background: #111827; border-color: #111827; }
+.stat-card.active .stat-label { color: #9ca3af; }
+.stat-card.active .stat-val { color: #fff !important; }
+.stat-card.active .stat-change { color: #6b7280; }
+
+.stat-label { font-size: 12px; font-weight: 600; color: #868e96; margin-bottom: 8px; }
+.stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #212529; }
+.stat-change { font-size: 12px; margin-top: 8px; color: #adb5bd; }
+
+/* ── 🚨 툴바 및 필터 영역 정렬 ── */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-wrap { position: relative; width: 320px; flex-shrink: 0; }
+.search-wrap input {
+    width: 100%;
+    height: 40px; /* 높이 40px 통일 */
+    padding: 0 12px 0 38px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 13px;
+    outline: none;
+    color: #333;
+    transition: all 0.2s ease;
+}
+.search-wrap input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.search-wrap input::placeholder { color: #9ca3af; }
+.search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 14px; }
+
+/* BUTTONS */
+.btn {
+    height: 40px; /* 높이 40px 통일 */
+    padding: 0 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.btn-black { background: #111827; color: #fff; }
+.btn-black:hover { background: #374151; }
+.btn-outline { background: #fff; color: #475569; border: 1px solid #e2e8f0; }
+.btn-outline:hover { border-color: #111827; color: #111827; }
+.btn-danger { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+.btn-danger:hover { background: #ef4444; color: #fff; }
+.btn-blue { background: #f0f4ff; color: #1a73e8; border: 1px solid #cce0ff; }
+.btn-blue:hover { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+.btn-green { background: #e6fcf5; color: #059669; border: 1px solid #bbf7d0; }
+.btn-green:hover { background: #059669; color: #fff; border-color: #059669; }
+
+.btn-xs { height: 28px; padding: 0 10px; font-size: 11px; }
+
+/* STATE BADGES */
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.b-wait { background: #fff4e6; color: #d9480f; }      /* 배송대기 */
+.b-ready { background: #e0f2fe; color: #0369a1; }     /* 준비중 */
+.b-shipping { background: #dbeafe; color: #2563eb; }  /* 배송중 */
+.b-done { background: #dcfce7; color: #059669; }      /* 완료 */
+.b-cancel { background: #fef2f2; color: #ef4444; }    /* 취소 */
+
+/* TABLE LIST */
+.tbl-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 14px 16px; font-size: 13px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; background: #f8fafc; text-align: center; }
+td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; vertical-align: middle; text-align: center; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fafc; }
+
+/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; width: 560px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
+.modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.modal-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+.modal-close { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 22px; padding: 0; transition: color 0.2s; }
+.modal-close:hover { color: #ef4444; }
+.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; justify-content: flex-end; background: #f8fafc; }
+
+/* FORM & DETAILED BOX */
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.f-label { font-size: 13px; font-weight: 600; color: #334155; }
+.f-input { height: 40px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; font-size: 13.5px; outline: none; color: #0f172a; width: 100%; transition: border 0.2s; }
+.f-input:focus { border-color: #3b82f6; }
+.f-input[readonly] { background: #f8fafc; color: #64748b; cursor: default; }
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.info-section { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 20px; border-radius: 8px; }
+.info-section-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 4px; }
+
+/* ── 🚚 배송 모달 스텝바 그래픽 리디자인 ── */
+.dlv-track-wrap { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+.dlv-track-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 20px; }
+.dlv-track { display: flex; align-items: flex-start; justify-content: center; position: relative; }
+.dlv-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 1; cursor: pointer; }
+.dlv-step-icon { width: 48px; height: 48px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 3px solid #e2e8f0; transition: all .2s; }
+.dlv-step-label { font-size: 12px; font-weight: 500; color: #94a3b8; text-align: center; transition: all .2s; line-height: 1.3; }
+
+/* 스텝바 유기적 컬러 변환 */
+.dlv-step.done .dlv-step-icon { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.dlv-step.done .dlv-step-label { color: #3b82f6; font-weight: 600; }
+.dlv-step.active .dlv-step-icon { background: #fff; border-color: #111827; box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.1); transform: scale(1.1); }
+.dlv-step.active .dlv-step-label { color: #111827; font-weight: 700; }
+.dlv-step:hover .dlv-step-icon { transform: scale(1.08); }
+
+.dlv-connector { flex: 1; height: 4px; background: #e2e8f0; margin-top: 22px; transition: background .2s; z-index: 0; }
+.dlv-connector.done { background: #3b82f6; }
+.dlv-status-label { text-align: center; margin-top: 16px; padding: 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13.5px; font-weight: 600; color: #1e293b; }
+
+/* 상품상세 카드 카드 팩 디자인 */
+.item-card { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+.item-card:last-child { border-bottom: none; }
+.item-img { width: 72px; height: 72px; object-fit: cover; border: 1px solid #e2e8f0; border-radius: 6px; flex-shrink: 0; background: #f8fafc; }
+.item-img-placeholder { width: 72px; height: 72px; border: 1px solid #e2e8f0; border-radius: 6px; flex-shrink: 0; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.item-info { flex: 1; min-width: 0; text-align: left; }
+.item-name { font-weight: 600; font-size: 14px; color: #111827; margin-bottom: 4px; }
+.item-brand { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+.item-opts { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+.item-opt-badge { padding: 2px 8px; background: #f1f5f9; border-radius: 4px; font-size: 11px; color: #475569; font-weight: 500; }
+.item-price-row { display: flex; align-items: center; justify-content: space-between; }
+.item-qty { font-size: 12px; color: #64748b; }
+.item-price { font-weight: 700; font-size: 15px; color: #0f172a; font-family: 'Space Grotesk', sans-serif; }
+
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111827; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; opacity: 0; transition: all .3s; z-index: 9999; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -114,11 +188,8 @@ tr:hover td{background:#fafafa}
 <%@ include file="../../common/shopAdminHeader.jsp"%>
 
 <div class="main">
-  <div class="topbar">
-    <div class="topbar-title">배송 관리</div>
-    <div class="topbar-path">Admin > 배송 관리</div>
-    <div class="topbar-right"><div class="t-btn">🔔</div></div>
-  </div>
+  <c:set var="pageTitle" value="배송 관리" scope="request" />
+  <jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
 
   <div class="content">
 
@@ -140,7 +211,6 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- 통계 카드 -->
     <div class="stats-row">
       <div class="stat-card ${statusSel == null || statusSel eq '' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do'">
@@ -151,81 +221,78 @@ tr:hover td{background:#fafafa}
       <div class="stat-card ${statusSel eq '1' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do?status=1'">
         <div class="stat-label">배송대기</div>
-        <div class="stat-val" style="color:#856404">${statusCount.wait}</div>
+        <div class="stat-val" style="color:#d9480f">${statusCount.wait}</div>
         <div class="stat-change">📦 처리 필요</div>
       </div>
       <div class="stat-card ${statusSel eq '2' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do?status=2'">
         <div class="stat-label">배송준비중</div>
-        <div class="stat-val" style="color:#0a58ca">${statusCount.ready}</div>
+        <div class="stat-val" style="color:#0369a1">${statusCount.ready}</div>
         <div class="stat-change">🏭 준비 중</div>
       </div>
       <div class="stat-card ${statusSel eq '3' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do?status=3'">
         <div class="stat-label">배송중</div>
-        <div class="stat-val" style="color:#0c5460">${statusCount.shipping}</div>
+        <div class="stat-val" style="color:#2563eb">${statusCount.shipping}</div>
         <div class="stat-change">🚚 이동 중</div>
       </div>
       <div class="stat-card ${statusSel eq '4' ? 'active' : ''}"
            onclick="location.href='${pageContext.request.contextPath}/shop/delivery/deliveryForm.do?status=4'">
         <div class="stat-label">배송완료</div>
-        <div class="stat-val" style="color:#155724">${statusCount.done}</div>
+        <div class="stat-val" style="color:#059669">${statusCount.done}</div>
         <div class="stat-change">✅ 완료</div>
       </div>
     </div>
 
-    <!-- 툴바 -->
     <form action="${pageContext.request.contextPath}/shop/delivery/deliveryForm.do" method="get" class="toolbar">
       <input type="hidden" name="status" value="${statusSel}">
       <div class="search-wrap">
-        <span class="search-ico">🔍</span>
+        <span class="search-ico"><i class="fa-solid fa-magnifying-glass"></i></span>
         <input type="text" name="keyword" value="${keyword}" placeholder="수령인, 송장번호, 주문번호 검색">
       </div>
-      <button type="submit" class="btn btn-outline btn-sm">🔄 조회</button>
+      <button type="submit" class="btn btn-outline"><i class="fa-solid fa-rotate-right"></i> 조회</button>
       <a href="${pageContext.request.contextPath}/shop/delivery/deliveryForm.do?status=5"
-         class="btn btn-danger btn-sm">🚫 취소 목록</a>
+         class="btn btn-danger">🚫 취소 목록</a>
     </form>
 
-    <!-- 테이블 -->
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
-            <th style="width:70px">배송번호</th>
-            <th style="width:80px">주문번호</th>
+            <th style="width:90px;">배송번호</th>
+            <th style="width:100px;">주문번호</th>
             <th>회원명</th>
             <th>수령인</th>
-            <th style="width:100px">결제금액</th>
-            <th style="width:110px">배송상태</th>
-            <th style="width:90px">택배사</th>
-            <th style="width:140px">송장번호</th>
-            <th style="width:130px">주문일시</th>
-            <th style="width:210px">관리</th>
+            <th style="width:130px; text-align: right;">결제금액</th>
+            <th style="width:130px;">배송상태</th>
+            <th style="width:110px;">택배사</th>
+            <th style="width:160px;">송장번호</th>
+            <th style="width:140px;">주문일시</th>
+            <th style="width:220px;">관리</th>
           </tr>
         </thead>
         <tbody>
           <c:forEach var="d" items="${deliveryList}">
             <tr>
-              <td style="color:var(--gray4);font-size:12px">${d.dlvNum}</td>
-              <td style="font-size:12px">${d.orderNum}</td>
-              <td style="font-weight:700">${d.userName}</td>
+              <td style="color:#64748b; font-size:13px; font-family: 'Space Grotesk', sans-serif;">${d.dlvNum}</td>
+              <td style="font-size:13px; font-family: 'Space Grotesk', sans-serif;">${d.orderNum}</td>
+              <td style="font-weight:600; color:#0f172a;">${d.userName}</td>
               <td>${d.recvName}</td>
-              <td><fmt:formatNumber value="${d.payPrice}" pattern="#,###"/>원</td>
+              <td style="text-align: right; font-weight:600; font-family: 'Space Grotesk';"><fmt:formatNumber value="${d.payPrice}" pattern="#,###"/>원</td>
               <td>
                 <c:choose>
-                  <c:when test="${d.dlvStatus == 1}"><span class="badge b-wait">📦 배송대기</span></c:when>
-                  <c:when test="${d.dlvStatus == 2}"><span class="badge b-ready">🏭 준비중</span></c:when>
-                  <c:when test="${d.dlvStatus == 3}"><span class="badge b-shipping">🚚 배송중</span></c:when>
-                  <c:when test="${d.dlvStatus == 4}"><span class="badge b-done">✅ 완료</span></c:when>
-                  <c:when test="${d.dlvStatus == 5}"><span class="badge b-cancel">🚫 취소</span></c:when>
+                  <c:when test="${d.dlvStatus == 1}"><span class="badge b-wait">● 배송대기</span></c:when>
+                  <c:when test="${d.dlvStatus == 2}"><span class="badge b-ready">● 준비중</span></c:when>
+                  <c:when test="${d.dlvStatus == 3}"><span class="badge b-shipping">● 배송중</span></c:when>
+                  <c:when test="${d.dlvStatus == 4}"><span class="badge b-done">● 완료</span></c:when>
+                  <c:when test="${d.dlvStatus == 5}"><span class="badge b-cancel">● 취소</span></c:when>
                 </c:choose>
               </td>
-              <td style="font-size:12px;color:var(--gray3)">${d.courier}</td>
-              <td style="font-size:12px;color:var(--gray3)">${d.invoiceNo}</td>
-              <td style="font-size:12px;color:var(--gray4)">${d.orderCreatedAt}</td>
+              <td style="font-size:13px; color:#475569">${empty d.courier ? '-' : d.courier}</td>
+              <td style="font-size:13px; color:#475569; font-family: 'Space Grotesk';">${empty d.invoiceNo ? '-' : d.invoiceNo}</td>
+              <td style="font-size:13px; color:#64748b">${d.orderCreatedAt}</td>
               <td>
-                <div style="display:flex;gap:5px;flex-wrap:wrap">
-                  <%-- 상세 버튼: 항상 표시 --%>
+                <div style="display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
                   <button class="btn btn-green btn-xs"
                     onclick="openDetailModal(
                       ${d.orderNum},
@@ -235,7 +302,6 @@ tr:hover td{background:#fafafa}
                     📋 상세
                   </button>
 
-                  <%-- 수정/취소: 취소 아닐 때만 --%>
                   <c:if test="${d.dlvStatus ne 5}">
                     <button class="btn btn-blue btn-xs"
                       onclick="openUpdateModal(
@@ -254,7 +320,7 @@ tr:hover td{background:#fafafa}
                   </c:if>
 
                   <c:if test="${d.dlvStatus eq 5}">
-                    <span style="font-size:11px;color:var(--gray4)">처리완료</span>
+                    <span style="font-size:12px; color:#94a3b8; font-weight: 500;">처리완료</span>
                   </c:if>
                 </div>
               </td>
@@ -262,8 +328,8 @@ tr:hover td{background:#fafafa}
           </c:forEach>
           <c:if test="${empty deliveryList}">
             <tr>
-              <td colspan="10" style="text-align:center;padding:40px;color:var(--gray4)">
-                📭 해당 배송 정보가 없습니다.
+              <td colspan="10" style="text-align:center; padding:60px 0; color:#94a3b8;">
+                <i class="fa-solid fa-truck-fast" style="font-size:32px; display:block; margin-bottom:12px; color:#e2e8f0;"></i>해당 배송 정보가 없습니다.
               </td>
             </tr>
           </c:if>
@@ -274,12 +340,11 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- ===== 주문 상세 모달 ===== -->
 <div class="modal-overlay" id="modal-detail">
   <div class="modal-box" style="width:620px">
     <div class="modal-hdr">
       <div class="modal-title">📋 주문 상품 상세</div>
-      <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-detail')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
 
@@ -300,11 +365,11 @@ tr:hover td{background:#fafafa}
       <div class="info-section" style="margin-bottom:0">
         <div class="info-section-title">주문 상품 목록</div>
         <div id="detailItemList">
-          <div style="text-align:center;padding:30px;color:var(--gray4)">🔄 불러오는 중...</div>
+          <div style="text-align:center; padding:30px; color:#94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> 불러오는 중...</div>
         </div>
-        <div style="border-top:2px solid #111;padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:12px;color:var(--gray4)">총 결제금액</span>
-          <span id="detailTotalPrice" style="font-size:20px;font-weight:900;color:#111"></span>
+        <div style="border-top:2px solid #111827; padding-top:16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center">
+          <span style="font-size:13px; color:#64748b; font-weight: 500;">총 결제금액</span>
+          <span id="detailTotalPrice" style="font-size:22px; font-weight:800; color:#ef4444; font-family:'Space Grotesk';"></span>
         </div>
       </div>
 
@@ -315,12 +380,11 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- ===== 배송 수정 모달 ===== -->
 <div class="modal-overlay" id="modal-update">
   <div class="modal-box">
     <div class="modal-hdr">
       <div class="modal-title">🚚 배송 정보 수정</div>
-      <button class="modal-close" onclick="closeModal('modal-update')">✕</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-update')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <form action="${pageContext.request.contextPath}/shop/delivery/deliveryUpdate.do" method="post">
       <input type="hidden" name="dlvNum"    id="updateDlvNum">
@@ -376,7 +440,7 @@ tr:hover td{background:#fafafa}
           <div class="f-row">
             <div class="form-group">
               <label class="f-label">택배사</label>
-              <select class="f-input" name="courier" id="updateCourier">
+              <select class="f-input" name="courier" id="updateCourier" style="height:40px; padding:0 12px; cursor:pointer;">
                 <option value="">선택</option>
                 <option value="CJ대한통운">CJ대한통운</option>
                 <option value="롯데택배">롯데택배</option>
@@ -390,8 +454,8 @@ tr:hover td{background:#fafafa}
               <input class="f-input" type="text" name="invoiceNo" id="updateInvoiceNo" placeholder="송장번호 입력">
             </div>
           </div>
-          <div id="trackBtnWrap" style="display:none;margin-top:4px">
-            <button type="button" class="btn btn-outline btn-sm" style="width:100%" onclick="trackDelivery()">
+          <div id="trackBtnWrap" style="display:none; margin-top:8px">
+            <button type="button" class="btn btn-outline" style="width:100%" onclick="trackDelivery()">
               🔍 네이버 배송 조회
             </button>
           </div>
@@ -406,7 +470,6 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- 취소 폼 -->
 <form id="cancelForm" action="${pageContext.request.contextPath}/shop/delivery/deliveryCancel.do" method="post">
   <input type="hidden" name="dlvNum"   id="cancelDlvNum">
   <input type="hidden" name="orderNum" id="cancelOrderNum">
@@ -460,7 +523,7 @@ function openDetailModal(orderNum, recvName, orderDate, payPrice) {
     document.getElementById('detailTotalPrice').textContent =
         Number(payPrice).toLocaleString() + '원';
     document.getElementById('detailItemList').innerHTML =
-        '<div style="text-align:center;padding:30px;color:#9ca3af">🔄 불러오는 중...</div>';
+        '<div style="text-align:center; padding:30px; color:#9ca3af"><i class="fa-solid fa-spinner fa-spin"></i> 불러오는 중...</div>';
     document.getElementById('modal-detail').classList.add('open');
 
     fetch(ctxPath + '/shop/delivery/deliveryDetail.do?orderNum=' + orderNum)
@@ -499,7 +562,7 @@ function openDetailModal(orderNum, recvName, orderDate, payPrice) {
         })
         .catch(function() {
             document.getElementById('detailItemList').innerHTML =
-                '<div style="text-align:center;padding:30px;color:red">❌ 상품 정보 조회에 실패했습니다.</div>';
+                '<div style="text-align:center;padding:30px;color:#ef4444">❌ 상품 정보 조회에 실패했습니다.</div>';
         });
 }
 

@@ -6,206 +6,262 @@
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall Admin - 매장 관리</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/KM_style.css">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-	/*top bar*/
-	.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
-	.topbar{height:54px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;padding:0 24px;gap:12px;background:var(--black);position:sticky;top:0;z-index:50}
-	.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em}
-	.topbar-path{font-size:11px;color:#444}
-	.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-	.t-btn{width:32px;height:32px;border:1px solid #333;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#888;border-radius:2px}
-	.t-btn:hover{border-color:#555;color:#fff}
-	.content{padding:24px;flex:1}
-	
-	/* PAGE HEADER */
-	.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-	.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
-	.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
+/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
-/* ── 기본 레이아웃 ── */
-    body { background-color: #f4f6f9; margin: 0; font-family: 'Noto Sans KR', sans-serif; }
-    .admin-dashboard { max-width: 1600px; width: 95%; margin: 30px auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    
-    /* ── 헤더 영역 ── */
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #000; }
-    .admin-title { font-size: 24px; font-weight: 700; color: #000; margin: 0; }
-    .btn-register { background: #000; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-    .btn-register:hover { background: #333; }
+/* --- 기본 레이아웃 --- */
+body { 
+    background-color: #f8f9fa; 
+    margin: 0; 
+    font-family: 'Pretendard', sans-serif; 
+    color: #333;
+    overflow-y: scroll; 
+}
 
-    /* ── 상세 검색 바 ── */
-    .search-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
-    .search-select { padding: 9px; border: 1px solid #ddd; border-radius: 4px; outline: none; background: #fff; }
-    .search-input { flex: 1; padding: 9px 15px; border: 1px solid #ddd; border-radius: 4px; outline: none; }
-    .btn-search { background: #000; color: #fff; border: none; padding: 9px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn-reset { background: #fff; color: #000; border: 1px solid #ddd; padding: 9px 20px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+.main { 
+    margin-left: 260px; 
+    padding: 30px; 
+    box-sizing: border-box;
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+}
 
-    /* ── 메인 콘텐츠 그리드 ── */
-    .admin-content { display: grid; grid-template-columns: 1.6fr 1fr; gap: 25px; }
+.content { 
+    flex: 1; 
+    width: 100%; 
+    max-width: none; 
+    margin: 0 auto; 
+}
 
-    /* ── 테이블 디자인 ── */
-    .table-container { height: 700px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
-    .admin-table { width: 100%; border-collapse: collapse; text-align: center; }
-    .admin-table th { background: #f8f9fa; padding: 15px; font-weight: 700; color: #333; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #eee; }
-        
-    .admin-table td { 
-        padding: 14px; border-bottom: 1px solid #eee; vertical-align: middle; 
-        color: #555; white-space: nowrap; /* 줄바꿈 절대 방지 */
-    }
-    /* 주소 */
-    .admin-table td.addr-cell {text-align: left; font-size: 13px; line-height: 1.4; }
+/* PAGE HEADER */
+.page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
+.page-hdr-sub { font-size: 14px; color: #666; }
 
-    .admin-table tbody tr { cursor: pointer; transition: 0.1s; }
-    .admin-table tbody tr:hover { background: #f0f4ff; }
-    .admin-table tbody tr.active-row { background: #e6f0ff; border-left: 4px solid #1a73e8; }
+/* ── 🚨 필터 툴바 (검색창 겹침 및 높이 40px 통일) ── */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.search-wrap { position: relative; width: 280px; flex-shrink: 0; }
+.search-wrap input {
+    width: 100%; height: 40px; padding: 0 12px 0 38px;
+    border: 1px solid #e2e8f0; border-radius: 6px; background: #fff;
+    font-size: 13px; outline: none; color: #333; transition: all 0.2s ease;
+}
+.search-wrap input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.search-wrap input::placeholder { color: #9ca3af; }
+.search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 14px; }
 
-    /* ── 뱃지 및 버튼 ── */
-    .badge-y { background: #e6f4ea; color: #1e8e3e; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
-    .badge-n { background: #fce8e6; color: #d93025; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
-    .btn-sm { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: #333; font-weight: 500; }
-    .btn-sm:hover { background: #f1f1f1; border-color: #999; }
+.sel {
+    height: 40px; padding: 0 30px 0 14px; border: 1px solid #e2e8f0; border-radius: 6px;
+    background: #fff; font-size: 13px; outline: none; color: #475569; cursor: pointer; flex-shrink: 0;
+}
 
-    /* ── 지도 영역 ── */
-    #adminMap { height: 700px; border-radius: 8px; border: 1px solid #eee; background: #fafafa; position: sticky; top: 0; }
+/* BUTTONS */
+.btn {
+    height: 40px; padding: 0 18px; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 600; font-family: inherit; transition: all .2s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0;
+}
+.btn-black { background: #111827; color: #fff; }
+.btn-black:hover { background: #374151; box-shadow: 0 2px 4px rgba(17,24,39,0.1); }
+.btn-outline { background: #fff; color: #475569; border: 1px solid #e2e8f0; }
+.btn-outline:hover { border-color: #111827; color: #111827; }
+.btn-danger { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+.btn-danger:hover { background: #ef4444; color: #fff; }
+.btn-xs { height: 28px; padding: 0 10px; font-size: 11.5px; }
 
-    /* ── 모달 공통 스타일 ── */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center; }
-    .modal-content { background: #fff; width: 600px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out; }
-    @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-    .modal-header h3 { margin: 0; font-size: 20px; font-weight: 700; }
-    .btn-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #999; line-height: 1; }
-    
-    .form-group { margin-bottom: 15px; text-align: left; }
-    .form-label { display: block; font-weight: 700; margin-bottom: 6px; color: #333; font-size: 13px; }
-    .form-input, .form-select { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
-    .addr-group { display: flex; gap: 8px; }
-    .btn-addr { background: #fff; border: 1px solid #000; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold; white-space: nowrap; font-size: 13px; }
-    
-    .modal-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; align-items: center; }
-    .btn-delete { background: #fff; color: #d32f2f; border: 1px solid #d32f2f; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: auto; font-size: 14px; }
-    .btn-delete:hover { background: #fff1f1; }
+/* STATE BADGES */
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600; }
+.b-normal { background: #dcfce7; color: #059669; }   /* 운영중 */
+.b-silver { background: #fef2f2; color: #ef4444; }   /* 미운영 */
+
+/* ── 메인 콘텐츠 그리드 (좌: 목록, 우: 지도) ── */
+.admin-content { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; }
+
+/* ── 테이블 영역 ── */
+.table-container { 
+    height: 700px; 
+    overflow-y: auto; 
+    background: #fff; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 12px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+}
+.table-container::-webkit-scrollbar { width: 6px; }
+.table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+table { width: 100%; border-collapse: collapse; }
+th { 
+    padding: 14px 16px; font-size: 13px; font-weight: 600; color: #475569; 
+    border-bottom: 1px solid #e2e8f0; background: #f8fafc; text-align: center; 
+    position: sticky; top: 0; z-index: 10; 
+}
+td { 
+    padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; 
+    color: #334155; vertical-align: middle; text-align: center; white-space: nowrap; 
+}
+td.addr-cell { text-align: left; white-space: normal; line-height: 1.4; }
+
+.store-row { cursor: pointer; transition: all 0.15s; }
+.store-row:hover { background: #f8fafc; }
+.store-row.active-row { background: #eff6ff; border-left: 4px solid #3b82f6; }
+
+/* ── 지도 영역 ── */
+#adminMap { 
+    height: 700px; 
+    border-radius: 12px; 
+    border: 1px solid #e2e8f0; 
+    background: #f1f5f9; 
+    position: sticky; 
+    top: 90px; /* 탑바 64px + 여백 고려 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+}
+
+/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; width: 640px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
+.modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.modal-title { font-size: 18px; font-weight: 700; color: #0f172a; }
+.modal-close { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 22px; padding: 0; transition: color 0.2s; }
+.modal-close:hover { color: #ef4444; }
+.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; justify-content: flex-end; background: #f8fafc; }
+
+/* FORM */
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.f-label { font-size: 13px; font-weight: 600; color: #334155; }
+.f-input { height: 42px; padding: 0 14px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; font-size: 14px; outline: none; color: #0f172a; transition: border 0.2s; width: 100%; font-family: 'Pretendard', sans-serif;}
+.f-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.f-input[readonly] { background: #f8fafc; color: #64748b; cursor: default; }
+
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* 주소 검색 그룹 */
+.addr-group { display: flex; gap: 8px; }
 </style>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/shopAdminHeader.jsp"/>
 
-	
 <div class="main">
-  <div class="topbar">
-    <div class="topbar-title">매장 정보 관리</div>
-    <div class="topbar-path">Admin > 매장 정보 관리</div>
-    <div class="topbar-right">
-      <div class="t-btn">🔔</div>
-    </div>
-  </div>
+  <c:set var="pageTitle" value="매장 정보 관리" scope="request" />
+  <jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
 
-<div class="content">
+  <div class="content">
 
-	 <div class="page-hdr">
+    <div class="page-hdr">
       <div>
         <div class="page-hdr-title">오프라인 매장 관리</div>
-        <div class="page-hdr-sub">오프라인 매장 등록·수정을 관리합니다. 오프라인 매장 등록 시 지도에서 확인 가능합니다.</div>
+        <div class="page-hdr-sub">쇼핑몰에 등록된 오프라인 매장을 등록, 수정, 삭제합니다.</div>
       </div>
-      <button class="btn-register" onclick="openInsertModal()">＋ 새 매장 등록</button>
+      <button class="btn btn-black" onclick="openInsertModal()"><i class="fa-solid fa-plus"></i> 새 매장 등록</button>
     </div>
 
-		<div class="search-bar">        
-            <select id="brandFilter" class="search-select" onchange="adminSearch()">
-                <option value="ALL">전체 브랜드</option>
-                <c:forEach var="brand" items="${brandList}">
-                    <option value="${brand.brandName}">${brand.brandName}</option>
-                </c:forEach>
-            </select>
-            
-            <select id="searchType" class="search-select">
-                <option value="name">매장명</option>
-                <option value="addr">주소</option>
-                <option value="status">상태 (Y/N)</option>
-            </select>           
+    <div class="toolbar">        
+        <select id="brandFilter" class="sel" onchange="adminSearch()">
+            <option value="ALL">브랜드 전체</option>
+            <c:forEach var="brand" items="${brandList}">
+                <option value="${brand.brandName}">${brand.brandName}</option>
+            </c:forEach>
+        </select>
+        
+        <select id="searchType" class="sel">
+            <option value="name">매장명</option>
+            <option value="addr">주소</option>
+            <option value="status">상태 (Y/N)</option>
+        </select>           
 
-            <input type="text" id="searchKeyword" class="search-input" placeholder="검색어를 입력하세요..." onkeyup="if(event.keyCode==13) adminSearch();">
-            
-            <button class="btn-search" onclick="adminSearch()">🔍 검색</button>
-            <button class="btn-reset" onclick="adminReset()">🔄 초기화</button>
+        <div class="search-wrap">
+            <span class="search-ico"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="searchKeyword" placeholder="검색어를 입력하세요..." onkeyup="if(event.keyCode==13) adminSearch();">
         </div>
         
-        <div class="admin-content">
-            <div class="table-container">
-                <table class="admin-table">
-                    <colgroup>
-                        <col style="width: 120px;">
-                        <col style="width: 180px;">
-                        <col style="width: auto;">
-                        <col style="width: 140px;">
-                        <col style="width: 140px;">
-                        <col style="width: 100px;">
-                        <col style="width: 80px;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>브랜드</th>
-                            <th>매장명</th>
-                            <th>주소</th>
-                            <th>영업시간</th>
-                            <th>전화번호</th>
-                            <th>상태</th>
-                            <th>관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="storeTbody">
-                        <c:forEach var="store" items="${adminStoreList}" varStatus="status">
-                            <tr class="store-row" 
-                                data-num="${store.storeNum}" 
-                                data-brandnum="${store.brandNum}" 
-                                data-brand="${store.brandName}" 
-                                data-name="${store.storeName}" 
-                                data-addr="${store.storeAddr}" 
-                                data-phone="${store.storePhone}" 
-                                data-time="${store.openTime}" 
-                                data-status="${store.storeUseYn}" 
-                                id="row-${status.index}" 
-                                onclick="focusStore('${store.storeAddr}', ${status.index})">
-                                
-                                <td style="font-weight: 700; color: #1a73e8;">${store.brandName}</td>
-                                <td style="font-weight: 700; color: #333;">${store.storeName}</td>
-                                <td class="addr-cell">${store.storeAddr}</td>
-                                <td>${store.openTime}</td>
-                                <td style="font-weight: 500;">${store.storePhone}</td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${store.storeUseYn == 'Y'}"><span class="badge-y">운영중</span></c:when>
-                                        <c:otherwise><span class="badge-n">미운영</span></c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn-sm" onclick="event.stopPropagation(); openModifyModal(this.closest('tr'))">수정</button>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty adminStoreList}">
-                            <tr><td colspan="7" style="padding: 100px; color: #999;">등록된 매장 데이터가 없습니다.</td></tr>
-                        </c:if>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="adminMap"></div>
-        </div>
+        <button class="btn btn-outline" onclick="adminSearch()">조회</button>
+        <button class="btn btn-outline" onclick="adminReset()"><i class="fa-solid fa-rotate-right"></i> 초기화</button>
     </div>
+        
+    <div class="admin-content">
+        <div class="table-container">
+            <table>
+                <colgroup>
+                    <col style="width: 120px;">
+                    <col style="width: 160px;">
+                    <col style="width: auto;">
+                    <col style="width: 130px;">
+                    <col style="width: 130px;">
+                    <col style="width: 90px;">
+                    <col style="width: 90px;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>브랜드</th>
+                        <th>매장명</th>
+                        <th style="text-align: left;">주소</th>
+                        <th>영업시간</th>
+                        <th>전화번호</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody id="storeTbody">
+                    <c:forEach var="store" items="${adminStoreList}" varStatus="status">
+                        <tr class="store-row" 
+                            data-num="${store.storeNum}" 
+                            data-brandnum="${store.brandNum}" 
+                            data-brand="${store.brandName}" 
+                            data-name="${store.storeName}" 
+                            data-addr="${store.storeAddr}" 
+                            data-phone="${store.storePhone}" 
+                            data-time="${store.openTime}" 
+                            data-status="${store.storeUseYn}" 
+                            id="row-${status.index}" 
+                            onclick="focusStore('${store.storeAddr}', ${status.index})">
+                            
+                            <td style="font-weight: 600; color: #3b82f6;">${store.brandName}</td>
+                            <td style="font-weight: 600; color: #0f172a;">${store.storeName}</td>
+                            <td class="addr-cell">${store.storeAddr}</td>
+                            <td>${store.openTime}</td>
+                            <td style="font-family: 'Space Grotesk';">${store.storePhone}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${store.storeUseYn == 'Y'}"><span class="badge b-normal">운영중</span></c:when>
+                                    <c:otherwise><span class="badge b-silver">미운영</span></c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline btn-xs" onclick="event.stopPropagation(); openModifyModal(this.closest('tr'))">✏️ 수정</button>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty adminStoreList}">
+                        <tr><td colspan="7" style="padding: 100px 0; color: #94a3b8; text-align:center;"><i class="fa-solid fa-store-slash" style="font-size:36px; display:block; margin-bottom:12px; color:#cbd5e1;"></i>등록된 매장 데이터가 없습니다.</td></tr>
+                    </c:if>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="modal-overlay" id="insertModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🏢 새 매장 등록</h3>
-                <button class="btn-close" onclick="closeInsertModal()">&times;</button>
-            </div>
-            <form action="${pageContext.request.contextPath}/shop/admin/adminStoreInsert.do" method="post" id="insertForm">
+        <div id="adminMap"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="insertModal">
+    <div class="modal-box">
+        <div class="modal-hdr">
+            <div class="modal-title">🏢 새 매장 등록</div>
+            <button type="button" class="modal-close" onclick="closeInsertModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form action="${pageContext.request.contextPath}/shop/admin/adminStoreInsert.do" method="post" id="insertForm" style="display:flex; flex-direction:column; height:100%;">
+            <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">소속 브랜드 <span style="color:red;">*</span></label>
-                    <select name="brandNum" class="form-select" required>
+                    <label class="f-label">소속 브랜드 <span style="color:#ef4444;">*</span></label>
+                    <select name="brandNum" class="f-input" style="cursor:pointer;" required>
                         <option value="">-- 브랜드를 선택하세요 --</option>
                         <c:forEach var="brand" items="${brandList}">
                             <option value="${brand.brandNum}">${brand.brandName}</option>
@@ -213,202 +269,201 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">매장명 <span style="color:red;">*</span></label>
-                    <input type="text" name="storeName" class="form-input" placeholder="예: 나이키 홍대점" required>
+                    <label class="f-label">매장명 <span style="color:#ef4444;">*</span></label>
+                    <input type="text" name="storeName" class="f-input" placeholder="예: 나이키 홍대점" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">매장 주소 <span style="color:red;">*</span></label>
+                    <label class="f-label">매장 주소 <span style="color:#ef4444;">*</span></label>
                     <div class="addr-group">
-                        <input type="text" id="insertAddr" name="storeAddr" class="form-input" placeholder="검색을 이용하세요" readonly required>
-                        <button type="button" class="btn-addr" onclick="searchAddress('insertAddr')">🔍 주소 검색</button>
+                        <input type="text" id="insertAddr" name="storeAddr" class="f-input" placeholder="검색을 이용하세요" readonly required>
+                        <button type="button" class="btn btn-outline" onclick="searchAddress('insertAddr')"><i class="fa-solid fa-magnifying-glass"></i> 주소 검색</button>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group"><label class="form-label">전화번호</label><input type="text" name="storePhone" class="form-input" placeholder="02-123-4567"></div>
-                    <div class="form-group"><label class="form-label">운영 시간</label><input type="text" name="openTime" class="form-input" placeholder="10:00 ~ 21:00"></div>
+                <div class="f-row">
+                    <div class="form-group"><label class="f-label">전화번호</label><input type="text" name="storePhone" class="f-input" placeholder="예: 02-123-4567"></div>
+                    <div class="form-group"><label class="f-label">운영 시간</label><input type="text" name="openTime" class="f-input" placeholder="예: 10:00 ~ 21:00"></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">운영 상태 <span style="color:red;">*</span></label>
-                    <select name="storeUseYn" class="form-select">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="f-label">운영 상태 <span style="color:#ef4444;">*</span></label>
+                    <select name="storeUseYn" class="f-input" style="cursor:pointer;">
                         <option value="Y" selected>운영중 (Y)</option>
                         <option value="N">미운영 (N)</option>
                     </select>
                 </div>
-                <div class="modal-btns">
-                    <button type="button" class="btn-reset" onclick="closeInsertModal()">취소</button>
-                    <button type="submit" class="btn-search">✅ 등록 완료</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modifyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🛠️ 매장 정보 수정 / 삭제</h3>
-                <button class="btn-close" onclick="closeModifyModal()">&times;</button>
             </div>
-            <form action="${pageContext.request.contextPath}/shop/admin/adminStoreUpdate.do" method="post" id="modifyForm">
-                <input type="hidden" id="modStoreNum" name="storeNum">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeInsertModal()">취소</button>
+                <button type="submit" class="btn btn-black">✅ 등록 완료</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modifyModal">
+    <div class="modal-box">
+        <div class="modal-hdr">
+            <div class="modal-title">🛠️ 매장 정보 수정</div>
+            <button type="button" class="modal-close" onclick="closeModifyModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form action="${pageContext.request.contextPath}/shop/admin/adminStoreUpdate.do" method="post" id="modifyForm" style="display:flex; flex-direction:column; height:100%;">
+            <input type="hidden" id="modStoreNum" name="storeNum">
+            <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">소속 브랜드 <span style="color:red;">*</span></label>
-                    <select id="modBrandNum" name="brandNum" class="form-select" required>
+                    <label class="f-label">소속 브랜드 <span style="color:#ef4444;">*</span></label>
+                    <select id="modBrandNum" name="brandNum" class="f-input" style="cursor:pointer;" required>
                         <c:forEach var="brand" items="${brandList}">
                             <option value="${brand.brandNum}">${brand.brandName}</option>
                         </c:forEach>
                     </select>
                 </div>
-                <div class="form-group"><label class="form-label">매장명 <span style="color:red;">*</span></label><input type="text" id="modStoreName" name="storeName" class="form-input" required></div>
+                <div class="form-group"><label class="f-label">매장명 <span style="color:#ef4444;">*</span></label><input type="text" id="modStoreName" name="storeName" class="f-input" required></div>
                 <div class="form-group">
-                    <label class="form-label">매장 주소 <span style="color:red;">*</span></label>
+                    <label class="f-label">매장 주소 <span style="color:#ef4444;">*</span></label>
                     <div class="addr-group">
-                        <input type="text" id="modStoreAddr" name="storeAddr" class="form-input" readonly required>
-                        <button type="button" class="btn-addr" onclick="searchAddress('modStoreAddr')">🔍 주소 검색</button>
+                        <input type="text" id="modStoreAddr" name="storeAddr" class="f-input" readonly required>
+                        <button type="button" class="btn btn-outline" onclick="searchAddress('modStoreAddr')"><i class="fa-solid fa-magnifying-glass"></i> 주소 검색</button>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group"><label class="form-label">전화번호</label><input type="text" id="modStorePhone" name="storePhone" class="form-input"></div>
-                    <div class="form-group"><label class="form-label">운영 시간</label><input type="text" id="modOpenTime" name="openTime" class="form-input"></div>
+                <div class="f-row">
+                    <div class="form-group"><label class="f-label">전화번호</label><input type="text" id="modStorePhone" name="storePhone" class="f-input"></div>
+                    <div class="form-group"><label class="f-label">운영 시간</label><input type="text" id="modOpenTime" name="openTime" class="f-input"></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">운영 상태 <span style="color:red;">*</span></label>
-                    <select id="modStoreUseYn" name="storeUseYn" class="form-select">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="f-label">운영 상태 <span style="color:#ef4444;">*</span></label>
+                    <select id="modStoreUseYn" name="storeUseYn" class="f-input" style="cursor:pointer;">
                         <option value="Y">운영중 (Y)</option>
                         <option value="N">미운영 (N)</option>
                     </select>
                 </div>
-                <div class="modal-btns">
-                    <button type="button" class="btn-delete" onclick="adminDeleteStore()">🗑️ 매장 삭제</button>
-                    <button type="button" class="btn-reset" onclick="closeModifyModal()">취소</button>
-                    <button type="submit" class="btn-search">💾 수정 저장</button>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-danger" onclick="adminDeleteStore()">🗑️ 매장 삭제</button>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModifyModal()">취소</button>
+                    <button type="submit" class="btn btn-black">💾 수정 저장</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
-    <script>
-    /* 모달 제어 로직 */
-    function openInsertModal() { document.getElementById('insertModal').style.display = 'flex'; }
-    function closeInsertModal() { document.getElementById('insertModal').style.display = 'none'; document.getElementById('insertForm').reset(); }
-    
-    function openModifyModal(trElement) {
-        document.getElementById('modStoreNum').value = trElement.getAttribute('data-num');
-        document.getElementById('modBrandNum').value = trElement.getAttribute('data-brandnum');
-        document.getElementById('modStoreName').value = trElement.getAttribute('data-name');
-        document.getElementById('modStoreAddr').value = trElement.getAttribute('data-addr');
-        document.getElementById('modStorePhone').value = trElement.getAttribute('data-phone');
-        document.getElementById('modOpenTime').value = trElement.getAttribute('data-time');
-        document.getElementById('modStoreUseYn').value = trElement.getAttribute('data-status');
-        document.getElementById('modifyModal').style.display = 'flex';
-    }
-    function closeModifyModal() { document.getElementById('modifyModal').style.display = 'none'; }
+<script>
+/* 모달 제어 로직 (클래스 토글 방식으로 변경) */
+function openInsertModal() { document.getElementById('insertModal').classList.add('open'); }
+function closeInsertModal() { document.getElementById('insertModal').classList.remove('open'); document.getElementById('insertForm').reset(); }
 
-    // 배경 클릭 시 닫기
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('insertModal')) closeInsertModal();
-        if (event.target == document.getElementById('modifyModal')) closeModifyModal();
-    }
+function openModifyModal(trElement) {
+    document.getElementById('modStoreNum').value = trElement.getAttribute('data-num');
+    document.getElementById('modBrandNum').value = trElement.getAttribute('data-brandnum');
+    document.getElementById('modStoreName').value = trElement.getAttribute('data-name');
+    document.getElementById('modStoreAddr').value = trElement.getAttribute('data-addr');
+    document.getElementById('modStorePhone').value = trElement.getAttribute('data-phone');
+    document.getElementById('modOpenTime').value = trElement.getAttribute('data-time');
+    document.getElementById('modStoreUseYn').value = trElement.getAttribute('data-status');
+    document.getElementById('modifyModal').classList.add('open');
+}
+function closeModifyModal() { document.getElementById('modifyModal').classList.remove('open'); }
 
-    /* 주소 검색 (다음 API) */
-    function searchAddress(inputId) {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                var addr = (data.userSelectedType === 'R') ? data.roadAddress : data.jibunAddress;
-                document.getElementById(inputId).value = addr;
-            }
-        }).open();
-    }
+// 배경 클릭 시 닫기
+window.onclick = function(event) {
+    if (event.target == document.getElementById('insertModal')) closeInsertModal();
+    if (event.target == document.getElementById('modifyModal')) closeModifyModal();
+}
 
-    /* 삭제 처리 */
-    function adminDeleteStore() {
-        var storeNum = document.getElementById('modStoreNum').value;
-        if(confirm("정말로 이 매장 정보를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) {
-            location.href = "${pageContext.request.contextPath}/shop/admin/adminStoreDelete.do?storeNum=" + storeNum;
+/* 주소 검색 (다음 API) */
+function searchAddress(inputId) {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            var addr = (data.userSelectedType === 'R') ? data.roadAddress : data.jibunAddress;
+            document.getElementById(inputId).value = addr;
         }
+    }).open();
+}
+
+/* 삭제 처리 */
+function adminDeleteStore() {
+    var storeNum = document.getElementById('modStoreNum').value;
+    if(confirm("정말로 이 매장 정보를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) {
+        location.href = "${pageContext.request.contextPath}/shop/admin/adminStoreDelete.do?storeNum=" + storeNum;
     }
+}
 
-    /* 카카오 지도 로직 */
-    var mapContainer = document.getElementById('adminMap'); 
-    var mapOption = { center: new kakao.maps.LatLng(37.566826, 126.978656), level: 4 };
-    var map = new kakao.maps.Map(mapContainer, mapOption); 
-    var geocoder = new kakao.maps.services.Geocoder();
-    var markers = []; 
-    var infowindows = []; 
+/* 카카오 지도 로직 */
+var mapContainer = document.getElementById('adminMap'); 
+var mapOption = { center: new kakao.maps.LatLng(37.566826, 126.978656), level: 4 };
+var map = new kakao.maps.Map(mapContainer, mapOption); 
+var geocoder = new kakao.maps.services.Geocoder();
+var markers = []; 
+var infowindows = []; 
 
-    // 데이터 루프 (마커 생성)
-    var stores = [
-        <c:forEach var="s" items="${adminStoreList}">
-        { name: '${s.storeName}', addr: '${s.storeAddr}', status: '${s.storeUseYn}' },
-        </c:forEach>
-    ];
+// 데이터 루프 (마커 생성)
+var stores = [
+    <c:forEach var="s" items="${adminStoreList}">
+    { name: '${s.storeName}', addr: '${s.storeAddr}', status: '${s.storeUseYn}' },
+    </c:forEach>
+];
 
-    stores.forEach(function(s, i) {
-        geocoder.addressSearch(s.addr, function(res, stat) {
-            if (stat === kakao.maps.services.Status.OK) {
-                var pos = new kakao.maps.LatLng(res[0].y, res[0].x);
-                var mark = new kakao.maps.Marker({ map: map, position: pos, opacity: (s.status==='N'?0.5:1.0) });
-                markers[i] = mark; 
-                var iw = new kakao.maps.InfoWindow({ 
-                    content: '<div style="padding:10px; font-size:12px; text-align:center;"><b>'+s.name+'</b><br>'+(s.status==='Y'?'운영중':'미운영')+'</div>' 
-                });
-                infowindows[i] = iw;
-                if(i === 0) map.setCenter(pos);
-            }
-        });
+stores.forEach(function(s, i) {
+    geocoder.addressSearch(s.addr, function(res, stat) {
+        if (stat === kakao.maps.services.Status.OK) {
+            var pos = new kakao.maps.LatLng(res[0].y, res[0].x);
+            var mark = new kakao.maps.Marker({ map: map, position: pos, opacity: (s.status==='N'?0.5:1.0) });
+            markers[i] = mark; 
+            
+            // 모던 인포윈도우 디자인
+            var iw = new kakao.maps.InfoWindow({ 
+                content: '<div style="padding:12px; font-size:13px; font-family:\'Pretendard\', sans-serif; text-align:center; color:#111827;"><b>'+s.name+'</b><br><span style="color:'+(s.status==='Y'?'#059669':'#ef4444')+'; font-size:11px; margin-top:4px; display:block;">'+(s.status==='Y'?'● 운영중':'● 미운영')+'</span></div>' 
+            });
+            infowindows[i] = iw;
+            if(i === 0) map.setCenter(pos);
+        }
     });
+});
+
+function adminSearch() {
+    var selectedBrand = document.getElementById('brandFilter').value; 
+    var searchType = document.getElementById('searchType').value; 
+    var keyword = document.getElementById('searchKeyword').value.toLowerCase().trim(); 
+
+    var rows = document.querySelectorAll('.store-row');
     
-    function adminSearch() {
-        // 1. 선택된 브랜드 값 가져오기
-        var selectedBrand = document.getElementById('brandFilter').value; 
-        // 2. 검색 조건(매장명, 주소 등)과 입력한 키워드 가져오기
-        var searchType = document.getElementById('searchType').value; 
-        var keyword = document.getElementById('searchKeyword').value.toLowerCase().trim(); 
-
-        var rows = document.querySelectorAll('.store-row');
+    rows.forEach(row => {
+        var rowBrand = row.getAttribute('data-brand'); 
+        var rowTargetText = row.getAttribute('data-' + searchType).toLowerCase(); 
         
-        rows.forEach(row => {
-            var rowBrand = row.getAttribute('data-brand'); // 표에 숨겨진 브랜드명
-            var rowTargetText = row.getAttribute('data-' + searchType).toLowerCase(); // 표에 숨겨진 검색 대상(매장명 등)
-            
-            // 조건 A: 브랜드가 '전체'이거나, 선택한 브랜드와 일치하는가?
-            var isBrandMatch = (selectedBrand === 'ALL' || rowBrand === selectedBrand);
-            
-            // 조건 B: 검색어가 포함되어 있는가?
-            var isKeywordMatch = rowTargetText.includes(keyword);
+        var isBrandMatch = (selectedBrand === 'ALL' || rowBrand === selectedBrand);
+        var isKeywordMatch = rowTargetText.includes(keyword);
 
-            // 두 조건을 모두 만족(AND)할 때만 보여줌!
-            if (isBrandMatch && isKeywordMatch) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
+        if (isBrandMatch && isKeywordMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
 
-    // ── 🌟 검색 초기화 ──
-    function adminReset() {
-        document.getElementById('brandFilter').value = 'ALL'; // 브랜드 전체로 원복
-        document.getElementById('searchType').value = 'name'; // 매장명으로 원복
-        document.getElementById('searchKeyword').value = '';  // 검색창 비우기
-        
-        adminSearch(); // 초기화된 상태로 다시 전체 목록 띄우기
-    }
+function adminReset() {
+    document.getElementById('brandFilter').value = 'ALL'; 
+    document.getElementById('searchType').value = 'name'; 
+    document.getElementById('searchKeyword').value = '';  
+    adminSearch(); 
+}
 
-    function focusStore(addr, idx) {
-        document.querySelectorAll('.store-row').forEach(r => r.classList.remove('active-row'));
-        document.getElementById('row-' + idx).classList.add('active-row');
-        geocoder.addressSearch(addr, function(res, stat) {
-            if (stat === kakao.maps.services.Status.OK) {
-                var p = new kakao.maps.LatLng(res[0].y, res[0].x);
-                map.panTo(p); 
-                infowindows.forEach(w => { if(w) w.close(); });
-                if(infowindows[idx]) infowindows[idx].open(map, markers[idx]);
-            }
-        });
-    }
-    </script>
+function focusStore(addr, idx) {
+    document.querySelectorAll('.store-row').forEach(r => r.classList.remove('active-row'));
+    document.getElementById('row-' + idx).classList.add('active-row');
+    geocoder.addressSearch(addr, function(res, stat) {
+        if (stat === kakao.maps.services.Status.OK) {
+            var p = new kakao.maps.LatLng(res[0].y, res[0].x);
+            map.panTo(p); 
+            infowindows.forEach(w => { if(w) w.close(); });
+            if(infowindows[idx]) infowindows[idx].open(map, markers[idx]);
+        }
+    });
+}
+</script>
 </body>
 </html>

@@ -21,7 +21,7 @@
 	href="${pageContext.request.contextPath}/css/login.css">
 </head>
 <body>
-
+ 
 	<!-- ══ 탑 헤더 ══════════════════════════════════════ -->
 	<header class="log-top-header">
 		<div class="log-logo">
@@ -132,11 +132,6 @@
 						</div>
 					</div>
 
-					<div class="log-form-row">
-						<label class="log-check-label"> <input type="checkbox"
-							name="rememberMe"> 로그인 상태 유지
-						</label> <span class="log-forgot">비밀번호 찾기</span>
-					</div>
 
 					<!-- 기능 유지: type="submit" -->
 					<button type="submit" class="log-btn-login">로그인</button>
