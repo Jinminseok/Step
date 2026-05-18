@@ -18,6 +18,11 @@
 	.t-btn:hover { border-color:#555; color:#fff; }
 	.content { padding:24px; flex:1; }
 
+	/* PAGE HEADER */
+	.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+	.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
+	.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
+
     /* ── 추가 UI 스타일 ── */
     .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
@@ -77,8 +82,17 @@
 		    <div class="topbar-title">주문 관리</div>
 		    <div class="topbar-path">Admin > 주문 관리</div>
 		  </div>
+		  
+
 
 		<div class="content">
+		
+			 <div class="page-hdr">
+		      <div>
+		        <div class="page-hdr-title">주문 관리</div>
+		        <div class="page-hdr-sub">고객 주문을 관리합니다. 상세 버튼을 통해 주문 상세를 확인 가능합니다.</div>
+		      </div>
+		    </div>
 			
 			<div class="card">
                 <form id="searchForm" action="adminorderForm.do" method="get">

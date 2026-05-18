@@ -168,6 +168,12 @@ td {
 	color: #d9480f;
 	background: #fff4e6;
 }
+
+/* PAGE HEADER */
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
+.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
+
 </style>
 </head>
 <body>
@@ -178,6 +184,14 @@ td {
 		<jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
 
 		<div class="content">
+		
+		    <div class="page-hdr">
+		      <div>
+		        <div class="page-hdr-title">상품 관리</div>
+		        <div class="page-hdr-sub">쇼핑몰에 등록된 상품을 조회합니다. 상품 마스터 관리(물류관리) 등록시 상품 목록에 반영됩니다.</div>
+		      </div>		      
+		    </div>
+		
 			<div class="tab-menu">
 				<div class="tab-item ${empty param.search_status ? 'active' : ''}"
 					onclick="location.href='productList.do'">전체 상품</div>
@@ -206,10 +220,10 @@ td {
 								<th width="80">사진</th>
 								<th width="150">품번 (SKU)</th>
 								<th width="100">브랜드</th>
-								<th style="text-align: left; padding-left: 15px;">상품명</th>
+								<th style="text-align: left; padding-left: 15px;">상품명 (같은 상품명인경우 하나로 묶어서 표기)</th>
 								<th width="120">카테고리</th>
-								<th width="90">색상</th>
-								<th width="90">사이즈</th>
+								<th width="90">색상 (같은 상품명인 경우 등록된 모든 색상 표기)</th>
+								<th width="90">사이즈 (같은 상품명인경우 모든 사이즈를 범위로 표시 220~280 이런식으로)</th>
 								<th width="130">판매가</th>
 								<th width="100">상태</th>
 							</tr>

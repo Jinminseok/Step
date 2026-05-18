@@ -18,6 +18,11 @@
 	.t-btn{width:32px;height:32px;border:1px solid #333;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#888;border-radius:2px}
 	.t-btn:hover{border-color:#555;color:#fff}
 	.content{padding:24px;flex:1}
+	
+	/* PAGE HEADER */
+	.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+	.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
+	.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
 
 /* ── 기본 레이아웃 ── */
     body { background-color: #f4f6f9; margin: 0; font-family: 'Noto Sans KR', sans-serif; }
@@ -97,11 +102,15 @@
     </div>
   </div>
 
-<div class="admin-dashboard">
-        <div class="admin-header">
-            <h2 class="admin-title">🏢 오프라인 매장 관리</h2>
-            <button class="btn-register" onclick="openInsertModal()">＋ 새 매장 등록</button>
-        </div>
+<div class="content">
+
+	 <div class="page-hdr">
+      <div>
+        <div class="page-hdr-title">오프라인 매장 관리</div>
+        <div class="page-hdr-sub">오프라인 매장 등록·수정을 관리합니다. 오프라인 매장 등록 시 지도에서 확인 가능합니다.</div>
+      </div>
+      <button class="btn-register" onclick="openInsertModal()">＋ 새 매장 등록</button>
+    </div>
 
 		<div class="search-bar">        
             <select id="brandFilter" class="search-select" onchange="adminSearch()">

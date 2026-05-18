@@ -17,7 +17,12 @@
 	.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 	.t-btn{width:32px;height:32px;border:1px solid #333;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#888;border-radius:2px}
 	.t-btn:hover{border-color:#555;color:#fff}
-	.content{padding:24px;flex:1}
+	.content{padding:24px;flex:1}	
+	
+	/* PAGE HEADER */
+	.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+	.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
+	.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
 	
 /* ── 기본 레이아웃 ── */
     body { background-color: #f4f6f9; margin: 0; font-family: 'Noto Sans KR', sans-serif; }
@@ -104,11 +109,13 @@
     </div>
   </div>
 
-<div class="admin-dashboard">
-        <div class="admin-header">
-            <h2 class="admin-title">📊 재고 현황</h2>
-            <div style="font-size: 13px; color: #666;">* 재고 수정은 물류 관리 시스템에서만 가능합니다.</div>
-        </div>
+<div class="content">
+    <div class="page-hdr">
+      <div>
+        <div class="page-hdr-title">재고 현황 조회</div>
+        <div class="page-hdr-sub">입고된 재고를 실시간으로 조회 합니다.</div>
+      </div>      
+    </div>
 
         <div class="search-bar">
             <select id="brandFilter" class="search-select" onchange="stockSearch()">
