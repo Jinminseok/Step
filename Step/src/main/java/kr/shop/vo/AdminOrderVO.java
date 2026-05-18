@@ -1,5 +1,7 @@
 package kr.shop.vo;
 
+import java.sql.Date;
+
 public class AdminOrderVO extends AdminBaseVO {
 	// 주문 (ORDERS)
 	private int order_num; // ORDER_NUM
@@ -17,15 +19,71 @@ public class AdminOrderVO extends AdminBaseVO {
 	private String invoice_no; // INVOICE_NO
 	private int dlv_status; // DLV_STATUS
 
-	// 반품 (RETURNS)
-	private int ret_num; // RET_NUM
-	private int tp; // TP
-	private String reason; // REASON
-	private int ret_status; // RET_STATUS
-	private int is_good; // IS_GOOD
-	private String ret_note; // RET_NOTE
+	// ── [3] 반품/교환 관련 (RETURNS) ──
+		private int ret_num;         // RET_NUM
+		private int user_num;        // USER_NUM 🌟 (추가: 신청한 회원 번호)
+		private int tp;              // TP (1:반품, 2:교환)
+		private String reason;       // REASON
+		private int prod_num;        // PROD_NUM 🌟 (추가: 신청된 상품 번호)
+		private int opt_num;         // OPT_NUM 🌟 (추가: 옵션 번호)
+		private int ret_status;      // RET_STATUS (1:신청대기, 2:수거진행, 3:처리완료, 4:신청반려)
+		private int admin_num;       // ADMIN_NUM 🌟 (추가: 승인/반려 처리한 관리자 번호)
+		private String ret_note;     // RET_NOTE (고객 추가 비고)
+		private int is_good;         // IS_GOOD (제품 상태 검수 결과 - 0:대기, 1:정상, 2:파손)
+		private Date ret_created_at; // RET_CREATED_AT 🌟 (추가: 클레임 신청일자)
+		private Date ret_updated_at; // RET_UPDATED_AT 🌟 (추가: 최종 심사일자)
 
+		
 	
+	
+	public int getUser_num() {
+			return user_num;
+		}
+
+		public void setUser_num(int user_num) {
+			this.user_num = user_num;
+		}
+
+		public int getProd_num() {
+			return prod_num;
+		}
+
+		public void setProd_num(int prod_num) {
+			this.prod_num = prod_num;
+		}
+
+		public int getOpt_num() {
+			return opt_num;
+		}
+
+		public void setOpt_num(int opt_num) {
+			this.opt_num = opt_num;
+		}
+
+		public int getAdmin_num() {
+			return admin_num;
+		}
+
+		public void setAdmin_num(int admin_num) {
+			this.admin_num = admin_num;
+		}
+
+		public Date getRet_created_at() {
+			return ret_created_at;
+		}
+
+		public void setRet_created_at(Date ret_created_at) {
+			this.ret_created_at = ret_created_at;
+		}
+
+		public Date getRet_updated_at() {
+			return ret_updated_at;
+		}
+
+		public void setRet_updated_at(Date ret_updated_at) {
+			this.ret_updated_at = ret_updated_at;
+		}
+
 	public String getProd_img_url() {
 		return prod_img_url;
 	}
