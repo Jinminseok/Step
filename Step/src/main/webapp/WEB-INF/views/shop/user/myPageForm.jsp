@@ -334,43 +334,61 @@
 
 				<!-- 5. 반품/교환 탭 -->
 				<div class="my-sub" id="my-return">
-					<div class="form-sec"
-						style="border: none; padding: 0; max-width: 100%">
-						<div class="form-group">
-							<label class="form-label">주문 선택</label> <select
-								class="form-input" name="order_num">
-								<c:if test="${empty orderList}">
-									<option value="">선택할 수 있는 주문 내역이 없습니다</option>
-								</c:if>
-								<c:forEach var="order" items="${orderList}">
-									<option value="${order.order_num}">#${order.order_num}
-										- ${order.prod_name}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">신청 유형</label>
-							<div style="display: flex; gap: 16px; margin-top: 6px">
-								<label
-									style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
-									type="radio" name="rt" checked>반품</label><label
-									style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
-									type="radio" name="rt">교환</label>
+					<form action="${pageContext.request.contextPath}/shop/mypage/returnRequest.do" method="post">
+						<div class="form-sec"
+							style="border: none; padding: 0; max-width: 100%">
+							<div class="form-group">
+								<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> 
+								
+								<select class="form-input" name="order_num">
+									<%-- 🌟 배송완료된 상품이 있는지 체크하기 위한 변수 --%>
+									<c:set var="deliveredCount" value="0" />
+									
+									<c:forEach var="order" items="${orderList}">
+										<%-- 🌟 이전 코드 기준 주문 상태 4(배송완료)인 경우에만 <option> 생성 --%>
+										<c:if test="${order.order_status == 4}">
+											<option value="${order.order_num}">#${order.order_num} - ${order.prod_name}</option>
+											<c:set var="deliveredCount" value="${deliveredCount + 1}" />
+										</c:if>
+									</c:forEach>
+									
+									<%-- 🌟 배송완료 상품이 하나도 없을 경우 --%>
+									<c:if test="${deliveredCount == 0}">
+										<option value="">선택할 수 있는 배송완료 내역이 없습니다</option>
+									</c:if>
+								</select>
 							</div>
+							<div class="form-group">
+								<label class="form-label">신청 유형</label>
+								<div style="display: flex; gap: 16px; margin-top: 6px">
+									<%-- 🌟 형님이 말씀하신 TP (1: 반품, 2: 교환) 세팅 --%>
+									<label
+										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
+										type="radio" name="tp" value="1" checked>반품</label>
+									<label
+										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
+										type="radio" name="tp" value="2">교환</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="form-label">사유</label>
+								<%-- 🌟 테이블의 REASON 컬럼과 매핑 --%>
+								<select class="form-input" name="reason">
+									<option value="단순 변심">단순 변심</option>
+									<option value="사이즈 불량">사이즈 불량</option>
+									<option value="상품 불량">상품 불량</option>
+									<option value="오배송">오배송</option>
+									<option value="기타">기타</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label class="form-label">상세 내용</label>
+								<%-- 🌟 테이블의 RET_NOTE 컬럼과 매핑 --%>
+								<textarea class="form-input" name="ret_note" placeholder="자세한 내용을 입력해주세요"></textarea>
+							</div>
+							<button type="submit" class="btn btn-black" style="margin-top: 4px; width: 100%">신청하기</button>
 						</div>
-						<div class="form-group">
-							<label class="form-label">사유</label><select class="form-input"><option>단순
-									변심</option>
-								<option>사이즈 불량</option>
-								<option>상품 불량</option>
-								<option>오배송</option></select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">상세 내용</label>
-							<textarea class="form-input" placeholder="자세한 내용을 입력해주세요"></textarea>
-						</div>
-						<button class="btn btn-black" style="margin-top: 4px; width: 100%">신청하기</button>
-					</div>
+					</form>
 				</div>
 
 				<!-- 6. 회원 탈퇴 탭 -->

@@ -7,6 +7,10 @@ public class AdminOrderVO extends AdminBaseVO {
 	private int disc_price; // DISC_PRICE
 	private int pay_price; // PAY_PRICE
 	private int order_status; // ORDER_STATUS
+	private String prod_name;
+	private String prod_img_url;
+
+
 
 	// 배송 (DELIVERY)
 	private String courier; // COURIER
@@ -21,6 +25,23 @@ public class AdminOrderVO extends AdminBaseVO {
 	private int is_good; // IS_GOOD
 	private String ret_note; // RET_NOTE
 
+	
+	public String getProd_img_url() {
+		return prod_img_url;
+	}
+
+	public void setProd_img_url(String prod_img_url) {
+		this.prod_img_url = prod_img_url;
+	}
+	
+	public String getProd_name() {
+		return prod_name;
+	}
+
+	public void setProd_name(String prod_name) {
+		this.prod_name = prod_name;
+	}
+	
 	public int getOrder_num() {
 		return order_num;
 	}

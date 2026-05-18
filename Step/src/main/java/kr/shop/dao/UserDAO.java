@@ -3,7 +3,10 @@ package kr.shop.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
+import kr.shop.vo.AdminOrderVO;
 import kr.shop.vo.UserVO;
 import kr.util.DBUtil;
 
@@ -259,5 +262,45 @@ public class UserDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
+	
+	// ── 🌟 마이페이지용: 내 주문 내역 전체 가져오기 ──
+		public List<AdminOrderVO> getMyOrderList(long user_num) throws Exception {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			List<AdminOrderVO> list = new ArrayList<>();
+			
+			try {
+				conn = DBUtil.getConnection();
+				
+				String sql = "SELECT o.ORDER_NUM, o.PAY_PRICE, o.ORDER_STATUS, "
+				           + "(SELECT p.PROD_NAME FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_NAME, "
+				           + "(SELECT p.PROD_IMG_URL FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_IMG_URL " // 🌟 이미지 경로 서브쿼리 추가!
+				           + "FROM ORDERS o "
+				           + "WHERE o.USER_NUM = ? "
+				           + "ORDER BY o.ORDER_NUM DESC";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setLong(1, user_num);
+				rs = pstmt.executeQuery();
+				
+				while (rs.next()) {
+				    AdminOrderVO order = new AdminOrderVO();
+				    order.setOrder_num(rs.getInt("ORDER_NUM"));
+				    order.setPay_price(rs.getInt("PAY_PRICE"));
+				    order.setOrder_status(rs.getInt("ORDER_STATUS")); 
+				    order.setProd_name(rs.getString("PROD_NAME"));
+				    order.setProd_img_url(rs.getString("PROD_IMG_URL")); 
+				    
+				    list.add(order);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new Exception(e);
+			} finally {
+				DBUtil.executeClose(rs, pstmt, conn);
+			}
+			return list;
+		}
 	
 }
