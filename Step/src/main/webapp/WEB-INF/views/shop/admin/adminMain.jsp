@@ -138,9 +138,15 @@ body {
 			<!-- 2. 상품 및 재고 관리 세션 (IN_STATUS=1 & PROD_STATUS 1~4 매칭) -->
 			<div class="dashboard-section">
 				<div class="section-title">
-					<i class="fa-solid fa-boxes-stacked" style="color: #495057;"></i>
-					상품 및 재고 현황 (입고완료 기준)
+					<i class="fa-solid fa-boxes-stacked" style="color: #495057;"></i>					
+					<b>재고현황 (재고상태별 count), 배송현황 (배송상태별 count),<br> 반품/교환 현황 (반품/교환 상태별 count), 채팅현황 (처리하지 않은 또는 읽지 않은 채팅방 count)</b>
+					
 				</div>
+				
+				<div class="section-title">
+				<br><b>물류 대시보드 (logis_dashForm.jsp 참조하여 작성)</b>
+				</div>
+				
 				<div class="card-grid"
 					style="grid-template-columns: repeat(2, 1fr);">
 					<div class="stat-card" onclick="location.href='productList.do'">
