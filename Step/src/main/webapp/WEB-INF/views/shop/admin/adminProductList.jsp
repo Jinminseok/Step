@@ -169,11 +169,6 @@ td {
 	background: #fff4e6;
 }
 
-/* PAGE HEADER */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.page-hdr-title{font-size:20px;font-weight:900;letter-spacing:-.5px}
-.page-hdr-sub{font-size:12px;color:var(--gray4);margin-top:2px}
-
 </style>
 </head>
 <body>
