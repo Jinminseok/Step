@@ -104,7 +104,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 5. 품절 임박 상품 건수 조회 (재고 5개 미만)
+	// 5. 품절 임박 상품 건수 조회 (재고 5개 미만, IN_STATUS=1, PROD_STATUS 1~4)
 	public int getLowStockCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -117,7 +117,9 @@ public class AdminProductDAO {
 			sql.append("JOIN PROD_OPTIONS o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN STOCK S ON o.opt_num = s.opt_num ");
 			sql.append("WHERE s.stock_qty < 5 ");
-			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2)");
+			sql.append("AND p.prod_status IN (1, 2, 3, 4) "); // 상품 상태 조건 추가
+			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1)"); // IN_STATUS
+																												// 변경
 			pstmt = conn.prepareStatement(sql.toString());
 			rs = pstmt.executeQuery();
 			if (rs.next())
@@ -128,7 +130,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [수정된 6번 메서드] 대시보드 전용 전체 등록 상품 수 조회 (매개변수 제거 및 리네이밍)
+	// 6. 대시보드 전용 전체 등록 상품 수 조회 (중복 제거 적용)
 	public int getDashboardProductTotalCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -137,10 +139,12 @@ public class AdminProductDAO {
 		int count = 0;
 		try {
 			conn = DBUtil.getConnection();
-			sql.append("SELECT COUNT(*) FROM products p ");
+			// DISTINCT를 넣어줘야 옵션 구별 없이 순수 상품 번호 기준으로만 카운트됨
+			sql.append("SELECT COUNT(DISTINCT p.prod_num) FROM products p ");
 			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
-			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
+			sql.append("WHERE p.prod_status IN (1, 2, 3, 4) ");
+			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
 
 			pstmt = conn.prepareStatement(sql.toString());
 			rs = pstmt.executeQuery();
@@ -152,12 +156,12 @@ public class AdminProductDAO {
 		}
 		return count;
 	}
-	
-	//============================
-	//대쉬보드용메서드끝
-	//============================
 
-	// 1. 입고 완료(IN_STATUS=2) 상태인 총 상품 데이터 개수 조회
+	// ============================
+	// 대쉬보드용메서드끝
+	// ============================
+
+	// 1. IN_STATUS=1 상태인 총 상품 데이터 개수 조회
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -168,11 +172,11 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			// 정석적인 조인 트리 구조 형성 및 EXISTS를 통한 중복 방지
 			sql.append("SELECT COUNT(*) FROM products p ");
 			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
-			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
+			// IN_STATUS 조건을 1로 수정
+			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sql.append(" AND p.prod_status = ?");
@@ -195,7 +199,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 2. 입고 완료(IN_STATUS=2) 상태인 상품 및 옵션 색상별 이미지 매칭 목록 조회
+	// 2. IN_STATUS=1 상태인 상품 및 옵션 색상별 이미지 매칭 목록 조회
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -206,8 +210,8 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			// 중복을 완벽히 차단하는 EXISTS 조건 적용
-			sub_sql.append(" WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 2) ");
+			// IN_STATUS 조건을 1로 수정
+			sub_sql.append(" WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sub_sql.append(" AND p.prod_status = ? ");

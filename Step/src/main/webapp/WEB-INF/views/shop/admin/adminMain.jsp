@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,193 +11,195 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style type="text/css">
-.dashboard-container {
-	padding: 24px;
+body {
 	background-color: #f8f9fa;
-	min-height: 100vh;
+	margin: 0;
+	font-family: 'Pretendard', sans-serif;
+	color: #333;
+}
+
+.content {
+	width: 98%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px 0;
+}
+
+.dashboard-section {
+	margin-bottom: 40px;
 }
 
 .section-title {
 	font-size: 18px;
-	font-weight: 700;
-	color: #222;
-	margin-bottom: 16px;
+	font-weight: 600;
+	color: #212529;
+	margin-bottom: 15px;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
-/* 오늘의 할 일 컨테이너 */
-.todo-container {
+
+.card-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 20px;
+}
+
+.stat-card {
 	background: #fff;
+	border: 1px solid #e9ecef;
 	border-radius: 12px;
 	padding: 24px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-	margin-bottom: 24px;
-}
-
-.todo-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 16px;
-}
-
-.todo-item {
-	background: #fdfdfd;
-	border: 1px solid #eaeaea;
-	border-radius: 8px;
-	padding: 20px;
-	text-align: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	transition: transform 0.2s, box-shadow 0.2s;
 	cursor: pointer;
-	transition: all 0.2s ease;
 }
 
-.todo-item:hover {
-	transform: translateY(-3px);
-	border-color: #4a90e2;
-	box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+.stat-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.todo-label {
+.stat-info .stat-label {
 	font-size: 14px;
-	color: #666;
+	color: #868e96;
+	font-weight: 500;
 	margin-bottom: 8px;
 }
 
-.todo-count {
+.stat-info .stat-value {
 	font-size: 28px;
 	font-weight: 700;
-	color: #222;
+	color: #212529;
 }
 
-.todo-count.highlight {
-	color: #e74c3c;
-}
-/* 하단 요약 인포 바 */
-.info-summary-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 16px;
+.stat-value span {
+	font-size: 16px;
+	font-weight: 500;
+	color: #495057;
+	margin-left: 2px;
 }
 
-.info-card {
-	background: #fff;
-	border-radius: 12px;
-	padding: 20px 24px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.info-text .info-title {
-	font-size: 14px;
-	color: #888;
-	margin-bottom: 4px;
-}
-
-.info-text .info-value {
-	font-size: 22px;
-	font-weight: 700;
-	color: #333;
-}
-
-.info-icon {
+.icon-box {
 	width: 48px;
 	height: 48px;
-	border-radius: 50%;
+	border-radius: 10px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 20px;
 }
+
+/* 아이콘 색상 커스텀 */
+.bg-blue {
+	background: #e7f5ff;
+	color: #1c7ed6;
+}
+
+.bg-orange {
+	background: #fff4e6;
+	color: #f76707;
+}
+
+.bg-green {
+	background: #e6fcf5;
+	color: #0ca678;
+}
+
+.bg-red {
+	background: #fff5f5;
+	color: #f03e3e;
+}
+
+.bg-indigo {
+	background: #edf2ff;
+	color: #4263eb;
+}
+
+.bg-teal {
+	background: #e6fffa;
+	color: #0b7285;
+}
 </style>
-<script type="text/javascript">
-	function goMenu(target) {
-		if (target === 'order') {
-			// [수정] 요청한 경로인 /shop/admin_order/adminorderForm.do 로 변경함
-			location.href = '${pageContext.request.contextPath}/shop/admin_order/adminorderForm.do';
-		} else if (target === 'product') {
-			location.href = '${pageContext.request.contextPath}/shop/admin/productList.do';
-		}
-	}
-</script>
 </head>
 <body>
+
 	<%@ include file="../../common/shopAdminHeader.jsp"%>
 
 	<div class="main">
 		<jsp:include page="/WEB-INF/views/common/sub_title.jsp" />
 
-		<div class="dashboard-container">
-			<div class="todo-container">
+		<div class="content">
+			<!-- 1. 주문 및 배송 현황 세션 -->
+			<!-- 2. 상품 및 재고 관리 세션 (IN_STATUS=1 & PROD_STATUS 1~4 기반 데이터 매칭 완료) -->
+			<!-- 2. 상품 및 재고 관리 세션 (IN_STATUS=1 & PROD_STATUS 1~4 매칭) -->
+			<div class="dashboard-section">
 				<div class="section-title">
-					<i class="fa-solid fa-clipboard-list" style="color: #4a90e2;"></i>
-					오늘의 할 일
+					<i class="fa-solid fa-boxes-stacked" style="color: #495057;"></i>
+					상품 및 재고 현황 (입고완료 기준)
 				</div>
-				<div class="todo-grid">
-					<div class="todo-item" onclick="goMenu('order')">
-						<div class="todo-label">신규 주문</div>
-						<div class="todo-count highlight">
-							<fmt:formatNumber value="${todayOrderCount}" pattern="#,###" />
+				<div class="card-grid"
+					style="grid-template-columns: repeat(2, 1fr);">
+					<div class="stat-card" onclick="location.href='productList.do'">
+						<div class="stat-info">
+							<div class="stat-label">전체 등록 상품 수 (판매/숨김/품절/주의)</div>
+							<div class="stat-value">${dashboardProductTotalCount}<span>개</span>
+							</div>
+						</div>
+						<div class="icon-box bg-indigo">
+							<i class="fa-solid fa-box"></i>
 						</div>
 					</div>
-					<div class="todo-item" onclick="goMenu('order')">
-						<div class="todo-label">결제 대기</div>
-						<div class="todo-count">
-							<fmt:formatNumber value="${pendingPaymentCount}" pattern="#,###" />
+
+					<div class="stat-card" onclick="location.href='lowStockList.do'">
+						<div class="stat-info">
+							<div class="stat-label">품절 임박 상품 (재고 5개 미만)</div>
+							<div class="stat-value" style="color: #f03e3e;">${lowStockCount}<span>개</span>
+							</div>
 						</div>
-					</div>
-					<div class="todo-item" onclick="goMenu('order')">
-						<div class="todo-label">배송 준비중</div>
-						<div class="todo-count">
-							<fmt:formatNumber value="${readyForShippingCount}"
-								pattern="#,###" />
-						</div>
-					</div>
-					<div class="todo-item" onclick="goMenu('order')">
-						<div class="todo-label">취소/반품 요청</div>
-						<div class="todo-count">
-							<fmt:formatNumber value="${cancelRequestCount}" pattern="#,###" />
+						<div class="icon-box bg-teal">
+							<i class="fa-solid fa-triangle-exclamation"></i>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="section-title">
-				<i class="fa-solid fa-chart-pie" style="color: #2ecc71;"></i> 시스템 운영
-				현황
-			</div>
-			<div class="info-summary-grid">
-				<div class="info-card" onclick="goMenu('product')"
-					style="cursor: pointer;">
-					<div class="info-text">
-						<div class="info-title">마스터 등록 상품 수</div>
-						<div class="info-value">
-							<fmt:formatNumber value="${totalProductCount}" pattern="#,###" />
-							개
-						</div>
-					</div>
-					<div class="info-icon" style="background: #e8f4fd; color: #4a90e2;">
-						<i class="fa-solid fa-box"></i>
-					</div>
+			<!-- 2. 상품 및 재고 관리 세션 (IN_STATUS=2 기반 데이터 매칭 완료) -->
+			<div class="dashboard-section">
+				<div class="section-title">
+					<i class="fa-solid fa-boxes-stacked" style="color: #495057;"></i>
+					상품 및 재고 현황 (입고완료 기준)
 				</div>
-
-				<div class="info-card" onclick="goMenu('product')"
-					style="cursor: pointer;">
-					<div class="info-text">
-						<div class="info-title">품절 위험 품목 (재고 5개 미만)</div>
-						<div class="info-value" style="color: #e74c3c;">
-							<fmt:formatNumber value="${lowStockCount}" pattern="#,###" />
-							개
+				<div class="card-grid"
+					style="grid-template-columns: repeat(2, 1fr);">
+					<div class="stat-card" onclick="location.href='productList.do'">
+						<div class="stat-info">
+							<div class="stat-label">전체 등록 상품 수 (판매/숨김/품절/주의 포함)</div>
+							<div class="stat-value">${dashboardProductTotalCount}<span>개</span>
+							</div>
+						</div>
+						<div class="icon-box bg-indigo">
+							<i class="fa-solid fa-box"></i>
 						</div>
 					</div>
-					<div class="info-icon" style="background: #fdf2f2; color: #e74c3c;">
-						<i class="fa-solid fa-triangle-exclamation"></i>
+
+					<div class="stat-card" onclick="location.href='lowStockList.do'">
+						<div class="stat-info">
+							<div class="stat-label">품절 임박 상품 (재고 5개 미만)</div>
+							<div class="stat-value" style="color: #f03e3e;">${lowStockCount}<span>개</span>
+							</div>
+						</div>
+						<div class="icon-box bg-teal">
+							<i class="fa-solid fa-triangle-exclamation"></i>
+						</div>
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
+
 </body>
 </html>
