@@ -93,11 +93,11 @@
 							<label>주문 상태</label>
 							<select class="fi-select" name="sStatus">
 								<option value="ALL" ${param.sStatus == 'ALL' ? 'selected' : ''}>전체보기</option>
-								<option value="1" ${param.sStatus == '1' ? 'selected' : ''}>결제대기/신규</option>
+								<option value="1" ${param.sStatus == '1' ? 'selected' : ''}>결제완료</option>
 								<option value="2" ${param.sStatus == '2' ? 'selected' : ''}>상품준비중</option>
 								<option value="3" ${param.sStatus == '3' ? 'selected' : ''}>배송중</option>
 								<option value="4" ${param.sStatus == '4' ? 'selected' : ''}>배송완료</option>
-								<option value="9" ${param.sStatus == '9' ? 'selected' : ''}>주문취소</option>
+								<option value="9" ${param.sStatus == '5' ? 'selected' : ''}>주문취소</option>
 							</select>
 						</div>
 
