@@ -334,7 +334,7 @@
 
 				<!-- 5. 반품/교환 탭 -->
 				<div class="my-sub" id="my-return">
-					<form action="${pageContext.request.contextPath}/shop/mypage/returnRequest.do" method="post">
+					<form action="${pageContext.request.contextPath}/shop/user/returnRequest.do" method="post">
 						<div class="form-sec"
 							style="border: none; padding: 0; max-width: 100%">
 							<div class="form-group">

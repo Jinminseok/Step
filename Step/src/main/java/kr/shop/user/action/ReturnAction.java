@@ -15,13 +15,17 @@ public class ReturnAction implements Action {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         
-        // 세션에 저장된 user_num 가져오기 
-        Integer userNum = (Integer) session.getAttribute("user_num"); 
+        // 🌟 형님 시스템의 세션에 든 user_num(Long)을 안전하게 Object로 먼저 꺼냅니다.
+        Object sessionUserNum = session.getAttribute("user_num"); 
 
-        if (userNum == null) {
+        if (sessionUserNum == null) {
             // 로그인이 안 되어있으면 로그인 창으로 튕겨냅니다.
             return "redirect:/shop/user/loginForm.do"; 
         }
+
+        // 🌟 자바에서 Long이든 Integer든 모두 상속받는 최상위 숫자 클래스인 'Number'를 이용하여
+        // 어떤 타입이 세션에 들어있든 에러 없이 깔끔하게 int형 숫자로 변환해 줍니다!
+        int userNum = ((Number) sessionUserNum).intValue();
 
         // 2. 폼에서 넘어온 파라미터 싹 다 받기
         String orderNumStr = request.getParameter("order_num");
@@ -29,11 +33,11 @@ public class ReturnAction implements Action {
         String reason = request.getParameter("reason");
         String retNote = request.getParameter("ret_note");
 
-        // 🚨 방어 코드: 주문을 아예 선택하지 않고 신청 버튼을 누른 경우
+        // 방어 코드: 주문을 아예 선택하지 않고 신청 버튼을 누른 경우
         if (orderNumStr == null || orderNumStr.trim().isEmpty()) {
             request.setAttribute("notice_msg", "반품/교환할 주문을 선택해주세요.");
             request.setAttribute("notice_url", request.getContextPath() + "/shop/mypage/myPage.do");
-            return "/WEB-INF/views/common/alert_view.jsp"; 
+            return "/WEB-INF/views/common/alert_view.jsp"; // 형님 프로젝트의 알럿 JSP 경로
         }
 
         try {
@@ -42,14 +46,18 @@ public class ReturnAction implements Action {
 
             // 3. DAO 호출해서 DB에 확실하게 박아넣기
             UserReturnDAO dao = UserReturnDAO.getInstance();
-            dao.insertReturnRequest(orderNum, userNum, tp, reason, retNote);            
+            dao.insertReturnRequest(orderNum, userNum, tp, reason, retNote);
             
-        } catch (Exception e) {            
+            // 이클립스 콘솔에서 성공 여부 확인용
+            System.out.println("✅ 반품/교환 신청 완료! (주문번호: " + orderNum + ", 유형: " + tp + ")");
+
+        } catch (Exception e) {
+            System.out.println("🚨 [ReturnAction 에러 발생]");
             e.printStackTrace();
             throw e;
         }
 
         // 4. 신청이 깔끔하게 끝나면 다시 마이페이지 메인으로 새로고침!
-        return "redirect:/shop/mypage/myPage.do"; 
+        return "redirect:/shop/user/myPageForm.do"; 
     }
 }
