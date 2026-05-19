@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kr.util.DBUtil;
 import kr.shop.vo.AdminProductVO;
@@ -24,7 +26,6 @@ public class AdminProductDAO {
 	// [리팩토링] 메인 대시보드 통계용 메서드들
 	// ==================================
 
-	// 1. 오늘 신규 주문 건수 조회 (TRUNC 함수 적용)
 	public int getTodayOrderCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -44,7 +45,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 2. 미결제 (결제 대기중) 건수 조회 (ORDER_STATUS = 1)
 	public int getPendingPaymentCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -64,7 +64,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 3. 배송 준비중 건수 조회 (ORDER_STATUS = 2)
 	public int getReadyForShippingCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -84,7 +83,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 4. 취소/반품/교환 요청 건수 조회 (ORDER_STATUS = 5)
 	public int getCancelRequestCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -104,7 +102,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 5. 품절 임박 상품 건수 조회 (재고 5개 미만, IN_STATUS=1, PROD_STATUS 1~4)
 	public int getLowStockCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -129,7 +126,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 6. 대시보드 전용 전체 등록 상품 수 조회 (중복 제거 적용)
 	public int getDashboardProductTotalCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -155,11 +151,139 @@ public class AdminProductDAO {
 		return count;
 	}
 
+	// ==================================
+	// [추가] 대시보드 실데이터 연동용 메서드
+	// ==================================
+
+	public long getTodaySalesAmount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long total = 0;
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT NVL(SUM(pay_price), 0) FROM orders WHERE TRUNC(order_created_at) = TRUNC(SYSDATE) AND order_status IN (1, 2, 3, 4)";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				total = rs.getLong(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return total;
+	}
+
+	public int getTodayNewUserCount() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int count = 0;
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT COUNT(*) FROM users_detail WHERE TRUNC(user_created_at) = TRUNC(SYSDATE)";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				count = rs.getInt(1);
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return count;
+	}
+
+	public List<Map<String, Object>> getMonthlySales() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Map<String, Object>> list = new ArrayList<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT TO_CHAR(order_created_at, 'MM') AS month, NVL(SUM(pay_price), 0) AS sales "
+					+ "FROM orders " + "WHERE order_created_at >= TRUNC(ADD_MONTHS(SYSDATE, -3), 'MM') "
+					+ "GROUP BY TO_CHAR(order_created_at, 'MM') " + "ORDER BY month";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("MONTH", rs.getString("month"));
+				map.put("SALES", rs.getLong("sales"));
+				list.add(map);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
+
+	public List<Map<String, Object>> getTopProducts() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Map<String, Object>> list = new ArrayList<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM (" + "  SELECT p.prod_name, SUM(oi.order_item_qty) AS sales_count "
+					+ "  FROM order_items oi " + "  JOIN products p ON oi.prod_num = p.prod_num "
+					+ "  GROUP BY p.prod_name " + "  ORDER BY sales_count DESC" + ") WHERE ROWNUM <= 4";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("PROD_NAME", rs.getString("prod_name"));
+				map.put("SALES_COUNT", rs.getInt("sales_count"));
+				list.add(map);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
+
+	public List<Map<String, Object>> getRecentOrders() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Map<String, Object>> list = new ArrayList<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM (" + "  SELECT " + "    o.order_num, "
+					+ "    NVL(u.user_id, '비회원') AS user_id, "
+					+ "    (SELECT p.prod_name FROM order_items oi JOIN products p ON oi.prod_num = p.prod_num WHERE oi.order_num = o.order_num AND ROWNUM = 1) AS main_prod_name, "
+					+ "    (SELECT COUNT(*) FROM order_items WHERE order_num = o.order_num) AS item_cnt, "
+					+ "    o.pay_price, " + "    o.order_status, " + "    o.order_created_at " + "  FROM orders o "
+					+ "  LEFT JOIN users u ON o.user_num = u.user_num " + "  ORDER BY o.order_created_at DESC"
+					+ ") WHERE ROWNUM <= 5";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("ORDER_NUM", rs.getString("order_num"));
+				map.put("USER_ID", rs.getString("user_id"));
+
+				String mainProdName = rs.getString("main_prod_name");
+				int itemCnt = rs.getInt("item_cnt");
+
+				if (itemCnt > 1) {
+					map.put("PROD_NAME", mainProdName + " 외 " + (itemCnt - 1) + "건");
+				} else {
+					map.put("PROD_NAME", mainProdName != null ? mainProdName : "상품정보없음");
+				}
+
+				map.put("PAY_PRICE", rs.getInt("pay_price"));
+				map.put("ORDER_STATUS", rs.getInt("order_status"));
+				map.put("ORDER_DATE", rs.getDate("order_created_at"));
+				list.add(map);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
+
 	// ============================
 	// 상품 목록 및 동적 필터 조회 메서드
 	// ============================
 
-	// 1. IN_STATUS=1 상태인 총 상품 데이터 개수 조회
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -208,7 +332,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 2. IN_STATUS=1 상태인 상품 및 옵션 색상별 이미지 매칭 목록 조회
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -231,13 +354,11 @@ public class AdminProductDAO {
 				sub_sql.append(" AND p.brand_num = ? ");
 			}
 
-			// 🚨 정렬 기준 동적 처리 (1: 최신입고순 먼저 / 2: 마지막입고순 먼저(오래된순))
-			String orderSql = "p.PROD_NUM DESC"; // 기본값 (최신순)
+			String orderSql = "p.PROD_NUM DESC";
 			if ("2".equals(vo.getOrder_type())) {
-				orderSql = "p.PROD_NUM ASC"; // 마지막 입고순 (과거순)
+				orderSql = "p.PROD_NUM ASC";
 			}
 
-			// 🚨 텍스트 블록과 변수 연결 구문 매칭 수정 완료
 			String sql = """
 					SELECT * FROM (
 					    SELECT a.*, ROWNUM rnum FROM (
@@ -320,7 +441,6 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// 3. 상품 상세 조회
 	public AdminProductVO getProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -361,7 +481,6 @@ public class AdminProductDAO {
 		return product;
 	}
 
-	// 4. 상품 등록 (트랜잭션: 상품 + 옵션 + 메인이미지)
 	public void insertProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -419,7 +538,6 @@ public class AdminProductDAO {
 		}
 	}
 
-	// 5. 상품 수정
 	public void updateProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -448,7 +566,6 @@ public class AdminProductDAO {
 		}
 	}
 
-	// 6. 상품 옵션 목록 조회
 	public List<AdminProductVO> getProductOptions(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -476,7 +593,6 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// 7. 상품 삭제
 	public void deleteProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt1 = null;
@@ -505,7 +621,6 @@ public class AdminProductDAO {
 		}
 	}
 
-	// 8. 브랜드 리스트 (Y인 것만)
 	public List<AdminProductVO> getBrandList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -528,7 +643,6 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// 9. 카테고리 리스트 (Y인 것만)
 	public List<AdminProductVO> getCategoryList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
