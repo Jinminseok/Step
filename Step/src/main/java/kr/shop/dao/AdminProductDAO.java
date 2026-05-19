@@ -117,9 +117,8 @@ public class AdminProductDAO {
 			sql.append("JOIN PROD_OPTIONS o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN STOCK S ON o.opt_num = s.opt_num ");
 			sql.append("WHERE s.stock_qty < 5 ");
-			sql.append("AND p.prod_status IN (1, 2, 3, 4) "); // 상품 상태 조건 추가
-			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1)"); // IN_STATUS
-																												// 변경
+			sql.append("AND p.prod_status IN (1, 2, 3, 4) ");
+			sql.append("AND EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1)");
 			pstmt = conn.prepareStatement(sql.toString());
 			rs = pstmt.executeQuery();
 			if (rs.next())
@@ -139,7 +138,6 @@ public class AdminProductDAO {
 		int count = 0;
 		try {
 			conn = DBUtil.getConnection();
-			// DISTINCT를 넣어줘야 옵션 구별 없이 순수 상품 번호 기준으로만 카운트됨
 			sql.append("SELECT COUNT(DISTINCT p.prod_num) FROM products p ");
 			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
@@ -158,7 +156,7 @@ public class AdminProductDAO {
 	}
 
 	// ============================
-	// 대쉬보드용메서드끝
+	// 상품 목록 및 동적 필터 조회 메서드
 	// ============================
 
 	// 1. IN_STATUS=1 상태인 총 상품 데이터 개수 조회
@@ -175,11 +173,16 @@ public class AdminProductDAO {
 			sql.append("SELECT COUNT(*) FROM products p ");
 			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
-			// IN_STATUS 조건을 1로 수정
 			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sql.append(" AND p.prod_status = ?");
+			}
+			if (vo.getCat_num() > 0) {
+				sql.append(" AND p.cat_num = ?");
+			}
+			if (vo.getBrand_num() > 0) {
+				sql.append(" AND p.brand_num = ?");
 			}
 
 			pstmt = conn.prepareStatement(sql.toString());
@@ -187,6 +190,12 @@ public class AdminProductDAO {
 			int n = 0;
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				pstmt.setString(++n, vo.getSearch_status());
+			}
+			if (vo.getCat_num() > 0) {
+				pstmt.setInt(++n, vo.getCat_num());
+			}
+			if (vo.getBrand_num() > 0) {
+				pstmt.setInt(++n, vo.getBrand_num());
 			}
 
 			rs = pstmt.executeQuery();
@@ -210,11 +219,16 @@ public class AdminProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			// IN_STATUS 조건을 1로 수정
 			sub_sql.append(" WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
 
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				sub_sql.append(" AND p.prod_status = ? ");
+			}
+			if (vo.getCat_num() > 0) {
+				sub_sql.append(" AND p.cat_num = ? ");
+			}
+			if (vo.getBrand_num() > 0) {
+				sub_sql.append(" AND p.brand_num = ? ");
 			}
 
 			String sql = """
@@ -264,6 +278,12 @@ public class AdminProductDAO {
 			int n = 0;
 			if (vo.getSearch_status() != null && !"".equals(vo.getSearch_status())) {
 				pstmt.setString(++n, vo.getSearch_status());
+			}
+			if (vo.getCat_num() > 0) {
+				pstmt.setInt(++n, vo.getCat_num());
+			}
+			if (vo.getBrand_num() > 0) {
+				pstmt.setInt(++n, vo.getBrand_num());
 			}
 			pstmt.setInt(++n, vo.getStart_row());
 			pstmt.setInt(++n, vo.getEnd_row());
@@ -347,14 +367,12 @@ public class AdminProductDAO {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 
-			// 4-1. 상품 시퀀스 번호 미리 따오기 (옵션/이미지 테이블 연결용)
 			sql = "SELECT PRODUCTS_SEQ.NEXTVAL FROM DUAL";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			if (rs.next())
 				prod_num = rs.getInt(1);
 
-			// 4-2. 상품 본체 등록
 			sql = "INSERT INTO products (prod_num, sku, prod_name, gender, brand_num, cat_num, "
 					+ "prod_price, sale_rate, prod_status, prod_text, prod_img_url) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -372,7 +390,6 @@ public class AdminProductDAO {
 			pstmt2.setString(11, vo.getProd_img_url());
 			pstmt2.executeUpdate();
 
-			// 4-3. 상품 옵션 등록 (기본 1개 우선 등록 구조)
 			sql = "INSERT INTO prod_options (opt_num, prod_num, size_val, color, add_price) "
 					+ "VALUES (PROD_OPTIONS_SEQ.NEXTVAL, ?, ?, ?, ?)";
 			pstmt3 = conn.prepareStatement(sql);
@@ -381,8 +398,6 @@ public class AdminProductDAO {
 			pstmt3.setString(3, vo.getColor());
 			pstmt3.setInt(4, vo.getAdd_price());
 			pstmt3.executeUpdate();
-
-			// 4-4. (선택사항) 이미지 테이블 연동이 필요하다면 여기서 추가 실행
 
 			conn.commit();
 		} catch (Exception e) {
@@ -396,7 +411,7 @@ public class AdminProductDAO {
 		}
 	}
 
-	// 5. 상품 수정 (본체 수정 + 옵션은 별도 관리 권장)
+	// 5. 상품 수정
 	public void updateProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -453,7 +468,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// 7. 상품 삭제 (트랜잭션: 옵션 먼저 -> 상품 나중)
+	// 7. 상품 삭제
 	public void deleteProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt1 = null;
@@ -463,12 +478,10 @@ public class AdminProductDAO {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 
-			// 옵션 삭제
 			pstmt1 = conn.prepareStatement("DELETE FROM prod_options WHERE prod_num=?");
 			pstmt1.setInt(1, prod_num);
 			pstmt1.executeUpdate();
 
-			// 상품 삭제
 			pstmt2 = conn.prepareStatement("DELETE FROM products WHERE prod_num=?");
 			pstmt2.setInt(1, prod_num);
 			pstmt2.executeUpdate();

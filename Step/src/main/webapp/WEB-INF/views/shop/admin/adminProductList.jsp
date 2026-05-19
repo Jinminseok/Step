@@ -64,12 +64,18 @@ body {
 	color: #666;
 }
 
-/* ── 📊 탭 메뉴 스타일 개편 ── */
+/* ── 📊 탭 메뉴 및 검색 필터 레이아웃 ── */
+.tab-filter-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	border-bottom: 1px solid #e2e8f0;
+	margin-bottom: 24px;
+}
+
 .tab-menu {
 	display: flex;
 	gap: 8px;
-	border-bottom: 1px solid #e2e8f0;
-	margin-bottom: 24px;
 	background: transparent;
 	padding: 0;
 }
@@ -82,6 +88,7 @@ body {
 	font-size: 14px;
 	border-bottom: 2px solid transparent;
 	transition: all 0.2s ease;
+	margin-bottom: -1px; /* 부모 border-bottom과 겹치도록 보정 */
 }
 
 .tab-item:hover {
@@ -92,6 +99,30 @@ body {
 	color: #3b82f6;
 	border-bottom: 2px solid #3b82f6;
 	font-weight: 600;
+}
+
+/* 🚨 추가된 브랜드/카테고리 셀렉트 폼 스타일 */
+.filter-form {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.filter-select {
+	padding: 8px 12px;
+	font-size: 13.5px;
+	font-family: 'Pretendard', sans-serif;
+	color: #334155;
+	background-color: #fff;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	outline: none;
+	cursor: pointer;
+	transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+	border-color: #3b82f6;
 }
 
 /* TABLE LIST */
@@ -252,6 +283,21 @@ tr:hover td {
 	font-weight: 700;
 }
 </style>
+<!-- 🚨 탭 변환 및 셀렉트 선택 시 크로스 필터링 유지를 위한 스크립트 작성 -->
+<script type="text/javascript">
+	function goFilter(status, cat, brand) {
+		let url = 'productList.do?';
+		let params = [];
+		if (status)
+			params.push('search_status=' + status);
+		if (cat && cat !== '0')
+			params.push('cat_num=' + cat);
+		if (brand && brand !== '0')
+			params.push('brand_num=' + brand);
+
+		location.href = url + params.join('&');
+	}
+</script>
 </head>
 <body>
 
@@ -270,17 +316,46 @@ tr:hover td {
 				</div>
 			</div>
 
-			<div class="tab-menu">
-				<div class="tab-item ${empty param.search_status ? 'active' : ''}"
-					onclick="location.href='productList.do'">전체 상품</div>
-				<div class="tab-item ${param.search_status == '1' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=1'">판매중</div>
-				<div class="tab-item ${param.search_status == '2' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=2'">숨김</div>
-				<div class="tab-item ${param.search_status == '3' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=3'">품절</div>
-				<div class="tab-item ${param.search_status == '4' ? 'active' : ''}"
-					onclick="location.href='productList.do?search_status=4'">주의</div>
+			<!-- 📊 탭 메뉴 및 검색 필터 컨테이너 분리 결합 -->
+			<div class="tab-filter-container">
+				<div class="tab-menu">
+					<div class="tab-item ${empty param.search_status ? 'active' : ''}"
+						onclick="goFilter('', '${cat_num}', '${brand_num}')">전체 상품</div>
+					<div class="tab-item ${param.search_status == '1' ? 'active' : ''}"
+						onclick="goFilter('1', '${cat_num}', '${brand_num}')">판매중</div>
+					<div class="tab-item ${param.search_status == '2' ? 'active' : ''}"
+						onclick="goFilter('2', '${cat_num}', '${brand_num}')">숨김</div>
+					<div class="tab-item ${param.search_status == '3' ? 'active' : ''}"
+						onclick="goFilter('3', '${cat_num}', '${brand_num}')">품절</div>
+					<div class="tab-item ${param.search_status == '4' ? 'active' : ''}"
+						onclick="goFilter('4', '${cat_num}', '${brand_num}')">주의</div>
+				</div>
+
+				<!-- 🚨 카테고리 및 브랜드 동적 셀렉트 필터 서식 영역 -->
+				<form action="productList.do" method="get" class="filter-form">
+					<input type="hidden" name="search_status"
+						value="${param.search_status}">
+
+					<!-- 브랜드 필터 -->
+					<select name="brand_num" class="filter-select"
+						onchange="this.form.submit()">
+						<option value="0">전체 브랜드</option>
+						<c:forEach var="b" items="${brandList}">
+							<option value="${b.brand_num}"
+								${brand_num == b.brand_num ? 'selected' : ''}>${b.brand_name}</option>
+						</c:forEach>
+					</select>
+
+					<!-- 카테고리 필터 -->
+					<select name="cat_num" class="filter-select"
+						onchange="this.form.submit()">
+						<option value="0">전체 카테고리</option>
+						<c:forEach var="c" items="${categoryList}">
+							<option value="${c.cat_num}"
+								${cat_num == c.cat_num ? 'selected' : ''}>${c.cat_name}</option>
+						</c:forEach>
+					</select>
+				</form>
 			</div>
 
 			<div class="tbl-wrap">
