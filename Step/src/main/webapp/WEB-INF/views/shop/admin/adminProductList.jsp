@@ -13,21 +13,19 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style type="text/css">
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
+/* --- 기본 레이아웃 및 뼈대 --- */
 *, *::before, *::after {
 	box-sizing: border-box;
 }
 
-/* --- 기본 레이아웃 --- */
 body {
 	background-color: #f8f9fa;
 	margin: 0;
 	font-family: 'Pretendard', sans-serif;
 	color: #333;
-	overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+	overflow-y: scroll;
 }
 
-/* 👇 사이드바 너비만큼 본문을 완벽히 밀어줍니다 */
 .main {
 	margin-left: 260px;
 	padding: 30px;
@@ -44,7 +42,7 @@ body {
 	margin: 0 auto;
 }
 
-/* PAGE HEADER */
+/* --- 상단 타이틀 및 필터 패널 --- */
 .page-hdr {
 	display: flex;
 	align-items: center;
@@ -64,7 +62,6 @@ body {
 	color: #666;
 }
 
-/* ── 📊 탭 메뉴 및 검색 필터 레이아웃 ── */
 .tab-filter-container {
 	display: flex;
 	justify-content: space-between;
@@ -88,7 +85,7 @@ body {
 	font-size: 14px;
 	border-bottom: 2px solid transparent;
 	transition: all 0.2s ease;
-	margin-bottom: -1px; /* 부모 border-bottom과 겹치도록 보정 */
+	margin-bottom: -1px;
 }
 
 .tab-item:hover {
@@ -101,7 +98,6 @@ body {
 	font-weight: 600;
 }
 
-/* ── 💻 상용 백오피스 스타일 검색 필터 패널 영역 ── */
 .filter-panel {
 	background: #fff;
 	border: 1px solid #e2e8f0;
@@ -159,7 +155,7 @@ body {
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* TABLE LIST */
+/* --- 메인 테이블 영역 --- */
 .tbl-wrap {
 	background: #fff;
 	border: 1px solid #e2e8f0;
@@ -204,7 +200,6 @@ tr:hover td {
 	background: #f8fafc;
 }
 
-/* 상품 이미지 미니어처 */
 .td-img {
 	display: flex;
 	justify-content: center;
@@ -258,7 +253,6 @@ tr:hover td {
 	font-weight: 500;
 }
 
-/* ── 🏷️ 상태 뱃지 글로벌 디자인 통일 ── */
 .status-badge {
 	display: inline-flex;
 	align-items: center;
@@ -273,21 +267,23 @@ tr:hover td {
 .status-sale {
 	color: #059669;
 	background: #dcfce7;
-} /* 판매중 (그린) */
+}
+
 .status-hide {
 	color: #2563eb;
 	background: #dbeafe;
-} /* 숨김 (블루) */
+}
+
 .status-soldout {
 	color: #ef4444;
 	background: #fef2f2;
-} /* 품절 (레드) */
+}
+
 .status-attention {
 	color: #d9480f;
 	background: #fff4e6;
-} /* 주의 (오렌지) */
+}
 
-/* PAGINATION */
 .paging-area {
 	margin-top: 30px;
 	margin-bottom: 10px;
@@ -316,22 +312,146 @@ tr:hover td {
 	color: #fff !important;
 	font-weight: 700;
 }
+
+/* --- 모달 및 클릭 효과 --- */
+.tr-clickable {
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.tr-clickable:hover td {
+	background: #f1f5f9 !important;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(15, 23, 42, 0.4);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+	backdrop-filter: blur(2px);
+}
+
+.modal-content {
+	background: #fff;
+	width: 600px;
+	border-radius: 12px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal-header {
+	background: #1e293b;
+	color: #fff;
+	padding: 16px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.modal-header h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.close-btn {
+	background: none;
+	border: none;
+	color: #94a3b8;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.close-btn:hover {
+	color: #fff;
+}
+
+.modal-body {
+	padding: 20px;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.modal-footer {
+	padding: 16px 20px;
+	border-top: 1px solid #e2e8f0;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	background: #f8fafc;
+}
+
+.btn-cancel {
+	padding: 8px 16px;
+	border: 1px solid #cbd5e1;
+	background: #fff;
+	border-radius: 6px;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+.stock-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: center;
+	font-size: 14px;
+}
+
+.stock-table th {
+	background: #f8fafc;
+	padding: 12px;
+	color: #64748b;
+	font-weight: 600;
+	border-bottom: 2px solid #e2e8f0;
+}
+
+.stock-table td {
+	padding: 12px;
+	border-bottom: 1px solid #e2e8f0;
+	vertical-align: middle;
+}
 </style>
-<!-- 🚨 탭 변환 및 셀렉트 선택 시 크로스 필터링 및 정렬 유지를 위한 스크립트 통합 보완 -->
+
 <script type="text/javascript">
 	function goFilter(status, cat, brand, order) {
 		let url = 'productList.do?';
 		let params = [];
-		if (status)
-			params.push('search_status=' + status);
-		if (cat && cat !== '0')
-			params.push('cat_num=' + cat);
-		if (brand && brand !== '0')
-			params.push('brand_num=' + brand);
-		if (order && order !== '1')
-			params.push('order_type=' + order);
-
+		if (status) params.push('search_status=' + status);
+		if (cat && cat !== '0') params.push('cat_num=' + cat);
+		if (brand && brand !== '0') params.push('brand_num=' + brand);
+		if (order && order !== '1') params.push('order_type=' + order);
 		location.href = url + params.join('&');
+	}
+
+	function openStockModal(el) {
+		let prodNum = el.dataset.prodnum;
+		let prodName = el.dataset.prodname;
+		
+		document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-box"></i> ' + prodName + ' — 사이즈별 재고';
+		document.getElementById('stockModal').style.display = 'flex';
+		
+		document.getElementById('stockTbody').innerHTML = '<tr><td colspan="5" style="padding:40px; color:#94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> 데이터 로딩중...</td></tr>';
+
+		fetch('${pageContext.request.contextPath}/shop/admin/productStockAjax.do?prod_num=' + prodNum)
+			.then(response => response.text())
+			.then(html => {
+				document.getElementById('stockTbody').innerHTML = html;
+			})
+			.catch(error => {
+				document.getElementById('stockTbody').innerHTML = '<tr><td colspan="5" style="color:#ef4444;">실패</td></tr>';
+			});
+	}
+
+	function closeStockModal() {
+		document.getElementById('stockModal').style.display = 'none';
 	}
 </script>
 </head>
@@ -352,7 +472,6 @@ tr:hover td {
 				</div>
 			</div>
 
-			<!-- 📊 탭 메뉴 컨테이너 상단 배치 -->
 			<div class="tab-filter-container">
 				<div class="tab-menu">
 					<div class="tab-item ${empty param.search_status ? 'active' : ''}"
@@ -369,13 +488,10 @@ tr:hover td {
 				</div>
 			</div>
 
-			<!-- 💻 상용 백오피스 벤치마킹 검색 필터 패널 영역 (기존 로직 완벽 유지) -->
 			<div class="filter-panel">
 				<form action="productList.do" method="get" class="filter-form">
 					<input type="hidden" name="search_status"
 						value="${param.search_status}">
-
-					<!-- 정렬 기준 필터 그룹 -->
 					<div class="filter-group">
 						<label class="filter-label"><i
 							class="fa-solid fa-arrow-down-short-wide"></i> 조회 정렬</label> <select
@@ -385,8 +501,6 @@ tr:hover td {
 							<option value="2" ${order_type == '2' ? 'selected' : ''}>마지막입고순</option>
 						</select>
 					</div>
-
-					<!-- 브랜드 필터 그룹 -->
 					<div class="filter-group">
 						<label class="filter-label"><i
 							class="fa-solid fa-copyright"></i> 브랜드 지정</label> <select
@@ -399,8 +513,6 @@ tr:hover td {
 							</c:forEach>
 						</select>
 					</div>
-
-					<!-- 카테고리 필터 그룹 -->
 					<div class="filter-group">
 						<label class="filter-label"><i
 							class="fa-solid fa-layer-group"></i> 카테고리 지정</label> <select
@@ -418,55 +530,13 @@ tr:hover td {
 
 			<div class="tbl-wrap">
 				<c:if test="${count == 0}">
-					<!-- 🚨 동적 문구 바인딩을 위한 상태값 텍스트 처리 변수 셋팅 -->
-					<c:set var="statusTxt" value="전체" />
-					<c:if test="${param.search_status == '1'}">
-						<c:set var="statusTxt" value="판매중" />
-					</c:if>
-					<c:if test="${param.search_status == '2'}">
-						<c:set var="statusTxt" value="숨김" />
-					</c:if>
-					<c:if test="${param.search_status == '3'}">
-						<c:set var="statusTxt" value="품절" />
-					</c:if>
-					<c:if test="${param.search_status == '4'}">
-						<c:set var="statusTxt" value="주의" />
-					</c:if>
-
-					<!-- 선택된 브랜드명 매칭 추출 -->
-					<c:set var="brandTxt" value="" />
-					<c:if test="${brand_num > 0}">
-						<c:forEach var="b" items="${brandList}">
-							<c:if test="${brand_num == b.brand_num}">
-								<c:set var="brandTxt" value=" [${b.brand_name}]" />
-							</c:if>
-						</c:forEach>
-					</c:if>
-
-					<!-- 선택된 카테고리명 매칭 추출 -->
-					<c:set var="catTxt" value="" />
-					<c:if test="${cat_num > 0}">
-						<c:forEach var="c" items="${categoryList}">
-							<c:if test="${cat_num == c.cat_num}">
-								<c:set var="catTxt" value=" [${c.cat_name}]" />
-							</c:if>
-						</c:forEach>
-					</c:if>
-
-					<!-- 🚨 실무 커머스 스타일 동적 안내 스크립트 출력 필드 -->
-					<div align="center"
-						style="padding: 90px 0; color: #64748b; font-size: 14.5px; line-height: 1.6;">
+					<div align="center" style="padding: 90px 0; color: #64748b;">
 						<i class="fa-solid fa-box-open"
 							style="font-size: 42px; margin-bottom: 16px; display: block; color: #cbd5e1;"></i>
-						<span
-							style="font-weight: 600; color: #0f172a; display: block; margin-bottom: 4px;">
-							조회 조건과 일치하는 마스터 상품이 없습니다. </span> <span
-							style="font-size: 13px; color: #94a3b8;"> 현재 필터 : <span
-							style="color: #3b82f6; font-weight: 500;">${statusTxt}</span>
-							상태${brandTxt}${catTxt} 내역 공백
-						</span>
+						조회 조건과 일치하는 마스터 상품이 없습니다.
 					</div>
 				</c:if>
+
 				<c:if test="${count > 0}">
 					<table>
 						<thead>
@@ -476,15 +546,17 @@ tr:hover td {
 								<th width="130">브랜드</th>
 								<th style="text-align: left; padding-left: 20px;">상품명</th>
 								<th width="140">카테고리</th>
-								<th width="100">색상</th>
-								<th width="90">사이즈</th>
+								<th width="120">색상</th>
+								<th width="110">사이즈</th>
 								<th width="140" style="text-align: right; padding-right: 20px;">판매가</th>
 								<th width="120">상태</th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:forEach var="product" items="${list}">
-								<tr>
+								<tr class="tr-clickable" data-prodnum="${product.prod_num}"
+									data-prodname="${product.prod_name}"
+									onclick="openStockModal(this)">
 									<td>
 										<div class="td-img">
 											<c:choose>
@@ -502,13 +574,23 @@ tr:hover td {
 									<td class="sku-text">${product.sku}</td>
 									<td style="font-weight: 500; color: #475569;">${empty product.brand_name ? '-' : product.brand_name}</td>
 									<td class="prod-name-cell">${product.prod_name}</td>
-									<td><span class="cat-badge"> ${empty product.cat_name ? '미지정' : product.cat_name}
-									</span></td>
-									<td style="color: #64748b; font-size: 13.5px;">${empty product.color ? '-' : product.color}</td>
+									<td><span class="cat-badge">${empty product.cat_name ? '미지정' : product.cat_name}</span></td>
 									<td
-										style="font-family: 'Space Grotesk'; font-weight: 600; color: #475569;">${product.size_val == 0 ? '-' : product.size_val}</td>
+										style="color: #64748b; font-size: 13.5px; font-weight: 500;">
+										<c:choose>
+											<c:when test="${product.color_cnt > 1}">${product.color} 외 ${product.color_cnt - 1}색</c:when>
+											<c:otherwise>${empty product.color ? '-' : product.color}</c:otherwise>
+										</c:choose>
+									</td>
 									<td
-										style="text-align: right; padding-right: 20px; font-weight: 700; font-family: 'Space Grotesk'; color: #0f172a;">
+										style="font-family: 'Space Grotesk'; font-weight: 600; color: #475569;">
+										<c:choose>
+											<c:when test="${product.min_size != product.max_size}">${product.min_size}~${product.max_size}</c:when>
+											<c:otherwise>${product.min_size == 0 ? '-' : product.min_size}</c:otherwise>
+										</c:choose>
+									</td>
+									<td
+										style="text-align: right; padding-right: 20px; font-weight: 700; color: #0f172a;">
 										<fmt:formatNumber value="${product.prod_price}"
 											pattern="#,###" />원
 									</td>
@@ -536,6 +618,36 @@ tr:hover td {
 					</table>
 					<div class="paging-area">${page}</div>
 				</c:if>
+			</div>
+		</div>
+	</div>
+
+	<div id="stockModal" class="modal-overlay" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 id="modalTitle">
+					<i class="fa-solid fa-box"></i> 상품명 — 사이즈별 재고
+				</h3>
+				<button onclick="closeStockModal()" class="close-btn">
+					<i class="fa-solid fa-xmark"></i>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="stock-table">
+					<thead>
+						<tr>
+							<th width="20%">사이즈</th>
+							<th width="20%">컬러</th>
+							<th width="20%">재고 수량</th>
+							<th width="25%">재고 바</th>
+							<th width="15%">상태</th>
+						</tr>
+					</thead>
+					<tbody id="stockTbody"></tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button onclick="closeStockModal()" class="btn-cancel">닫기</button>
 			</div>
 		</div>
 	</div>

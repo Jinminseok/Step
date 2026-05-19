@@ -22,10 +22,6 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
-	// ==================================
-	// [리팩토링] 메인 대시보드 통계용 메서드들
-	// ==================================
-
 	public int getTodayOrderCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -150,10 +146,6 @@ public class AdminProductDAO {
 		}
 		return count;
 	}
-
-	// ==================================
-	// [추가] 대시보드 실데이터 연동용 메서드
-	// ==================================
 
 	public long getTodaySalesAmount() throws Exception {
 		Connection conn = null;
@@ -280,10 +272,6 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// ============================
-	// 상품 목록 및 동적 필터 조회 메서드
-	// ============================
-
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -293,8 +281,7 @@ public class AdminProductDAO {
 
 		try {
 			conn = DBUtil.getConnection();
-
-			sql.append("SELECT COUNT(*) FROM products p ");
+			sql.append("SELECT COUNT(DISTINCT p.prod_num) FROM products p ");
 			sql.append("JOIN prod_options o ON p.prod_num = o.prod_num ");
 			sql.append("JOIN stock s ON o.opt_num = s.opt_num ");
 			sql.append("WHERE EXISTS (SELECT 1 FROM inbound i WHERE i.opt_num = o.opt_num AND i.in_status = 1) ");
@@ -332,6 +319,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
+	// 🚨 [수정] 오라클 버전 타지 않게 서브쿼리 안정성(인라인 뷰 감싸기)을 대폭 높인 최종 쿼리
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -363,44 +351,29 @@ public class AdminProductDAO {
 					SELECT * FROM (
 					    SELECT a.*, ROWNUM rnum FROM (
 					        SELECT
-					            p.PROD_NUM,
-					            p.SKU,
-					            p.PROD_NAME,
-					            p.PROD_PRICE,
-					            p.PROD_STATUS,
-					            p.PROD_CREATED_AT,
-					            b.brand_name,
-					            c.cat_name,
-					            s.stock_qty,
-					            o.size_val,
-					            o.color,
-					            COALESCE(
-					                (SELECT PROD_IMG_URL
-					                 FROM PROD_IMGS
-					                 WHERE PROD_NUM = p.PROD_NUM
-					                   AND LOWER(PROD_IMG_URL) LIKE '%' ||
-					                       CASE
-					                           WHEN o.color = '블랙' THEN 'black'
-					                           WHEN o.color = '화이트' THEN 'white'
-					                           WHEN o.color = '레드' THEN 'red'
-					                           WHEN o.color = '블루' THEN 'blue'
-					                           WHEN o.color = '그레이' THEN 'gray'
-					                           ELSE LOWER(o.color)
-					                       END || '%'
-					                   AND ROWNUM = 1),
-					                (SELECT PROD_IMG_URL FROM PROD_IMGS WHERE PROD_NUM = p.PROD_NUM AND ROWNUM = 1)
-					            ) AS PROD_IMG_URL
-					        FROM PRODUCTS p
-					        JOIN PROD_OPTIONS o ON p.PROD_NUM = o.PROD_NUM
-					        JOIN STOCK s ON o.OPT_NUM = s.OPT_NUM
-					        LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM
-					        LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM
-					""" + sub_sql.toString() + """
-					ORDER BY p.PROD_STATUS ASC, """ + orderSql + """
-					        , o.color ASC, o.size_val ASC
-					    ) a
-					) WHERE rnum >= ? AND rnum <= ?
-					""";
+					            base.PROD_NUM, base.SKU, base.PROD_NAME, base.PROD_PRICE, base.PROD_STATUS, base.PROD_CREATED_AT,
+					            base.brand_name, base.cat_name, base.min_size, base.max_size, base.color, base.color_cnt,
+					            (SELECT PROD_IMG_URL FROM PROD_IMGS WHERE PROD_NUM = base.PROD_NUM AND ROWNUM = 1) AS PROD_IMG_URL
+					        FROM (
+					            SELECT
+					                p.PROD_NUM, p.SKU, p.PROD_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_CREATED_AT,
+					                b.brand_name, c.cat_name,
+					                MIN(o.size_val) AS min_size, MAX(o.size_val) AS max_size,
+					                MIN(o.color) AS color, COUNT(DISTINCT o.color) AS color_cnt
+					            FROM PRODUCTS p
+					            JOIN PROD_OPTIONS o ON p.PROD_NUM = o.PROD_NUM
+					            LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM
+					            LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM
+					"""
+					+ sub_sql.toString()
+					+ """
+							GROUP BY p.PROD_NUM, p.SKU, p.PROD_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_CREATED_AT, b.brand_name, c.cat_name
+							ORDER BY p.PROD_STATUS ASC, """
+					+ orderSql + """
+							        ) base
+							    ) a
+							) WHERE rnum >= ? AND rnum <= ?
+							""";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -429,11 +402,41 @@ public class AdminProductDAO {
 				product.setProd_img_url(rs.getString("PROD_IMG_URL"));
 				product.setBrand_name(rs.getString("brand_name"));
 				product.setCat_name(rs.getString("cat_name"));
-				product.setStock_qty(rs.getInt("stock_qty"));
-				product.setSize_val(rs.getInt("size_val"));
+
+				product.setMin_size(rs.getInt("min_size"));
+				product.setMax_size(rs.getInt("max_size"));
 				product.setColor(rs.getString("color"));
+				product.setColor_cnt(rs.getInt("color_cnt"));
 
 				list.add(product);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
+
+	public List<AdminProductVO> getProductStockDetails(int prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<AdminProductVO> list = new ArrayList<>();
+
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT o.size_val, o.color, NVL(s.stock_qty, 0) as stock_qty "
+					+ "FROM prod_options o LEFT JOIN stock s ON o.opt_num = s.opt_num "
+					+ "WHERE o.prod_num = ? ORDER BY o.size_val ASC, o.color ASC";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, prod_num);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				AdminProductVO vo = new AdminProductVO();
+				vo.setSize_val(rs.getInt("size_val"));
+				vo.setColor(rs.getString("color"));
+				vo.setStock_qty(rs.getInt("stock_qty"));
+				list.add(vo);
 			}
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
@@ -449,9 +452,9 @@ public class AdminProductDAO {
 
 		try {
 			conn = DBUtil.getConnection();
-			String sql = "SELECT p.*, b.brand_name, c.cat_name " + "FROM products p "
+			String sql = "SELECT p.*, b.brand_name, c.cat_name FROM products p "
 					+ "LEFT JOIN brands b ON p.brand_num = b.brand_num "
-					+ "LEFT JOIN categories c ON p.cat_num = c.cat_num " + "WHERE p.prod_num = ?";
+					+ "LEFT JOIN categories c ON p.cat_num = c.cat_num WHERE p.prod_num = ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);

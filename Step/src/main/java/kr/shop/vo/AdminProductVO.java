@@ -45,7 +45,36 @@ public class AdminProductVO extends AdminBaseVO {
 	// 🚨 정렬 기준 파라미터 (1: 최신입고순, 2: 마지막입고순)
 	private String order_type;
 
+	// 새로 추가된 변수들
+	private int min_size;
+	private int max_size;
+	private int color_cnt;
+
 	// ── Getter / Setter ──
+
+	public int getMin_size() {
+		return min_size;
+	}
+
+	public void setMin_size(int min_size) {
+		this.min_size = min_size;
+	}
+
+	public int getMax_size() {
+		return max_size;
+	}
+
+	public void setMax_size(int max_size) {
+		this.max_size = max_size;
+	}
+
+	public int getColor_cnt() {
+		return color_cnt;
+	}
+
+	public void setColor_cnt(int color_cnt) {
+		this.color_cnt = color_cnt;
+	}
 
 	public int getStock_qty() {
 		return stock_qty;
