@@ -1,10 +1,11 @@
 package kr.shop.restock.action;
 
+import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.http.*;
 import kr.controller.Action;
 import kr.shop.dao.RestockAlertDAO;
-import java.util.List;
-import java.util.Map;
 
 public class RestockListAction implements Action {
     @Override
@@ -20,10 +21,10 @@ public class RestockListAction implements Action {
 
         int userNum = ((Number) userNumObj).intValue();
 
-        List<Map<String, Object>> restockList = 
+        List<Map<String, Object>> restockList =
             RestockAlertDAO.getInstance().getAlertListByUser(userNum);
-
         request.setAttribute("restockList", restockList);
+
         return "shop/restock/restockList.jsp";
     }
 }

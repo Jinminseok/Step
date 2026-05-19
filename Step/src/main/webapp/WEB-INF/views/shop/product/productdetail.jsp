@@ -21,7 +21,6 @@
             <%-- 왼쪽: 다중 이미지 영역 --%>
             <div class="detail-imgs-wrap">
                 <div class="thumb-list">
-                    <%-- DB에 저장된 사진 개수만큼 반복해서 썸네일 생성 --%>
                     <c:forEach var="img" items="${imgList}" varStatus="status">
                         <img src="${pageContext.request.contextPath}/upload/${img}" 
                              class="thumb-img ${status.first ? 'active' : ''}" 
@@ -29,12 +28,11 @@
                     </c:forEach>
                 </div>
                 <div class="main-img-box">
-                    <%-- 메인 이미지는 리스트의 첫 번째 사진 --%>
                     <img id="mainImage" src="${pageContext.request.contextPath}/upload/${imgList[0]}" alt="${product.prod_name}">
                 </div>
             </div>
 
-            <%-- 2. 오른쪽: 상품 정보 및 옵션 --%>
+            <%-- 오른쪽: 상품 정보 및 옵션 --%>
             <div class="detail-info-wrap">
                 <div class="detail-brand">${product.brand_name}</div>
                 <div class="detail-name">${product.prod_name}</div>
@@ -44,7 +42,7 @@
                     <span style="color:#fbc02d; font-size:15px;">★★★★☆</span> 4.5 (리뷰 0개)
                 </div>
 
-                <%-- 가격 영역 (할인율 적용) --%>
+                <%-- 가격 영역 --%>
                 <div class="detail-price-row">
                     <c:if test="${product.sale_rate > 0}">
                         <span class="detail-discount">${product.sale_rate}%</span>
@@ -57,7 +55,7 @@
                 
                 <%-- 로그인 혜택 --%>
                 <c:if test="${isLogin}">
-                    <div style="background:#e8f5e9; padding:12px 16px; border-radius:4px; margin-bottom:24px; font-size:13px; display: flex; align-items: center; gap: 8px;">
+                    <div style="background:#e8f5e9; padding:12px 16px; border-radius:4px; margin-bottom:24px; font-size:13px; display:flex; align-items:center; gap:8px;">
                         <span>👑</span>
                         <span><strong>${grade}등급</strong> 회원 추가 혜택가:</span>
                         <strong style="color:#2e7d32; font-size:16px;">
@@ -72,7 +70,6 @@
                 </div>
                 <div class="color-grid">
                     <c:forEach var="color" items="${colorList}">
-                        <%-- 색상 이름이 '블랙'이면 검정색, '화이트'면 흰색으로 UI 표현 처리 --%>
                         <c:set var="bgColor" value="#ccc" />
                         <c:if test="${color == '블랙' or color == 'Black'}"><c:set var="bgColor" value="#000000" /></c:if>
                         <c:if test="${color == '화이트' or color == 'White'}"><c:set var="bgColor" value="#ffffff" /></c:if>
@@ -81,8 +78,7 @@
                         <c:if test="${color == '네이비' or color == 'Navy'}"><c:set var="bgColor" value="#13264E" /></c:if>
                         <c:if test="${color == '레드' or color == 'Red'}"><c:set var="bgColor" value="#FF0000" /></c:if>
                         <c:if test="${color == '그린' or color == 'Green'}"><c:set var="bgColor" value="#6BEC62" /></c:if>
-                        
-                        <div class="color-btn" style="background-color: ${bgColor};" onclick="selectColor(this, '${color}')" title="${color}"></div>
+                        <div class="color-btn" style="background-color:${bgColor};" onclick="selectColor(this, '${color}')" title="${color}"></div>
                     </c:forEach>
                 </div>
 
@@ -96,23 +92,30 @@
                     </c:forEach>
                 </div>
                 
-                <div style="font-size:12px; color:var(--gray4); margin-bottom: 24px;">현재 선택 가능한 재고 : ${totalStock}개</div>
+                <div style="font-size:12px; color:var(--gray4); margin-bottom:24px;">현재 선택 가능한 재고 : ${totalStock}개</div>
 
+                <%-- 장바구니/바로구매 form --%>
                 <form id="orderPageForm" action="${pageContext.request.contextPath}/shop/order/orderPageForm.do" method="post">
                     <input type="hidden" name="prod_num" value="${product.prod_num}">
                     <input type="hidden" name="color" id="input_color" value="">
                     <input type="hidden" name="size" id="input_size" value="">
                 </form>
 
-                <%-- 초기 버튼 상태 (비활성화) --%>
+                <%-- ✅ 재입고 신청 전용 form (script 밖에 위치) --%>
+                <form id="restockForm" action="${pageContext.request.contextPath}/shop/restock/restockAlert.do" method="post">
+                    <input type="hidden" name="prod_num" value="${product.prod_num}">
+                    <input type="hidden" name="opt_num" id="restock_opt_num" value="">
+                </form>
+
+                <%-- 버튼 영역 --%>
                 <div class="detail-btns">
                     <button class="btn-wish-lg" onclick="handleWish()">🤍</button>
-                    <button id="cartBtn" class="btn btn-gray" disabled style="cursor:not-allowed; opacity:0.6; font-size: 14px; padding: 14px;">옵션을 선택해 주세요</button>
-                    <button id="buyBtn" class="btn btn-black" disabled style="cursor:not-allowed; opacity:0.6; font-size: 14px; padding: 14px;">옵션을 선택해 주세요</button>
+                    <button id="cartBtn" class="btn btn-gray" disabled style="cursor:not-allowed; opacity:0.6; font-size:14px; padding:14px;">옵션을 선택해 주세요</button>
+                    <button id="buyBtn" class="btn btn-black" disabled style="cursor:not-allowed; opacity:0.6; font-size:14px; padding:14px;">옵션을 선택해 주세요</button>
                 </div>
             </div>
         </div>
-	</div>
+    </div>
 
 <script>
 const isLogin = ${isLogin};
@@ -133,8 +136,7 @@ function selectColor(element, color) {
     selectedColor = color;
     document.getElementById('selectedColorText').innerText = "(" + color + ")";
     document.getElementById('input_color').value = color;
-    
-    checkOptionStock(); // 색상을 누를 때마다 검사
+    checkOptionStock();
 }
 
 function selectSize(element, size) {
@@ -143,38 +145,30 @@ function selectSize(element, size) {
     selectedSize = size;
     document.getElementById('selectedSizeText').innerText = "(" + size + ")";
     document.getElementById('input_size').value = size;
-    
-    checkOptionStock(); // 사이즈를 누를 때마다 검사
+    checkOptionStock();
 }
 
 function checkOptionStock() {
-    // 1. 색상과 사이즈 둘 다 골랐을 때만 작동
     if(selectedColor === "" || selectedSize === "") return;
 
-    // 2. 재고표에서 지금 고른 조합 찾기
     let matchedOption = stockData.find(opt => opt.color === selectedColor && opt.size === selectedSize);
-    
-    
-    // opt_num 저장 (재입고 신청에 필요)
-    window.selectedOptNum = matchedOption ? matchedOption.opt_num : 0;
-    
-    // 3. 재고량 파악
     let currentStock = matchedOption ? matchedOption.stock : 0;
 
+    // ✅ restock form의 hidden input에 opt_num 세팅
+    document.getElementById('restock_opt_num').value = matchedOption ? matchedOption.opt_num : 0;
+
     let $cartBtn = $('#cartBtn');
-    let $buyBtn = $('#buyBtn');
+    let $buyBtn  = $('#buyBtn');
 
     if (currentStock > 0) {
-        // 재고가 있을 때: 장바구니 / 바로구매 활성화
         $cartBtn.text('장바구니').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1'})
                 .attr('onclick', "handleAction('cart')");
         $buyBtn.text('바로 구매').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1', 'background-color':'var(--black)'})
                .attr('onclick', "handleAction('buy')");
     } else {
-        // 품절일 때: 장바구니 막기 / 재입고 알림 신청 활성화
         $cartBtn.text('품절').prop('disabled', true).css({'cursor':'not-allowed', 'opacity':'0.6'})
                 .removeAttr('onclick');
-        $buyBtn.text('재입고 알림 신청').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1', 'background-color':'#d32f2f'}) // 빨간 버튼으로 변경!
+        $buyBtn.text('재입고 알림 신청').prop('disabled', false).css({'cursor':'pointer', 'opacity':'1', 'background-color':'#d32f2f'})
                .attr('onclick', "handleAction('restock')");
     }
 }
@@ -188,14 +182,11 @@ function requireLogin() {
     return true;
 }
 
-// 찜(즐겨찾기) 기능
 function handleWish() {
     if(!requireLogin()) return;
-
-    let prod_num = $('input[name="prod_num"]').val();
-
+    let prod_num = $('input[name="prod_num"]').first().val();
     $.ajax({
-    	url: '${pageContext.request.contextPath}/shop/wish/writeWish.do',
+        url: '${pageContext.request.contextPath}/shop/wish/writeWish.do',
         type: 'post',
         data: { prod_num: prod_num },
         dataType: 'json',
@@ -203,9 +194,9 @@ function handleWish() {
             if(param.result === 'logout') {
                 alert("로그인 후 이용 가능합니다.");
                 location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
-            } else if (param.result === 'success') {
+            } else if(param.result === 'success') {
                 alert("관심 상품(찜)에 추가되었습니다!");
-                $('.btn-wish-lg').addClass('on'); // 버튼에 불 들어오게 처리
+                $('.btn-wish-lg').addClass('on');
             }
         },
         error: function(xhr, status, error) {
@@ -215,52 +206,33 @@ function handleWish() {
     });
 }
 
-//장바구니, 바로구매
 function handleAction(type) {
     if(!requireLogin()) return;
-    
+
+    // ✅ 재입고 알림 신청 - form submit으로 처리
     if(type === 'restock') {
-        if(!window.selectedOptNum) { alert("옵션을 먼저 선택해 주세요."); return; }
-        
-        $.ajax({
-            url: '${pageContext.request.contextPath}/shop/restock/restockAlert.do',
-            type: 'post',
-            data: { opt_num: window.selectedOptNum },
-            dataType: 'json',
-            success: function(res) {
-                if(res.result === 'logout') {
-                    alert("로그인 후 이용 가능합니다.");
-                    location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
-                } else if(res.result === 'success') {
-                    alert("재입고 알림 신청이 완료되었습니다!\n재입고 시 알림을 보내드립니다.");
-                } else if(res.result === 'duplicate') {
-                    alert("이미 재입고 알림을 신청하신 옵션입니다.");
-                }
-            },
-            error: function() { alert("오류가 발생했습니다."); }
-        });
+        document.getElementById('restockForm').submit();
         return;
     }
-    if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
-    if(selectedSize === "") { alert("상품의 사이즈를 선택해 주세요."); return; }
-    
-    // 장바구니 버튼
-    if(type === 'cart') {
-        let prod_num = $('input[name="prod_num"]').val();
-        let color = $('#input_color').val();
-        let size = $('#input_size').val();
-        let cart_qty = 1; 
 
+    if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
+    if(selectedSize === "")  { alert("상품의 사이즈를 선택해 주세요."); return; }
+
+    // 장바구니
+    if(type === 'cart') {
+        let prod_num = $('input[name="prod_num"]').first().val();
+        let color = $('#input_color').val();
+        let size  = $('#input_size').val();
         $.ajax({
             url: '${pageContext.request.contextPath}/shop/cart/writeCart.do',
             type: 'post',
-            data: { prod_num: prod_num, color: color, size: size, cart_qty: cart_qty },
+            data: { prod_num: prod_num, color: color, size: size, cart_qty: 1 },
             dataType: 'json',
             success: function(param) {
                 if(param.result === 'logout') {
                     alert("로그인 후 이용 가능합니다.");
                     location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
-                } else if (param.result === 'success') {
+                } else if(param.result === 'success') {
                     if(confirm(selectedColor + " 색상, " + selectedSize + " 사이즈가 장바구니에 담겼습니다!\n장바구니로 이동하시겠습니까?")) {
                         location.href = '${pageContext.request.contextPath}/shop/cart/cartList.do';
                     }
@@ -268,9 +240,8 @@ function handleAction(type) {
             },
             error: function() { alert("통신 중 오류가 발생했습니다."); }
         });
-        
-    } 
-    // 바로구매 버튼
+    }
+    // 바로구매
     else if(type === 'buy') {
         let form = document.getElementById('orderPageForm');
         form.action = '${pageContext.request.contextPath}/shop/order/directBuy.do';

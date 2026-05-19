@@ -186,31 +186,31 @@
 					</c:forEach>
 				</div>
 
+
 				<!-- 2. 재입고 알림 탭 -->
 				<div class="my-sub" id="my-restock">
 					<div class="sec-title" style="margin-bottom: 16px;">신청한 재입고
 						알림</div>
 
-					<%-- 실제 재입고 알림 리스트 출력 영역 --%>
 					<c:if test="${empty restockList}">
 						<div
 							style="text-align: center; padding: 40px; color: var(--gray4); background: var(--gray7); border: 1px solid var(--border);">
 							신청하신 재입고 알림 내역이 없습니다.</div>
 					</c:if>
+
 					<c:forEach var="restock" items="${restockList}">
 						<div class="order-card">
 							<div class="order-hdr">
 								<span class="order-num">신청일: ${restock.reg_date}</span>
 								<c:choose>
 									<c:when test="${restock.sent_yn eq 'Y'}">
-										<%-- 재입고 완료된 경우 초록 뱃지 --%>
 										<span class="badge"
-											style="background: #e8f5e9; color: #2e7d32; margin-left: auto;">✅
-											재입고 완료</span>
+											style="background: #e8f5e9; color: #2e7d32; margin-left: auto;">
+											✅ 재입고 완료 </span>
 									</c:when>
 									<c:otherwise>
-										<span class="badge b-gray" style="margin-left: auto">⏳
-											입고 대기중</span>
+										<span class="badge b-gray" style="margin-left: auto;">
+											⏳ 입고 대기중 </span>
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -229,11 +229,18 @@
 										style="font-size: 12px; color: var(--gray4); margin-top: 4px;">
 										${restock.color} / ${restock.size_val}</div>
 								</div>
+								<%-- ✅ form submit 방식으로 취소 --%>
 								<c:if test="${restock.sent_yn ne 'Y'}">
 									<div style="flex-shrink: 0;">
-										<button class="btn btn-outline btn-sm"
-											onclick="cancelRestock(${restock.alert_num}, this)">알림
-											취소</button>
+										<form
+											action="${pageContext.request.contextPath}/shop/restock/restockCancel.do"
+											method="post"
+											onsubmit="return confirm('재입고 알림 신청을 취소하시겠습니까?')">
+											<input type="hidden" name="alert_num"
+												value="${restock.alert_num}">
+											<button type="submit" class="btn btn-outline btn-sm">알림
+												취소</button>
+										</form>
 									</div>
 								</c:if>
 							</div>
@@ -486,14 +493,13 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', funct
     this.classList.add('on');
 }));
 
-//회원 탈퇴 유효성 체크
+// 회원 탈퇴 유효성 체크
 function checkDelete() {
     const inputId = document.getElementById('del_id').value;
     const inputEmail = document.getElementById('del_email').value;
     const inputPwd = document.getElementById('del_pwd').value;
     const inputPwdConfirm = document.getElementById('del_pwd_confirm').value;
 
-    // 회원 정보
     const realId = '${user.user_id}';
     const realEmail = '${user.email}';
 
@@ -502,42 +508,21 @@ function checkDelete() {
         document.getElementById('del_id').focus();
         return false;
     }
-    
     if(inputEmail !== realEmail) {
         alert("입력하신 이메일이 등록된 이메일과 일치하지 않습니다.");
         document.getElementById('del_email').focus();
         return false;
     }
-    
     if(inputPwd === "") {
         alert("비밀번호를 입력해주세요.");
         document.getElementById('del_pwd').focus();
         return false;
     }
-    
     if(inputPwd !== inputPwdConfirm) {
         alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         document.getElementById('del_pwd_confirm').focus();
         return false;
     }
-    //알림 취소 버튼용 
-    function cancelRestock(alertNum, btn) {
-        if(!confirm("재입고 알림 신청을 취소하시겠습니까?")) return;
-        $.ajax({
-            url: '${pageContext.request.contextPath}/shop/restock/restockCancel.do',
-            type: 'post',
-            data: { alert_num: alertNum },
-            dataType: 'json',
-            success: function(res) {
-                if(res.result === 'success') {
-                    btn.closest('.order-card').remove();
-                    alert("알림 신청이 취소되었습니다.");
-                }
-            }
-        });
-    }
-
-    // 모든 확인을 마치면 마지막으로 의사 묻기
     return confirm("정말로 ShoeMall에서 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없습니다.");
 }
 </script>
