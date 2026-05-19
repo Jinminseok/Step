@@ -231,6 +231,13 @@ public class AdminProductDAO {
 				sub_sql.append(" AND p.brand_num = ? ");
 			}
 
+			// 🚨 정렬 기준 동적 처리 (1: 최신입고순 먼저 / 2: 마지막입고순 먼저(오래된순))
+			String orderSql = "p.PROD_NUM DESC"; // 기본값 (최신순)
+			if ("2".equals(vo.getOrder_type())) {
+				orderSql = "p.PROD_NUM ASC"; // 마지막 입고순 (과거순)
+			}
+
+			// 🚨 텍스트 블록과 변수 연결 구문 매칭 수정 완료
 			String sql = """
 					SELECT * FROM (
 					    SELECT a.*, ROWNUM rnum FROM (
@@ -268,7 +275,8 @@ public class AdminProductDAO {
 					        LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM
 					        LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM
 					""" + sub_sql.toString() + """
-					        ORDER BY p.PROD_STATUS ASC, p.PROD_NUM DESC, o.color ASC, o.size_val ASC
+					ORDER BY p.PROD_STATUS ASC, """ + orderSql + """
+					        , o.color ASC, o.size_val ASC
 					    ) a
 					) WHERE rnum >= ? AND rnum <= ?
 					""";

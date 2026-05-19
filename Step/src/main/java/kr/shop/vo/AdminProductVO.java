@@ -38,16 +38,30 @@ public class AdminProductVO extends AdminBaseVO {
 	private int brand_num; // BRAND_NUM
 	private String brand_name; // BRAND_NAME
 	private String brand_use_yn; // BRAND_USE_YN
-	
-	//재고(stock)
+
+	// 재고(stock)
 	private int stock_qty;
-	
+
+	// 🚨 정렬 기준 파라미터 (1: 최신입고순, 2: 마지막입고순)
+	private String order_type;
+
+	// ── Getter / Setter ──
+
 	public int getStock_qty() {
 		return stock_qty;
 	}
 
 	public void setStock_qty(int stock_qty) {
 		this.stock_qty = stock_qty;
+	}
+
+	// 🚨 정렬 기준 Getter / Setter 추가
+	public String getOrder_type() {
+		return order_type;
+	}
+
+	public void setOrder_type(String order_type) {
+		this.order_type = order_type;
 	}
 
 	public int getProd_num() {

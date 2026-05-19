@@ -283,9 +283,9 @@ tr:hover td {
 	font-weight: 700;
 }
 </style>
-<!-- 🚨 탭 변환 및 셀렉트 선택 시 크로스 필터링 유지를 위한 스크립트 작성 -->
+<!-- 🚨 탭 변환 및 셀렉트 선택 시 크로스 필터링 및 정렬 유지를 위한 스크립트 통합 보완 -->
 <script type="text/javascript">
-	function goFilter(status, cat, brand) {
+	function goFilter(status, cat, brand, order) {
 		let url = 'productList.do?';
 		let params = [];
 		if (status)
@@ -294,6 +294,8 @@ tr:hover td {
 			params.push('cat_num=' + cat);
 		if (brand && brand !== '0')
 			params.push('brand_num=' + brand);
+		if (order && order !== '1')
+			params.push('order_type=' + order);
 
 		location.href = url + params.join('&');
 	}
@@ -320,21 +322,29 @@ tr:hover td {
 			<div class="tab-filter-container">
 				<div class="tab-menu">
 					<div class="tab-item ${empty param.search_status ? 'active' : ''}"
-						onclick="goFilter('', '${cat_num}', '${brand_num}')">전체 상품</div>
+						onclick="goFilter('', '${cat_num}', '${brand_num}', '${order_type}')">전체
+						상품</div>
 					<div class="tab-item ${param.search_status == '1' ? 'active' : ''}"
-						onclick="goFilter('1', '${cat_num}', '${brand_num}')">판매중</div>
+						onclick="goFilter('1', '${cat_num}', '${brand_num}', '${order_type}')">판매중</div>
 					<div class="tab-item ${param.search_status == '2' ? 'active' : ''}"
-						onclick="goFilter('2', '${cat_num}', '${brand_num}')">숨김</div>
+						onclick="goFilter('2', '${cat_num}', '${brand_num}', '${order_type}')">숨김</div>
 					<div class="tab-item ${param.search_status == '3' ? 'active' : ''}"
-						onclick="goFilter('3', '${cat_num}', '${brand_num}')">품절</div>
+						onclick="goFilter('3', '${cat_num}', '${brand_num}', '${order_type}')">품절</div>
 					<div class="tab-item ${param.search_status == '4' ? 'active' : ''}"
-						onclick="goFilter('4', '${cat_num}', '${brand_num}')">주의</div>
+						onclick="goFilter('4', '${cat_num}', '${brand_num}', '${order_type}')">주의</div>
 				</div>
 
-				<!-- 🚨 카테고리 및 브랜드 동적 셀렉트 필터 서식 영역 -->
+				<!-- 🚨 카테고리, 브랜드, 정렬 조건 동적 셀렉트 필터 서식 영역 -->
 				<form action="productList.do" method="get" class="filter-form">
 					<input type="hidden" name="search_status"
 						value="${param.search_status}">
+
+					<!-- 정렬 기준 필터 -->
+					<select name="order_type" class="filter-select"
+						onchange="this.form.submit()">
+						<option value="1" ${order_type == '1' ? 'selected' : ''}>최신입고순</option>
+						<option value="2" ${order_type == '2' ? 'selected' : ''}>마지막입고순</option>
+					</select>
 
 					<!-- 브랜드 필터 -->
 					<select name="brand_num" class="filter-select"
