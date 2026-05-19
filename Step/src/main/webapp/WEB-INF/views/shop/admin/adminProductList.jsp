@@ -70,7 +70,7 @@ body {
 	justify-content: space-between;
 	align-items: flex-end;
 	border-bottom: 1px solid #e2e8f0;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 }
 
 .tab-menu {
@@ -101,15 +101,47 @@ body {
 	font-weight: 600;
 }
 
-/* 🚨 추가된 브랜드/카테고리 셀렉트 폼 스타일 */
+/* ── 💻 상용 백오피스 스타일 검색 필터 패널 영역 ── */
+.filter-panel {
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 18px 24px;
+	margin-bottom: 24px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
 .filter-form {
 	display: flex;
-	gap: 8px;
-	margin-bottom: 8px;
+	flex-wrap: wrap;
+	gap: 20px;
+	align-items: center;
+}
+
+.filter-group {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.filter-label {
+	font-size: 11.5px;
+	font-weight: 600;
+	color: #64748b;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.filter-label i {
+	color: #94a3b8;
+	font-size: 12px;
 }
 
 .filter-select {
-	padding: 8px 12px;
+	padding: 9px 14px;
 	font-size: 13.5px;
 	font-family: 'Pretendard', sans-serif;
 	color: #334155;
@@ -118,11 +150,13 @@ body {
 	border-radius: 6px;
 	outline: none;
 	cursor: pointer;
-	transition: border-color 0.2s;
+	min-width: 160px;
+	transition: all 0.2s ease;
 }
 
 .filter-select:focus {
 	border-color: #3b82f6;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* TABLE LIST */
@@ -260,7 +294,7 @@ tr:hover td {
 	text-align: center;
 	font-size: 14px;
 }
-/* PagingUtil 패키징 클래스 링크 간격 보정 */
+
 .paging-area a, .paging-area b, .paging-area span {
 	padding: 6px 12px;
 	border: 1px solid #e2e8f0;
@@ -318,7 +352,7 @@ tr:hover td {
 				</div>
 			</div>
 
-			<!-- 📊 탭 메뉴 및 검색 필터 컨테이너 분리 결합 -->
+			<!-- 📊 탭 메뉴 컨테이너 상단 배치 -->
 			<div class="tab-filter-container">
 				<div class="tab-menu">
 					<div class="tab-item ${empty param.search_status ? 'active' : ''}"
@@ -333,63 +367,104 @@ tr:hover td {
 					<div class="tab-item ${param.search_status == '4' ? 'active' : ''}"
 						onclick="goFilter('4', '${cat_num}', '${brand_num}', '${order_type}')">주의</div>
 				</div>
+			</div>
 
-				<!-- 🚨 카테고리, 브랜드, 정렬 조건 동적 셀렉트 필터 서식 영역 -->
+			<!-- 💻 상용 백오피스 벤치마킹 검색 필터 패널 영역 (기존 로직 완벽 유지) -->
+			<div class="filter-panel">
 				<form action="productList.do" method="get" class="filter-form">
 					<input type="hidden" name="search_status"
 						value="${param.search_status}">
 
-					<!-- 정렬 기준 필터 -->
-					<select name="order_type" class="filter-select"
-						onchange="this.form.submit()">
-						<option value="1" ${order_type == '1' ? 'selected' : ''}>최신입고순</option>
-						<option value="2" ${order_type == '2' ? 'selected' : ''}>마지막입고순</option>
-					</select>
+					<!-- 정렬 기준 필터 그룹 -->
+					<div class="filter-group">
+						<label class="filter-label"><i
+							class="fa-solid fa-arrow-down-short-wide"></i> 조회 정렬</label> <select
+							name="order_type" class="filter-select"
+							onchange="this.form.submit()">
+							<option value="1" ${order_type == '1' ? 'selected' : ''}>최신입고순</option>
+							<option value="2" ${order_type == '2' ? 'selected' : ''}>마지막입고순</option>
+						</select>
+					</div>
 
-					<!-- 브랜드 필터 -->
-					<select name="brand_num" class="filter-select"
-						onchange="this.form.submit()">
-						<option value="0">전체 브랜드</option>
-						<c:forEach var="b" items="${brandList}">
-							<option value="${b.brand_num}"
-								${brand_num == b.brand_num ? 'selected' : ''}>${b.brand_name}</option>
-						</c:forEach>
-					</select>
+					<!-- 브랜드 필터 그룹 -->
+					<div class="filter-group">
+						<label class="filter-label"><i
+							class="fa-solid fa-copyright"></i> 브랜드 지정</label> <select
+							name="brand_num" class="filter-select"
+							onchange="this.form.submit()">
+							<option value="0">전체 브랜드</option>
+							<c:forEach var="b" items="${brandList}">
+								<option value="${b.brand_num}"
+									${brand_num == b.brand_num ? 'selected' : ''}>${b.brand_name}</option>
+							</c:forEach>
+						</select>
+					</div>
 
-					<!-- 카테고리 필터 -->
-					<select name="cat_num" class="filter-select"
-						onchange="this.form.submit()">
-						<option value="0">전체 카테고리</option>
-						<c:forEach var="c" items="${categoryList}">
-							<option value="${c.cat_num}"
-								${cat_num == c.cat_num ? 'selected' : ''}>${c.cat_name}</option>
-						</c:forEach>
-					</select>
+					<!-- 카테고리 필터 그룹 -->
+					<div class="filter-group">
+						<label class="filter-label"><i
+							class="fa-solid fa-layer-group"></i> 카테고리 지정</label> <select
+							name="cat_num" class="filter-select"
+							onchange="this.form.submit()">
+							<option value="0">전체 카테고리</option>
+							<c:forEach var="c" items="${categoryList}">
+								<option value="${c.cat_num}"
+									${cat_num == c.cat_num ? 'selected' : ''}>${c.cat_name}</option>
+							</c:forEach>
+						</select>
+					</div>
 				</form>
 			</div>
 
 			<div class="tbl-wrap">
 				<c:if test="${count == 0}">
-					<div align="center" style="padding: 80px 0; color: #94a3b8;">
+					<!-- 🚨 동적 문구 바인딩을 위한 상태값 텍스트 처리 변수 셋팅 -->
+					<c:set var="statusTxt" value="전체" />
+					<c:if test="${param.search_status == '1'}">
+						<c:set var="statusTxt" value="판매중" />
+					</c:if>
+					<c:if test="${param.search_status == '2'}">
+						<c:set var="statusTxt" value="숨김" />
+					</c:if>
+					<c:if test="${param.search_status == '3'}">
+						<c:set var="statusTxt" value="품절" />
+					</c:if>
+					<c:if test="${param.search_status == '4'}">
+						<c:set var="statusTxt" value="주의" />
+					</c:if>
+
+					<!-- 선택된 브랜드명 매칭 추출 -->
+					<c:set var="brandTxt" value="" />
+					<c:if test="${brand_num > 0}">
+						<c:forEach var="b" items="${brandList}">
+							<c:if test="${brand_num == b.brand_num}">
+								<c:set var="brandTxt" value=" [${b.brand_name}]" />
+							</c:if>
+						</c:forEach>
+					</c:if>
+
+					<!-- 선택된 카테고리명 매칭 추출 -->
+					<c:set var="catTxt" value="" />
+					<c:if test="${cat_num > 0}">
+						<c:forEach var="c" items="${categoryList}">
+							<c:if test="${cat_num == c.cat_num}">
+								<c:set var="catTxt" value=" [${c.cat_name}]" />
+							</c:if>
+						</c:forEach>
+					</c:if>
+
+					<!-- 🚨 실무 커머스 스타일 동적 안내 스크립트 출력 필드 -->
+					<div align="center"
+						style="padding: 90px 0; color: #64748b; font-size: 14.5px; line-height: 1.6;">
 						<i class="fa-solid fa-box-open"
-							style="font-size: 36px; margin-bottom: 12px; display: block; color: #e2e8f0;"></i>
-						<c:choose>
-							<c:when test="${param.search_status == '1'}">
-								판매 중인 상품이 없습니다.
-							</c:when>
-							<c:when test="${param.search_status == '2'}">
-								숨긴 상품이 없습니다.
-							</c:when>
-							<c:when test="${param.search_status == '3'}">
-								품절 상품이 없습니다.
-							</c:when>
-							<c:when test="${param.search_status == '4'}">
-								주의 상품이 없습니다.
-							</c:when>
-							<c:otherwise>
-								조건에 매칭되는 입고 완료 상품 내역이 존재하지 않습니다.
-							</c:otherwise>
-						</c:choose>
+							style="font-size: 42px; margin-bottom: 16px; display: block; color: #cbd5e1;"></i>
+						<span
+							style="font-weight: 600; color: #0f172a; display: block; margin-bottom: 4px;">
+							조회 조건과 일치하는 마스터 상품이 없습니다. </span> <span
+							style="font-size: 13px; color: #94a3b8;"> 현재 필터 : <span
+							style="color: #3b82f6; font-weight: 500;">${statusTxt}</span>
+							상태${brandTxt}${catTxt} 내역 공백
+						</span>
 					</div>
 				</c:if>
 				<c:if test="${count > 0}">
