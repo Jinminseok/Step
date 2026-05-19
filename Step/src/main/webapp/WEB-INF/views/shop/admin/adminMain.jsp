@@ -368,7 +368,9 @@ body {
 			<div class="table-card">
 				<div class="table-header">
 					<div class="table-title">최근 주문 목록</div>
-					<a href="adminorderForm.do" class="btn-more">전체 보기 &rarr;</a>
+					<a
+						href="${pageContext.request.contextPath}/shop/admin_order/adminorderForm.do"
+						class="btn-more">전체 보기 &rarr;</a>
 				</div>
 				<table class="order-table">
 					<thead>
