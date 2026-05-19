@@ -16,7 +16,7 @@ public class UserOrderDAO {
 	// 주문 처리
 	public void processOrder(Long userNum, int totalPrice, String recvName, String recvPhone, 
                              String recvZip, String recvAddr1, String recvAddr2, 
-                             String[] cartNums, String payMethod) throws Exception {
+                             String[] cartNums, String payMethod, String tid) throws Exception {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -72,12 +72,13 @@ public class UserOrderDAO {
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
 			
-			// 테이블에 결제 내역 추가 (PAYMENTS)
-			String sql4 = "INSERT INTO payments (pay_num, order_num, method, amount, pay_status) VALUES (payments_seq.nextval, ?, ?, ?, 1)";
+			// 결제 내역
+			String sql4 = "INSERT INTO payments (pay_num, order_num, method, tid, amount, pay_status) VALUES (payments_seq.nextval, ?, ?, ?, ?, 1)";
 			pstmt = conn.prepareStatement(sql4);
 			pstmt.setLong(1, orderNum);
 			pstmt.setString(2, payMethod);
-			pstmt.setInt(3, totalPrice);
+			pstmt.setString(3, tid); // 카카오페이면 tid값, 아니면 null 저장
+			pstmt.setInt(4, totalPrice);
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
 

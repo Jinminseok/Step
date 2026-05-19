@@ -29,13 +29,19 @@
             
             <%-- 환영 서브 텍스트 --%>
             <div class="rc-desc">
-                <c:if test="${result_title == '회원 가입 완료'}">
-                    ShoeMall의 회원이 되신 것을 진심으로 환영합니다.<br>
-                    가장 완벽한 한 걸음을 위한 준비가 모두 끝났습니다.
-                </c:if>
-                <c:if test="${result_title != '회원 가입 완료'}">
-                    요청하신 작업이 정상적으로 완료되었습니다.
-                </c:if>
+                <c:choose>
+                    <c:when test="${result_title == '회원 가입 완료'}">
+                        ShoeMall의 회원이 되신 것을 진심으로 환영합니다.<br>
+                        가장 완벽한 한 걸음을 위한 준비가 모두 끝났습니다.
+                    </c:when>
+                    <c:when test="${result_title == '결제 완료' or result_title == '주문 완료'}">
+                        안전하게 주문 및 결제 처리가 완료되었습니다.<br>
+                        멋진 상품으로 빠르게 보답하겠습니다.
+                    </c:when>
+                    <c:otherwise>
+                        요청하신 작업이 정상적으로 완료되었습니다.
+                    </c:otherwise>
+                </c:choose>
             </div>
             
             <%-- 상황에 맞게 버튼을 다르게 --%>
@@ -46,8 +52,8 @@
                             onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">메인 화면으로 돌아가기</button>
                 </c:when>
                 
-                <%-- 2. 주문 완료 --%>
-                <c:when test="${result_title == '주문 완료'}">
+                <%-- 2. 주문 완료 또는 결제 완료 --%>
+                <c:when test="${result_title == '주문 완료' or result_title == '결제 완료'}">
                     <button class="btn btn-black btn-full" style="height:54px; font-size:15px; margin-bottom:10px;" 
                             onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">주문 내역 확인하기</button>
                     <button class="btn btn-outline btn-full" style="height:54px; font-size:15px; border-color:var(--border); color:var(--gray3);" 
