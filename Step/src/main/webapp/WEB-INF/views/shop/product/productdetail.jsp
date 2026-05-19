@@ -247,7 +247,7 @@ function handleAction(type) {
         form.action = '${pageContext.request.contextPath}/shop/order/directBuy.do';
         form.submit();
     }
-}
+}    
 </script>
 </body>
 </html>

@@ -111,20 +111,43 @@ public class MemberDAO {
         } finally { DBUtil.executeClose(null, pstmt, conn); }
     }
 
-    // 회원 삭제
+ // 회원 삭제
     public void deleteMember(int userNum) throws Exception {
-        Connection conn = null; PreparedStatement pstmt = null;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
         try {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            // USERS_DETAIL 먼저 삭제 (FK 제약)
-            pstmt = conn.prepareStatement("DELETE FROM USERS_DETAIL WHERE USER_NUM = ?");
-            pstmt.setInt(1, userNum);
-            pstmt.executeUpdate();
+            // USERS를 참조하는 자식 테이블 목록을 DB에서 자동으로 조회
+            String findChildTables = 
+                "SELECT a.table_name, a.column_name " +
+                "FROM all_cons_columns a " +
+                "JOIN all_constraints c ON a.constraint_name = c.constraint_name " +
+                "JOIN all_constraints r ON c.r_constraint_name = r.constraint_name " +
+                "WHERE r.table_name = 'USERS' AND c.constraint_type = 'R' " +
+                "AND c.owner = 'BTEAM02'";
+
+            pstmt = conn.prepareStatement(findChildTables);
+            rs = pstmt.executeQuery();
+
+            // 조회된 자식 테이블을 자동으로 전부 삭제
+            while (rs.next()) {
+                String childTable = rs.getString("table_name");
+                String childColumn = rs.getString("column_name");
+
+                PreparedStatement delPstmt = conn.prepareStatement(
+                    "DELETE FROM " + childTable + " WHERE " + childColumn + " = ?"
+                );
+                delPstmt.setInt(1, userNum);
+                delPstmt.executeUpdate();
+                delPstmt.close();
+            }
+            rs.close();
             pstmt.close();
 
-            // USERS 삭제
+            // 마지막에 USERS 삭제
             pstmt = conn.prepareStatement("DELETE FROM USERS WHERE USER_NUM = ?");
             pstmt.setInt(1, userNum);
             pstmt.executeUpdate();
@@ -133,7 +156,7 @@ public class MemberDAO {
         } catch (Exception e) {
             if (conn != null) conn.rollback();
             throw e;
-        } finally { DBUtil.executeClose(null, pstmt, conn); }
+        } finally { DBUtil.executeClose(rs, pstmt, conn); }
     }
 
     // 전체 회원 수
