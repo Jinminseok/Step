@@ -1,12 +1,14 @@
 package kr.shop.user.action;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import kr.controller.Action;
+import kr.shop.dao.RestockAlertDAO;
 import kr.shop.dao.UserDAO;
 import kr.shop.vo.AdminOrderVO;
 import kr.shop.vo.UserVO;
@@ -41,6 +43,14 @@ public class MyPageAction implements Action {
 		// JSP에서 쓸 수 있게 데이터 담기
 		request.setAttribute("user", user);
 		request.setAttribute("orderList", orderList);
+		
+		// 세션에서 user_num 가져온 직후
+		int userNum = ((Number) session.getAttribute("user_num")).intValue();
+
+		// 재입고 알림 목록 조회 추가
+		List<Map<String, Object>> restockList = 
+		RestockAlertDAO.getInstance().getAlertListByUser(userNum);
+		request.setAttribute("restockList", restockList);
 		
 		// 마이페이지 화면으로 이동
 		return "shop/user/myPageForm.jsp";

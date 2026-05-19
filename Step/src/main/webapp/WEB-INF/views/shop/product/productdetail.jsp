@@ -154,6 +154,10 @@ function checkOptionStock() {
     // 2. 재고표에서 지금 고른 조합 찾기
     let matchedOption = stockData.find(opt => opt.color === selectedColor && opt.size === selectedSize);
     
+    
+    // opt_num 저장 (재입고 신청에 필요)
+    window.selectedOptNum = matchedOption ? matchedOption.opt_num : 0;
+    
     // 3. 재고량 파악
     let currentStock = matchedOption ? matchedOption.stock : 0;
 
@@ -215,7 +219,28 @@ function handleWish() {
 function handleAction(type) {
     if(!requireLogin()) return;
     
-    if(type === 'restock') { alert("재입고 알림 신청이 완료되었습니다."); return; }
+    if(type === 'restock') {
+        if(!window.selectedOptNum) { alert("옵션을 먼저 선택해 주세요."); return; }
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/shop/restock/restockAlert.do',
+            type: 'post',
+            data: { opt_num: window.selectedOptNum },
+            dataType: 'json',
+            success: function(res) {
+                if(res.result === 'logout') {
+                    alert("로그인 후 이용 가능합니다.");
+                    location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
+                } else if(res.result === 'success') {
+                    alert("재입고 알림 신청이 완료되었습니다!\n재입고 시 알림을 보내드립니다.");
+                } else if(res.result === 'duplicate') {
+                    alert("이미 재입고 알림을 신청하신 옵션입니다.");
+                }
+            },
+            error: function() { alert("오류가 발생했습니다."); }
+        });
+        return;
+    }
     if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
     if(selectedSize === "") { alert("상품의 사이즈를 선택해 주세요."); return; }
     

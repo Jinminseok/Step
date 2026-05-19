@@ -200,8 +200,19 @@
 					<c:forEach var="restock" items="${restockList}">
 						<div class="order-card">
 							<div class="order-hdr">
-								<span class="order-num">신청일: ${restock.reg_date}</span> <span
-									class="badge b-gray" style="margin-left: auto">입고 대기중</span>
+								<span class="order-num">신청일: ${restock.reg_date}</span>
+								<c:choose>
+									<c:when test="${restock.sent_yn eq 'Y'}">
+										<%-- 재입고 완료된 경우 초록 뱃지 --%>
+										<span class="badge"
+											style="background: #e8f5e9; color: #2e7d32; margin-left: auto;">✅
+											재입고 완료</span>
+									</c:when>
+									<c:otherwise>
+										<span class="badge b-gray" style="margin-left: auto">⏳
+											입고 대기중</span>
+									</c:otherwise>
+								</c:choose>
 							</div>
 							<div class="order-body">
 								<div class="order-thumb">
@@ -214,10 +225,17 @@
 									<div class="order-info-name"
 										style="color: var(--gray3); font-size: 11px;">${restock.brand_name}</div>
 									<div class="order-info-name">${restock.prod_name}</div>
+									<div
+										style="font-size: 12px; color: var(--gray4); margin-top: 4px;">
+										${restock.color} / ${restock.size_val}</div>
 								</div>
-								<div style="flex-shrink: 0;">
-									<button class="btn btn-outline btn-sm">알림 취소</button>
-								</div>
+								<c:if test="${restock.sent_yn ne 'Y'}">
+									<div style="flex-shrink: 0;">
+										<button class="btn btn-outline btn-sm"
+											onclick="cancelRestock(${restock.alert_num}, this)">알림
+											취소</button>
+									</div>
+								</c:if>
 							</div>
 						</div>
 					</c:forEach>
@@ -334,24 +352,26 @@
 
 				<!-- 5. 반품/교환 탭 -->
 				<div class="my-sub" id="my-return">
-					<form action="${pageContext.request.contextPath}/shop/user/returnRequest.do" method="post">
+					<form
+						action="${pageContext.request.contextPath}/shop/user/returnRequest.do"
+						method="post">
 						<div class="form-sec"
 							style="border: none; padding: 0; max-width: 100%">
 							<div class="form-group">
-								<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> 
-								
-								<select class="form-input" name="order_num">
+								<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> <select
+									class="form-input" name="order_num">
 									<%-- 🌟 배송완료된 상품이 있는지 체크하기 위한 변수 --%>
 									<c:set var="deliveredCount" value="0" />
-									
+
 									<c:forEach var="order" items="${orderList}">
 										<%-- 🌟 이전 코드 기준 주문 상태 4(배송완료)인 경우에만 <option> 생성 --%>
 										<c:if test="${order.order_status == 4}">
-											<option value="${order.order_num}">#${order.order_num} - ${order.prod_name}</option>
+											<option value="${order.order_num}">#${order.order_num}
+												- ${order.prod_name}</option>
 											<c:set var="deliveredCount" value="${deliveredCount + 1}" />
 										</c:if>
 									</c:forEach>
-									
+
 									<%-- 🌟 배송완료 상품이 하나도 없을 경우 --%>
 									<c:if test="${deliveredCount == 0}">
 										<option value="">선택할 수 있는 배송완료 내역이 없습니다</option>
@@ -364,8 +384,7 @@
 									<%-- 🌟 형님이 말씀하신 TP (1: 반품, 2: 교환) 세팅 --%>
 									<label
 										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
-										type="radio" name="tp" value="1" checked>반품</label>
-									<label
+										type="radio" name="tp" value="1" checked>반품</label> <label
 										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
 										type="radio" name="tp" value="2">교환</label>
 								</div>
@@ -384,9 +403,11 @@
 							<div class="form-group">
 								<label class="form-label">상세 내용</label>
 								<%-- 🌟 테이블의 RET_NOTE 컬럼과 매핑 --%>
-								<textarea class="form-input" name="ret_note" placeholder="자세한 내용을 입력해주세요"></textarea>
+								<textarea class="form-input" name="ret_note"
+									placeholder="자세한 내용을 입력해주세요"></textarea>
 							</div>
-							<button type="submit" class="btn btn-black" style="margin-top: 4px; width: 100%">신청하기</button>
+							<button type="submit" class="btn btn-black"
+								style="margin-top: 4px; width: 100%">신청하기</button>
 						</div>
 					</form>
 				</div>
@@ -498,6 +519,22 @@ function checkDelete() {
         alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         document.getElementById('del_pwd_confirm').focus();
         return false;
+    }
+    //알림 취소 버튼용 
+    function cancelRestock(alertNum, btn) {
+        if(!confirm("재입고 알림 신청을 취소하시겠습니까?")) return;
+        $.ajax({
+            url: '${pageContext.request.contextPath}/shop/restock/restockCancel.do',
+            type: 'post',
+            data: { alert_num: alertNum },
+            dataType: 'json',
+            success: function(res) {
+                if(res.result === 'success') {
+                    btn.closest('.order-card').remove();
+                    alert("알림 신청이 취소되었습니다.");
+                }
+            }
+        });
     }
 
     // 모든 확인을 마치면 마지막으로 의사 묻기
