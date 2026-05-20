@@ -163,14 +163,13 @@ public class UserProductDAO {
 		List<AdminProductVO> list = null;
 		String sql = null;
 		
-		// 🚨 수정: 판매중(prod_status = 1) 조건 기본 삽입
+		// 판매중(prod_status = 1) 조건
 		String sub_sql = "WHERE p.prod_status = 1 ";
 		int cnt = 0;
 
 		try {
 			conn = DBUtil.getConnection();
 
-			// 🚨 수정: 앞서 WHERE가 무조건 들어갔으므로 이후 조건들은 AND로 이어줌
 			if (filter.getGender() != -1) {
 				sub_sql += "AND p.gender = ? ";
 			}
@@ -317,5 +316,40 @@ public class UserProductDAO {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		return json.toString();
+	}
+	
+	// 추천 상품 가져오기 (같은 카테고리, 브랜드 중 현재 상품 제외 랜덤 4개)
+	public List<AdminProductVO> getRecommendProducts(int cat_num, int brand_num, int current_prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<AdminProductVO> list = new ArrayList<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM ( "
+					   + "SELECT p.prod_num, p.prod_name, p.prod_price, i.prod_img_url "
+					   + "FROM products p "
+					   + "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
+					   + "WHERE p.prod_status = 1 AND p.prod_num != ? "
+					   + "AND (p.cat_num = ? OR p.brand_num = ?) "
+					   + "ORDER BY DBMS_RANDOM.VALUE "
+					   + ") WHERE ROWNUM <= 4";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, current_prod_num);
+			pstmt.setInt(2, cat_num);
+			pstmt.setInt(3, brand_num);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				AdminProductVO vo = new AdminProductVO();
+				vo.setProd_num(rs.getInt("prod_num"));
+				vo.setProd_name(rs.getString("prod_name"));
+				vo.setProd_price(rs.getInt("prod_price"));
+				vo.setProd_img_url(rs.getString("prod_img_url"));
+				list.add(vo);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
 	}
 }

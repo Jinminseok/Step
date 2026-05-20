@@ -73,15 +73,16 @@ public class UserOrderDAO {
 			DBUtil.executeClose(null, pstmt, null);
 			
 			// 결제 내역
-			String sql4 = "INSERT INTO payments (pay_num, order_num, method, tid, amount, pay_status) VALUES (payments_seq.nextval, ?, ?, ?, ?, 1)";
+			String sql4 = "INSERT INTO payments (pay_num, order_num, method, tid, amount, pay_status, paid_at) "
+					+ "VALUES (payments_seq.nextval, ?, ?, ?, ?, 1, SYSDATE)";
 			pstmt = conn.prepareStatement(sql4);
 			pstmt.setLong(1, orderNum);
 			pstmt.setString(2, payMethod);
-			pstmt.setString(3, tid); // 카카오페이면 tid값, 아니면 null 저장
+			pstmt.setString(3, tid); // 카카오페이면 고유번호, 일반 결제면 null
 			pstmt.setInt(4, totalPrice);
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
-
+			
 			// 장바구니 목록 비우기
 			String sql5 = "DELETE FROM cart WHERE cart_num IN (" + placeholders + ")";
 			pstmt = conn.prepareStatement(sql5);
@@ -102,6 +103,28 @@ public class UserOrderDAO {
 			if (conn != null) conn.setAutoCommit(true);
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
+	}
+	
+	// 해당 유저가 특정 상품을 구매 했는지 확인 (리뷰 작성 권한)
+	public boolean checkUserPurchase(long userNum, int prodNum) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boolean result = false;
+		try {
+			conn = DBUtil.getConnection();
+			// 주문 상태가 1(결제완료) 이상이고, 해당 주문 상세에 이 상품이 있는지 조인하여 확인
+			String sql = "SELECT * FROM orders o JOIN order_items oi ON o.order_num = oi.order_num "
+					   + "WHERE o.user_num = ? AND oi.prod_num = ? AND o.order_status >= 1";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, userNum);
+			pstmt.setInt(2, prodNum);
+			rs = pstmt.executeQuery();
+			if(rs.next()) result = true;
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return result;
 	}
 		
 }

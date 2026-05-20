@@ -90,7 +90,7 @@ public class UserWishListDAO {
 		}
 	}
 	
-	// 찜 전체 개수 가져오기
+	// 찜 전체 개수 가져오기 (뱃지)
 	public int getWishCount(Long user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -111,7 +111,27 @@ public class UserWishListDAO {
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
-		
 		return count;
 	}
+	
+	// 찜(즐겨찾기) 여부 확인 (있으면 true, 없으면 false)
+	public boolean checkWish(long user_num, int prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boolean result = false;
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT * FROM wishlist WHERE user_num = ? AND prod_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, user_num);
+			pstmt.setLong(2, prod_num);
+			rs = pstmt.executeQuery();
+			if(rs.next()) result = true;
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return result;
+	}
+
 }
