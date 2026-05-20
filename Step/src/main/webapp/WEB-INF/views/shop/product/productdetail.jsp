@@ -9,12 +9,49 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+    /* 🌟 스크롤 스파이 전용 탭 스타일 */
+    .sticky-tabs {
+        display: flex;
+        position: sticky;
+        top: 56px; /* 헤더 높이 딱 맞춤 */
+        background: #fff;
+        z-index: 100;
+        border-bottom: 2px solid var(--black);
+        margin-bottom: 40px;
+        /* padding-top: 10px; 삭제 -> 헤더와 완벽하게 밀착됩니다! */
+    }
+    .sticky-tab {
+        flex: 1;
+        text-align: center;
+        padding: 18px 0;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        background: #fff;
+        color: var(--gray3);
+        border: 1px solid var(--border);
+        border-bottom: none;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    /* 선택된 탭 강제 블랙 디자인 */
+    .sticky-tab.active {
+        background: var(--black);
+        color: #fff;
+        border-color: var(--black);
+    }
+    
+    /* 🌟 클릭 시 섹션 상단이 탭에 가려지지 않도록 여백 추가 (헤더 56px + 탭 약 56px) */
+    .scroll-section {
+        scroll-margin-top: 112px; 
+    }
+</style>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
     <div class="wrap">
-        <div class="back-btn" onclick="history.back()" style="margin-bottom: 10px;">← 목록으로</div>
+        <div class="back-btn" onclick="history.back()" style="margin-bottom: 10px; cursor: pointer;">← 목록으로</div>
         
         <div class="detail-layout">
             
@@ -101,7 +138,7 @@
                     <input type="hidden" name="size" id="input_size" value="">
                 </form>
 
-                <%-- ✅ 재입고 신청 전용 form (script 밖에 위치) --%>
+                <%-- 팀원분의 재입고 신청 전용 form 유지 --%>
                 <form id="restockForm" action="${pageContext.request.contextPath}/shop/restock/restockAlert.do" method="post">
                     <input type="hidden" name="prod_num" value="${product.prod_num}">
                     <input type="hidden" name="opt_num" id="restock_opt_num" value="">
@@ -115,6 +152,131 @@
                 </div>
             </div>
         </div>
+
+        <%-- 스크롤 스파이 하단 영역 --%>
+        <div class="detail-bottom-area" style="position: relative; margin-top: 80px;">
+            
+            <%-- 스티키 고정 탭 메뉴 --%>
+            <div class="sticky-tabs">
+                <div class="sticky-tab active" id="tab-btn-info" onclick="scrollToSection('info')">정보</div>
+                <div class="sticky-tab" id="tab-btn-size" onclick="scrollToSection('size')">사이즈</div>
+                <div class="sticky-tab" id="tab-btn-recommend" onclick="scrollToSection('recommend')">추천 상품</div>
+                <div class="sticky-tab" id="tab-btn-review" onclick="scrollToSection('review')">리뷰 (0)</div>
+            </div>
+
+            <%-- 모든 탭의 내용을 스크롤로 볼 수 있도록 설정 --%>
+            
+            <%-- 1. 정보 내용 --%>
+            <div id="content-info" class="scroll-section" style="padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+                <div style="max-width: 800px; margin: 0 auto;">
+                    
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">상품 기본 정보</h3>
+                    
+                    <table class="info-table" style="margin-bottom: 60px;">
+                        <tbody>
+                            <tr>
+                                <th>품번(SKU)</th>
+                                <td>${product.sku}</td>
+                                <th>브랜드</th>
+                                <td>${product.brand_name}</td>
+                            </tr>
+                            <tr>
+                                <th>성별</th>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${product.gender == 1}">남성 (Men)</c:when>
+                                        <c:when test="${product.gender == 2}">여성 (Women)</c:when>
+                                        <c:otherwise>남녀공용 (Unisex)</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <th>제조사</th>
+                                <td>${product.brand_name} 협력업체</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <c:if test="${empty product.prod_text}">
+                        <div style="padding: 40px 0; color: var(--gray4); text-align: center;">등록된 상세 설명이 없습니다.</div>
+                    </c:if>
+                    <c:if test="${!empty product.prod_text}">
+                        <div style="text-align: center;">
+                            ${product.prod_text}
+                        </div>
+                    </c:if>
+                </div>
+            </div>
+
+            <%-- 2. 사이즈 내용 --%>
+            <div id="content-size" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Size Guide</h3>
+                    <p style="font-size: 13px; color: var(--gray3); margin-bottom: 24px;">본 사이즈 표는 표준 규격을 기준으로 제작되었습니다. 브랜드 디자인에 따라 약간의 오차가 있을 수 있습니다.</p>
+                    
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th>KR (mm)</th>
+                                <th style="text-align: center;">US (Men)</th>
+                                <th style="text-align: center;">UK</th>
+                                <th style="text-align: center;">EU</th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align: center;">
+                            <tr><td style="font-weight:700;">230</td><td>5</td><td>4</td><td>37.5</td></tr>
+                            <tr><td style="font-weight:700;">240</td><td>6</td><td>5</td><td>38.5</td></tr>
+                            <tr><td style="font-weight:700;">250</td><td>7</td><td>6</td><td>40</td></tr>
+                            <tr><td style="font-weight:700;">260</td><td>8</td><td>7</td><td>41</td></tr>
+                            <tr><td style="font-weight:700;">270</td><td>9</td><td>8</td><td>42.5</td></tr>
+                            <tr><td style="font-weight:700;">280</td><td>10</td><td>9</td><td>44</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <%-- 3. 추천 상품 내용 --%>
+            <div id="content-recommend" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center;">이런 상품은 어떠세요?</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                        <div style="cursor: pointer; text-align: center;">
+                            <div style="width: 100%; aspect-ratio: 1; background: var(--gray7); border-radius: 4px; margin-bottom: 10px;"></div>
+                            <div style="font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--black);">추천 제품 A</div>
+                            <div style="font-size: 13px; color: var(--blue); font-weight: 700;">129,000원</div>
+                        </div>
+                        <div style="cursor: pointer; text-align: center;">
+                            <div style="width: 100%; aspect-ratio: 1; background: var(--gray7); border-radius: 4px; margin-bottom: 10px;"></div>
+                            <div style="font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--black);">추천 제품 B</div>
+                            <div style="font-size: 13px; color: var(--blue); font-weight: 700;">145,000원</div>
+                        </div>
+                        <div style="cursor: pointer; text-align: center;">
+                            <div style="width: 100%; aspect-ratio: 1; background: var(--gray7); border-radius: 4px; margin-bottom: 10px;"></div>
+                            <div style="font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--black);">추천 제품 C</div>
+                            <div style="font-size: 13px; color: var(--blue); font-weight: 700;">98,000원</div>
+                        </div>
+                        <div style="cursor: pointer; text-align: center;">
+                            <div style="width: 100%; aspect-ratio: 1; background: var(--gray7); border-radius: 4px; margin-bottom: 10px;"></div>
+                            <div style="font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--black);">추천 제품 D</div>
+                            <div style="font-size: 13px; color: var(--blue); font-weight: 700;">189,000원</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- 4. 리뷰 내용 --%>
+            <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 60px;">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: 700;">상품 리뷰</h3>
+                    </div>
+                    <div style="text-align: center; color: var(--gray4); padding: 80px 0; background: var(--gray7); border-radius: 4px; font-size: 14px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📝</div>
+                        아직 등록된 상품 리뷰가 없습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 <script>
@@ -123,6 +285,46 @@ const stockData = ${empty optionJson ? '[]' : optionJson};
 
 let selectedColor = "";
 let selectedSize = "";
+
+// 클릭 시 해당 섹션으로 부드럽게 스크롤 이동
+function scrollToSection(tabName) {
+    const target = document.getElementById('content-' + tabName);
+    if(target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// 🌟 스크롤 스파이 로직 수정: 오차 범위를 확 줄여서 정확한 타이밍에 탭 변경
+window.addEventListener('scroll', function() {
+    let current = 'info'; // 스크롤 안 내렸을 때는 기본으로 '정보' 활성화
+    const sections = ['info', 'size', 'recommend', 'review'];
+    
+    // 현재 화면 스크롤 값 + 헤더(56) + 탭 높이(약 56) + 약간의 여유(10)
+    const scrollPosition = window.scrollY + 130; 
+
+    sections.forEach(sec => {
+        const section = document.getElementById('content-' + sec);
+        if (section) {
+            // 내가 스크롤을 내린 위치가 해당 섹션의 시작점보다 아래에 있으면 해당 탭 활성화!
+            if (scrollPosition >= section.offsetTop) { 
+                current = sec;
+            }
+        }
+    });
+
+    if (current) {
+        // 모든 탭 디자인 초기화
+        document.querySelectorAll('.sticky-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // 현재 위치 탭만 블랙 디자인
+        const activeBtn = document.getElementById('tab-btn-' + current);
+        if(activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+});
 
 function changeMainImg(element) {
     document.querySelectorAll('.thumb-img').forEach(img => img.classList.remove('active'));
@@ -154,7 +356,6 @@ function checkOptionStock() {
     let matchedOption = stockData.find(opt => opt.color === selectedColor && opt.size === selectedSize);
     let currentStock = matchedOption ? matchedOption.stock : 0;
 
-    // ✅ restock form의 hidden input에 opt_num 세팅
     document.getElementById('restock_opt_num').value = matchedOption ? matchedOption.opt_num : 0;
 
     let $cartBtn = $('#cartBtn');
@@ -209,7 +410,6 @@ function handleWish() {
 function handleAction(type) {
     if(!requireLogin()) return;
 
-    // ✅ 재입고 알림 신청 - form submit으로 처리
     if(type === 'restock') {
         document.getElementById('restockForm').submit();
         return;
@@ -218,7 +418,6 @@ function handleAction(type) {
     if(selectedColor === "") { alert("상품의 색상을 선택해 주세요."); return; }
     if(selectedSize === "")  { alert("상품의 사이즈를 선택해 주세요."); return; }
 
-    // 장바구니
     if(type === 'cart') {
         let prod_num = $('input[name="prod_num"]').first().val();
         let color = $('#input_color').val();
@@ -241,13 +440,12 @@ function handleAction(type) {
             error: function() { alert("통신 중 오류가 발생했습니다."); }
         });
     }
-    // 바로구매
     else if(type === 'buy') {
         let form = document.getElementById('orderPageForm');
         form.action = '${pageContext.request.contextPath}/shop/order/directBuy.do';
         form.submit();
     }
-}    
+}
 </script>
 </body>
 </html>
