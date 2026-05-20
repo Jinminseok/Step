@@ -9,43 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<style>
-    /* 🌟 스크롤 스파이 전용 탭 스타일 */
-    .sticky-tabs {
-        display: flex;
-        position: sticky;
-        top: 56px; /* 헤더 높이 딱 맞춤 */
-        background: #fff;
-        z-index: 100;
-        border-bottom: 2px solid var(--black);
-        margin-bottom: 40px;
-        /* padding-top: 10px; 삭제 -> 헤더와 완벽하게 밀착됩니다! */
-    }
-    .sticky-tab {
-        flex: 1;
-        text-align: center;
-        padding: 18px 0;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        background: #fff;
-        color: var(--gray3);
-        border: 1px solid var(--border);
-        border-bottom: none;
-        transition: background-color 0.2s, color 0.2s;
-    }
-    /* 선택된 탭 강제 블랙 디자인 */
-    .sticky-tab.active {
-        background: var(--black);
-        color: #fff;
-        border-color: var(--black);
-    }
-    
-    /* 🌟 클릭 시 섹션 상단이 탭에 가려지지 않도록 여백 추가 (헤더 56px + 탭 약 56px) */
-    .scroll-section {
-        scroll-margin-top: 112px; 
-    }
-</style>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
@@ -167,7 +130,7 @@
             <%-- 모든 탭의 내용을 스크롤로 볼 수 있도록 설정 --%>
             
             <%-- 1. 정보 내용 --%>
-            <div id="content-info" class="scroll-section" style="padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-info" class="scroll-section" style="padding-top: 20px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 800px; margin: 0 auto;">
                     
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">상품 기본 정보</h3>
@@ -186,7 +149,7 @@
                                     <c:choose>
                                         <c:when test="${product.gender == 1}">남성 (Men)</c:when>
                                         <c:when test="${product.gender == 2}">여성 (Women)</c:when>
-                                        <c:otherwise>남녀공용 (Unisex)</c:otherwise>
+                                        <c:otherwise>남녀공용</c:otherwise>
                                     </c:choose>
                                 </td>
                                 <th>제조사</th>
@@ -207,7 +170,7 @@
             </div>
 
             <%-- 2. 사이즈 내용 --%>
-            <div id="content-size" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-size" class="scroll-section" style="padding-top: 30px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 800px; margin: 0 auto;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Size Guide</h3>
                     <p style="font-size: 13px; color: var(--gray3); margin-bottom: 24px;">본 사이즈 표는 표준 규격을 기준으로 제작되었습니다. 브랜드 디자인에 따라 약간의 오차가 있을 수 있습니다.</p>
@@ -234,7 +197,7 @@
             </div>
 
             <%-- 3. 추천 상품 내용 --%>
-            <div id="content-recommend" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-recommend" class="scroll-section" style="padding-top: 30px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 900px; margin: 0 auto;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center;">이런 상품은 어떠세요?</h3>
                     
@@ -264,7 +227,7 @@
             </div>
 
             <%-- 4. 리뷰 내용 --%>
-            <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 60px;">
+            <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 30px;">
                 <div style="max-width: 900px; margin: 0 auto;">
                     <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: 20px;">
                         <h3 style="font-size: 18px; font-weight: 700;">상품 리뷰</h3>
@@ -286,39 +249,38 @@ const stockData = ${empty optionJson ? '[]' : optionJson};
 let selectedColor = "";
 let selectedSize = "";
 
-// 클릭 시 해당 섹션으로 부드럽게 스크롤 이동
+// 클릭 시 자바스크립트로 정밀 스크롤 이동
 function scrollToSection(tabName) {
     const target = document.getElementById('content-' + tabName);
     if(target) {
-        target.scrollIntoView({ behavior: 'smooth' });
+        // 헤더 높이(56px) + 탭 메뉴 높이(58px) = 114px
+        const targetY = target.getBoundingClientRect().top + window.pageYOffset - 114;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
 }
 
-// 🌟 스크롤 스파이 로직 수정: 오차 범위를 확 줄여서 정확한 타이밍에 탭 변경
+// 스크롤 스파이
 window.addEventListener('scroll', function() {
-    let current = 'info'; // 스크롤 안 내렸을 때는 기본으로 '정보' 활성화
+    let current = 'info'; 
     const sections = ['info', 'size', 'recommend', 'review'];
     
-    // 현재 화면 스크롤 값 + 헤더(56) + 탭 높이(약 56) + 약간의 여유(10)
-    const scrollPosition = window.scrollY + 130; 
+    const triggerLine = 130; 
 
     sections.forEach(sec => {
         const section = document.getElementById('content-' + sec);
         if (section) {
-            // 내가 스크롤을 내린 위치가 해당 섹션의 시작점보다 아래에 있으면 해당 탭 활성화!
-            if (scrollPosition >= section.offsetTop) { 
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= triggerLine) {
                 current = sec;
             }
         }
     });
 
     if (current) {
-        // 모든 탭 디자인 초기화
         document.querySelectorAll('.sticky-tab').forEach(tab => {
             tab.classList.remove('active');
         });
         
-        // 현재 위치 탭만 블랙 디자인
         const activeBtn = document.getElementById('tab-btn-' + current);
         if(activeBtn) {
             activeBtn.classList.add('active');
