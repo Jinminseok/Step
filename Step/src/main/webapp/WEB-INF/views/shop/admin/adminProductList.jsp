@@ -284,34 +284,15 @@ tr:hover td {
 	background: #fff4e6;
 }
 
-.paging-area {
-	margin-top: 30px;
-	margin-bottom: 10px;
-	text-align: center;
-	font-size: 14px;
-}
-
-.paging-area a, .paging-area b, .paging-area span {
-	padding: 6px 12px;
-	border: 1px solid #e2e8f0;
-	color: #475569;
-	text-decoration: none;
-	border-radius: 4px;
-	margin: 0 2px;
-	transition: all 0.2s;
-}
-
-.paging-area a:hover {
-	border-color: #111827;
-	color: #111827;
-}
-
-.paging-area b span {
-	border-color: #111827;
-	background: #111827;
-	color: #fff !important;
-	font-weight: 700;
-}
+/* 🌟 PAGINATION (새로 교체된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
 
 /* --- 모달 및 클릭 효과 --- */
 .tr-clickable {
@@ -552,9 +533,9 @@ tr:hover td {
 								<th width="120">상태</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="productTbody">
 							<c:forEach var="product" items="${list}">
-								<tr class="tr-clickable" data-prodnum="${product.prod_num}"
+								<tr class="tr-clickable product-row" data-prodnum="${product.prod_num}"
 									data-prodname="${product.prod_name}"
 									onclick="openStockModal(this)">
 									<td>
@@ -616,7 +597,12 @@ tr:hover td {
 							</c:forEach>
 						</tbody>
 					</table>
-					<div class="paging-area">${page}</div>
+
+					<%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+					<div class="pagination-wrap" id="productPagination" style="display:none;">
+						<div class="page-info" id="productPageInfo">총 <strong>0</strong>건</div>
+						<div class="page-btns" id="productPageBtns"></div>
+					</div>
 				</c:if>
 			</div>
 		</div>
@@ -652,5 +638,81 @@ tr:hover td {
 		</div>
 	</div>
 
+<script>
+// 🌟 PAGINATION JAVASCRIPT LOGIC 🌟
+let currentProductPage = 1;
+const productItemsPerPage = 10; // 한 페이지에 보여줄 개수
+let allProductRows = [];
+
+window.addEventListener('load', function() {
+    const tbody = document.getElementById('productTbody');
+    if (tbody) {
+        allProductRows = Array.from(tbody.querySelectorAll('tr.product-row'));
+        if (allProductRows.length > 0) {
+            renderProductTable();
+        } else {
+            const pw = document.getElementById('productPagination');
+            if(pw) pw.style.display = 'none';
+        }
+    }
+});
+
+function renderProductTable() {
+    allProductRows.forEach(r => r.style.display = 'none');
+    const start = (currentProductPage - 1) * productItemsPerPage;
+    const end = start + productItemsPerPage;
+    
+    for (let i = start; i < end && i < allProductRows.length; i++) {
+        allProductRows[i].style.display = '';
+    }
+    renderProductPagination();
+}
+
+function renderProductPagination() {
+    const totalPages = Math.ceil(allProductRows.length / productItemsPerPage);
+    const pw = document.getElementById('productPagination');
+    const pi = document.getElementById('productPageInfo');
+    const pb = document.getElementById('productPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allProductRows.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentProductPage - 1) * productItemsPerPage + 1;
+    const en = Math.min(currentProductPage * productItemsPerPage, allProductRows.length);
+    
+    // JSP 처리 방지를 위해 \${} 이스케이프 사용
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allProductRows.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentProductPage === 1 ? 'disabled' : ''}" onclick="changeProductPage(\${currentProductPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentProductPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentProductPage ? 'on' : ''}" onclick="changeProductPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentProductPage === totalPages ? 'disabled' : ''}" onclick="changeProductPage(\${currentProductPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeProductPage(p) {
+    const totalPages = Math.ceil(allProductRows.length / productItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentProductPage = p;
+    renderProductTable();
+}
+</script>
 </body>
 </html>
