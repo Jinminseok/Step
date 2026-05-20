@@ -33,9 +33,26 @@ public class AdminOrderVO extends AdminBaseVO {
 		private Date ret_created_at; // RET_CREATED_AT 🌟 (추가: 클레임 신청일자)
 		private Date ret_updated_at; // RET_UPDATED_AT 🌟 (추가: 최종 심사일자)
 
-		
+		private String Opt_info;
+		private int qty;
 	
 	
+	public String getOpt_info() {
+			return Opt_info;
+		}
+
+		public void setOpt_info(String opt_info) {
+			Opt_info = opt_info;
+		}
+
+		public int getQty() {
+			return qty;
+		}
+
+		public void setQty(int qty) {
+			this.qty = qty;
+		}
+
 	public int getUser_num() {
 			return user_num;
 		}
