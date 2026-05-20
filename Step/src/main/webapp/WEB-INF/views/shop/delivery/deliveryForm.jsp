@@ -546,20 +546,22 @@ function openDetailModal(orderNum, recvName, orderDate, payPrice) {
     document.getElementById('modal-detail').classList.add('open');
 
     fetch(ctxPath + '/shop/delivery/deliveryDetail.do?orderNum=' + orderNum)
-        .then(function(res) { return res.json(); })
-        .then(function(items) {
-            if (!items || items.length === 0) {
-                document.getElementById('detailItemList').innerHTML =
-                    '<div style="text-align:center;padding:30px;color:#9ca3af">📭 상품 정보가 없습니다.</div>';
-                return;
-            }
-            var html = '';
-            items.forEach(function(item) {
-                var imgHtml = (item.prodImgUrl && item.prodImgUrl !== '')
-                    ? '<img class="item-img" src="' + ctxPath + item.prodImgUrl + '" onerror="this.outerHTML=\'<div class=item-img-placeholder>👟</div>\'">'
-                    : '<div class="item-img-placeholder">👟</div>';
+    .then(function(res) { return res.json(); })
+    .then(function(items) {
+        if (!items || items.length === 0) {
+            document.getElementById('detailItemList').innerHTML =
+                '<div style="text-align:center;padding:30px;color:#9ca3af">📭 상품 정보가 없습니다.</div>';
+            return;
+        }
+        var html = '';
+        items.forEach(function(item) {
+            
+            // 🚨 이 부분을 수정해 주세요! (경로 중간에 '/upload/' 추가)
+            var imgHtml = (item.prodImgUrl && item.prodImgUrl !== '')
+                ? '<img class="item-img" src="' + ctxPath + '/upload/' + item.prodImgUrl + '" onerror="this.outerHTML=\'<div class=item-img-placeholder>👟</div>\'">'
+                : '<div class="item-img-placeholder">👟</div>';
 
-                var totalItemPrice = Number(item.itemPrice) * Number(item.qty);
+            var totalItemPrice = Number(item.itemPrice) * Number(item.qty);
 
                 html += '<div class="item-card">';
                 html +=   imgHtml;

@@ -125,15 +125,16 @@ body {
 .badge-warn { background: #fff4e6; color: #d9480f; }  /* 부족 */
 .badge-out { background: #fef2f2; color: #ef4444; }   /* 품절 */
 
-/* PAGINATION */
-.pagination-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; flex-wrap: nowrap; }
-.page-info { font-size: 14px; color: #64748b; white-space: nowrap; flex-shrink: 0; }
-.page-btns { display: flex; gap: 5px; flex-wrap: nowrap; }
-.pg-btn { padding: 8px 12px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; border-radius: 4px; font-size: 13px; min-width: 35px; text-align: center; transition: all 0.2s; }
-.pg-btn:hover:not(.disabled) { border-color: #111827; color: #111827; }
-.pg-btn.on { background: #111827; color: #fff; border-color: #111827; font-weight: 700; }
-.pg-btn.disabled { color: #cbd5e1; cursor: default; border-color: #f1f5f9; }
-    
+/* 🌟 PAGINATION (새로 추가/수정된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
 /* ACTION BUTTON */
 .btn-detail { background: #f0f4ff; color: #1a73e8; border: 1px solid #cce0ff; padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .btn-detail:hover { background: #1a73e8; color: #fff; border-color: #1a73e8; box-shadow: 0 2px 8px rgba(26,115,232,0.2); }
@@ -274,12 +275,15 @@ body {
                     </c:if>
                 </tbody>
             </table>
+            
+            <%-- 🌟 PAGINATION HTML (새로 추가/수정됨) 🌟 --%>
+            <div class="pagination-wrap" id="stockPagination" style="display:none;">
+                <div class="page-info" id="stockPageInfo">총 <strong>0</strong>건</div>
+                <div class="page-btns" id="stockPageBtns"></div>
+            </div>
+
         </div>
 
-        <div class="pagination-wrap" id="stockPagination" style="display:none;">
-            <div class="page-info" id="stockPageInfo">0 - 0 / 0건</div>
-            <div class="page-btns" id="stockPageBtns"></div>
-        </div>
     </div>
 </div>
 
@@ -312,18 +316,26 @@ body {
 </div>
 
 <script>
-    // ── 데이터 및 페이징 설정 ──
+    // ── 데이터 및 페이징 설정 (새로운 디자인 로직 적용) ──
     let currentStockPage = 1;
     const itemsPerPage = 10;
     let allRows = [];
 
-    window.onload = function() {
-        allRows = Array.from(document.querySelectorAll('.stock-row'));
-        renderTable();
-    };
+    window.addEventListener('load', function() {
+        const tbody = document.getElementById('stockTbody');
+        if (tbody) {
+            allRows = Array.from(tbody.querySelectorAll('tr.stock-row'));
+            allRows.forEach(row => row.setAttribute('data-visible', 'true')); // 초기화
+            if (allRows.length > 0) {
+                renderTable();
+            } else {
+                document.getElementById('stockPagination').style.display = 'none';
+            }
+        }
+    });
 
     function renderTable() {
-        const activeRows = allRows.filter(row => row.getAttribute('data-visible') !== 'false');
+        const activeRows = allRows.filter(row => row.getAttribute('data-visible') === 'true');
         allRows.forEach(row => row.style.display = 'none');
         
         const start = (currentStockPage - 1) * itemsPerPage;
@@ -341,6 +353,8 @@ body {
         const pi = document.getElementById('stockPageInfo');
         const pb = document.getElementById('stockPageBtns');
         
+        if (!pw || !pb) return;
+
         if (totalItems === 0) {
             pw.style.display = 'none';
             return;
@@ -349,34 +363,33 @@ body {
         pw.style.display = 'flex';
         const sn = (currentStockPage - 1) * itemsPerPage + 1;
         const en = Math.min(currentStockPage * itemsPerPage, totalItems);
-        pi.innerHTML = sn + ' - ' + en + ' / ' + totalItems + '건';
+        
+        // JSP 처리 방지를 위해 \${} 이스케이프 사용
+        pi.innerHTML = `총 <strong style="color:#0f172a">\${totalItems}</strong>건 · \${sn}-\${en}`;
 
-        const blockSize = 10;
-        const currentBlock = Math.ceil(currentStockPage / blockSize);
-        const startPage = (currentBlock - 1) * blockSize + 1;
-        const endPage = Math.min(startPage + blockSize - 1, totalPages);
+        let h = `<div class="pg-btn \${currentStockPage === 1 ? 'disabled' : ''}" onclick="changePage(\${currentStockPage - 1})">‹</div>`;
 
-        let h = '';
-        if (startPage > 1) {
-            h += '<div class="pg-btn" onclick="changePage(' + (startPage - 1) + ')">‹</div>';
-        } else {
-            h += '<div class="pg-btn disabled">‹</div>';
+        // 최대 9개의 버튼만 보여지도록 제한
+        let maxVisible = 9;
+        let startPage = Math.max(1, currentStockPage - Math.floor(maxVisible / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+        if (endPage - startPage + 1 < maxVisible) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
         }
 
         for (let i = startPage; i <= endPage; i++) {
-            const onCls = (i === currentStockPage) ? 'on' : '';
-            h += '<div class="pg-btn ' + onCls + '" onclick="changePage(' + i + ')">' + i + '</div>';
+            h += `<div class="pg-btn \${i === currentStockPage ? 'on' : ''}" onclick="changePage(\${i})">\${i}</div>`;
         }
 
-        if (endPage < totalPages) {
-            h += '<div class="pg-btn" onclick="changePage(' + (endPage + 1) + ')">›</div>';
-        } else {
-            h += '<div class="pg-btn disabled">›</div>';
-        }
+        h += `<div class="pg-btn \${currentStockPage === totalPages ? 'disabled' : ''}" onclick="changePage(\${currentStockPage + 1})">›</div>`;
         pb.innerHTML = h;
     }
 
     function changePage(p) {
+        const activeRows = allRows.filter(row => row.getAttribute('data-visible') === 'true');
+        const totalPages = Math.ceil(activeRows.length / itemsPerPage);
+        if (p < 1 || p > totalPages) return;
         currentStockPage = p;
         renderTable();
     }
@@ -414,7 +427,7 @@ body {
         renderTable();
     }
 
-    // ── 🚨 상세 모달 구동 로직 (중복 제거 및 기능 단일화) ──
+    // ── 🚨 상세 모달 구동 로직 ──
     function openStockDetailModal(trElement) {
         var prodNum = trElement.getAttribute('data-num');
         var brand = trElement.getAttribute('data-brand');
@@ -458,44 +471,44 @@ body {
     });
 
     // ── 서버에서 받아온 상세 재고 정보를 그리는 렌더링 함수 ──
-	function renderRealStockMatrix(data) {
-	    const stockArray = Array.isArray(data) ? data : data.list;
-	    const matrixArea = document.getElementById('stockMatrixArea');
-	    
-	    if (!stockArray || stockArray.length === 0) {
-	        matrixArea.innerHTML = '<div style="padding:50px; text-align:center; color:#999;">상세 옵션 정보가 없습니다.</div>';
-	        return;
-	    }
-	
-	    // 컬러별 그룹화
-	    const grouped = stockArray.reduce((acc, obj) => {
-	        if (!acc[obj.color]) acc[obj.color] = [];
-	        acc[obj.color].push(obj);
-	        return acc;
-	    }, {});
-	
-	    // 동적 HTML 바인딩
-	    let html = '';
-	    for (const color in grouped) {
-	        html += '<div class="color-group">' +
-	                '<div class="color-title">🎨 ' + color + '</div>' +
-	                '<div class="size-chips-grid">';
-	        
-	        grouped[color].forEach(opt => {
-	            const isOut = opt.qty === 0;
-	            const chipClass = isOut ? 'size-stock-chip out-of-stock' : 'size-stock-chip';
-	            const qtyHtml = isOut ? '<span class="ssc-out">품절</span>' : '<span class="ssc-qty">' + opt.qty + '</span>';
-	
-	            html += '<div class="' + chipClass + '">' +
-	                    '<div class="ssc-size">' + opt.size + ' mm</div>' + 
-	                    qtyHtml +
-	                    '</div>';
-	        });
-	        
-	        html += '</div></div>';
-	    }
-	    matrixArea.innerHTML = html;
-	}
+    function renderRealStockMatrix(data) {
+        const stockArray = Array.isArray(data) ? data : data.list;
+        const matrixArea = document.getElementById('stockMatrixArea');
+        
+        if (!stockArray || stockArray.length === 0) {
+            matrixArea.innerHTML = '<div style="padding:50px; text-align:center; color:#999;">상세 옵션 정보가 없습니다.</div>';
+            return;
+        }
+    
+        // 컬러별 그룹화
+        const grouped = stockArray.reduce((acc, obj) => {
+            if (!acc[obj.color]) acc[obj.color] = [];
+            acc[obj.color].push(obj);
+            return acc;
+        }, {});
+    
+        // 동적 HTML 바인딩
+        let html = '';
+        for (const color in grouped) {
+            html += '<div class="color-group">' +
+                    '<div class="color-title">🎨 ' + color + '</div>' +
+                    '<div class="size-chips-grid">';
+            
+            grouped[color].forEach(opt => {
+                const isOut = opt.qty === 0;
+                const chipClass = isOut ? 'size-stock-chip out-of-stock' : 'size-stock-chip';
+                const qtyHtml = isOut ? '<span class="ssc-out">품절</span>' : '<span class="ssc-qty">' + opt.qty + '</span>';
+    
+                html += '<div class="' + chipClass + '">' +
+                        '<div class="ssc-size">' + opt.size + ' mm</div>' + 
+                        qtyHtml +
+                        '</div>';
+            });
+            
+            html += '</div></div>';
+        }
+        matrixArea.innerHTML = html;
+    }
 </script>
 </body>
 </html>
