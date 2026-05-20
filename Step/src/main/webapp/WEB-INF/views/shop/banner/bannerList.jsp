@@ -76,6 +76,16 @@ td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; colo
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f8fafc; }
 
+/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
 /* 배너 미리보기 - 리스트형 와이드 비율 */
 .banner-preview-wrap { 
     width: 240px; 
@@ -192,9 +202,11 @@ tr:hover td { background: #f8fafc; }
             <th style="width:160px;">관리</th>
           </tr>
         </thead>
-        <tbody>
+        <%-- 🌟 id="bannerTbody" 추가 🌟 --%>
+        <tbody id="bannerTbody">
           <c:forEach var="b" items="${bannerList}">
-            <tr>
+            <%-- 🌟 class="banner-row" 추가 🌟 --%>
+            <tr class="banner-row">
               <td style="font-weight:700; color:#94a3b8; font-family:'Space Grotesk'; font-size: 16px;">${b.banner_sort_no}</td>
               <td>
                 <div class="banner-preview-wrap">
@@ -238,6 +250,13 @@ tr:hover td { background: #f8fafc; }
           </c:if>
         </tbody>
       </table>
+
+      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <div class="pagination-wrap" id="bannerPagination" style="display:none;">
+        <div class="page-info" id="bannerPageInfo">총 <strong>0</strong>건</div>
+        <div class="page-btns" id="bannerPageBtns"></div>
+      </div>
+
     </div>
 
   </div>
@@ -368,6 +387,80 @@ function openRegModal() {
 document.getElementById('modal-reg').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });
+
+// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
+let currentBannerPage = 1;
+const bannerItemsPerPage = 10; // 한 페이지에 보여줄 개수
+let allBannerRows = [];
+
+window.addEventListener('load', function() {
+    const tbody = document.getElementById('bannerTbody');
+    if (tbody) {
+        allBannerRows = Array.from(tbody.querySelectorAll('tr.banner-row'));
+        if (allBannerRows.length > 0) {
+            renderBannerTable();
+        } else {
+            document.getElementById('bannerPagination').style.display = 'none';
+        }
+    }
+});
+
+function renderBannerTable() {
+    allBannerRows.forEach(r => r.style.display = 'none');
+    const start = (currentBannerPage - 1) * bannerItemsPerPage;
+    const end = start + bannerItemsPerPage;
+    
+    for (let i = start; i < end && i < allBannerRows.length; i++) {
+        allBannerRows[i].style.display = '';
+    }
+    renderBannerPagination();
+}
+
+function renderBannerPagination() {
+    const totalPages = Math.ceil(allBannerRows.length / bannerItemsPerPage);
+    const pw = document.getElementById('bannerPagination');
+    const pi = document.getElementById('bannerPageInfo');
+    const pb = document.getElementById('bannerPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allBannerRows.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentBannerPage - 1) * bannerItemsPerPage + 1;
+    const en = Math.min(currentBannerPage * bannerItemsPerPage, allBannerRows.length);
+    
+    // JSP 처리 방지를 위해 \${} 이스케이프 사용
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allBannerRows.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentBannerPage === 1 ? 'disabled' : ''}" onclick="changeBannerPage(\${currentBannerPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentBannerPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentBannerPage ? 'on' : ''}" onclick="changeBannerPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentBannerPage === totalPages ? 'disabled' : ''}" onclick="changeBannerPage(\${currentBannerPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeBannerPage(p) {
+    const totalPages = Math.ceil(allBannerRows.length / bannerItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentBannerPage = p;
+    renderBannerTable();
+}
 </script>
 </body>
 </html>

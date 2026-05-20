@@ -68,6 +68,16 @@ td {
     white-space: nowrap; 
 }
 
+/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
 /* PAGE HEADER */
 .page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
@@ -147,14 +157,6 @@ td {
 .b-gold { background: #fff7ed; color: #c2410c; }     /* 골드 */
 .b-silver { background: #f1f5f9; color: #475569; }   /* 실버 */
 .b-normal { background: #dcfce7; color: #059669; }   /* 일반 */
-
-/* TABLE LIST */
-.tbl-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-table { width: 100%; border-collapse: collapse; }
-th { padding: 14px 16px; font-size: 13px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; background: #f8fafc; text-align: center; }
-td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; vertical-align: middle; text-align: center; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #f8fafc; }
 
 /* ── MODAL OVERLAY & BOX (통일감 구현) ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
@@ -270,7 +272,8 @@ tr:hover td { background: #f8fafc; }
             <th style="width: 90px;">상세관리</th>
           </tr>
         </thead>
-        <tbody>
+        <%-- 🌟 id="returnTbody" 추가 🌟 --%>
+        <tbody id="returnTbody">
           <c:if test="${empty returnList}">
             <tr>
               <td colspan="9" style="padding: 60px; color: #94a3b8; font-size: 14px;">
@@ -281,7 +284,8 @@ tr:hover td { background: #f8fafc; }
           </c:if>
           
           <c:forEach var="item" items="${returnList}">
-            <tr>
+            <%-- 🌟 class="return-row" 추가 🌟 --%>
+            <tr class="return-row">
               <td style="font-weight: 600; color: #64748b;">RET-${item.ret_num}</td>
               <td style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #1a73e8;">#${item.order_num}</td>
               <td style="font-size: 13px; color: #64748b;">${item.user_num}</td>
@@ -313,10 +317,18 @@ tr:hover td { background: #f8fafc; }
           </c:forEach>
         </tbody>
       </table>
+
+      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <div class="pagination-wrap" id="returnPagination" style="display:none;">
+        <div class="page-info" id="returnPageInfo">총 <strong>0</strong>건</div>
+        <div class="page-btns" id="returnPageBtns"></div>
+      </div>
+
     </div>
 
   </div>
  </div>
+ 
  <div class="modal-overlay" id="returnModal">
   <div class="modal-box">
     <div class="modal-hdr">
@@ -459,6 +471,80 @@ window.onclick = function(event) {
     if (event.target === modal) {
         modal.classList.remove('open');
     }
+}
+
+// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
+let currentReturnPage = 1;
+const returnItemsPerPage = 10; // 한 페이지에 보여줄 개수
+let allReturnRows = [];
+
+window.addEventListener('load', function() {
+    const tbody = document.getElementById('returnTbody');
+    if (tbody) {
+        allReturnRows = Array.from(tbody.querySelectorAll('tr.return-row'));
+        if (allReturnRows.length > 0) {
+            renderReturnTable();
+        } else {
+            document.getElementById('returnPagination').style.display = 'none';
+        }
+    }
+});
+
+function renderReturnTable() {
+    allReturnRows.forEach(r => r.style.display = 'none');
+    const start = (currentReturnPage - 1) * returnItemsPerPage;
+    const end = start + returnItemsPerPage;
+    
+    for (let i = start; i < end && i < allReturnRows.length; i++) {
+        allReturnRows[i].style.display = '';
+    }
+    renderReturnPagination();
+}
+
+function renderReturnPagination() {
+    const totalPages = Math.ceil(allReturnRows.length / returnItemsPerPage);
+    const pw = document.getElementById('returnPagination');
+    const pi = document.getElementById('returnPageInfo');
+    const pb = document.getElementById('returnPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allReturnRows.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentReturnPage - 1) * returnItemsPerPage + 1;
+    const en = Math.min(currentReturnPage * returnItemsPerPage, allReturnRows.length);
+    
+    // JSP 처리 방지를 위해 \${} 이스케이프 사용
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allReturnRows.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentReturnPage === 1 ? 'disabled' : ''}" onclick="changeReturnPage(\${currentReturnPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentReturnPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentReturnPage ? 'on' : ''}" onclick="changeReturnPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentReturnPage === totalPages ? 'disabled' : ''}" onclick="changeReturnPage(\${currentReturnPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeReturnPage(p) {
+    const totalPages = Math.ceil(allReturnRows.length / returnItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentReturnPage = p;
+    renderReturnTable();
 }
 </script>
 </body>

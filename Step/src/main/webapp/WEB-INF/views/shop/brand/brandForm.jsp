@@ -132,6 +132,16 @@ td {padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#3341
 tr:last-child td {border-bottom:none;}
 tr:hover td {background:#f8fafc;}
 
+/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
 /* MODAL */
 .modal-overlay {display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;}
 .modal-overlay.open {display:flex;}
@@ -239,9 +249,11 @@ tr:hover td {background:#f8fafc;}
             <th style="width:240px; text-align:center;">관리</th>
           </tr>
         </thead>
-        <tbody>
+        <%-- 🌟 id="brandTbody" 추가 🌟 --%>
+        <tbody id="brandTbody">
           <c:forEach var="b" items="${brandList}">
-            <tr>
+            <%-- 🌟 class="brand-row" 추가 🌟 --%>
+            <tr class="brand-row">
               <td style="color:#64748b;font-size:13px;text-align:center;">${b.brandNum}</td>
               <td style="font-weight:600;font-size:15px;color:#0f172a;">${b.brandName}</td>
               <td style="text-align:center;">
@@ -298,6 +310,13 @@ tr:hover td {background:#f8fafc;}
           </c:if>
         </tbody>
       </table>
+
+      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <div class="pagination-wrap" id="brandPagination" style="display:none;">
+        <div class="page-info" id="brandPageInfo">총 <strong>0</strong>건</div>
+        <div class="page-btns" id="brandPageBtns"></div>
+      </div>
+
     </div>
 
   </div>
@@ -407,6 +426,80 @@ function showToast(msg) {
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// 🌟 PAGINATION JAVASCRIPT LOGIC 🌟
+let currentBrandPage = 1;
+const brandItemsPerPage = 10; // 한 페이지에 보여줄 개수
+let allBrandRows = [];
+
+window.addEventListener('load', function() {
+    const tbody = document.getElementById('brandTbody');
+    if (tbody) {
+        allBrandRows = Array.from(tbody.querySelectorAll('tr.brand-row'));
+        if (allBrandRows.length > 0) {
+            renderBrandTable();
+        } else {
+            document.getElementById('brandPagination').style.display = 'none';
+        }
+    }
+});
+
+function renderBrandTable() {
+    allBrandRows.forEach(r => r.style.display = 'none');
+    const start = (currentBrandPage - 1) * brandItemsPerPage;
+    const end = start + brandItemsPerPage;
+    
+    for (let i = start; i < end && i < allBrandRows.length; i++) {
+        allBrandRows[i].style.display = '';
+    }
+    renderBrandPagination();
+}
+
+function renderBrandPagination() {
+    const totalPages = Math.ceil(allBrandRows.length / brandItemsPerPage);
+    const pw = document.getElementById('brandPagination');
+    const pi = document.getElementById('brandPageInfo');
+    const pb = document.getElementById('brandPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allBrandRows.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentBrandPage - 1) * brandItemsPerPage + 1;
+    const en = Math.min(currentBrandPage * brandItemsPerPage, allBrandRows.length);
+    
+    // JSP 처리 방지를 위해 \${} 이스케이프 사용
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allBrandRows.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentBrandPage === 1 ? 'disabled' : ''}" onclick="changeBrandPage(\${currentBrandPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentBrandPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentBrandPage ? 'on' : ''}" onclick="changeBrandPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentBrandPage === totalPages ? 'disabled' : ''}" onclick="changeBrandPage(\${currentBrandPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeBrandPage(p) {
+    const totalPages = Math.ceil(allBrandRows.length / brandItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentBrandPage = p;
+    renderBrandTable();
 }
 </script>
 </body>

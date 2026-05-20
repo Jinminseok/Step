@@ -116,7 +116,6 @@ body {
 .btn-outline:hover {border-color:#111827;color:#111827;}
 .btn-danger {background:#fef2f2;color:#ef4444;border:1px solid #fecaca;}
 .btn-danger:hover {background:#ef4444;color:#fff;}
-
 .btn-xs {height:28px; padding:0 10px; font-size:11px;} 
 
 /* BADGE */
@@ -131,6 +130,16 @@ th {padding:14px 16px;font-size:13px;font-weight:600;color:#475569;border-bottom
 td {padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;vertical-align:middle;}
 tr:last-child td {border-bottom:none;}
 tr:hover td {background:#f8fafc;}
+
+/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
 
 /* MODAL */
 .modal-overlay {display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;}
@@ -240,9 +249,10 @@ tr:hover td {background:#f8fafc;}
             <th style="width:240px; text-align:center;">관리</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="catTbody">
           <c:forEach var="c" items="${categoryList}">
-            <tr>
+            <%-- 🌟 자바스크립트가 인식할 수 있도록 cat-row 클래스를 추가했습니다 --%>
+            <tr class="cat-row">
               <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#94a3b8;text-align:center">${c.catSortNo}</td>
               <td style="color:#64748b;font-size:13px;text-align:center">${c.catNum}</td>
               <td style="font-weight:600;font-size:15px;color:#0f172a">${c.catName}</td>
@@ -281,8 +291,14 @@ tr:hover td {background:#f8fafc;}
           </c:if>
         </tbody>
       </table>
-    </div>
+      
+      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <div class="pagination-wrap" id="catPagination" style="display:none;">
+        <div class="page-info" id="catPageInfo">총 <strong>0</strong>건</div>
+        <div class="page-btns" id="catPageBtns"></div>
+      </div>
 
+    </div>
   </div>
 </div>
 
@@ -392,6 +408,78 @@ function showToast(msg) {
     var t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// 🌟 PAGINATION JAVASCRIPT LOGIC 🌟
+let currentCatPage = 1;
+const catItemsPerPage = 10; // 한 페이지에 보여줄 개수
+let allCatRows = [];
+
+window.addEventListener('load', function() {
+    const tbody = document.getElementById('catTbody');
+    if (tbody) {
+        allCatRows = Array.from(tbody.querySelectorAll('tr.cat-row'));
+        if (allCatRows.length > 0) {
+            renderCatTable();
+        } else {
+            document.getElementById('catPagination').style.display = 'none';
+        }
+    }
+});
+
+function renderCatTable() {
+    allCatRows.forEach(r => r.style.display = 'none');
+    const start = (currentCatPage - 1) * catItemsPerPage;
+    const end = start + catItemsPerPage;
+    
+    for (let i = start; i < end && i < allCatRows.length; i++) {
+        allCatRows[i].style.display = '';
+    }
+    renderCatPagination();
+}
+
+function renderCatPagination() {
+    const totalPages = Math.ceil(allCatRows.length / catItemsPerPage);
+    const pw = document.getElementById('catPagination');
+    const pi = document.getElementById('catPageInfo');
+    const pb = document.getElementById('catPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allCatRows.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentCatPage - 1) * catItemsPerPage + 1;
+    const en = Math.min(currentCatPage * catItemsPerPage, allCatRows.length);
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allCatRows.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentCatPage === 1 ? 'disabled' : ''}" onclick="changeCatPage(\${currentCatPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentCatPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentCatPage ? 'on' : ''}" onclick="changeCatPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentCatPage === totalPages ? 'disabled' : ''}" onclick="changeCatPage(\${currentCatPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeCatPage(p) {
+    const totalPages = Math.ceil(allCatRows.length / catItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentCatPage = p;
+    renderCatTable();
 }
 </script>
 </body>

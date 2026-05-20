@@ -176,6 +176,16 @@ body {
     gap: 8px;
 }
 
+/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
+.page-info {font-size:13px;color:#64748b;}
+.page-info strong {color:#0f172a;}
+.page-btns {display:flex;gap:4px;}
+.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
+.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
+.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
 /* 토스트 알림 */
 .toast {
     position: fixed;
@@ -214,7 +224,8 @@ body {
       <div class="alert-success"><i class="fa-solid fa-circle-check"></i> 채팅방이 안전하게 삭제되었습니다.</div>
     </c:if>
 
-    <div class="room-list">
+    <%-- 🌟 id="chatRoomContainer" 추가 🌟 --%>
+    <div class="room-list" id="chatRoomContainer">
 
       <c:forEach var="r" items="${roomList}">
         <div class="room-item ${r.unreadCnt > 0 ? 'has-unread' : ''}">
@@ -260,6 +271,12 @@ body {
         </div>
       </c:if>
 
+      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <div class="pagination-wrap" id="chatPagination" style="display:none;">
+        <div class="page-info" id="chatPageInfo">총 <strong>0</strong>건</div>
+        <div class="page-btns" id="chatPageBtns"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -276,8 +293,13 @@ function deleteRoom(roomNum, userName) {
     location.href = '${pageContext.request.contextPath}/shop/chat/adminChatDelete.do?roomNum=' + roomNum;
 }
 
-// 삭제 완료 토스트 구조 최적화
-window.onload = function() {
+// 🌟 PAGINATION & TOAST JAVASCRIPT LOGIC 🌟
+let currentChatPage = 1;
+const chatItemsPerPage = 10; // 한 페이지에 보여줄 채팅방 개수
+let allChatItems = [];
+
+window.addEventListener('load', function() {
+    // 1. 토스트 메시지 처리
     var params = new URLSearchParams(window.location.search);
     if (params.get('msg') === 'delete_ok') {
         var t = document.getElementById('toast');
@@ -287,7 +309,76 @@ window.onload = function() {
             setTimeout(function() { t.classList.remove('show'); }, 2800);
         }
     }
-};
+
+    // 2. 페이징 초기화
+    const container = document.getElementById('chatRoomContainer');
+    if (container) {
+        allChatItems = Array.from(container.querySelectorAll('.room-item'));
+        if (allChatItems.length > 0) {
+            renderChatList();
+        } else {
+            document.getElementById('chatPagination').style.display = 'none';
+        }
+    }
+});
+
+function renderChatList() {
+    allChatItems.forEach(item => item.style.display = 'none');
+    const start = (currentChatPage - 1) * chatItemsPerPage;
+    const end = start + chatItemsPerPage;
+    
+    for (let i = start; i < end && i < allChatItems.length; i++) {
+        // 인라인 스타일을 초기화하여 css 클래스(display: flex)를 그대로 적용
+        allChatItems[i].style.display = ''; 
+    }
+    renderChatPagination();
+}
+
+function renderChatPagination() {
+    const totalPages = Math.ceil(allChatItems.length / chatItemsPerPage);
+    const pw = document.getElementById('chatPagination');
+    const pi = document.getElementById('chatPageInfo');
+    const pb = document.getElementById('chatPageBtns');
+
+    if (!pw || !pb) return;
+
+    if (allChatItems.length === 0) {
+        pw.style.display = 'none';
+        return;
+    }
+
+    pw.style.display = 'flex';
+    const sn = (currentChatPage - 1) * chatItemsPerPage + 1;
+    const en = Math.min(currentChatPage * chatItemsPerPage, allChatItems.length);
+    
+    // JSP 처리 방지를 위해 \${} 이스케이프 사용
+    pi.innerHTML = `총 <strong style="color:#0f172a">\${allChatItems.length}</strong>건 · \${sn}-\${en}`;
+
+    let h = `<div class="pg-btn \${currentChatPage === 1 ? 'disabled' : ''}" onclick="changeChatPage(\${currentChatPage - 1})">‹</div>`;
+
+    // 최대 9개의 버튼만 보여지도록 제한
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentChatPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        h += `<div class="pg-btn \${i === currentChatPage ? 'on' : ''}" onclick="changeChatPage(\${i})">\${i}</div>`;
+    }
+
+    h += `<div class="pg-btn \${currentChatPage === totalPages ? 'disabled' : ''}" onclick="changeChatPage(\${currentChatPage + 1})">›</div>`;
+    pb.innerHTML = h;
+}
+
+function changeChatPage(p) {
+    const totalPages = Math.ceil(allChatItems.length / chatItemsPerPage);
+    if (p < 1 || p > totalPages) return;
+    currentChatPage = p;
+    renderChatList();
+}
 </script>
 </body>
 </html>
