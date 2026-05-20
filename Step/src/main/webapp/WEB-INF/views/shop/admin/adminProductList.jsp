@@ -111,7 +111,7 @@ body {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 20px;
-	align-items: center;
+	align-items: flex-end; /* 셀렉트박스와 초기화 버튼 하단 정렬을 위해 변경 */
 }
 
 .filter-group {
@@ -153,6 +153,29 @@ body {
 .filter-select:focus {
 	border-color: #3b82f6;
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 필터 초기화 버튼 스타일 추가 */
+.btn-reset {
+	padding: 9px 16px;
+	font-size: 13.5px;
+	font-family: 'Pretendard', sans-serif;
+	font-weight: 600;
+	color: #475569;
+	background-color: #f8fafc;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	height: 38px;
+}
+
+.btn-reset:hover {
+	background-color: #e2e8f0;
+	color: #0f172a;
 }
 
 /* --- 메인 테이블 영역 --- */
@@ -284,15 +307,62 @@ tr:hover td {
 	background: #fff4e6;
 }
 
-/* 🌟 PAGINATION (새로 교체된 스타일) 🌟 */
-.pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
-.page-info {font-size:13px;color:#64748b;}
-.page-info strong {color:#0f172a;}
-.page-btns {display:flex;gap:4px;}
-.pg-btn {width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;background:#fff;transition:all .2s;}
-.pg-btn:hover {border-color:#3b82f6;color:#3b82f6;}
-.pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
-.pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
+/* 🌟 PAGINATION 🌟 */
+.pagination-wrap {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-top: 1px solid #e2e8f0;
+	background: #fff;
+}
+
+.page-info {
+	font-size: 13px;
+	color: #64748b;
+}
+
+.page-info strong {
+	color: #0f172a;
+}
+
+.page-btns {
+	display: flex;
+	gap: 4px;
+}
+
+.pg-btn {
+	width: 32px;
+	height: 32px;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	color: #64748b;
+	background: #fff;
+	transition: all .2s;
+}
+
+.pg-btn:hover {
+	border-color: #3b82f6;
+	color: #3b82f6;
+}
+
+.pg-btn.on {
+	background: #3b82f6;
+	color: #fff;
+	border-color: #3b82f6;
+}
+
+.pg-btn.disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	pointer-events: none;
+}
 
 /* --- 모달 및 클릭 효과 --- */
 .tr-clickable {
@@ -506,6 +576,13 @@ tr:hover td {
 							</c:forEach>
 						</select>
 					</div>
+
+					<div class="filter-group" style="margin-left: auto;">
+						<button type="button" class="btn-reset"
+							onclick="location.href='productList.do'">
+							<i class="fa-solid fa-arrow-rotate-right"></i> 필터 초기화
+						</button>
+					</div>
 				</form>
 			</div>
 
@@ -535,7 +612,8 @@ tr:hover td {
 						</thead>
 						<tbody id="productTbody">
 							<c:forEach var="product" items="${list}">
-								<tr class="tr-clickable product-row" data-prodnum="${product.prod_num}"
+								<tr class="tr-clickable product-row"
+									data-prodnum="${product.prod_num}"
 									data-prodname="${product.prod_name}"
 									onclick="openStockModal(this)">
 									<td>
@@ -598,9 +676,12 @@ tr:hover td {
 						</tbody>
 					</table>
 
-					<%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
-					<div class="pagination-wrap" id="productPagination" style="display:none;">
-						<div class="page-info" id="productPageInfo">총 <strong>0</strong>건</div>
+					<%-- 🌟 PAGINATION HTML 🌟 --%>
+					<div class="pagination-wrap" id="productPagination"
+						style="display: none;">
+						<div class="page-info" id="productPageInfo">
+							총 <strong>0</strong>건
+						</div>
 						<div class="page-btns" id="productPageBtns"></div>
 					</div>
 				</c:if>
@@ -638,7 +719,7 @@ tr:hover td {
 		</div>
 	</div>
 
-<script>
+	<script>
 // 🌟 PAGINATION JAVASCRIPT LOGIC 🌟
 let currentProductPage = 1;
 const productItemsPerPage = 10; // 한 페이지에 보여줄 개수
