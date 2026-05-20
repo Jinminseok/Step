@@ -113,7 +113,7 @@ public class UserOrderDAO {
 		boolean result = false;
 		try {
 			conn = DBUtil.getConnection();
-			// 주문 상태가 1(결제완료) 이상이고, 해당 주문 상세에 이 상품이 있는지 조인하여 확인
+			// 주문 상태가 1(결제완료) 이상이고, 해당 주문 상세에 이 상품이 있는지 확인
 			String sql = "SELECT * FROM orders o JOIN order_items oi ON o.order_num = oi.order_num "
 					   + "WHERE o.user_num = ? AND oi.prod_num = ? AND o.order_status >= 1";
 			pstmt = conn.prepareStatement(sql);

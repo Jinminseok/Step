@@ -127,19 +127,19 @@
             </div>
             
             <%-- 1. 정보 --%>
-            <div id="content-info" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-info" class="scroll-section" style="padding-top: 20px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 800px; margin: 0 auto;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">상품 기본 정보</h3>
                     <table class="info-table" style="margin-bottom: 60px;">
                         <tbody>
-                            <tr><th>품번(SKU)</th><td>${product.sku}</td><th>브랜드</th><td>${product.brand_name}</td></tr>
+                            <tr><th>품번</th><td>${product.sku}</td><th>브랜드</th><td>${product.brand_name}</td></tr>
                             <tr>
                                 <th>성별</th>
                                 <td>
                                     <c:choose>
                                         <c:when test="${product.gender == 1}">남성 (Men)</c:when>
                                         <c:when test="${product.gender == 2}">여성 (Women)</c:when>
-                                        <c:otherwise>남녀공용 (Unisex)</c:otherwise>
+                                        <c:otherwise>남녀공용</c:otherwise>
                                     </c:choose>
                                 </td>
                                 <th>제조사</th><td>${product.brand_name} 협력업체</td>
@@ -152,7 +152,7 @@
             </div>
 
             <%-- 2. 사이즈 --%>
-            <div id="content-size" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-size" class="scroll-section" style="padding-top: 30px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 800px; margin: 0 auto;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Size Guide</h3>
                     <p style="font-size: 13px; color: var(--gray3); margin-bottom: 24px;">본 사이즈 표는 표준 규격을 기준으로 제작되었습니다. 브랜드 디자인에 따라 약간의 오차가 있을 수 있습니다.</p>
@@ -171,7 +171,7 @@
             </div>
 
             <%-- 3. 추천 상품 --%>
-            <div id="content-recommend" class="scroll-section" style="padding-top: 60px; padding-bottom: 80px; border-bottom: 1px solid var(--border);">
+            <div id="content-recommend" class="scroll-section" style="padding-top: 30px; padding-bottom: 40px; border-bottom: 1px solid var(--border);">
                 <div style="max-width: 900px; margin: 0 auto;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center;">이런 상품은 어떠세요?</h3>
                     
@@ -195,7 +195,7 @@
             </div>
 
             <%-- 4. 리뷰 --%>
-            <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 60px;">
+            <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 30px;">
                 <div style="max-width: 900px; margin: 0 auto;">
                     <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
                         <h3 style="font-size: 18px; font-weight: 700;">상품 리뷰</h3>
