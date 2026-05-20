@@ -14,7 +14,6 @@ public class AdminNotifyListAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// 관리자 권한 체크 (Auth = 9)
 		HttpSession session = request.getSession();
 		Object user_auth_obj = session.getAttribute("user_auth");
 
@@ -22,7 +21,6 @@ public class AdminNotifyListAction implements Action {
 			return "redirect:/shop/user/loginForm.do";
 		}
 
-		// 파라미터 수집
 		String pageNum = request.getParameter("pageNum");
 		if (pageNum == null)
 			pageNum = "1";
@@ -35,7 +33,6 @@ public class AdminNotifyListAction implements Action {
 
 		String keyword = request.getParameter("keyword");
 
-		// VO 세팅 (AdminBaseVO 상속 필드 활용)
 		AdminNotifyVO vo = new AdminNotifyVO();
 		vo.setNotify_type(notify_type);
 		vo.setKeyword(keyword);
@@ -43,7 +40,6 @@ public class AdminNotifyListAction implements Action {
 		AdminNotifyDAO dao = AdminNotifyDAO.getInstance();
 		int count = dao.getNotifyTotalCount(vo);
 
-		// 페이징 쿼리 스트링 유지
 		StringBuilder addKey = new StringBuilder();
 		if (notify_type > 0)
 			addKey.append("&notify_type=").append(notify_type);
@@ -60,7 +56,6 @@ public class AdminNotifyListAction implements Action {
 			list = dao.getNotifyList(vo);
 		}
 
-		// JSP 바인딩
 		request.setAttribute("count", count);
 		request.setAttribute("list", list);
 		request.setAttribute("page", page.getPage());

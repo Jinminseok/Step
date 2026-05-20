@@ -274,7 +274,7 @@ tr:hover td {
 						모니터링합니다.</div>
 				</div>
 				<a href="sendNotice.do" class="btn-primary"> <i
-					class="fa-solid fa-paper-plane"></i> 전체 공지 알림 발송
+					class="fa-solid fa-paper-plane"></i> 공지 알림 수동 발송
 				</a>
 			</div>
 
