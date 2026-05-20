@@ -391,11 +391,26 @@ tr:hover td {
 .modal-content {
 	background: #fff;
 	width: 600px;
+	
+	/* 1️⃣ 초기 오픈 사이즈 (사진의 'default' 영역만큼만 열림) */
+	height: 520px; 
+	
 	border-radius: 12px;
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	
+	/* 2️⃣ 리사이즈(늘리기) 켜기 */
+	resize: both;
+	overflow: hidden; 
+	
+	min-width: 450px;
+	min-height: 300px; 
+	max-width: 95vw;
+	
+	/* 3️⃣ 핵심: 위아래 동그라미 영역까지 쭉 늘릴 수 있도록 한계치 최대 개방 */
+	/* 100vh로 하면 브라우저 끄트머리가 잘릴 수 있어서 98vh로 넉넉하게 줌 */
+	max-height: 98vh; 
 }
 
 .modal-header {
@@ -425,10 +440,16 @@ tr:hover td {
 	color: #fff;
 }
 
+/* 모달 내부 테이블 영역 */
 .modal-body {
 	padding: 20px;
-	max-height: 400px;
+	
+	/* 4️⃣ 창을 늘렸을 때 하단에 하얀 여백 안 생기고 꽉 차게 만듦 */
+	flex: 1; 
+	
 	overflow-y: auto;
+	
+	/* 🚨 기존에 있던 max-height 속성은 무조건 다 지워야 함 */
 }
 
 .modal-footer {
