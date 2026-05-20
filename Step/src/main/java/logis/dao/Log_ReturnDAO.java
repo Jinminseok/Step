@@ -8,6 +8,7 @@ import java.util.List;
 
 import kr.shop.vo.AdminOrderVO;
 import kr.util.DBUtil;
+import logis_vo.Log_ReturnVO;
 
 public class Log_ReturnDAO {
     // 싱글톤 패턴
@@ -15,179 +16,161 @@ public class Log_ReturnDAO {
     public static Log_ReturnDAO getInstance() { return instance; }
     private Log_ReturnDAO() {}
 
-    // ── 🌟 1. [검수 대기] 목록 가져오기 (RET_STATUS = 2: 수거진행/도착완료 상태) ──
-    public List<AdminOrderVO> getWaitList() throws Exception {
+ // ── [1] 쇼핑몰 관리자가 처리를 완료하여 '물류 창고'에 실물이 도착한 대기 목록 조회 ──
+    public List<Log_ReturnVO> getClaimWaitList() throws Exception {
+        List<Log_ReturnVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        List<AdminOrderVO> list = new ArrayList<>();
-
-        try {
-            conn = DBUtil.getConnection();            
-
-            String sql = "SELECT r.*, p.PROD_NAME, "
-                    + "(SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
-                    + "(SELECT ORDER_ITEM_QTY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND OPT_NUM = r.OPT_NUM AND ROWNUM = 1) AS QTY "
-                    + "FROM RETURNS r "
-                    + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                    + "WHERE r.RET_STATUS = 2 "
-                    + "ORDER BY r.RET_NUM ASC";
-            
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                AdminOrderVO item = new AdminOrderVO();
-                item.setRet_num(rs.getInt("RET_NUM"));
-                item.setOrder_num(rs.getInt("ORDER_NUM"));
-                item.setTp(rs.getInt("TP"));
-                item.setProd_name(rs.getString("PROD_NAME"));
-                item.setReason(rs.getString("REASON"));
-                item.setOpt_num(rs.getInt("OPT_NUM"));
-                item.setRet_created_at(rs.getDate("RET_CREATED_AT"));
-                
-                // VO에 새로 추가가 필요한 임시 변수들 (Action에서 map으로 넘기거나 VO에 추가 필요)
-                item.setOpt_info(rs.getString("OPT_INFO")); // 옵션명(사이즈)
-                item.setQty(rs.getInt("QTY"));              // 수량
-                
-                list.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        } finally {
-            DBUtil.executeClose(rs, pstmt, conn);
-        }
-        return list;
-    }
-
-    // ── 🌟 2. [처리 내역] 목록 가져오기 (RET_STATUS = 3: 물류 처리완료 상태) ──
-    public List<AdminOrderVO> getHistList() throws Exception {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        List<AdminOrderVO> list = new ArrayList<>();
-
+        
+        // 🎯 쇼핑몰 관리자가 완료한 상태(RET_STATUS = 3)인 것만 타겟팅하여 가져옵니다.
+        String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.PROD_NUM, r.OPT_NUM, r.USER_NUM, r.TP, r.REASON, r.RET_NOTE, r.RET_STATUS, "
+                   + "       p.PROD_NAME, o.RECV_NAME, o.RECV_PHONE, (o.RECV_ADDR1 || ' ' || o.RECV_ADDR2) AS RECV_ADDR "
+                   + "FROM RETURNS r "
+                   + "JOIN ORDERS o ON r.ORDER_NUM = o.ORDER_NUM "
+                   + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
+                   + "WHERE r.RET_STATUS = 3 " 
+                   + "ORDER BY r.RET_NUM DESC";
         try {
             conn = DBUtil.getConnection();
-            
-            String sql = "SELECT r.*, p.PROD_NAME, "
-                    + "(SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
-                    + "(SELECT ORDER_ITEM_QTY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND OPT_NUM = r.OPT_NUM AND ROWNUM = 1) AS QTY "
-                    + "FROM RETURNS r "
-                    + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                    + "WHERE r.RET_STATUS = 3 "
-                    + "ORDER BY r.RET_UPDATED_AT DESC";
-            
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                AdminOrderVO item = new AdminOrderVO();
-                item.setRet_num(rs.getInt("RET_NUM"));
-                item.setOrder_num(rs.getInt("ORDER_NUM"));
-                item.setTp(rs.getInt("TP"));
-                item.setProd_name(rs.getString("PROD_NAME"));
-                item.setOpt_num(rs.getInt("OPT_NUM"));
-                item.setIs_good(rs.getInt("IS_GOOD"));
-                item.setRet_updated_at(rs.getDate("RET_UPDATED_AT"));
-                
-                item.setOpt_info(rs.getString("OPT_INFO")); 
-                item.setQty(rs.getInt("QTY")); 
-                
-                list.add(item);
+            while(rs.next()) {
+                Log_ReturnVO vo = new Log_ReturnVO();
+                vo.setRet_num(rs.getInt("RET_NUM"));
+                vo.setOrder_num(rs.getInt("ORDER_NUM"));
+                vo.setProd_num(rs.getInt("PROD_NUM"));
+                vo.setOpt_num(rs.getInt("OPT_NUM"));
+                vo.setUser_num(rs.getInt("USER_NUM"));
+                vo.setTp(rs.getInt("TP"));
+                vo.setReason(rs.getString("REASON"));
+                vo.setRet_note(rs.getString("RET_NOTE"));
+                vo.setRet_status(rs.getInt("RET_STATUS"));
+                vo.setProd_name(rs.getString("PROD_NAME"));
+                vo.setRecv_name(rs.getString("RECV_NAME"));
+                vo.setRecv_phone(rs.getString("RECV_PHONE"));
+                vo.setRecv_addr(rs.getString("RECV_ADDR"));
+                list.add(vo);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
         } finally {
             DBUtil.executeClose(rs, pstmt, conn);
         }
         return list;
     }
 
-    // ── 🌟 3. [반품 실물 검수 확정] 상태 변경 및 재고 복구 (트랜잭션 적용) ──
-    public void processReturnStock(int retNum, int isGood, int qty, int optNum) throws Exception {
+    // ── [2] 물류 관리자가 최종 완결 지은 이력 목록 조회 (양품/불량 텍스트 직접 매핑) ──
+    public List<Log_ReturnVO> getClaimHistoryList() throws Exception {
+        List<Log_ReturnVO> list = new ArrayList<>();
         Connection conn = null;
-        PreparedStatement pstmtStatus = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        // 🎯 후속 버그 방지를 위해 오라클 자체에서 DECODE로 '양품복구' / '불량폐기' 글자를 박아서 가져옵니다.
+        String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.TP, r.RET_NOTE, r.RET_STATUS, p.PROD_NAME, "
+                   + "       DECODE(r.RET_STATUS, 3, '양품복구', 4, '불량폐기', '검수중') AS PROC_TYPE, "
+                   + "       (SELECT d.COURIER || ' ' || d.INVOICE_NO FROM DELIVERY d WHERE d.ORDER_NUM = r.ORDER_NUM AND ROWNUM = 1) AS INVOICE_NO "
+                   + "FROM RETURNS r "
+                   + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
+                   + "WHERE r.RET_STATUS IN (3, 4) "
+                   + "ORDER BY r.RET_NUM DESC";
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while(rs.next()) {
+                Log_ReturnVO vo = new Log_ReturnVO();
+                vo.setRet_num(rs.getInt("RET_NUM"));
+                vo.setOrder_num(rs.getInt("ORDER_NUM"));
+                vo.setTp(rs.getInt("TP"));
+                vo.setRet_note(rs.getString("RET_NOTE"));
+                vo.setRet_status(rs.getInt("RET_STATUS"));
+                vo.setProd_name(rs.getString("PROD_NAME"));
+                // 🌟 중요: 이력 조회 글자가 깨지거나 고정되던 버그 완벽 차단!
+                vo.setReason(rs.getString("PROC_TYPE")); // VO의 임시 스트링 필드로 활용하거나 별도 세팅 가능 (JSP 매핑용)
+                vo.setInvoice_no(rs.getString("INVOICE_NO"));
+                list.add(vo);
+            }
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // ── [3] 🎯 형님의 WMS 철학을 반영한 재고 증감 연산 트랜잭션 ──
+    public void processClaimTransaction(int retNum, int orderNum, int tp, String processType, String courier, String invoiceNo, String adminMemo) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmtRet = null;
         PreparedStatement pstmtStock = null;
-
+        PreparedStatement pstmtDlv = null;
+        
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // 🚨 트랜잭션 시작 (둘 중 하나라도 실패하면 롤백)
+            conn.setAutoCommit(false); // 트랜잭션 락 온!
 
-            // 1. 반품 상태 업데이트 (처리완료: 3, 검수결과 기록)
-            String sqlStatus = "UPDATE RETURNS SET RET_STATUS = 3, IS_GOOD = ?, RET_UPDATED_AT = SYSDATE WHERE RET_NUM = ?";
-            pstmtStatus = conn.prepareStatement(sqlStatus);
-            pstmtStatus.setInt(1, isGood);
-            pstmtStatus.setInt(2, retNum);
-            pstmtStatus.executeUpdate();
+            int stockDelta = 0;
+            int nextStatus = 3; // 기본값 3: 양품복구 완료 상태
 
-            // 2. 양품(1) 판정 시에만 STOCK 테이블의 재고(STOCK_QTY)를 플러스 복구!
-            if (isGood == 1) {
-                String sqlStock = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?"; 
-                pstmtStock = conn.prepareStatement(sqlStock);
-                pstmtStock.setInt(1, qty);
-                pstmtStock.setInt(2, optNum);
+            // 🎯 형님이 말씀하신 WMS 전용 완벽 재고 가감 공식 적용 구역
+            if (tp == 1) { 
+                // 🔄 [반품 상품]일 때
+                if (processType.equals("RECOVERY")) {
+                    stockDelta = 1;     // 양품이면 재고 +1
+                    nextStatus = 3;
+                } else if (processType.equals("DISPOSAL")) {
+                    stockDelta = -1;    // 불량이면 재고 -1
+                    nextStatus = 4;
+                }
+            } else if (tp == 2) { 
+                // 🔄 [교환 상품]일 때
+                if (processType.equals("RECOVERY")) {
+                    stockDelta = 0;     // 양품이면 재고 변동 없음 (0)
+                    nextStatus = 3;
+                } else if (processType.equals("DISPOSAL")) {
+                    stockDelta = -1;    // 불량이 오면 재고 -1
+                    nextStatus = 4;
+                }
+            }
+
+            // 1. RETURNS 테이블에 최종 결과 및 메모 업뎃
+            String updateRetSql = "UPDATE RETURNS SET RET_STATUS = ?, RET_NOTE = ? WHERE RET_NUM = ?";
+            pstmtRet = conn.prepareStatement(updateRetSql);
+            pstmtRet.setInt(1, nextStatus);
+            pstmtRet.setString(2, adminMemo);
+            pstmtRet.setInt(3, retNum);
+            pstmtRet.executeUpdate();
+
+            // 2. 창고 실재고(STOCK) 증감 타격 (0일 때는 쿼리 안 날리고 스킵해서 안전성 확보)
+            if (stockDelta != 0) {
+                String updateStockSql = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ? "
+                                     + "WHERE OPT_NUM = (SELECT OPT_NUM FROM RETURNS WHERE RET_NUM = ?)";
+                pstmtStock = conn.prepareStatement(updateStockSql);
+                pstmtStock.setInt(1, stockDelta);
+                pstmtStock.setInt(2, retNum);
                 pstmtStock.executeUpdate();
             }
 
-            conn.commit(); // 🚨 모든 작업이 성공하면 확정
-        } catch (Exception e) {
-            if (conn != null) conn.rollback(); // 에러 나면 재고 원상복구
-            e.printStackTrace();
-            throw new Exception(e);
-        } finally {
-            DBUtil.executeClose(null, pstmtStock, null);
-            DBUtil.executeClose(null, pstmtStatus, conn);
-        }
-    }
-
-    // ── 🌟 4. [교환 실물 검수 확정] 상태 변경 및 구/신 재고 조절 (트랜잭션 적용) ──
-    public void processExchangeStock(int retNum, int isGood, int qty, int oldOptNum, int newOptNum) throws Exception {
-        Connection conn = null;
-        PreparedStatement pstmtStatus = null;
-        PreparedStatement pstmtOldStock = null;
-        PreparedStatement pstmtNewStock = null;
-
-        try {
-            conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // 🚨 트랜잭션 시작
-
-            // 1. 교환 상태 업데이트
-            String sqlStatus = "UPDATE RETURNS SET RET_STATUS = 3, IS_GOOD = ?, RET_UPDATED_AT = SYSDATE WHERE RET_NUM = ?";
-            pstmtStatus = conn.prepareStatement(sqlStatus);
-            pstmtStatus.setInt(1, isGood);
-            pstmtStatus.setInt(2, retNum);
-            pstmtStatus.executeUpdate();
-
-            // 2. 회수한 헌 상품이 양품(1)이면 기존 옵션 재고(STOCK_QTY) 플러스 복구
-            if (isGood == 1) {
-                String sqlOld = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?";
-                pstmtOldStock = conn.prepareStatement(sqlOld);
-                pstmtOldStock.setInt(1, qty);
-                pstmtOldStock.setInt(2, oldOptNum);
-                pstmtOldStock.executeUpdate();
+            // 3. 교환 처리 시에만 택배사 정보 및 랜덤 송장 번호를 DELIVERY 테이블에 등록!
+            if (tp == 2 && courier != null && !courier.trim().isEmpty()) {
+                String insertDlvSql = "INSERT INTO DELIVERY (DLV_NUM, ORDER_NUM, COURIER, INVOICE_NO, DLV_STATUS) "
+                                    + "VALUES (DELIVERY_SEQ.NEXTVAL, ?, ?, ?, 1)";
+                pstmtDlv = conn.prepareStatement(insertDlvSql);
+                pstmtDlv.setInt(1, orderNum);
+                pstmtDlv.setString(2, courier);
+                pstmtDlv.setString(3, invoiceNo);
+                pstmtDlv.executeUpdate();
             }
 
-            // 3. 내보낼 새 상품 옵션 재고 마이너스 삭감! (교환 출고)
-            if (newOptNum > 0) { // 새 옵션 번호가 정상적으로 들어왔을 때
-                String sqlNew = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY - ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?";
-                pstmtNewStock = conn.prepareStatement(sqlNew);
-                pstmtNewStock.setInt(1, qty);
-                pstmtNewStock.setInt(2, newOptNum);
-                pstmtNewStock.executeUpdate();
-            }
-
-            conn.commit(); // 🚨 확정
+            conn.commit(); // 전 과정 성공 시 오라클 최종 커밋!
+            
         } catch (Exception e) {
             if (conn != null) conn.rollback();
-            e.printStackTrace();
-            throw new Exception(e);
+            throw e;
         } finally {
-            DBUtil.executeClose(null, pstmtNewStock, null);
-            DBUtil.executeClose(null, pstmtOldStock, null);
-            DBUtil.executeClose(null, pstmtStatus, conn);
+            DBUtil.executeClose(null, pstmtRet, null);
+            DBUtil.executeClose(null, pstmtStock, null);
+            DBUtil.executeClose(null, pstmtDlv, conn);
         }
     }
+    
+    
 }
