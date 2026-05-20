@@ -231,6 +231,36 @@ textarea.form-input{resize:vertical;min-height:90px}
 .bottom-content.active {
     display: block;
 }
+/* 스크롤 스파이 전용 탭 스타일 */
+.sticky-tabs {
+    display: flex;
+    position: sticky;
+    top: 56px; /* 헤더 높이 딱 맞춤 */
+    background: #fff;
+    z-index: 100;
+    border-bottom: 2px solid var(--black);
+    margin-bottom: 40px;
+}
+.sticky-tab {
+    flex: 1;
+    text-align: center;
+    padding: 18px 0;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #fff;
+    color: var(--gray3);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* 선택된 탭 강제 블랙 디자인 */
+.sticky-tab.active {
+    background: var(--black);
+    color: #fff;
+    border-color: var(--black);
+}
 
 /* 사이즈 테이블 스타일 */
 .info-table { width: 100%; max-width: 800px; border-collapse: collapse; font-size: 13px; }

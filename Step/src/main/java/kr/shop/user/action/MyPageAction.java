@@ -10,7 +10,9 @@ import jakarta.servlet.http.HttpSession;
 import kr.controller.Action;
 import kr.shop.dao.RestockAlertDAO;
 import kr.shop.dao.UserDAO;
+import kr.shop.dao.UserReturnDAO;
 import kr.shop.vo.AdminOrderVO;
+import kr.shop.vo.UserReturnVO;
 import kr.shop.vo.UserVO;
 
 public class MyPageAction implements Action {
@@ -51,6 +53,10 @@ public class MyPageAction implements Action {
 		List<Map<String, Object>> restockList = 
 		RestockAlertDAO.getInstance().getAlertListByUser(userNum);
 		request.setAttribute("restockList", restockList);
+		
+		// 반품/교환 신청 내역 가져오기
+		List<UserReturnVO> returnList = UserReturnDAO.getInstance().getReturnListByUserNum(userNum);
+		request.setAttribute("returnList", returnList);
 		
 		// 마이페이지 화면으로 이동
 		return "shop/user/myPageForm.jsp";
