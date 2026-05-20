@@ -359,64 +359,158 @@
 
 				<!-- 5. 반품/교환 탭 -->
 				<div class="my-sub" id="my-return">
-					<form
-						action="${pageContext.request.contextPath}/shop/user/returnRequest.do"
-						method="post">
-						<div class="form-sec"
-							style="border: none; padding: 0; max-width: 100%">
-							<div class="form-group">
-								<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> <select
-									class="form-input" name="order_num">
-									<%-- 🌟 배송완료된 상품이 있는지 체크하기 위한 변수 --%>
-									<c:set var="deliveredCount" value="0" />
+					
+					<%-- 내부 탭 버튼 --%>
+					<div class="tabs" id="return-tabs" style="margin-bottom: 24px;">
+						<div class="tab on" onclick="switchReturnTab('available')">신청하기</div>
+						<div class="tab" onclick="switchReturnTab('history')">신청 내역 조회</div>
+					</div>
 
-									<c:forEach var="order" items="${orderList}">
-										<%-- 🌟 이전 코드 기준 주문 상태 4(배송완료)인 경우에만 <option> 생성 --%>
-										<c:if test="${order.order_status == 4}">
-											<option value="${order.order_num}">#${order.order_num}
-												- ${order.prod_name}</option>
-											<c:set var="deliveredCount" value="${deliveredCount + 1}" />
+					<%-- 5-1. 반품/교환 신청 폼 (신청하기 탭) --%>
+					<div id="return-available" style="display: block;">
+						<form
+							action="${pageContext.request.contextPath}/shop/user/returnRequest.do"
+							method="post">
+							<div class="form-sec" style="border: none; padding: 0; max-width: 100%">
+								<div class="form-group">
+									<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> 
+									<select class="form-input" name="order_num">
+										<c:set var="deliveredCount" value="0" />
+										<c:forEach var="order" items="${orderList}">
+											<c:if test="${order.order_status == 4}">
+												<option value="${order.order_num}">#${order.order_num} - ${order.prod_name}</option>
+												<c:set var="deliveredCount" value="${deliveredCount + 1}" />
+											</c:if>
+										</c:forEach>
+										<c:if test="${deliveredCount == 0}">
+											<option value="">선택할 수 있는 배송완료 내역이 없습니다</option>
 										</c:if>
-									</c:forEach>
-
-									<%-- 🌟 배송완료 상품이 하나도 없을 경우 --%>
-									<c:if test="${deliveredCount == 0}">
-										<option value="">선택할 수 있는 배송완료 내역이 없습니다</option>
-									</c:if>
-								</select>
-							</div>
-							<div class="form-group">
-								<label class="form-label">신청 유형</label>
-								<div style="display: flex; gap: 16px; margin-top: 6px">
-									<%-- 🌟 형님이 말씀하신 TP (1: 반품, 2: 교환) 세팅 --%>
-									<label
-										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
-										type="radio" name="tp" value="1" checked>반품</label> <label
-										style="display: flex; align-items: center; gap: 6px; font-size: 13px"><input
-										type="radio" name="tp" value="2">교환</label>
+									</select>
 								</div>
+								<div class="form-group">
+									<label class="form-label">신청 유형</label>
+									<div style="display: flex; gap: 16px; margin-top: 6px">
+										<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+											<input type="radio" name="tp" value="1" checked>반품
+										</label> 
+										<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+											<input type="radio" name="tp" value="2">교환
+										</label>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="form-label">사유</label>
+									<select class="form-input" name="reason">
+										<option value="단순 변심">단순 변심</option>
+										<option value="사이즈 불량">사이즈 불량</option>
+										<option value="상품 불량">상품 불량</option>
+										<option value="오배송">오배송</option>
+										<option value="기타">기타</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label class="form-label">상세 내용</label>
+									<textarea class="form-input" name="ret_note" placeholder="자세한 내용을 입력해주세요"></textarea>
+								</div>
+								<button type="submit" class="btn btn-black" style="margin-top: 4px; width: 100%">신청하기</button>
 							</div>
-							<div class="form-group">
-								<label class="form-label">사유</label>
-								<%-- 🌟 테이블의 REASON 컬럼과 매핑 --%>
-								<select class="form-input" name="reason">
-									<option value="단순 변심">단순 변심</option>
-									<option value="사이즈 불량">사이즈 불량</option>
-									<option value="상품 불량">상품 불량</option>
-									<option value="오배송">오배송</option>
-									<option value="기타">기타</option>
-								</select>
+						</form>
+					</div>
+
+					<%-- 5-2. 신청 내역 조회 탭 --%>
+					<div id="return-history" style="display: none;">
+						<c:if test="${empty returnList}">
+							<div style="text-align: center; padding: 40px; color: var(--gray4); background: var(--gray7); border: 1px solid var(--border);">
+								신청하신 반품/교환 내역이 없습니다.
 							</div>
-							<div class="form-group">
-								<label class="form-label">상세 내용</label>
-								<%-- 🌟 테이블의 RET_NOTE 컬럼과 매핑 --%>
-								<textarea class="form-input" name="ret_note"
-									placeholder="자세한 내용을 입력해주세요"></textarea>
+						</c:if>
+
+						<c:forEach var="ret" items="${returnList}">
+							<div class="order-card" style="margin-bottom: 16px;">
+								<div class="order-hdr">
+									<span class="order-num">신청번호: #${ret.ret_num} (원주문: #${ret.order_num})</span>
+									<c:choose>
+										<c:when test="${ret.ret_status == 1}"><span class="badge b-gray">처리 대기중</span></c:when>
+										<c:when test="${ret.ret_status == 2}"><span class="badge b-blue">수거 진행중</span></c:when>
+										<c:when test="${ret.ret_status == 3}"><span class="badge" style="background: #e8f5e9; color: #2e7d32;">처리 완료</span></c:when>
+										<c:when test="${ret.ret_status == 4}"><span class="badge b-red">반려됨</span></c:when>
+										<c:otherwise><span class="badge b-gray">상태 미상</span></c:otherwise>
+									</c:choose>
+								</div>
+								
+								<div class="order-body">
+									<div class="order-thumb">
+										<img src="${pageContext.request.contextPath}/upload/${ret.prod_img_url}"
+											style="width: 100%; height: 100%; object-fit: cover;" alt="상품이미지">
+									</div>
+									<div style="flex: 1;">
+										<div class="order-info-name">
+											<strong style="color: var(--blue);">[${ret.tp == 1 ? '반품' : '교환'}]</strong> ${ret.prod_name}
+										</div>
+										<div style="font-size: 13px; color: var(--gray3); margin-top: 4px;">사유: ${ret.reason}</div>
+										<div style="font-size: 12px; color: var(--gray4); margin-top: 4px;">상세: <c:out value="${ret.ret_note}"/></div>
+									</div>
+								</div>
+								
+								<%-- 상태가 '대기중(1)'일 때만 버튼 및 수정 폼 출력 --%>
+								<c:if test="${ret.ret_status == 1}">
+									<div class="order-foot" style="justify-content: flex-end; gap: 8px; display: flex;">
+										<%-- 클릭 시 해당 ret_num을 가진 폼 영역을 토글 --%>
+										<button type="button" class="btn btn-outline btn-sm" onclick="toggleReturnEdit(${ret.ret_num})">
+											내용 수정
+										</button>
+										
+										<form action="${pageContext.request.contextPath}/shop/user/returnDelete.do" method="post" onsubmit="return confirm('이 반품/교환 신청을 정말 취소하시겠습니까?');">
+											<input type="hidden" name="ret_num" value="${ret.ret_num}">
+											<button type="submit" class="btn btn-gray btn-sm">신청 취소</button>
+										</form>
+									</div>
+
+									<%-- 🌟 아래로 펼쳐지는 인라인 수정 폼 (초기엔 display: none) 🌟 --%>
+									<div id="edit-form-${ret.ret_num}" style="display: none; background: var(--gray7); padding: 16px; border-radius: 4px; margin-top: 16px; border: 1px solid var(--border);">
+										<div style="font-weight: 600; margin-bottom: 12px; font-size: 14px;">수정할 내용 입력</div>
+										
+										<form action="${pageContext.request.contextPath}/shop/user/returnUpdate.do" method="post">
+											<input type="hidden" name="ret_num" value="${ret.ret_num}">
+											
+											<div class="form-group">
+												<label class="form-label" style="font-size: 12px;">신청 유형</label>
+												<div style="display: flex; gap: 16px; margin-top: 4px">
+													<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+														<input type="radio" name="tp" value="1" ${ret.tp == 1 ? 'checked' : ''}>반품
+													</label> 
+													<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+														<input type="radio" name="tp" value="2" ${ret.tp == 2 ? 'checked' : ''}>교환
+													</label>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="form-label" style="font-size: 12px;">사유</label>
+												<select class="form-input" name="reason">
+													<option value="단순 변심" ${ret.reason == '단순 변심' ? 'selected' : ''}>단순 변심</option>
+													<option value="사이즈 불량" ${ret.reason == '사이즈 불량' ? 'selected' : ''}>사이즈 불량</option>
+													<option value="상품 불량" ${ret.reason == '상품 불량' ? 'selected' : ''}>상품 불량</option>
+													<option value="오배송" ${ret.reason == '오배송' ? 'selected' : ''}>오배송</option>
+													<option value="기타" ${ret.reason == '기타' ? 'selected' : ''}>기타</option>
+												</select>
+											</div>
+											
+											<div class="form-group">
+												<label class="form-label" style="font-size: 12px;">상세 내용</label>
+												<textarea class="form-input" name="ret_note" style="min-height: 80px;"><c:out value="${ret.ret_note}"/></textarea>
+											</div>
+											
+											<div style="display: flex; gap: 8px; margin-top: 12px;">
+												<button type="button" class="btn btn-outline" style="flex: 1;" onclick="toggleReturnEdit(${ret.ret_num})">닫기</button>
+												<button type="submit" class="btn btn-black" style="flex: 1;">수정 완료</button>
+											</div>
+										</form>
+									</div>
+								</c:if>
 							</div>
-							<button type="submit" class="btn btn-black"
-								style="margin-top: 4px; width: 100%">신청하기</button>
-						</div>
-					</form>
+						</c:forEach>
+					</div>
 				</div>
 
 				<!-- 6. 회원 탈퇴 탭 -->
@@ -525,6 +619,37 @@ function checkDelete() {
     }
     return confirm("정말로 ShoeMall에서 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없습니다.");
 }
+
+//반품/교환 내부 탭 전환 함수
+function switchReturnTab(tabName) {
+    const tabs = document.querySelectorAll('#return-tabs .tab');
+    tabs.forEach(t => t.classList.remove('on'));
+
+    if (tabName === 'available') {
+        tabs[0].classList.add('on');
+        document.getElementById('return-available').style.display = 'block';
+        document.getElementById('return-history').style.display = 'none';
+        closeEditReturnForm(); // 탭 이동 시 수정 폼 닫기
+    } else {
+        tabs[1].classList.add('on');
+        document.getElementById('return-available').style.display = 'none';
+        document.getElementById('return-history').style.display = 'block';
+    }
+}
+
+//반품/교환 인라인 폼 토글 (열기/닫기)
+function toggleReturnEdit(retNum) {
+    const editForm = document.getElementById('edit-form-' + retNum);
+    
+    if (editForm.style.display === 'none' || editForm.style.display === '') {
+        // 숨겨져 있으면 보이게 처리 (부드러운 효과를 위해 block 대신 사용)
+        editForm.style.display = 'block';
+    } else {
+        // 보이고 있으면 숨기기
+        editForm.style.display = 'none';
+    }
+}
+
 </script>
 </body>
 </html>
