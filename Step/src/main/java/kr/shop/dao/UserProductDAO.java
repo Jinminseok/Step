@@ -162,24 +162,23 @@ public class UserProductDAO {
 		ResultSet rs = null;
 		List<AdminProductVO> list = null;
 		String sql = null;
-		String sub_sql = "";
+		
+		// 🚨 수정: 판매중(prod_status = 1) 조건 기본 삽입
+		String sub_sql = "WHERE p.prod_status = 1 ";
 		int cnt = 0;
 
 		try {
 			conn = DBUtil.getConnection();
 
+			// 🚨 수정: 앞서 WHERE가 무조건 들어갔으므로 이후 조건들은 AND로 이어줌
 			if (filter.getGender() != -1) {
-				sub_sql += "WHERE p.gender = ? ";
+				sub_sql += "AND p.gender = ? ";
 			}
 			if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
-				if (sub_sql.contains("WHERE")) sub_sql += "AND ";
-				else sub_sql += "WHERE ";
-				sub_sql += "p.prod_name LIKE ? ";
+				sub_sql += "AND p.prod_name LIKE ? ";
 			}
 			if (filter.getCat_num() > 0) {
-				if (sub_sql.contains("WHERE")) sub_sql += "AND ";
-				else sub_sql += "WHERE ";
-				sub_sql += "p.cat_num = ? ";
+				sub_sql += "AND p.cat_num = ? ";
 			}
 
 			sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
@@ -306,7 +305,7 @@ public class UserProductDAO {
 			while (rs.next()) {
 				if (!first) json.append(",");
 				json.append("{")
-				.append("\"opt_num\":").append(rs.getInt("opt_num")).append(",")  // ✅ 추가
+				.append("\"opt_num\":").append(rs.getInt("opt_num")).append(",") 
 				.append("\"color\":\"").append(rs.getString("color")).append("\",")
 				.append("\"size\":").append(rs.getInt("size_val")).append(",")
 				.append("\"stock\":").append(rs.getInt("available_stock"))
