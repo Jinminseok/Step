@@ -17,14 +17,24 @@ public class UserReturnVO {
     // --- DB 테이블엔 없지만 JSP 출력을 위해 조인으로 가져올 확장 필드 ---
     private String prod_name;   // 상품명
     private String prod_img_url;// 상품 메인 이미지 경로
+    
+    private String opt_info;
 
-    // Getter & Setter
+   
+	// Getter & Setter
     public int getRet_num() { return ret_num; }
     public void setRet_num(int ret_num) { this.ret_num = ret_num; }
 
     public int getOrder_num() { return order_num; }
     public void setOrder_num(int order_num) { this.order_num = order_num; }
 
+    public String getOpt_info() {
+		return opt_info;
+	}
+	public void setOpt_info(String opt_info) {
+		this.opt_info = opt_info;
+	}
+    
     public int getUser_num() { return user_num; }
     public void setUser_num(int user_num) { this.user_num = user_num; }
 

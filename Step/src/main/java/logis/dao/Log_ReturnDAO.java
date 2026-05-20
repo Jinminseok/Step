@@ -23,17 +23,15 @@ public class Log_ReturnDAO {
         List<AdminOrderVO> list = new ArrayList<>();
 
         try {
-            conn = DBUtil.getConnection();
-            
-            // 💡 CS팀이 수거를 지시했거나 도착한 상태(2)인 내역만 가져옵니다.
-            // RETURNS 테이블에 QTY가 없다면 ORDER_ITEMS에서 조인해서 가져오는 서브쿼리를 썼습니다.
+            conn = DBUtil.getConnection();            
+
             String sql = "SELECT r.*, p.PROD_NAME, "
-                       + "(SELECT OPT_SIZE FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
-                       + "(SELECT ORDER_QUANTITY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND ROWNUM = 1) AS QTY "
-                       + "FROM RETURNS r "
-                       + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                       + "WHERE r.RET_STATUS = 2 "
-                       + "ORDER BY r.RET_NUM ASC"; // 오래된 대기건부터 처리하도록 오름차순
+                    + "(SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
+                    + "(SELECT ORDER_ITEM_QTY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND OPT_NUM = r.OPT_NUM AND ROWNUM = 1) AS QTY "
+                    + "FROM RETURNS r "
+                    + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
+                    + "WHERE r.RET_STATUS = 2 "
+                    + "ORDER BY r.RET_NUM ASC";
             
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -74,12 +72,12 @@ public class Log_ReturnDAO {
             conn = DBUtil.getConnection();
             
             String sql = "SELECT r.*, p.PROD_NAME, "
-                       + "(SELECT OPT_SIZE FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
-                       + "(SELECT ORDER_QUANTITY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND ROWNUM = 1) AS QTY "
-                       + "FROM RETURNS r "
-                       + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                       + "WHERE r.RET_STATUS = 3 "
-                       + "ORDER BY r.RET_UPDATED_AT DESC"; // 최근 처리건부터 
+                    + "(SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO, "
+                    + "(SELECT ORDER_ITEM_QTY FROM ORDER_ITEMS WHERE ORDER_NUM = r.ORDER_NUM AND PROD_NUM = r.PROD_NUM AND OPT_NUM = r.OPT_NUM AND ROWNUM = 1) AS QTY "
+                    + "FROM RETURNS r "
+                    + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
+                    + "WHERE r.RET_STATUS = 3 "
+                    + "ORDER BY r.RET_UPDATED_AT DESC";
             
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -125,10 +123,9 @@ public class Log_ReturnDAO {
             pstmtStatus.setInt(2, retNum);
             pstmtStatus.executeUpdate();
 
-            // 2. 양품(1) 판정 시에만 PROD_OPTIONS 테이블의 창고 재고(STOCK)를 플러스 복구!
+            // 2. 양품(1) 판정 시에만 STOCK 테이블의 재고(STOCK_QTY)를 플러스 복구!
             if (isGood == 1) {
-                // 형님 테이블 상황에 맞게 STOCK 혹은 QUANTITY 컬럼명 확인 필요
-                String sqlStock = "UPDATE PROD_OPTIONS SET STOCK = STOCK + ? WHERE OPT_NUM = ?"; 
+                String sqlStock = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?"; 
                 pstmtStock = conn.prepareStatement(sqlStock);
                 pstmtStock.setInt(1, qty);
                 pstmtStock.setInt(2, optNum);
@@ -164,9 +161,9 @@ public class Log_ReturnDAO {
             pstmtStatus.setInt(2, retNum);
             pstmtStatus.executeUpdate();
 
-            // 2. 회수한 헌 상품이 양품(1)이면 기존 옵션 재고 플러스 복구
+            // 2. 회수한 헌 상품이 양품(1)이면 기존 옵션 재고(STOCK_QTY) 플러스 복구
             if (isGood == 1) {
-                String sqlOld = "UPDATE PROD_OPTIONS SET STOCK = STOCK + ? WHERE OPT_NUM = ?";
+                String sqlOld = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?";
                 pstmtOldStock = conn.prepareStatement(sqlOld);
                 pstmtOldStock.setInt(1, qty);
                 pstmtOldStock.setInt(2, oldOptNum);
@@ -175,7 +172,7 @@ public class Log_ReturnDAO {
 
             // 3. 내보낼 새 상품 옵션 재고 마이너스 삭감! (교환 출고)
             if (newOptNum > 0) { // 새 옵션 번호가 정상적으로 들어왔을 때
-                String sqlNew = "UPDATE PROD_OPTIONS SET STOCK = STOCK - ? WHERE OPT_NUM = ?";
+                String sqlNew = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY - ?, STOCK_UPDATED_AT = SYSDATE WHERE OPT_NUM = ?";
                 pstmtNewStock = conn.prepareStatement(sqlNew);
                 pstmtNewStock.setInt(1, qty);
                 pstmtNewStock.setInt(2, newOptNum);

@@ -303,4 +303,81 @@ public class UserDAO {
 		return list;
 	}
 	
+	// ── 🌟 [추가 1] 마이페이지 반품 콤보박스용: 배송완료(상태4)된 개별 상품 목록 조회 ──
+	public List<AdminOrderVO> getDeliveredItemList(int userNum) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<AdminOrderVO> list = new ArrayList<>();
+        
+        try {
+            conn = DBUtil.getConnection();
+            
+            String sql = "SELECT o.ORDER_NUM, i.PROD_NUM, i.OPT_NUM, p.PROD_NAME, "
+                + "       (SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = i.OPT_NUM) AS OPT_INFO "
+                + "FROM ORDERS o "
+                + "JOIN ORDER_ITEMS i ON o.ORDER_NUM = i.ORDER_NUM "
+                + "JOIN PRODUCTS p ON i.PROD_NUM = p.PROD_NUM "
+                + "WHERE o.USER_NUM = ? AND o.ORDER_STATUS = 4 "
+                + "  AND NOT EXISTS ( "
+                + "      SELECT 1 FROM RETURNS r "
+                + "      WHERE r.ORDER_NUM = o.ORDER_NUM "
+                + "        AND r.PROD_NUM = i.PROD_NUM "
+                + "        AND r.OPT_NUM = i.OPT_NUM "
+                + "        AND r.RET_STATUS IN (1, 2, 3, 4) " 
+                + "  ) "
+                + "ORDER BY o.ORDER_NUM DESC";
+                       
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userNum);
+            rs = pstmt.executeQuery();
+            
+            while(rs.next()) {
+                AdminOrderVO item = new AdminOrderVO();
+                item.setOrder_num(rs.getInt("ORDER_NUM"));
+                item.setProd_num(rs.getInt("PROD_NUM"));
+                item.setOpt_num(rs.getInt("OPT_NUM"));
+                item.setProd_name(rs.getString("PROD_NAME"));
+                item.setOpt_info(rs.getString("OPT_INFO"));
+                list.add(item);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // ── 개별 상품 정보(주문, 상품, 옵션)가 포함된 반품/교환 데이터 생성 ──
+    public void insertReturnRequest(int userNum, int orderNum, int prodNum, int optNum, int tp, String reason, String retNote) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        try {
+            conn = DBUtil.getConnection();
+            
+            // 🚨 수정 완료: RET_SEQ -> RETURNS_SEQ 로 완벽 교체!
+            String sql = "INSERT INTO RETURNS (RET_NUM, ORDER_NUM, USER_NUM, TP, REASON, PROD_NUM, OPT_NUM, RET_NOTE, RET_STATUS, RET_CREATED_AT) "
+                       + "VALUES (RETURNS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, 1, SYSDATE)";
+                       
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderNum);
+            pstmt.setInt(2, userNum);
+            pstmt.setInt(3, tp);
+            pstmt.setString(4, reason);
+            pstmt.setInt(5, prodNum);
+            pstmt.setInt(6, optNum);
+            pstmt.setString(7, retNote);
+            
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        } finally {
+            DBUtil.executeClose(null, pstmt, conn);
+        }
+    }
+	
 }

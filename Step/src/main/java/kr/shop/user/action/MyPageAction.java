@@ -48,15 +48,26 @@ public class MyPageAction implements Action {
 		
 		// 세션에서 user_num 가져온 직후
 		int userNum = ((Number) session.getAttribute("user_num")).intValue();
+		
+		// 배송완료(상태 4)된 개별 상품 목록 조회 후 JSP로 전달
+		List<AdminOrderVO> deliveredItemList = dao.getDeliveredItemList(userNum);
+		request.setAttribute("deliveredItemList", deliveredItemList);		
 
 		// 재입고 알림 목록 조회 추가
-		List<Map<String, Object>> restockList = 
-		RestockAlertDAO.getInstance().getAlertListByUser(userNum);
+		List<Map<String, Object>> restockList = RestockAlertDAO.getInstance().getAlertListByUser(userNum);
 		request.setAttribute("restockList", restockList);
 		
+		
 		// 반품/교환 신청 내역 가져오기
-		List<UserReturnVO> returnList = UserReturnDAO.getInstance().getReturnListByUserNum(userNum);
-		request.setAttribute("returnList", returnList);
+		try {			
+			List<UserReturnVO> returnList = UserReturnDAO.getInstance().getReturnListByUserNum(userNum);
+			request.setAttribute("returnList", returnList);
+		} catch (Exception e) {
+			// 화면은 뻗지 않게 막아두고, 이클립스 콘솔창에 진짜 에러 원인만 빨간 글씨로 뱉어냅니다.
+			System.out.println("🚨 [마이페이지 반품내역 조회 에러 발생] 🚨");
+			e.printStackTrace(); 
+			request.setAttribute("returnList", null); // 에러 나면 그냥 빈 목록으로 화면 띄움
+		}
 		
 		// 마이페이지 화면으로 이동
 		return "shop/user/myPageForm.jsp";

@@ -12,6 +12,7 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/KR_style.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 	<%-- 공통 헤더 --%>
@@ -372,21 +373,29 @@
 							action="${pageContext.request.contextPath}/shop/user/returnRequest.do"
 							method="post">
 							<div class="form-sec" style="border: none; padding: 0; max-width: 100%">
+								
 								<div class="form-group">
-									<label class="form-label">주문 선택 (배송완료 상품만 가능)</label> 
-									<select class="form-input" name="order_num">
-										<c:set var="deliveredCount" value="0" />
-										<c:forEach var="order" items="${orderList}">
-											<c:if test="${order.order_status == 4}">
-												<option value="${order.order_num}">#${order.order_num} - ${order.prod_name}</option>
-												<c:set var="deliveredCount" value="${deliveredCount + 1}" />
-											</c:if>
+									<label class="form-label">반품/교환할 상품 선택 (배송완료 상품만 가능)</label> 
+									<%-- 🌟 핵심: 이름(name)을 item_info로 변경하여 주문번호, 상품번호, 옵션번호를 한 번에 넘깁니다. --%>
+									<select class="form-input" name="item_info" required>
+										<option value="">상품을 선택해 주세요</option>
+										<c:set var="itemCount" value="0" />
+										
+										<%-- 🌟 기존 orderList가 아닌, 상품 단위로 쪼개진 새로운 리스트(deliveredItemList)를 순회합니다 --%>
+										<c:forEach var="item" items="${deliveredItemList}">
+											<%-- value에 "주문번호_상품번호_옵션번호"를 합쳐서 세팅! --%>
+											<option value="${item.order_num}_${item.prod_num}_${item.opt_num}">
+												[주문 #${item.order_num}] ${item.prod_name} (옵션: ${item.opt_info == null ? '단일옵션' : item.opt_info})
+											</option>
+											<c:set var="itemCount" value="${itemCount + 1}" />
 										</c:forEach>
-										<c:if test="${deliveredCount == 0}">
-											<option value="">선택할 수 있는 배송완료 내역이 없습니다</option>
+										
+										<c:if test="${itemCount == 0}">
+											<option value="" disabled>선택할 수 있는 배송완료 상품이 없습니다</option>
 										</c:if>
 									</select>
 								</div>
+								
 								<div class="form-group">
 									<label class="form-label">신청 유형</label>
 									<div style="display: flex; gap: 16px; margin-top: 6px">
@@ -398,6 +407,7 @@
 										</label>
 									</div>
 								</div>
+								
 								<div class="form-group">
 									<label class="form-label">사유</label>
 									<select class="form-input" name="reason">
@@ -408,10 +418,12 @@
 										<option value="기타">기타</option>
 									</select>
 								</div>
+								
 								<div class="form-group">
 									<label class="form-label">상세 내용</label>
 									<textarea class="form-input" name="ret_note" placeholder="자세한 내용을 입력해주세요"></textarea>
 								</div>
+								
 								<button type="submit" class="btn btn-black" style="margin-top: 4px; width: 100%">신청하기</button>
 							</div>
 						</form>

@@ -65,9 +65,9 @@ public class UserReturnDAO {
         ResultSet rs = null;
         List<UserReturnVO> list = null;
         
-        // RETURNS, PRODUCTS 테이블과 PROD_IMGS(메인 이미지) 조인
-        String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.TP, r.REASON, r.RET_NOTE, r.RET_STATUS, "
-                + "p.PROD_NAME, i.PROD_IMG_URL "
+        String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.TP, r.REASON, r.RET_NOTE, r.RET_STATUS, r.OPT_NUM, "
+                + "p.PROD_NAME, i.PROD_IMG_URL, "
+                + "(SELECT SIZE_VAL || ' / ' || COLOR FROM PROD_OPTIONS WHERE OPT_NUM = r.OPT_NUM) AS OPT_INFO "
                 + "FROM RETURNS r "
                 + "LEFT OUTER JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
                 + "LEFT OUTER JOIN PROD_IMGS i ON p.PROD_NUM = i.PROD_NUM AND i.IS_MAIN = 'Y' " 
@@ -91,6 +91,8 @@ public class UserReturnDAO {
                 vo.setRet_status(rs.getInt("RET_STATUS"));
                 vo.setProd_name(rs.getString("PROD_NAME"));
                 vo.setProd_img_url(rs.getString("PROD_IMG_URL"));
+                vo.setOpt_info(rs.getString("OPT_INFO")); 
+                
                 list.add(vo);
             }
         } catch (Exception e) {
