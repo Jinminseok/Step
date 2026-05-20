@@ -88,7 +88,6 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.6}
 .btn-xs{padding:3px 9px;font-size:11px}
 .btn-ghost{background:transparent;color:var(--gray3);border:1.5px solid var(--gray5)}
 .btn-ghost:hover{color:var(--gray1);border-color:var(--gray3)}
-/* 추가된 삭제버튼 스타일 */
 .btn-danger{background:var(--red-lt);color:var(--red);border:1.5px solid #FECACA}
 .btn-danger:hover{background:var(--red);color:#fff}
 
@@ -176,23 +175,9 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 .bdg::before{content:'●';font-size:7px}
 
 /* PAGINATION */
-.pagination-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap !important; /* 전체 박스 줄바꿈 절대 방지 */
-}
-
-.page-info {
-    white-space: nowrap !important; /* 800건, 1000건이 되어도 한 줄로 유지! */
-    flex-shrink: 0; /* 공간 좁아져도 글자 영역 찌그러짐 방지 */
-}
-
-.page-btns {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 5px;
-}
+.pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--gray6)}
+.page-info{font-size:12px;color:var(--gray3)}
+.page-btns{display:flex;gap:4px}
 .pg-btn{width:30px;height:30px;border:1.5px solid var(--gray5);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray3);background:var(--white);transition:all .15s}
 .pg-btn:hover{border-color:var(--blue);color:var(--blue)}
 .pg-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -226,9 +211,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
-<!-- ═══ MAIN ═══ -->
 <main class="main">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="breadcrumb">
       <span class="breadcrumb-root">Step WMS</span>
@@ -243,7 +226,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
  
  <div class="content">
 
-    <!-- TAB BAR -->
     <div class="tab-bar">
       <div class="tab-btn on" id="tab-reg-btn" onclick="switchMain('reg')">
         📥 입고 등록
@@ -254,11 +236,9 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       </div>
     </div>
 
-    <!-- ══════════════ 입고 등록 탭 ══════════════ -->
     <div id="reg-section">
       <div class="main-grid">
 
-        <!-- LEFT: 등록 폼 -->
         <form id="inboundForm" action="${pageContext.request.contextPath}/logistics/log_in/log_inInsert.do" method="post" onsubmit="return false;">
           <input type="hidden" id="hidden_prodNum" name="prodNum" value="">
           <input type="hidden" id="hidden_sizes" name="sizes" value="">          
@@ -305,34 +285,15 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <div class="fg-full" style="height:1px; background:var(--gray6); margin: 6px 0;"></div>
 
               <div class="fg fg-full">
-                <label>입고 컬러 (복수 선택 가능) <span class="req">*</span></label>
-                <input type="hidden" id="hidden_colors" name="color" value="">
-                <div style="display:flex; gap:15px; flex-wrap:wrap; padding: 12px; border: 1px solid var(--gray6); border-radius: 6px; background: #fff;">
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="화이트"> 화이트
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="블랙"> 블랙
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="그레이"> 그레이
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="네이비"> 네이비
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="베이지"> 베이지
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="레드"> 레드
-                  </label>
-                  <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:13px; font-weight:500;">
-                    <input type="checkbox" class="chk-color" value="그린"> 그린
-                  </label>
-                </div>
+                <label>입고 컬러 <span class="req">*</span></label>
+                <select class="fi" id="fi-color" name="color">
+                  <option value="">컬러 선택</option>
+                  <option>화이트</option><option>블랙</option><option>그레이</option>
+                  <option>네이비</option><option>베이지</option><option>레드</option><option>그린</option>
+                </select>
               </div>
 
-			<div class="fg fg-full">
+              <div class="fg fg-full">
                 <label>입고 사이즈 (mm) <span class="req">*</span></label>
                 <div class="chip-wrap" id="sizeChips">
                   <div class="chip" onclick="selSize(this)">225</div>
@@ -347,7 +308,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
                   <div class="chip" onclick="selSize(this)">270</div>
                   <div class="chip" onclick="selSize(this)">275</div>
                   <div class="chip" onclick="selSize(this)">280</div>
-                  <div class="chip" onclick="selSize(this)">285</div>
                 </div>
                 <div class="fi-hint">복수 선택 가능 · 선택된 사이즈: <strong id="selSizeTxt">없음</strong></div>
               </div>
@@ -390,10 +350,8 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
         </div>
         </form>
 
-        <!-- RIGHT: 알림 -->
         <div style="display:flex;flex-direction:column;gap:14px">
 
-          <!-- 재입고 알림 -->
           <div class="alert alert-blue">
             <span class="alert-ico">🔔</span>
             <div>
@@ -402,8 +360,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             </div>
           </div>
 
-          <!-- 입고 대기 상품 -->
-		<div class="card">
+          <div class="card">
             <div class="card-hdr">
               <div class="card-title">
                 <div class="card-title-ico">⏳</div>
@@ -438,10 +395,8 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       </div>
     </div>
 
-    <!-- ══════════════ 입고 이력 조회 탭 ══════════════ -->
     <div id="hist-section" style="display:none">
 
-      <!-- 필터 바 -->
       <div class="filter-bar">
 		<div class="filter-group">
 		    <span class="filter-label">기간</span>		    
@@ -466,7 +421,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
   		<button type="button" class="btn btn-outline btn-sm" onclick="resetSearch()">초기화</button>
       </div>
 
-      <!-- 요약 pills -->
       <div class="summary-pills">
         <div class="pill pill-total"><div class="pill-num" id="pillTotalNum">0</div>전체</div>
         <div class="pill pill-done"><div class="pill-num" id="pillDoneNum">0</div>완료</div>
@@ -507,11 +461,9 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
   </div>
 </main>
 
-<!-- ═══ UPDATE MODAL (수정용 폼) ═══ -->
 <div class="modal-bg" id="updateModal">
   <div class="modal" style="max-width:500px;">
     <form id="updateForm" action="${pageContext.request.contextPath}/logistics/log_in/log_inUpdate.do" method="post">
-      <!-- 🚨 서버로 넘길 진짜 PK (입고번호) -->
       <input type="hidden" id="upd_inNum" name="inNum">
       
       <div class="modal-hdr">
@@ -521,12 +473,10 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       
       <div class="modal-body">
         <div class="fg-grid">
-          <!-- 1. 입고일 -->
           <div class="fg fg-full"><label>입고일 <span class="req">*</span></label>
             <input type="date" class="fi" id="upd_date" name="inDate" required>
           </div>
           
-          <!-- 2. 상품 정보 (변경 불가 처리 - readonly) -->
           <div class="fg"><label>브랜드</label>
             <input type="text" class="fi" id="upd_brand" style="background:var(--gray7);color:var(--gray4)" readonly>
           </div>
@@ -534,10 +484,8 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             <input type="text" class="fi" id="upd_name" style="background:var(--gray7);color:var(--gray4)" readonly>
           </div>
           
-          <!-- 3. 사이즈 & 컬러 -->
           <div class="fg"><label>사이즈 (mm)</label>
             <select class="fi" id="upd_size" name="sizeVal">
-              <option value="220">220</option>
               <option value="225">225</option>
               <option value="230">230</option>
               <option value="235">235</option>
@@ -550,7 +498,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
               <option value="270">270</option>
               <option value="275">275</option>
               <option value="280">280</option>
-              <option value="285">285</option>
             </select>
           </div>
           <div class="fg"><label>컬러</label>
@@ -565,7 +512,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             </select>
           </div>
 
-          <!-- 4. 수량 & 상태 -->
           <div class="fg"><label>입고 수량 <span class="req">*</span></label>
             <input type="number" class="fi" id="upd_qty" name="inQty" required>
           </div>
@@ -577,7 +523,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
             </select>
           </div>
           
-          <!-- 5. 공급업체 & 메모 -->
           <div class="fg fg-full"><label>공급업체</label>
             <select class="fi" id="upd_supplier" name="supplier">
               <option value="나이키">나이키</option>
@@ -636,24 +581,24 @@ function getStatusText(code) {
 
 const prods = [
   <c:forEach var="p" items="${prodList}">
-    { sku: '${p.sku}', name: '${p.prodName}', brand: '${p.brandName}', prodNum: '${p.prodNum}' },
+    { sku: `${p.sku}`, name: `${p.prodName}`, brand: `${p.brandName}`, prodNum: `${p.prodNum}` },
   </c:forEach>
 ];
 
 const histData = [
   <c:forEach var="item" items="${inboundList}">
     {
-      no: 'IN-${item.inNum}', date: '${item.inDate}', brand: '${item.brandName}', 
-      name: '${item.prodName}', size: '${item.sizeVal}mm', color: '${item.color}', 
-      qty: ${item.inQty}, supplier: '${item.supplier}',
-      status: getStatusText('${item.inStatus}'), manager: '${item.userName}', memo: '${item.inMemo}'
+      no: `IN-${item.inNum}`, date: `${item.inDate}`, brand: `${item.brandName}`, 
+      name: `${item.prodName}`, size: `${item.sizeVal}mm`, color: `${item.color}`, 
+      qty: ${empty item.inQty ? 0 : item.inQty}, supplier: `${item.supplier}`,
+      status: getStatusText(`${item.inStatus}`), manager: `${item.userName}`, memo: `${item.inMemo}`
     },
   </c:forEach>
 ];
 
 const pendingMasterData = [
   <c:forEach var="p" items="${pendingMasterList}">
-    { sku: '${p.sku}', name: '${p.prodName}', brand: '${p.brandName}', color: '${p.color}', size: '${p.sizeVal}mm', status: '완료' },
+    { sku: `${p.sku}`, name: `${p.prodName}`, brand: `${p.brandName}`, color: `${p.color}`, size: `${p.sizeVal}mm`, status: '완료' },
   </c:forEach>
 ];
 
@@ -686,7 +631,7 @@ function saveSearchState() {
     if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
 }
 
-//── 4. [페이징 1] 입고 대기 상품 ──────────────────
+// ── 4. [페이징 1] 입고 대기 상품 ──────────────────
 let currentPendingPage = 1;
 const pendingItemsPerPage = 10;
 
@@ -695,7 +640,6 @@ function renderPendingDashboard() {
     const cntEl = document.getElementById('pendingTotalCount');
     const paginWrap = document.getElementById('pendingPagination');
     
-    // 🌟 여기서 pendingMasterData를 사용하고 있습니다!
     if(cntEl) cntEl.innerText = pendingMasterData.length + '건';
 
     if(!tbody) return;
@@ -707,8 +651,6 @@ function renderPendingDashboard() {
         if(paginWrap) paginWrap.style.display = 'flex';
         const startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
         const endIndex = startIndex + pendingItemsPerPage;
-        
-        // 🌟 여기서도 pendingMasterData를 자르고 있습니다!
         const paginatedData = pendingMasterData.slice(startIndex, endIndex);
 
         tbody.innerHTML = paginatedData.map(d => `
@@ -720,72 +662,45 @@ function renderPendingDashboard() {
                 <td style="padding:10px;font-size:11px;font-family:'DM Mono',monospace">\${d.size}</td>
                 <td style="padding:10px;text-align:center;"><span class="bdg bdg-amber">대기</span></td>
             </tr>`).join('');
-            
         renderPendingPagination();
     }
 }
 
 function renderPendingPagination() {
-    var totalItems = pendingMasterData.length; 
-    var totalPages = Math.ceil(totalItems / pendingItemsPerPage); 
-    var pw  = document.getElementById('pendingPagination');
-    var pi  = document.getElementById('pendingPageInfo');
-    var pb  = document.getElementById('pendingPageBtns');
-    
-    if (!pw || !pb) return;
-    pw.style.display = 'flex';
+    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
+    const pageInfo = document.getElementById('pendingPageInfo');
+    const pageBtns = document.getElementById('pendingPageBtns');
+    if (!pageInfo || !pageBtns) return;
 
-    // ── 1. 왼쪽 정보 텍스트 (깔끔하고 통일감 있게!) ──
-    var startNum = (currentPendingPage - 1) * pendingItemsPerPage + 1;
-    var endNum = Math.min(currentPendingPage * pendingItemsPerPage, totalItems);
-    if(totalItems === 0) { startNum = 0; endNum = 0; }
-    
-    // 강제 스타일링(strong 등)을 빼고 가장 깔끔한 기본 텍스트로 넣습니다.
-    pi.innerHTML = startNum + " - " + endNum + " / " + totalItems + "건";
+    const startNum = (currentPendingPage - 1) * pendingItemsPerPage + 1;
+    const endNum = Math.min(currentPendingPage * pendingItemsPerPage, pendingMasterData.length);
+    pageInfo.innerText = `\${startNum} - \${endNum} / \${pendingMasterData.length}건`;
 
-    // ── 2. 10개 단위 페이지 블록 계산 ──
-    var blockSize = 10; 
-    var currentBlock = Math.ceil(currentPendingPage / blockSize); 
-    var startPage = (currentBlock - 1) * blockSize + 1; 
-    var endPage = Math.min(startPage + blockSize - 1, totalPages); 
+    let btnsHTML = '';
+    btnsHTML += `<div class="pg-btn \${currentPendingPage === 1 ? 'disabled' : ''}" style="\${currentPendingPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage - 1})">‹</div>`;
 
-    var h = '';
+    // 💡 페이징 번호 제한 (최대 9개까지만 표시)
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentPendingPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
 
-    // 🌟 JSP EL 충돌을 막기 위해 전부 홑따옴표와 + 기호로 안전하게 연결했습니다! 🌟
-
-    // [이전 10개] 버튼 (‹)
-    if (startPage > 1) {
-        h += '<div class="pg-btn" onclick="changePendingPage(' + (startPage - 1) + ')">‹</div>';
-    } else {
-        h += '<div class="pg-btn disabled">‹</div>';
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
     }
 
-    // 가운데 페이지 숫자 버튼들 (1~10, 11~20...)
-    for (var i = startPage; i <= endPage; i++) {
-        var onCls = (i === currentPendingPage) ? 'on' : '';
-        h += '<div class="pg-btn ' + onCls + '" onclick="changePendingPage(' + i + ')">' + i + '</div>';
+    for (let i = startPage; i <= endPage; i++) {
+        btnsHTML += `<div class="pg-btn \${i === currentPendingPage ? 'on' : ''}" style="cursor:pointer;" onclick="changePendingPage(\${i})">\${i}</div>`;
     }
 
-    // [다음 10개] 버튼 (›)
-    if (endPage < totalPages) {
-        h += '<div class="pg-btn" onclick="changePendingPage(' + (endPage + 1) + ')">›</div>';
-    } else {
-        h += '<div class="pg-btn disabled">›</div>';
-    }
-
-    pb.innerHTML = h;
+    btnsHTML += `<div class="pg-btn \${currentPendingPage === totalPages ? 'disabled' : ''}" style="\${currentPendingPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage + 1})">›</div>`;
+    pageBtns.innerHTML = btnsHTML;
 }
 
-// 🌟 추가 완료: 버튼을 클릭했을 때 실제로 페이지를 이동시키는 함수
-function changePendingPage(p) {
-    var totalItems = pendingMasterData.length;
-    var totalPages = Math.ceil(totalItems / pendingItemsPerPage);
-    
-    // 비정상적인 페이지 번호(1보다 작거나 끝 페이지보다 큰 경우)는 무시
-    if (p < 1 || p > totalPages) return; 
-    
-    currentPendingPage = p;
-    renderPendingDashboard(); // 번호 바꾼 후 테이블 다시 그리기!
+function changePendingPage(page) {
+    const totalPages = Math.ceil(pendingMasterData.length / pendingItemsPerPage);
+    if (page < 1 || page > totalPages) return; 
+    currentPendingPage = page;
+    renderPendingDashboard();
 }
 
 // ── 5. [페이징 2] 입고 이력 조회 ──────────────────
@@ -810,7 +725,7 @@ function searchHistory() {
         return true;
     });
 
-    currentHistPage = 1; // 검색 시 1페이지로 리셋
+    currentHistPage = 1;
     renderHistList(); 
 }
 
@@ -850,7 +765,6 @@ function renderHistList() {
         renderHistPagination();
     }
 
-    // 상단 요약 알약 업데이트
     const pillTotal = document.querySelector('.pill-total .pill-num');
     const pillDone = document.querySelector('.pill-done .pill-num');
     const pillPend = document.querySelector('.pill-pend .pill-num');
@@ -870,15 +784,32 @@ function renderHistPagination() {
     const pageBtns = document.getElementById('histPageBtns');
     if (!pageInfo || !pageBtns) return;
 
+    if (currentFilteredHistData.length === 0) {
+        pageInfo.innerText = '0 - 0 / 0건';
+        pageBtns.innerHTML = '';
+        return;
+    }
+
     const startNum = (currentHistPage - 1) * histItemsPerPage + 1;
     const endNum = Math.min(currentHistPage * histItemsPerPage, currentFilteredHistData.length);
     pageInfo.innerText = `\${startNum} - \${endNum} / \${currentFilteredHistData.length}건`;
 
     let btnsHTML = '';
     btnsHTML += `<div class="pg-btn \${currentHistPage === 1 ? 'disabled' : ''}" style="\${currentHistPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeHistPage(\${currentHistPage - 1})">‹</div>`;
-    for (let i = 1; i <= totalPages; i++) {
+
+    // 💡 이력 테이블에도 동일하게 페이징 번호 제한 적용
+    let maxVisible = 9;
+    let startPage = Math.max(1, currentHistPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
         btnsHTML += `<div class="pg-btn \${i === currentHistPage ? 'on' : ''}" style="cursor:pointer;" onclick="changeHistPage(\${i})">\${i}</div>`;
     }
+
     btnsHTML += `<div class="pg-btn \${currentHistPage === totalPages ? 'disabled' : ''}" style="\${currentHistPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeHistPage(\${currentHistPage + 1})">›</div>`;
     pageBtns.innerHTML = btnsHTML;
 }
@@ -950,101 +881,59 @@ function clearProd() {
 }
 
 const selSizes = new Set();
-function selSize(btn) {
-    // 1. 클릭한 칩에 'on' 클래스 토글 (불 켜기/끄기)
-    btn.classList.toggle('on');
-    
-    // 2. 현재 불이 들어와 있는 모든 사이즈 칩의 텍스트를 모읍니다.
-    var selectedSizes = [];
-    document.querySelectorAll('#sizeChips .chip.on').forEach(function(chip) {
-        selectedSizes.push(chip.innerText.trim());
-    });
-    
-    // 3. 화면에 "선택된 사이즈: 275, 280" 처럼 보여주기
-    document.getElementById('selSizeTxt').innerText = selectedSizes.length > 0 ? selectedSizes.join(', ') : "없음";
-    
-    // 4. 히든 필드에 임시로 저장 (submit 시 다시 한번 체크할 예정)
-    document.getElementById('hidden_sizes').value = selectedSizes.join(',');
+function selSize(el) {
+    el.classList.toggle('on');
+    const mm = el.textContent;
+    selSizes.has(mm) ? selSizes.delete(mm) : selSizes.add(mm);
+    document.getElementById('selSizeTxt').textContent = selSizes.size ? [...selSizes].sort((a,b) => a-b).join(', ') + 'mm' : '없음';
 }
 
 function resetForm() {
-    // 1. 일반 폼 리셋
-    document.getElementById('inboundForm').reset();
-    
-    // 2. 히든 필드들 초기화
-    document.getElementById('hidden_prodNum').value = "";
-    document.getElementById('hidden_sizes').value = "";
-    document.getElementById('hidden_colors').value = "";
-    
-    // 3. 사이즈 칩 초기화
+    ['fi-color','fi-qty','fi-memo','fi-supplier'].forEach(id => { 
+        const el = document.getElementById(id); if(el) el.value=''; 
+    });
+    const fiDate = document.getElementById('fi-date');
+    if(fiDate) fiDate.value = getTodayStr();
+    clearProd();
+    selSizes.clear();
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-    document.getElementById('selSizeTxt').innerText = "없음";
-    
-    // 🌟 4. 컬러 체크박스 전체 해제
-    document.querySelectorAll('.chk-color').forEach(cb => cb.checked = false);
-    
-    // 5. 상품 선택 UI 리셋
-    clearProd(); 
-    
-    showToast("입고 폼이 초기화되었습니다.");
+    document.getElementById('selSizeTxt').textContent = '없음';
 }
 
 function submitInbound() {
-    // [1] 마스터 상품 선택 체크
-    var prodNum = document.getElementById('hidden_prodNum').value;
-    if(!prodNum) {
-        alert("마스터 상품을 먼저 검색하여 선택해 주세요.");
+    const prodNum = document.getElementById('hidden_prodNum').value;
+    const color   = document.getElementById('fi-color').value;
+    const qty     = parseInt(document.getElementById('fi-qty').value);
+    const supplier = document.getElementById('fi-supplier').value.trim();
+    const selBrand = document.getElementById('selProdBrand').textContent.trim();
+
+    if (!prodNum) { showToast('⚠ 입고할 상품을 검색 후 선택해주세요.', true); return; }
+    if (!color)   { showToast('⚠ 컬러를 선택해주세요.', true); return; }
+    if (selSizes.size === 0) { showToast('⚠ 사이즈를 선택해주세요.', true); return; }
+    if (!supplier) { showToast('⚠ 공급업체를 입력해주세요.', true); return; }
+    if (supplier !== selBrand) {
+        showToast('⚠ 공급업체 이름이 상품 브랜드(' + selBrand + ')와 일치하지 않습니다.', true);
         return;
     }
 
-    // [2] 🌟 다중 선택된 컬러 수집 (체크박스)
-    var selectedColors = [];
-    document.querySelectorAll('.chk-color:checked').forEach(function(cb) {
-        selectedColors.push(cb.value);
-    });
-
-    if (selectedColors.length === 0) {
-        alert("입고할 컬러를 최소 하나 이상 선택해 주세요.");
+    if (isNaN(qty) || qty < 1) {
+        showToast('⚠ 수량은 1개 이상이어야 합니다.', true);
         return;
     }
-    document.getElementById('hidden_colors').value = selectedColors.join(',');
-
-    // [3] 🌟 다중 선택된 사이즈 수집 (on 클래스가 붙은 칩들)
-    var selectedSizes = [];
-    document.querySelectorAll('#sizeChips .chip.on').forEach(function(chip) {
-        selectedSizes.push(chip.innerText.trim());
-    });
-
-    if (selectedSizes.length === 0) {
-        alert("입고할 사이즈를 선택해 주세요."); // 👈 형님을 괴롭히던 그 alert!
+    if (qty > 9999) {
+        showToast('⚠ 1회 입고 수량은 9,999개를 초과할 수 없습니다.', true);
         return;
     }
-    document.getElementById('hidden_sizes').value = selectedSizes.join(',');
-
-    // [4] 수량 및 날짜 체크
-    var qty = document.getElementById('fi-qty').value;
-    var date = document.getElementById('fi-date').value;
-
-    if(!qty || qty <= 0) {
-        alert("입고 수량을 정확히 입력해 주세요.");
-        document.getElementById('fi-qty').focus();
-        return;
-    }
-    if(!date) {
-        alert("입고일을 선택해 주세요.");
-        document.getElementById('fi-date').focus();
+    if (!Number.isInteger(parseFloat(document.getElementById('fi-qty').value))) {
+        showToast('⚠ 수량은 정수만 입력 가능합니다.', true);
         return;
     }
 
-    // [5] 최종 전송
-    var totalCount = selectedColors.length * selectedSizes.length;
-    var confirmMsg = "선택하신 컬러 [" + selectedColors.join(', ') + "]와 \n" +
-                     "사이즈 [" + selectedSizes.join(', ') + "]에 대해 \n" +
-                     "총 " + totalCount + "건의 입고를 진행하시겠습니까?";
-                     
-    if(confirm(confirmMsg)) {
-        // 폼 전송을 허용하기 위해 onsubmit="return false;"를 뚫어주거나 직접 submit 호출
-        document.getElementById('inboundForm').submit();
+    const sizeArr = Array.from(selSizes);
+    document.getElementById('hidden_sizes').value = sizeArr.join(',');
+
+    if (confirm(`총 \${sizeArr.length}개의 사이즈 옵션에 각각 \${qty}개씩 입고 처리하시겠습니까?`)) {
+        document.getElementById('inboundForm').submit(); 
     }
 }
 
@@ -1127,11 +1016,10 @@ window.addEventListener('load', function() {
     renderPendingDashboard();
     searchHistory(); 
 
-    //  (alert 대신 Toast 사용)
     if(result === 'in_success') {
         showToast('✅ 성공적으로 입고 처리가 완료되었습니다!');
         window.history.replaceState({}, document.title, window.location.pathname);
-        switchMain('hist'); // 성공 시 이력 탭으로 예쁘게 이동
+        switchMain('hist'); 
     } else if (result === 'updated') {
         showToast('✅ 수정이 완료되었습니다.');
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -1141,10 +1029,9 @@ window.addEventListener('load', function() {
         window.history.replaceState({}, document.title, window.location.pathname);
         switchMain('hist'); 
     } else if (result === 'opt_error') {
-        // 🚨 백엔드에서 에러가 터졌을 때 보여줄 진짜 에러 메시지
         showToast('❌ 상품 마스터에 등록되지 않은 사이즈/색상입니다.', true);
         window.history.replaceState({}, document.title, window.location.pathname);
-        switchMain('reg'); // 에러 났으니 다시 등록 탭 유지
+        switchMain('reg'); 
     }
 });
 </script>

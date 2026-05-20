@@ -32,9 +32,6 @@ public class Log_InDAO {
             pstmt.setString(6, inDate);
             pstmt.setString(7, supplier);
             pstmt.executeUpdate();
-            
-            kr.shop.dao.RestockAlertDAO.getInstance().sendRestockNotify(optNum);
-            
             // ← STOCK 처리 불필요: TRG_INBOUND_INSERT 트리거가 자동 처리
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,7 +227,7 @@ public class Log_InDAO {
             pstmt.setInt   (7, vo.getInNum());
             pstmt.executeUpdate();
             // ← STOCK 처리 불필요: TRG_INBOUND_UPDATE 트리거가 자동 처리
-            kr.shop.dao.RestockAlertDAO.getInstance().sendRestockNotify(newOptNum);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("입고 내역 수정 중 오류 발생", e);
