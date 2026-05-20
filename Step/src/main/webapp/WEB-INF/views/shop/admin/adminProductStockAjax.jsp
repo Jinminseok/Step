@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <c:forEach var="item" items="${stockList}">
+	<c:set var="percent"
+		value="${item.stock_qty >= maxBarStock ? 100 : (item.stock_qty * 100.0) / maxBarStock}" />
+
 	<tr>
 		<td style="font-weight: 600;">${item.size_val}mm</td>
 		<td>${item.color}</td>
@@ -11,10 +15,17 @@
 			${item.stock_qty}개</td>
 		<td>
 			<div
-				style="width: 100px; height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin: 0 auto;">
+				style="display: flex; align-items: center; justify-content: center; gap: 8px;">
 				<div
-					style="height: 100%; border-radius: 4px; background: ${item.stock_qty < lowStockThreshold ? '#ef4444' : '#3b82f6'}; 
-							width: ${item.stock_qty > maxBarStock ? 100 : (item.stock_qty * 100) / maxBarStock}%;"></div>
+					style="width: 70px; height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+					<div
+						style="height: 100%; border-radius: 4px; background: ${item.stock_qty < lowStockThreshold ? '#ef4444' : '#3b82f6'}; 
+								width: ${percent}%;"></div>
+				</div>
+				<span
+					style="font-size: 12px; color: #64748b; font-weight: 600; min-width: 36px; text-align: right;">
+					<fmt:formatNumber value="${percent}" maxFractionDigits="0" />%
+				</span>
 			</div>
 		</td>
 		<td><c:choose>
