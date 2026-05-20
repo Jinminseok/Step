@@ -319,7 +319,6 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// 🚨 [수정] 오라클 버전 타지 않게 서브쿼리 안정성(인라인 뷰 감싸기)을 대폭 높인 최종 쿼리
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -358,10 +357,13 @@ public class AdminProductDAO {
 					            SELECT
 					                p.PROD_NUM, p.SKU, p.PROD_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_CREATED_AT,
 					                b.brand_name, c.cat_name,
-					                MIN(o.size_val) AS min_size, MAX(o.size_val) AS max_size,
+					                -- 👇 핵심: 재고가 0 초과인 경우만 사이즈를 수집함. 재고가 없으면 0으로 표시.
+					                NVL(MIN(CASE WHEN NVL(s.stock_qty, 0) > 0 THEN o.size_val END), 0) AS min_size,
+					                NVL(MAX(CASE WHEN NVL(s.stock_qty, 0) > 0 THEN o.size_val END), 0) AS max_size,
 					                MIN(o.color) AS color, COUNT(DISTINCT o.color) AS color_cnt
 					            FROM PRODUCTS p
 					            JOIN PROD_OPTIONS o ON p.PROD_NUM = o.PROD_NUM
+					            LEFT JOIN STOCK s ON o.opt_num = s.opt_num  -- 재고 테이블 조인 추가
 					            LEFT JOIN BRANDS b ON p.BRAND_NUM = b.BRAND_NUM
 					            LEFT JOIN CATEGORIES c ON p.CAT_NUM = c.CAT_NUM
 					"""
