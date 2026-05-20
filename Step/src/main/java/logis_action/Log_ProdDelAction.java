@@ -18,9 +18,15 @@ public class Log_ProdDelAction implements Action {
 
         if (prodNum > 0) {
             Log_ProdDAO dao = new Log_ProdDAO();
-            dao.deleteProd(prodNum);
+            int result = dao.deleteProd(prodNum);
+            
+            // 🚨 FK 무결성 제약조건 위배로 삭제 실패 시
+            if (result == -1) {
+                return "redirect:/logistics/log_prod/log_prodForm.do?result=fk_error";
+            }
         }
 
-        return "redirect:/logistics/log_prod/log_prodForm.do";
+        // ✅ 정상 삭제 시
+        return "redirect:/logistics/log_prod/log_prodForm.do?result=deleted";
     }
 }

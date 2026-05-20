@@ -158,10 +158,11 @@ textarea.fi{resize:vertical;min-height:72px}
                     <c:set var="maxStk"  value="${p.maxStock > 0 ? p.maxStock : 100}"/>
                     <c:set var="pct"     value="${p.stockQty * 100 / maxStk}"/>
                     <c:set var="progCls" value="${p.stockQty==0?'prog-low':pct<15?'prog-low':pct<30?'prog-warn':'prog-ok'}"/>
-                    <c:set var="bdgCls"  value="${p.stockQty==0?'bdg-red':p.prodStatus==2?'bdg-gray':pct<20?'bdg-amber':'bdg-green'}"/>
-                    <c:set var="bdgTxt"  value="${p.stockQty==0?'품절':p.prodStatus==2?'숨김':pct<20?'주의':'판매중'}"/>
                     
-                    <%-- 🌟 여기에 data-gender="${p.gender}" 를 추가했습니다! --%>
+                    <%-- 🚨 수정한 부분: 숨김(2) 상태를 최우선으로 검사하도록 변경! 🚨 --%>
+                    <c:set var="bdgCls"  value="${p.prodStatus==2?'bdg-gray':p.stockQty==0?'bdg-red':pct<20?'bdg-amber':'bdg-green'}"/>
+                    <c:set var="bdgTxt"  value="${p.prodStatus==2?'숨김':p.stockQty==0?'품절':pct<20?'주의':'판매중'}"/>
+                    
                     <tr class="prod-row" data-id="${p.prodNum}"
                         data-desc="${p.prodText}" data-colors="${p.colorList}"
                         data-sizes="${p.sizeList}" data-img="${p.prodImgUrl}"
@@ -236,7 +237,6 @@ textarea.fi{resize:vertical;min-height:72px}
         <div class="dp-body">
           <div class="dp-tab-content active" id="tab-info">
 
-            <%-- 이미지 섹션 --%>
             <div class="dp-section">
               <div class="dp-section-title">상품 이미지 (최대 5장 · 한 번에 여러 장을 드래그하여 선택하세요)</div>
 
@@ -424,7 +424,6 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
         var imgArr = imgsStr.split(',');
         imgArr.forEach(function(imgName, idx) {
             if(!imgName.trim()) return;
-            // [복구] 수업 때 쓰던 프로젝트 내부 webapp/upload 경로 방식
             var imgSrc = cp + '/upload/' + imgName.trim();
             var div = document.createElement('div');
             div.className = 'img-thumb' + (idx === 0 ? ' main-img' : '');
@@ -453,7 +452,6 @@ function openDetailFromServer(prodNum, prodName, sku, brandName, catName, prodPr
     document.getElementById('fi-status').value = prodStatus;
     document.getElementById('fi-desc').value   = rowEl ? (rowEl.getAttribute('data-desc') || '') : '';
     
-    <%-- 🌟 여기에 성별 불러오는 코드가 추가되었습니다! 🌟 --%>
     var genderVal = rowEl ? (rowEl.getAttribute('data-gender') || '0') : '0';
     document.getElementById('fi-gender').value = genderVal;
 
@@ -647,6 +645,17 @@ window.addEventListener('load', function() {
         allProdRows = Array.from(tbody.querySelectorAll('.prod-row'));
         if (allProdRows.length > 0) { renderProdTable(); }
         else { document.getElementById('prodPagination').style.display = 'none'; }
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const resultMsg = urlParams.get('result');
+
+    if (resultMsg === 'fk_error') {
+        alert("해당 상품과 연결된 입출고 또는 재고 내역이 존재하여 삭제할 수 없습니다.\n상품 상세정보에서 '숨김' 상태를 이용해 주세요.");
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (resultMsg === 'deleted') {
+        alert("상품이 성공적으로 삭제되었습니다.");
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
 

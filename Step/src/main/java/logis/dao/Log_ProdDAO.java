@@ -324,18 +324,30 @@ public class Log_ProdDAO {
         try {
             conn  = DBUtil.getConnection();
             conn.setAutoCommit(false);
+            
             String sql1 = "DELETE FROM STOCK WHERE OPT_NUM IN (SELECT OPT_NUM FROM PROD_OPTIONS WHERE PROD_NUM = ?)";
             pstmt = conn.prepareStatement(sql1); pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
+            
             String sql2 = "DELETE FROM PROD_OPTIONS WHERE PROD_NUM = ?";
             pstmt = conn.prepareStatement(sql2); pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
+            
             String sql3 = "DELETE FROM PROD_IMGS WHERE PROD_NUM = ?";
             pstmt = conn.prepareStatement(sql3); pstmt.setInt(1, prodNum); pstmt.executeUpdate(); pstmt.close();
+            
             String sql4 = "DELETE FROM PRODUCTS WHERE PROD_NUM = ?";
             pstmt = conn.prepareStatement(sql4); pstmt.setInt(1, prodNum); result = pstmt.executeUpdate();
+            
             conn.commit();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // 🚨 무결성 에러 발생 시 롤백 처리하고 -1 반환
+            if (conn != null) conn.rollback();
+            return -1; 
         } catch (Exception e) {
-            if (conn != null) conn.rollback(); throw e;
-        } finally { DBUtil.executeClose(null, pstmt, conn); }
+            if (conn != null) conn.rollback(); 
+            throw e;
+        } finally { 
+            DBUtil.executeClose(null, pstmt, conn); 
+        }
         return result;
     }
 
