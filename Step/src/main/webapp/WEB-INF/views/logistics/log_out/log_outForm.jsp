@@ -374,21 +374,22 @@ function switchTab(tab) {
 }
 
 const orders = [
-  <c:forEach var="p" items="${pendingList}">
-  { 
-    id: '#${p.orderNum}', 
-    rawId: ${p.orderNum}, 
-    optNum: ${p.optNum}, 
-    qty: ${p.orderItemQty}, 
-    time: '${p.orderCreatedAt}'.substring(0, 16), 
-    name: '${p.prodName}', 
-    size: '${p.sizeVal}mm', 
-    color: '${p.color}', 
-    addr: '${p.recvAddr1}'.split(' ').slice(0, 2).join(' '), 
-    recv: '${p.recvName}' 
-  },
-  </c:forEach>
-];
+	  <c:forEach var="p" items="${pendingList}">
+	  { 
+	    uid: '${p.orderNum}_${p.optNum}', // 🔥 주문번호와 옵션번호를 합친 절대 중복 안 되는 키값!
+	    id: '#${p.orderNum}', 
+	    rawId: ${p.orderNum}, 
+	    optNum: ${p.optNum}, 
+	    qty: ${p.orderItemQty}, 
+	    time: '${p.orderCreatedAt}'.substring(0, 16), 
+	    name: '${p.prodName}', 
+	    size: '${p.sizeVal}mm', 
+	    color: '${p.color}', 
+	    addr: '${p.recvAddr1}'.split(' ').slice(0, 2).join(' '), 
+	    recv: '${p.recvName}' 
+	  },
+	  </c:forEach>
+	];
 
 const histories = [
   <c:forEach var="h" items="${historyList}">
@@ -419,41 +420,42 @@ const histItemsPerPage = 10;
 let filteredHistories = [...histories];
 
 function renderTable() {
-  const tbody = document.getElementById('orderTbody');
-  if(!tbody) return;
-  
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  const pageData = filteredOrders.slice(start, end);
+	  const tbody = document.getElementById('orderTbody');
+	  if(!tbody) return;
+	  
+	  const start = (currentPage - 1) * itemsPerPage;
+	  const end = start + itemsPerPage;
+	  const pageData = filteredOrders.slice(start, end);
 
-  if(!pageData.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray4);font-size:13px">📭 출고 대기 주문이 없습니다</td></tr>';
-    if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
-    renderPagination();
-    return;
-  }
+	  if(!pageData.length) {
+	    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray4);font-size:13px">📭 출고 대기 주문이 없습니다</td></tr>';
+	    if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
+	    renderPagination();
+	    return;
+	  }
 
-  let html = '';
-  for(let i=0; i<pageData.length; i++) {
-    const o = pageData[i];
-    const actionBtn = '<button type="button" class="btn btn-blue btn-xs" onclick="openSingle(\'' + o.id + '\')">출고 처리</button>';
-    html += '<tr class="tbl-row" data-id="' + o.id + '" onclick="rowClick(this)">'
-      + '<td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="' + o.id + '" onchange="updateSel()"></td>'
-      + '<td style="font-family:\'DM Mono\',monospace;font-size:11.5px;font-weight:700;color:var(--blue)">' + o.id + '</td>'
-      + '<td style="font-size:11px;color:var(--gray3)">' + o.time + '</td>'
-      + '<td style="font-weight:600;color:var(--gray1)">' + o.name + '</td>'
-      + '<td><span class="bdg bdg-gray" style="font-family:\'DM Mono\',monospace;font-size:10px">' + o.size + '</span> <span style="font-size:11px;color:var(--gray4)">' + o.color + '</span></td>'
-      + '<td style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:13px">' + o.qty + '</td>'
-      + '<td style="font-size:12px">' + o.addr + '</td>'
-      + '<td><span class="bdg bdg-amber">출고 대기</span></td>'
-      + '<td onclick="event.stopPropagation()">' + actionBtn + '</td>'
-      + '</tr>';
-  }
-  tbody.innerHTML = html;
+	  let html = '';
+	  for(let i=0; i<pageData.length; i++) {
+	    const o = pageData[i];
+	    // 🔥 o.id 가 아니라 o.uid 를 파라미터로 넘깁니다!
+	    const actionBtn = '<button type="button" class="btn btn-blue btn-xs" onclick="openSingle(\'' + o.uid + '\')">출고 처리</button>';
+	    html += '<tr class="tbl-row" data-id="' + o.uid + '" onclick="rowClick(this)">'
+	      + '<td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="' + o.uid + '" onchange="updateSel()"></td>'
+	      + '<td style="font-family:\'DM Mono\',monospace;font-size:11.5px;font-weight:700;color:var(--blue)">' + o.id + '</td>'
+	      + '<td style="font-size:11px;color:var(--gray3)">' + o.time + '</td>'
+	      + '<td style="font-weight:600;color:var(--gray1)">' + o.name + '</td>'
+	      + '<td><span class="bdg bdg-gray" style="font-family:\'DM Mono\',monospace;font-size:10px">' + o.size + '</span> <span style="font-size:11px;color:var(--gray4)">' + o.color + '</span></td>'
+	      + '<td style="font-family:\'DM Mono\',monospace;font-weight:700;font-size:13px">' + o.qty + '</td>'
+	      + '<td style="font-size:12px">' + o.addr + '</td>'
+	      + '<td><span class="bdg bdg-amber">출고 대기</span></td>'
+	      + '<td onclick="event.stopPropagation()">' + actionBtn + '</td>'
+	      + '</tr>';
+	  }
+	  tbody.innerHTML = html;
 
-  if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
-  renderPagination();
-}
+	  if(document.getElementById('totalCnt')) document.getElementById('totalCnt').textContent = filteredOrders.length;
+	  renderPagination();
+	}
 
 function renderPagination() {
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
@@ -494,10 +496,11 @@ function updateSel() {
 }
 
 // 🌟 단일 출고 모달 열기 (택배사 선택 및 운송장 기입 폼)
-function openSingle(id) {
-  const o = orders.find(x => x.id === id);
+function openSingle(uid) {
+  const o = orders.find(x => x.uid === uid);
   if(!o) return;
-  currentSingleId = id;
+  currentSingleId = uid; // 저장해둠
+  
   if (o.stock !== undefined && o.qty > o.stock) {
       showToast(`⚠ 재고(${o.stock}개)가 주문 수량(${o.qty}개)보다 부족합니다.`, true);
       return;
@@ -506,7 +509,7 @@ function openSingle(id) {
   document.getElementById('singleBody').innerHTML = 
       '<div class="sec-title">주문 정보</div>'
     + '<div class="dr"><div class="dk">주문번호</div><div class="dv"><b>' + o.id + '</b></div></div>'
-    + '<div class="dr"><div class="dk">상품명</div><div class="dv">' + o.name + '</div></div>'
+    + '<div class="dr"><div class="dk">상품명</div><div class="dv">' + o.name + ' (' + o.size + ' / ' + o.color + ')</div></div>' // 이름에 옵션도 추가해줌
     + '<div class="dr"><div class="dk">수량</div><div class="dv"><b>' + o.qty + '개</b></div></div>'
     + '<hr style="border:0;border-top:1px solid var(--gray6);margin:15px 0">'
     + '<div class="sec-title">배송 정보 입력</div>'
@@ -570,21 +573,14 @@ function closeSingle(){ document.getElementById('singleModal').classList.remove(
 
 // 출고 확정 전 유효성 검사
 function confirmSingle() {
-    const o = orders.find(x => x.id === currentSingleId);
+    const o = orders.find(x => x.uid === currentSingleId);
     if(!o) return;
     
     const courier = document.getElementById('modal-courier') ? document.getElementById('modal-courier').value : '';
     const invoice = document.getElementById('modal-invoice') ? document.getElementById('modal-invoice').value : '';
     
-    if (!courier) {
-        showToast('⚠ 택배사를 선택해주세요.');
-        document.getElementById('modal-courier').focus();
-        return;
-    }
-    if (!invoice) {
-        showToast('⚠ 운송장 번호를 기입해주세요.');
-        return;
-    }
+    if (!courier) { showToast('⚠ 택배사를 선택해주세요.'); document.getElementById('modal-courier').focus(); return; }
+    if (!invoice) { showToast('⚠ 운송장 번호를 기입해주세요.'); return; }
 
     const form = document.getElementById('outboundForm');
     form.innerHTML = '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
@@ -596,25 +592,84 @@ function confirmSingle() {
 }
 
 function openBulkConfirm() {
-  const checked = document.querySelectorAll('.row-chk:checked');
-  document.getElementById('bulkDesc').textContent = '선택하신 ' + checked.length + '건의 주문을 일괄 출고합니다.';
-  document.getElementById('bulkModal').classList.add('open');
+	  const checked = document.querySelectorAll('.row-chk:checked');
+	  
+	  const html = 
+	      '<div class="confirm-icon" style="font-size:42px; margin-bottom:12px;">📦</div>'
+	    + '<div class="confirm-title" style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--gray1);">선택 주문 일괄 출고</div>'
+	    + '<div class="confirm-desc" style="font-size:13px; color:var(--gray3); margin-bottom:20px;">선택하신 ' + checked.length + '건의 상품을 일괄 출고합니다.</div>'
+	    
+	    // 🎯 단일 출고에 있던 택배사/운송장 폼을 그대로 이식!
+	    + '<div style="text-align:left; background:var(--gray7); padding:16px; border-radius:8px; margin-bottom:20px;">'
+	    +   '<div style="margin-bottom:12px;">'
+	    +     '<div style="font-size:12px; font-weight:600; margin-bottom:6px;">일괄 적용 택배사</div>'
+	    +     '<select id="bulk-courier" class="modal-input" style="padding:8px 12px; width:100%; cursor:pointer;">'
+	    +       '<option value="">택배사를 선택해주세요</option>'
+	    +       '<option value="CJ대한통운">CJ대한통운</option>'
+	    +       '<option value="롯데택배">롯데택배</option>'
+	    +       '<option value="한진택배">한진택배</option>'
+	    +       '<option value="우체국택배">우체국택배</option>'
+	    +     '</select>'
+	    +   '</div>'
+	    +   '<div>'
+	    +     '<div style="font-size:12px; font-weight:600; margin-bottom:6px;">일괄 적용 운송장 번호</div>'
+	    +     '<div style="display:flex; gap:8px;">'
+	    +       '<input type="text" id="bulk-invoice" class="modal-input" placeholder="운송장 번호 기입" readonly style="background-color: var(--white);">'
+	    +       '<button type="button" class="btn btn-outline btn-sm" onclick="generateBulkInvoice()" style="white-space:nowrap;">자동 생성</button>'
+	    +     '</div>'
+	    +   '</div>'
+	    + '</div>'
+	    
+	    + '<div class="alert alert-amber" style="margin:0; text-align:left; display:flex; gap:8px; align-items:flex-start; line-height:1.5;">'
+	    +   '<span class="alert-ico" style="flex-shrink:0; margin-top:2px;">⚠</span>'
+	    +   '<div style="flex:1; font-size:12.5px;">출고 처리 시 재고가 즉시 차감되며<br>마지막 상품 출고 시 주문 상태가 변경됩니다.</div>'
+	    + '</div>';
+
+	  document.querySelector('#bulkModal .modal-body').innerHTML = html;
+	  document.getElementById('bulkModal').classList.add('open');
+	}
+	
+function generateBulkInvoice() {
+    const courier = document.getElementById('bulk-courier').value;
+    if (!courier) {
+        showToast('⚠ 택배사를 먼저 선택해주세요.');
+        document.getElementById('bulk-courier').focus();
+        return;
+    }
+    const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    let prefix = "CJ";
+    if(courier === '롯데택배') prefix = "LOTTE";
+    else if(courier === '한진택배') prefix = "HJ";
+    else if(courier === '우체국택배') prefix = "POST";
+
+    const randomNum = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    // 일괄 출고용은 송장번호에 BULK 기호를 넣어 구별하기 쉽게 세팅했습니다!
+    document.getElementById('bulk-invoice').value = prefix + "-" + dateStr + "-BULK-" + randomNum;
+    showToast('✅ 일괄 운송장 번호가 기입되었습니다.');
 }
+	
 function closeBulk(){ document.getElementById('bulkModal').classList.remove('open'); }
 
 function doBulk() {
+    const courier = document.getElementById('bulk-courier') ? document.getElementById('bulk-courier').value : '';
+    const invoice = document.getElementById('bulk-invoice') ? document.getElementById('bulk-invoice').value : '';
+
+    if (!courier) { showToast('⚠ 택배사를 선택해주세요.'); return; }
+    if (!invoice) { showToast('⚠ 운송장 번호를 기입해주세요.'); return; }
+
     const checked = Array.from(document.querySelectorAll('.row-chk:checked'));
-    const ids = checked.map(c => c.dataset.id);
+    const uids = checked.map(c => c.dataset.id);
     const form = document.getElementById('outboundForm');
     form.innerHTML = '';
-    ids.forEach(id => {
-        const o = orders.find(x => x.id === id);
+    
+    uids.forEach(uid => {
+        const o = orders.find(x => x.uid === uid);
         if(o) {
             form.innerHTML += '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
                             + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
                             + '<input type="hidden" name="qty" value="'+o.qty+'">'
-                            + '<input type="hidden" name="courier" value="">'
-                            + '<input type="hidden" name="invoiceNo" value="">';
+                            + '<input type="hidden" name="courier" value="'+courier+'">' // 선택한 택배사 탑재!
+                            + '<input type="hidden" name="invoiceNo" value="'+invoice+'">'; // 선택한 송장 탑재!
         }
     });
     form.submit();
