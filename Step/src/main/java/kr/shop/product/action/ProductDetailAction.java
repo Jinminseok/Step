@@ -64,7 +64,7 @@ public class ProductDetailAction implements Action {
 		boolean isLogin = (user_num != null);
 		request.setAttribute("isLogin", isLogin);
 
-		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인
+		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인 
 		boolean isWished = false;
 		boolean hasPurchased = false;
 		
