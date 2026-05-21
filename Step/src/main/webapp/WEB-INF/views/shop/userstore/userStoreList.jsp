@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
 /* --- 🚨 전역 스타일 --- */
 *, *::before, *::after { box-sizing: border-box; }
