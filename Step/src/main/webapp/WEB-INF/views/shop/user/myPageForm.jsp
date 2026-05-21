@@ -47,16 +47,9 @@
 			<div class="my-body">
 
 				<%-- ✅ 주문 취소 결과 메시지 --%>
-				<c:if test="${not empty param.msg}">
-					<c:choose>
-						<c:when test="${param.msg eq 'cancel_ok'}">
-							<script>alert('주문이 취소되었습니다.');</script>
-						</c:when>
-						<c:when test="${param.msg eq 'cancel_fail'}">
-							<script>alert('주문 취소에 실패했습니다. 다시 시도해주세요.');</script>
-						</c:when>
-					</c:choose>
-
+				<c:if test="${not empty cancelMsg}">
+					<script>alert('${cancelMsg}');</script>
+					<c:remove var="cancelMsg" scope="session" />
 				</c:if>
 				<%-- 리뷰 등록 결과 메시지 --%>
 				<c:if test="${not empty reviewMsg}">
@@ -265,7 +258,7 @@
 				<div class="my-sub" id="my-orders">
 					<div class="tabs">
 						<div class="tab on" onclick="filterOrders(this, 0)">전체</div>
-						<div class="tab" onclick="filterOrders(this, 2)">배송대기</div>
+						<div class="tab" onclick="filterOrders(this, 1)">배송대기</div>
 						<div class="tab" onclick="filterOrders(this, 4)">배송완료</div>
 					</div>
 
