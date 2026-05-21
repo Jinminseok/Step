@@ -20,7 +20,29 @@ public class Log_ReturnVO {
     private String recv_addr;   // 수령인 반송 주소 (ADDR1 + ADDR2 결합)
     private String invoice_no;  // 교환 처리 시 재출고된 운송장 번호
     
+    private String size_val;
+    private String color;
+    private String is_good_str; // 양품/불량 텍스트 저장용
     
+    
+	public String getSize_val() {
+		return size_val;
+	}
+	public void setSize_val(String size_val) {
+		this.size_val = size_val;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	public String getIs_good_str() {
+		return is_good_str;
+	}
+	public void setIs_good_str(String is_good_str) {
+		this.is_good_str = is_good_str;
+	}
 	public int getRet_num() {
 		return ret_num;
 	}

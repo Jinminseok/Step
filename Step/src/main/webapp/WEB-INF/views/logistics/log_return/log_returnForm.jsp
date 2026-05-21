@@ -214,11 +214,23 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 				    <td style="color:var(--gray3);">${c.reason}</td>
 				    <td><span class="bdg bdg-amber">쇼핑몰완료</span></td>
 				    <td>
-				      <button type="button" class="btn btn-blue btn-xs" 
-				              onclick="openClaimModal('${c.ret_num}', '${c.order_num}', '${c.tp}', '${c.prod_name}', '${c.recv_name}', '${c.recv_phone}', '${c.recv_addr}')">
-				        검수 및 처리
-				      </button>
-				    </td>
+					  <button type="button" class="btn btn-blue btn-xs" 
+					          data-retnum="${c.ret_num}"
+					          data-ordernum="${c.order_num}"
+					          data-tp="${c.tp}"
+					          data-prodname="${c.prod_name}"
+					          data-color="${c.color}"
+					          data-sizeval="${c.size_val}"
+					          data-recvname="${c.recv_name}"
+					          data-recvphone="${c.recv_phone}"
+					          data-recvaddr="${c.recv_addr}"
+					          data-reason="${c.reason}"
+					          data-retnote="${c.ret_note}"
+					          data-isgood="${c.is_good_str}"
+					          onclick="openClaimModal(this)">
+					    검수 및 처리
+					  </button>
+					</td>
 				  </tr>
 				</c:forEach>
               <c:if var="isEmpty" test="${empty claimList}">
@@ -282,61 +294,95 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
       <button class="modal-x" onclick="closeModal()">✕</button>
     </div>
     
-	    <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
-	      
-	      <div class="sec-title">👤 수령자(주문자) 배송 정보</div>
-	      <div class="dr"><div class="dk">수령인</div><div class="dv" id="m-recvName"></div></div>
-	      <div class="dr"><div class="dk">연락처</div><div class="dv" id="m-recvPhone"></div></div>
-	      <div class="dr"><div class="dk">반송 주소</div><div class="dv" id="m-recvAddr"></div></div>
-	      
-	      <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
-	      
-	      <div class="sec-title">👟 검수 대상 상품 정보</div>
-	      <div class="dr"><div class="dk">접수/주문번호</div><div class="dv" id="m-nums"></div></div>
-	      <div class="dr"><div class="dk">상품명</div><div class="dv" id="m-prodName" style="font-weight:700;"></div></div>
-	
-	      <div id="exchange-delivery-area" style="display:none; background: #f8faff; padding: 15px; border-radius: 8px; border: 1px solid #e1e8f5; margin-top: 10px;">
-	        <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px;">🚚 교환 상품 재출고 정보 (필수)</div>
-	        
-	        <div class="dr" style="margin-bottom: 8px;">
-	          <div class="dk" style="font-size: 12px; width: 80px;">택배사</div>
-	          <div class="dv">
-	            <select id="m-courier-sel" class="modal-input" style="width: 100%; padding: 6px; cursor:pointer;">
-	              <option value="">택배사 선택</option>
-	              <option value="CJ대한통운">CJ대한통운</option>
-	              <option value="롯데택배">롯데택배</option>
-	              <option value="한진택배">한진택배</option>
-	              <option value="우체국택배">우체국택배</option>
-	            </select>
-	          </div>
-	        </div>
-	
-	        <div class="dr">
-	          <div class="dk" style="font-size: 12px; width: 80px;">송장번호</div>
-	          <div class="dv" style="display:flex; gap:6px;">
-	            <input type="text" id="m-invoice-input" class="modal-input" placeholder="우측 버튼을 눌러주세요" readonly style="flex:1; background:#fff; border:1px solid var(--gray5); padding:6px;">
-	            <button type="button" class="btn btn-outline btn-xs" onclick="generateExchangeInvoice()" style="white-space:nowrap;">번호 생성</button>
-	          </div>
-	        </div>
-	      </div>
-	
-	      <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
-	      
-	      <div class="sec-title">📝 물류 담당자 특이사항 기록 (특수문자 허용)</div>
-	      <div style="margin-top:6px;">
-	        <textarea id="m-memo" style="width:100%; height:80px; padding:10px; border:1px solid var(--gray5); border-radius:6px; resize:none; font-size:13px;" placeholder="물류창고 상품 입고 상태 및 폐기 사유 기입..."></textarea>
-	      </div>
-	      
-	    </div>
-	    
-	    <div class="modal-foot" style="display:flex; gap:10px; justify-content:flex-end;">
-	      <button class="btn btn-outline" onclick="closeModal()">닫기</button>
-	      <button class="btn btn-red" onclick="submitProcess('DISPOSAL')">🗑️ 불량 폐기 처리</button>
-	      <button class="btn btn-green" onclick="submitProcess('RECOVERY')">✨ 양품 복구 입고</button>
-	    </div>
-	    
-	  </div>
-	</div>
+    <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+      
+      <div class="sec-title">👤 수령자(주문자) 배송 정보</div>
+      <div class="dr">
+        <div class="dk">수령인</div>
+        <div class="dv" id="m-recvName"></div>
+      </div>
+      <div class="dr">
+        <div class="dk">연락처</div>
+        <div class="dv" id="m-recvPhone"></div>
+      </div>
+      <div class="dr">
+        <div class="dk">반송 주소</div>
+        <div class="dv" id="m-recvAddr"></div>
+      </div>
+      
+      <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
+      
+      <div class="sec-title">👟 검수 대상 상품 및 클레임 정보</div>
+      <div class="dr">
+        <div class="dk">접수/주문번호</div>
+        <div class="dv" id="m-nums"></div>
+      </div>
+      <div class="dr">
+        <div class="dk">상품명</div>
+        <div class="dv" id="m-prodName" style="font-weight:700;"></div>
+      </div>
+      <div class="dr">
+        <div class="dk">색상 / 사이즈</div>
+        <div class="dv" id="m-option"></div>
+      </div>
+      
+      <hr style="border:0; border-top:1px dashed var(--gray6); margin:10px 0;">
+      
+      <div class="dr">
+        <div class="dk">고객 신청사유</div>
+        <div class="dv" id="m-reason" style="color:var(--red); font-weight:600;"></div>
+      </div>
+      <div class="dr">
+        <div class="dk">쇼핑몰 판정</div>
+        <div class="dv" id="m-isGood" style="color:var(--blue); font-weight:600;"></div>
+      </div>
+      <div class="dr" style="align-items:flex-start;">
+        <div class="dk" style="margin-top:4px;">쇼핑몰 전달메모</div>
+        <div class="dv" id="m-retNote" style="background:#f4f6fa; padding:10px; border-radius:6px; font-size:12.5px; line-height:1.4; white-space:pre-wrap; width:100%;"></div>
+      </div>
+
+      <div id="exchange-delivery-area" style="display:none; background: #f8faff; padding: 15px; border-radius: 8px; border: 1px solid #e1e8f5; margin-top: 10px;">
+        <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px;">🚚 교환 상품 재출고 정보 (필수)</div>
+        
+        <div class="dr" style="margin-bottom: 8px;">
+          <div class="dk" style="font-size: 12px; width: 80px;">택배사</div>
+          <div class="dv">
+            <select id="m-courier-sel" class="modal-input" style="width: 100%; padding: 6px; cursor:pointer;">
+              <option value="">택배사 선택</option>
+              <option value="CJ대한통운">CJ대한통운</option>
+              <option value="롯데택배">롯데택배</option>
+              <option value="한진택배">한진택배</option>
+              <option value="우체국택배">우체국택배</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dr">
+          <div class="dk" style="font-size: 12px; width: 80px;">송장번호</div>
+          <div class="dv" style="display:flex; gap:6px;">
+            <input type="text" id="m-invoice-input" class="modal-input" placeholder="우측 버튼 클릭" readonly style="flex:1; background:#fff; border:1px solid var(--gray5); padding:6px;">
+            <button type="button" class="btn btn-outline btn-xs" onclick="generateExchangeInvoice()" style="white-space:nowrap;">번호 생성</button>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
+      
+      <div class="sec-title">📝 물류 담당자 특이사항 기록 (특수문자 허용)</div>
+      <div style="margin-top:6px;">
+        <textarea id="m-memo" style="width:100%; height:80px; padding:10px; border:1px solid var(--gray5); border-radius:6px; resize:none; font-size:13px;" placeholder="물류창고 상품 입고 상태 및 폐기 사유 기입..."></textarea>
+      </div>
+      
+    </div>
+    
+    <div class="modal-foot" style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn btn-red" onclick="submitProcess('DISPOSAL')">🗑️ 불량 폐기 처리</button>
+      <button class="btn btn-green" onclick="submitProcess('RECOVERY')">✨ 양품 복구 입고</button>
+    </div>
+    
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -345,13 +391,15 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 const historyData = [
   <c:forEach var="h" items="${historyList}">
   {
-    ret_num: ${h.ret_num},
-    order_num: ${h.order_num},
+    ret_num: '${h.ret_num}',
+    order_num: '${h.order_num}',
     tp: '${h.tp == 1 ? "반품" : "교환"}',
-    prod_name: '${h.prod_name}',
-    proc_type: '${h.reason}', // 🎯 DAO에서 디코딩해온 '양품복구'/'불량폐기' 문자열이 들어갑니다!
+    // 🚨 홑따옴표나 특수문자가 들어와도 깨지지 않게 백틱과 c:out 조합!
+    prod_name: `<c:out value="${h.prod_name}" escapeXml="true"/>`,
+    proc_type: '${h.reason}', 
     invoice: '${empty h.invoice_no ? "-" : h.invoice_no}',
-    memo: `${h.ret_note}`
+    // 🚨 관리자 메모의 엔터(줄바꿈)나 따옴표도 완벽하게 무력화시켜서 담습니다!
+    memo: `<c:out value="${h.ret_note}" escapeXml="true"/>`
   },
   </c:forEach>
 ];
@@ -370,32 +418,68 @@ function switchTab(tab) {
 }
 
 // 팝업 데이터 셋업 및 오픈
-function openClaimModal(retNum, orderNum, tp, prodName, recvName, recvPhone, recvAddr) {
-    // 폼 데이터 세팅 (Hidden 필드)
-    document.getElementById('f-retNum').value = retNum;
-    document.getElementById('f-orderNum').value = orderNum;
-    document.getElementById('f-tp').value = tp;
+function openClaimModal(btn) {
+    // 1. 브라우저가 강제 소문자로 바꾼 dataset에서 값 추출 (대소문자 미스매치 완전 차단)
+    const retnum = btn.dataset.retnum;
+    const ordernum = btn.dataset.ordernum;
+    const tp = btn.dataset.tp;
+    const prodname = btn.dataset.prodname;
+    const color = btn.dataset.color;
+    const sizeval = btn.dataset.sizeval;
+    const recvname = btn.dataset.recvname;
+    const recvphone = btn.dataset.recvphone;
+    const recvaddr = btn.dataset.recvaddr;
+    const reason = btn.dataset.reason;
+    const retnote = btn.dataset.retnote;
+    const isgood = btn.dataset.isgood;
+
+    // 2. 서버 전송용 hidden 폼 바인딩
+    if(document.getElementById('f-retNum')) document.getElementById('f-retNum').value = retnum;
+    if(document.getElementById('f-orderNum')) document.getElementById('f-orderNum').value = ordernum;
+    if(document.getElementById('f-tp')) document.getElementById('f-tp').value = tp;
     
-    // 모달 상단 정보 세팅
-    document.getElementById('m-title').innerText = (tp === '1') ? "🔄 [반품] 상세 검수 및 재고 처리" : "🔄 [교환] 상세 검수 및 교환 출고";
-    document.getElementById('m-recvName').innerText = recvName;
-    document.getElementById('m-recvPhone').innerText = recvPhone;
-    document.getElementById('m-recvAddr').innerText = recvAddr;
-    document.getElementById('m-nums').innerHTML = `접수번호: <b>${retNum}</b> / 주문번호: <b>#${orderNum}</b>`;
-    document.getElementById('m-prodName').innerText = prodName;
-    
-    // 🎯 [교환 전용 구역] tp가 2(교환)일 때만 배송 정보 입력창을 보여줍니다.
-    const dlvArea = document.getElementById('exchange-delivery-area');
-    if(tp === '2') {
-        dlvArea.style.display = 'block'; // 교환이면 표시
-    } else {
-        dlvArea.style.display = 'none';  // 반품이면 숨김
+    // 3. 모달 상단 타이틀 세팅
+    if(document.getElementById('m-title')) {
+        document.getElementById('m-title').innerText = (tp == 1) ? "🔄 [반품] 상세 검수 및 재고 처리" : "🔄 [교환] 상세 검수 및 교환 출고";
     }
     
-    // 모달 내 입력값 초기화
-    document.getElementById('m-courier-sel').value = "";
-    document.getElementById('m-invoice-input').value = "";
-    document.getElementById('m-memo').value = "";
+    // 4. 수령자 배송 정보 주입 (짤림 없이 깔끔하게 대입)
+    if(document.getElementById('m-recvName')) document.getElementById('m-recvName').innerText = recvname;
+    if(document.getElementById('m-recvPhone')) document.getElementById('m-recvPhone').innerText = recvphone;
+    if(document.getElementById('m-recvAddr')) document.getElementById('m-recvAddr').innerText = recvaddr;
+    
+    // 5. 🎯 [긴급 수정 구역] 누락되던 껍데기 구역에 강제 값 주입!
+    if(document.getElementById('m-nums')) {
+        document.getElementById('m-nums').innerHTML = `접수번호: <b style="color:var(--navy); font-family:'DM Mono';">\${retnum}</b> / 주문번호: <b style="color:var(--navy); font-family:'DM Mono';">#\${ordernum}</b>`;
+    }
+    if(document.getElementById('m-prodName')) {
+        document.getElementById('m-prodName').innerText = prodname;
+    }
+    if(document.getElementById('m-option')) {
+        document.getElementById('m-option').innerText = `\${color} / \${sizeval}mm`;
+    }
+    
+    // 6. 하단 쇼핑몰 정보 주입 (이미 잘 나오던 구역 안전장치)
+    if(document.getElementById('m-reason')) document.getElementById('m-reason').innerText = reason;
+    if(document.getElementById('m-isGood')) document.getElementById('m-isGood').innerText = isgood;
+    if(document.getElementById('m-retNote')) {
+        document.getElementById('m-retNote').innerText = (retnote && retnote.trim() !== "") ? retnote : "쇼핑몰에서 전달한 메모가 없습니다.";
+    }
+
+    // 7. 교환 전용 출고 폼 토글 제어
+    const dlvArea = document.getElementById('exchange-delivery-area');
+    if(dlvArea) {
+        if(tp == 2) {
+            dlvArea.style.setProperty("display", "block", "important");
+        } else {
+            dlvArea.style.setProperty("display", "none", "important");
+        }
+    }
+    
+    // 8. 입력 폼 초기화 및 모달 활성화
+    if(document.getElementById('m-courier-sel')) document.getElementById('m-courier-sel').value = "";
+    if(document.getElementById('m-invoice-input')) document.getElementById('m-invoice-input').value = "";
+    if(document.getElementById('m-memo')) document.getElementById('m-memo').value = "";
     
     document.getElementById('claimModal').classList.add('open');
 }
@@ -472,9 +556,9 @@ function renderHistTable() {
     
     let html = '';
     pageData.forEach(h => {
-        // 🎯 스타일 배지 컬러 분기 처리 완벽 수정
-        const procBdg = h.proc_type === '양품복구' ? 'bdg-green' : 'bdg-red';
-        const tpBdg = h.tp === '반품' ? 'bdg-red' : 'bdg-blue';
+        // 🎯 완벽 수정: DAO에서 디코딩해온 글자 그대로 비교해서 녹색/빨간색 배지를 입힙니다!
+        const procBdg = (h.proc_type === '양품복구') ? 'bdg-green' : 'bdg-red';
+        const tpBdg = (h.tp === '반품') ? 'bdg-red' : 'bdg-blue';
         
         html += `<tr>
             <td>\${h.ret_num}</td>

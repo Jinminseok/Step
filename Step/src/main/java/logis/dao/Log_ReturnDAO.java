@@ -23,40 +23,45 @@ public class Log_ReturnDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         
-        // 🎯 쇼핑몰 관리자가 완료한 상태(RET_STATUS = 3)인 것만 타겟팅하여 가져옵니다.
+        // 🎯 핵심: po.SIZE_VAL, po.COLOR, r.IS_GOOD 데이터까지 싹 다 SELECT 해와야 합니다!
         String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.PROD_NUM, r.OPT_NUM, r.USER_NUM, r.TP, r.REASON, r.RET_NOTE, r.RET_STATUS, "
-                   + "       p.PROD_NAME, o.RECV_NAME, o.RECV_PHONE, (o.RECV_ADDR1 || ' ' || o.RECV_ADDR2) AS RECV_ADDR "
-                   + "FROM RETURNS r "
-                   + "JOIN ORDERS o ON r.ORDER_NUM = o.ORDER_NUM "
-                   + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                   + "WHERE r.RET_STATUS = 3 " 
-                   + "ORDER BY r.RET_NUM DESC";
-        try {
-            conn = DBUtil.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            while(rs.next()) {
-                Log_ReturnVO vo = new Log_ReturnVO();
-                vo.setRet_num(rs.getInt("RET_NUM"));
-                vo.setOrder_num(rs.getInt("ORDER_NUM"));
-                vo.setProd_num(rs.getInt("PROD_NUM"));
-                vo.setOpt_num(rs.getInt("OPT_NUM"));
-                vo.setUser_num(rs.getInt("USER_NUM"));
-                vo.setTp(rs.getInt("TP"));
-                vo.setReason(rs.getString("REASON"));
-                vo.setRet_note(rs.getString("RET_NOTE"));
-                vo.setRet_status(rs.getInt("RET_STATUS"));
-                vo.setProd_name(rs.getString("PROD_NAME"));
-                vo.setRecv_name(rs.getString("RECV_NAME"));
-                vo.setRecv_phone(rs.getString("RECV_PHONE"));
-                vo.setRecv_addr(rs.getString("RECV_ADDR"));
-                list.add(vo);
-            }
-        } finally {
-            DBUtil.executeClose(rs, pstmt, conn);
-        }
-        return list;
-    }
+                + "       DECODE(r.IS_GOOD, 1, '양품', 2, '불량', '상태미상') AS IS_GOOD_STR, "
+                + "       p.PROD_NAME AS PROD_NAME, po.SIZE_VAL AS SIZE_VAL, po.COLOR AS COLOR, "
+                + "       o.RECV_NAME AS RECV_NAME, o.RECV_PHONE AS RECV_PHONE, (o.RECV_ADDR1 || ' ' || o.RECV_ADDR2) AS RECV_ADDR "
+                + "FROM RETURNS r "
+                + "JOIN ORDERS o ON r.ORDER_NUM = o.ORDER_NUM "
+                + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
+                + "JOIN PROD_OPTIONS po ON r.OPT_NUM = po.OPT_NUM "
+                + "WHERE r.RET_STATUS = 3 " // 🚨 DB의 상태값과 형님의 데이터가 일치하는지 꼭 확인하셔야 합니다!
+                + "ORDER BY r.RET_NUM DESC";
+     try {
+         conn = DBUtil.getConnection();
+         pstmt = conn.prepareStatement(sql);
+         rs = pstmt.executeQuery();
+         while(rs.next()) {
+             Log_ReturnVO vo = new Log_ReturnVO();
+             vo.setRet_num(rs.getInt("RET_NUM"));
+             vo.setOrder_num(rs.getInt("ORDER_NUM"));
+             vo.setTp(rs.getInt("TP"));
+             vo.setReason(rs.getString("REASON"));
+             vo.setRet_note(rs.getString("RET_NOTE"));
+             vo.setIs_good_str(rs.getString("IS_GOOD_STR")); 
+             vo.setProd_name(rs.getString("PROD_NAME"));
+             
+             // 🚨 형님의 Log_ReturnVO 멤버 변수가 소문자 size_val, color 인지 철저하게 매칭 검증
+             vo.setSize_val(rs.getString("SIZE_VAL"));       
+             vo.setColor(rs.getString("COLOR"));             
+             
+             vo.setRecv_name(rs.getString("RECV_NAME"));
+             vo.setRecv_phone(rs.getString("RECV_PHONE"));   
+             vo.setRecv_addr(rs.getString("RECV_ADDR"));
+             list.add(vo);
+         }
+     } finally {
+         DBUtil.executeClose(rs, pstmt, conn);
+     }
+     return list;
+ }
 
     // ── [2] 물류 관리자가 최종 완결 지은 이력 목록 조회 (양품/불량 텍스트 직접 매핑) ──
     public List<Log_ReturnVO> getClaimHistoryList() throws Exception {
@@ -65,13 +70,13 @@ public class Log_ReturnDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         
-        // 🎯 후속 버그 방지를 위해 오라클 자체에서 DECODE로 '양품복구' / '불량폐기' 글자를 박아서 가져옵니다.
+        // 🎯 물류 완료 상태인 4(양품복구)와 5(불량폐기)만 깔끔하게 긁어옵니다.
         String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.TP, r.RET_NOTE, r.RET_STATUS, p.PROD_NAME, "
-                   + "       DECODE(r.RET_STATUS, 3, '양품복구', 4, '불량폐기', '검수중') AS PROC_TYPE, "
+                   + "       DECODE(r.RET_STATUS, 4, '양품복구', 5, '불량폐기', '검수중') AS PROC_TYPE, "
                    + "       (SELECT d.COURIER || ' ' || d.INVOICE_NO FROM DELIVERY d WHERE d.ORDER_NUM = r.ORDER_NUM AND ROWNUM = 1) AS INVOICE_NO "
                    + "FROM RETURNS r "
                    + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
-                   + "WHERE r.RET_STATUS IN (3, 4) "
+                   + "WHERE r.RET_STATUS IN (4, 5) "
                    + "ORDER BY r.RET_NUM DESC";
         try {
             conn = DBUtil.getConnection();
@@ -85,8 +90,7 @@ public class Log_ReturnDAO {
                 vo.setRet_note(rs.getString("RET_NOTE"));
                 vo.setRet_status(rs.getInt("RET_STATUS"));
                 vo.setProd_name(rs.getString("PROD_NAME"));
-                // 🌟 중요: 이력 조회 글자가 깨지거나 고정되던 버그 완벽 차단!
-                vo.setReason(rs.getString("PROC_TYPE")); // VO의 임시 스트링 필드로 활용하거나 별도 세팅 가능 (JSP 매핑용)
+                vo.setReason(rs.getString("PROC_TYPE")); // 매핑 바인딩용 컬럼 우회 활용
                 vo.setInvoice_no(rs.getString("INVOICE_NO"));
                 list.add(vo);
             }
@@ -96,7 +100,7 @@ public class Log_ReturnDAO {
         return list;
     }
 
-    // ── [3] 🎯 형님의 WMS 철학을 반영한 재고 증감 연산 트랜잭션 ──
+    // ── [3] 반품/교환 최종 검수 처리 트랜잭션 ──
     public void processClaimTransaction(int retNum, int orderNum, int tp, String processType, String courier, String invoiceNo, String adminMemo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmtRet = null;
@@ -105,33 +109,33 @@ public class Log_ReturnDAO {
         
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // 트랜잭션 락 온!
+            conn.setAutoCommit(false); // 트랜잭션 시작
 
-            int stockDelta = 0;
-            int nextStatus = 3; // 기본값 3: 양품복구 완료 상태
+            int stockDelta = 0; // 물류 검수 시점의 재고 변동값
+            int nextStatus = 4; // 기본값 4: 물류 양품복구 완료 상태
 
-            // 🎯 형님이 말씀하신 WMS 전용 완벽 재고 가감 공식 적용 구역
+            // 🎯 형님의 WMS 철학과 주문 시점(-1)을 반영한 완벽 재고 가감 공식
             if (tp == 1) { 
-                // 🔄 [반품 상품]일 때
+                // 🔄 [반품 상품] 일 때
                 if (processType.equals("RECOVERY")) {
-                    stockDelta = 1;     // 양품이면 재고 +1
-                    nextStatus = 3;
+                    stockDelta = 1;     // ✨ 양품이면 창고에 다시 채우기 (+1) -> 최종 누적재고: 0
+                    nextStatus = 4;     // 양품복구완료(4)
                 } else if (processType.equals("DISPOSAL")) {
-                    stockDelta = -1;    // 불량이면 재고 -1
-                    nextStatus = 4;
+                    stockDelta = 0;     // 🗑️ 불량이 오면 창고에 넣을 게 없음 (0) -> 주문할 때 깎인 상태 그대로 최종 누적재고: -1
+                    nextStatus = 5;     // 불량폐기완료(5)
                 }
             } else if (tp == 2) { 
-                // 🔄 [교환 상품]일 때
+                // 🔄 [교환 상품] 일 때
                 if (processType.equals("RECOVERY")) {
-                    stockDelta = 0;     // 양품이면 재고 변동 없음 (0)
-                    nextStatus = 3;
+                    stockDelta = 0;     // ✨ 양품 반입(+1) + 새 상품 출고(-1) = 변동 없음 (0) -> 최종 누적재고: -1
+                    nextStatus = 4;     // 양품복구완료(4)
                 } else if (processType.equals("DISPOSAL")) {
-                    stockDelta = -1;    // 불량이 오면 재고 -1
-                    nextStatus = 4;
+                    stockDelta = -1;    // 🗑️ 불량 반입(0) + 새 상품 출고(-1) = 재고 차감 (-1) -> 최종 누적재고: -2
+                    nextStatus = 5;     // 불량폐기완료(5)
                 }
             }
 
-            // 1. RETURNS 테이블에 최종 결과 및 메모 업뎃
+            // 1. RETURNS 테이블 상태를 완료(4 또는 5)로 업데이트하여 대기실에서 아웃!
             String updateRetSql = "UPDATE RETURNS SET RET_STATUS = ?, RET_NOTE = ? WHERE RET_NUM = ?";
             pstmtRet = conn.prepareStatement(updateRetSql);
             pstmtRet.setInt(1, nextStatus);
@@ -139,7 +143,7 @@ public class Log_ReturnDAO {
             pstmtRet.setInt(3, retNum);
             pstmtRet.executeUpdate();
 
-            // 2. 창고 실재고(STOCK) 증감 타격 (0일 때는 쿼리 안 날리고 스킵해서 안전성 확보)
+            // 2. 창고 실재고(STOCK) 증감 타격 (변동치인 stockDelta가 0이 아닐 때만 오라클에 레이저 사격)
             if (stockDelta != 0) {
                 String updateStockSql = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ? "
                                      + "WHERE OPT_NUM = (SELECT OPT_NUM FROM RETURNS WHERE RET_NUM = ?)";
@@ -149,18 +153,18 @@ public class Log_ReturnDAO {
                 pstmtStock.executeUpdate();
             }
 
-            // 3. 교환 처리 시에만 택배사 정보 및 랜덤 송장 번호를 DELIVERY 테이블에 등록!
+            // 3. 교환 처리 시 기존 DELIVERY 레코드에 새 송장 번호 UPDATE 
             if (tp == 2 && courier != null && !courier.trim().isEmpty()) {
-                String insertDlvSql = "INSERT INTO DELIVERY (DLV_NUM, ORDER_NUM, COURIER, INVOICE_NO, DLV_STATUS) "
-                                    + "VALUES (DELIVERY_SEQ.NEXTVAL, ?, ?, ?, 1)";
-                pstmtDlv = conn.prepareStatement(insertDlvSql);
-                pstmtDlv.setInt(1, orderNum);
-                pstmtDlv.setString(2, courier);
-                pstmtDlv.setString(3, invoiceNo);
+                String updateDlvSql = "UPDATE DELIVERY SET COURIER = ?, INVOICE_NO = ?, DLV_STATUS = 1 WHERE ORDER_NUM = ?";
+                pstmtDlv = conn.prepareStatement(updateDlvSql);
+                pstmtDlv.setString(1, courier);
+                pstmtDlv.setString(2, invoiceNo);
+                pstmtDlv.setInt(3, orderNum);
                 pstmtDlv.executeUpdate();
             }
 
-            conn.commit(); // 전 과정 성공 시 오라클 최종 커밋!
+            conn.commit(); // 모든 연산 무사 통과 시 오라클 최종 저장!
+            System.out.println("✅ [재고 동기화 완결] 구분: " + (tp==1?"반품":"교환") + " | 판정: " + processType + " | 이번 변동치: " + stockDelta);
             
         } catch (Exception e) {
             if (conn != null) conn.rollback();
