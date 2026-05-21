@@ -182,7 +182,7 @@
                     <%-- 추천 상품 데이터 --%>
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
                         <c:forEach var="rec" items="${recommendList}">
-                            <div style="cursor: pointer; text-align: center;" onclick="location.href='${pageContext.request.contextPath}/shop/product/productDetail.do?prod_num=${rec.prod_num}'">
+                            <div style="cursor: pointer; text-align: center;" onclick="location.href='${pageContext.request.contextPath}/shop/product/productdetail.do?prod_num=${rec.prod_num}'">
                                 <div style="width: 100%; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; overflow: hidden; background: #fff;">
                                     <img src="${pageContext.request.contextPath}/upload/${rec.prod_img_url}" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>

@@ -28,10 +28,9 @@ public class UserProductDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			sql = """
-					SELECT p.prod_num, p.prod_name, p.sku, p.prod_price, p.sale_rate, p.prod_text, b.brand_name
-					FROM products p JOIN brands b ON p.brand_num = b.brand_num WHERE p.prod_num = ?
-					""";
+			sql = "SELECT p.prod_num, p.prod_name, p.sku, p.prod_price, p.sale_rate, p.prod_text, "
+			    + "p.cat_num, p.brand_num, p.gender, b.brand_name "
+			    + "FROM products p JOIN brands b ON p.brand_num = b.brand_num WHERE p.prod_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
 			rs = pstmt.executeQuery();
@@ -44,6 +43,9 @@ public class UserProductDAO {
 				vo.setSale_rate(rs.getInt("sale_rate"));
 				vo.setBrand_name(rs.getString("brand_name"));
 				vo.setProd_text(rs.getString("prod_text"));
+				vo.setCat_num(rs.getInt("cat_num"));
+				vo.setBrand_num(rs.getInt("brand_num"));
+				vo.setGender(rs.getInt("gender"));
 			}
 		} finally {
 			DBUtil.executeClose(rs, pstmt, conn);

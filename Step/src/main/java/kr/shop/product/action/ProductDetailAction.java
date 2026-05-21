@@ -54,7 +54,7 @@ public class ProductDetailAction implements Action {
 
 		request.setAttribute("salePrice", salePrice);
 
-		// 추천 상품 리스트
+		// 추천 상품 리스트 세팅 (같은 카테고리, 브랜드 중 랜덤 4개)
 		List<AdminProductVO> recommendList = dao.getRecommendProducts(product.getCat_num(), product.getBrand_num(), prod_num);
 		request.setAttribute("recommendList", recommendList);
 
@@ -64,21 +64,21 @@ public class ProductDetailAction implements Action {
 		boolean isLogin = (user_num != null);
 		request.setAttribute("isLogin", isLogin);
 
-		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인 
+		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인
 		boolean isWished = false;
 		boolean hasPurchased = false;
 		
 		if(isLogin) {
-			// 1. 이 회원이 이 상품을 찜했는지 검사
+			// 회원이 상품을 찜했는지 검사
 			UserWishListDAO wishDao = UserWishListDAO.getInstance();
 			isWished = wishDao.checkWish(user_num, prod_num);
 			
-			// 2. 이 회원이 이 상품을 구매 했는지 검사
+			// 회원이 상품을 구매했는지 검사
 			UserOrderDAO orderDao = UserOrderDAO.getInstance();
 			hasPurchased = orderDao.checkUserPurchase(user_num, prod_num);
 		}
 		
-		// 검사 결과를 JSP로 전송
+		// JSP로 반환
 		request.setAttribute("isWished", isWished);
 		request.setAttribute("hasPurchased", hasPurchased);
 
