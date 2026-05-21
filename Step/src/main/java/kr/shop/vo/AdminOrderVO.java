@@ -40,7 +40,35 @@ public class AdminOrderVO extends AdminBaseVO {
 		private String opt_info;           // 옵션 (사이즈/컬러)
 		private int    item_count;         // 주문 상품 수
 		
-	
+		// ✅ 리뷰 관련 필드 추가
+		private int    review_num;
+		private int    review_rating;
+		private String review_content;
+		
+	public int getReview_num() {
+			return review_num;
+		}
+
+		public void setReview_num(int review_num) {
+			this.review_num = review_num;
+		}
+
+		public int getReview_rating() {
+			return review_rating;
+		}
+
+		public void setReview_rating(int review_rating) {
+			this.review_rating = review_rating;
+		}
+
+		public String getReview_content() {
+			return review_content;
+		}
+
+		public void setReview_content(String review_content) {
+			this.review_content = review_content;
+		}
+
 	public String getOrder_created_at() {
 			return order_created_at;
 		}
