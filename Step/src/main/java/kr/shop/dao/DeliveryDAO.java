@@ -266,6 +266,25 @@ public class DeliveryDAO {
 		} finally { DBUtil.executeClose(rs, pstmt, conn); }
 		return list;
 	}
+	// 주문번호로 배송번호(dlvNum) 조회
+	public int getDlvNumByOrderNum(int orderNum) throws Exception {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int dlvNum = 0;
+	    
+	    try {
+	        conn = DBUtil.getConnection();
+	        String sql = "SELECT DLV_NUM FROM DELIVERY WHERE ORDER_NUM = ?";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, orderNum);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) dlvNum = rs.getInt("DLV_NUM");
+	    } finally {
+	        DBUtil.executeClose(rs, pstmt, conn);
+	    }
+	    return dlvNum;
+	}
 }
 
 

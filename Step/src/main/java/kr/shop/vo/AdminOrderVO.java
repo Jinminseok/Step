@@ -36,7 +36,27 @@ public class AdminOrderVO extends AdminBaseVO {
 		private String Opt_info;
 		private int qty;
 	
+		private String order_created_at;  // 주문일자
+		private String opt_info;           // 옵션 (사이즈/컬러)
+		private int    item_count;         // 주문 상품 수
+		
 	
+	public String getOrder_created_at() {
+			return order_created_at;
+		}
+
+		public void setOrder_created_at(String order_created_at) {
+			this.order_created_at = order_created_at;
+		}
+
+		public int getItem_count() {
+			return item_count;
+		}
+
+		public void setItem_count(int item_count) {
+			this.item_count = item_count;
+		}
+
 	public String getOpt_info() {
 			return Opt_info;
 		}

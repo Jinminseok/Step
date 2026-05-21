@@ -274,8 +274,15 @@ public class UserDAO {
 			conn = DBUtil.getConnection();
 			
 			String sql = "SELECT o.ORDER_NUM, o.PAY_PRICE, o.ORDER_STATUS, "
-			           + "       (SELECT p.PROD_NAME FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_NAME, "
-			           + "       (SELECT img.PROD_IMG_URL FROM ORDER_ITEMS oi JOIN PROD_IMGS img ON oi.PROD_NUM = img.PROD_NUM WHERE oi.ORDER_NUM = o.ORDER_NUM AND img.IS_MAIN = 'Y' AND ROWNUM = 1) AS PROD_IMG_URL "
+			           + "  TO_CHAR(o.ORDER_CREATED_AT, 'YYYY.MM.DD') AS ORDER_CREATED_AT, "
+			           + "  (SELECT p.PROD_NAME FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM "
+			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_NAME, "
+			           + "  (SELECT img.PROD_IMG_URL FROM ORDER_ITEMS oi JOIN PROD_IMGS img ON oi.PROD_NUM = img.PROD_NUM "
+			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND img.IS_MAIN = 'Y' AND ROWNUM = 1) AS PROD_IMG_URL, "
+			           + "  (SELECT po.SIZE_VAL || 'mm / ' || po.COLOR FROM ORDER_ITEMS oi "
+			           + "   JOIN PROD_OPTIONS po ON oi.OPT_NUM = po.OPT_NUM "
+			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS OPT_INFO, "
+			           + "  (SELECT COUNT(*) FROM ORDER_ITEMS oi WHERE oi.ORDER_NUM = o.ORDER_NUM) AS ITEM_COUNT "
 			           + "FROM ORDERS o "
 			           + "WHERE o.USER_NUM = ? "
 			           + "ORDER BY o.ORDER_NUM DESC";
@@ -291,6 +298,9 @@ public class UserDAO {
 				order.setOrder_status(rs.getInt("ORDER_STATUS"));
 				order.setProd_name(rs.getString("PROD_NAME"));
 				order.setProd_img_url(rs.getString("PROD_IMG_URL")); 
+				order.setOrder_created_at(rs.getString("ORDER_CREATED_AT"));
+				order.setOpt_info(rs.getString("OPT_INFO"));
+				order.setItem_count(rs.getInt("ITEM_COUNT"));
 				
 				list.add(order);
 			}
