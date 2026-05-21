@@ -29,7 +29,7 @@ public class UserStoreListAction implements Action{
         request.setAttribute("brandList", brandList); // 주석 해제 및 담기 완료!
         
         // 4. 매장 찾기 JSP 페이지로 포워딩
-        return "/shop/userstore/userStoreList.jsp"; 
+        return "shop/userstore/userStoreList.jsp"; 
     }
 
 }
