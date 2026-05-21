@@ -3,6 +3,9 @@ package kr.shop.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import kr.util.DBUtil;
 
@@ -90,4 +93,55 @@ public class ReviewDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
+	
+	// 상품 상세페이지 - 해당 상품의 리뷰 목록을 조회
+	public List<Map<String, Object>> getReviewListByProd(int prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Map<String, Object>> list = new ArrayList<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT r.*, u.user_name FROM REVIEWS r "
+					   + "JOIN USERS_DETAIL u ON r.user_num = u.user_num "
+					   + "WHERE r.prod_num = ? ORDER BY r.review_created_at DESC";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, prod_num);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Map<String, Object> map = new java.util.HashMap<>();
+				map.put("review_num", rs.getInt("review_num"));
+				map.put("user_name", rs.getString("user_name"));
+				map.put("rating", rs.getInt("rating"));
+				map.put("content", rs.getString("review_content"));
+				map.put("date", rs.getDate("review_created_at"));
+				list.add(map);
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return list;
+	}
+	
+	// 구매한 해당 상품에 대한 가장 최근 order_num을 가져오기
+	public Long getRecentOrderNum(long userNum, int prodNum) throws Exception {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    Long orderNum = null;
+	    try {
+	        conn = DBUtil.getConnection();
+	        String sql = "SELECT MAX(o.order_num) FROM orders o JOIN order_items oi ON o.order_num = oi.order_num "
+	                   + "WHERE o.user_num = ? AND oi.prod_num = ? AND o.order_status = 4"; // 4: 배송완료
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setLong(1, userNum);
+	        pstmt.setInt(2, prodNum);
+	        rs = pstmt.executeQuery();
+	        if(rs.next()) orderNum = rs.getLong(1);
+	    } finally {
+	        DBUtil.executeClose(rs, pstmt, conn);
+	    }
+	    return orderNum;
+	}
+	
 }

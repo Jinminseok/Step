@@ -1,6 +1,8 @@
 package kr.shop.product.action;
 
 import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.controller.Action;
 import kr.shop.dao.UserProductDAO;
 import kr.shop.dao.UserWishListDAO;
+import kr.shop.dao.ReviewDAO;
 import kr.shop.dao.UserOrderDAO;
 import kr.shop.vo.AdminProductVO;
 
@@ -78,9 +81,14 @@ public class ProductDetailAction implements Action {
 			hasPurchased = orderDao.checkUserPurchase(user_num, prod_num);
 		}
 		
+		ReviewDAO revDao = ReviewDAO.getInstance();
+		List<Map<String, Object>> reviewList = revDao.getReviewListByProd(prod_num);
+		
 		// JSP로 반환
 		request.setAttribute("isWished", isWished);
 		request.setAttribute("hasPurchased", hasPurchased);
+		request.setAttribute("reviewList", reviewList);
+		request.setAttribute("reviewCount", reviewList.size()); // 리뷰 총 개수 표시용
 
 		return "shop/product/productdetail.jsp";
 	}
