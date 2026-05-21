@@ -259,7 +259,7 @@
 				<div class="my-sub" id="my-orders">
 					<div class="tabs">
 						<div class="tab on" onclick="filterOrders(this, 0)">전체</div>
-						<div class="tab" onclick="filterOrders(this, 3)">배송중</div>
+						<div class="tab" onclick="filterOrders(this, 1)">배송대기</div>
 						<div class="tab" onclick="filterOrders(this, 4)">배송완료</div>
 					</div>
 
