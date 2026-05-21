@@ -15,10 +15,9 @@
 
 /* ══ TAB BAR ══ */
 .tab-bar{display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid var(--gray6)}
-.tab-btn{padding:10px 22px;font-size:12.5px;font-weight:700;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;display:flex;align-items:center;gap:7px}
-.tab-btn.on{color:var(--blue);border-bottom-color:var(--blue)}
-.tab-btn:hover:not(.on){color:var(--gray2)}
-.tab-cnt{color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+.tab{padding:10px 22px;font-size:12.5px;font-weight:700;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;display:flex;align-items:center;gap:7px}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.tab:hover:not(.on){color:var(--gray2)}
 
 /* ══ ALERT ══ */
 .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:8px;font-size:12.5px;line-height:1.6;border:1px solid;margin-bottom:16px}
@@ -82,14 +81,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .bdg-green{background:var(--green-lt);color:#065F46}
 .bdg-blue{background:var(--blue-lt);color:var(--blue)}
 .bdg-gray{background:var(--gray7);color:var(--gray3)}
-.bdg-purple{background:var(--purple-lt);color:var(--purple)}
-.bdg-orange{background:var(--orange-lt);color:var(--orange)}
-.bdg-teal{background:var(--teal-lt);color:var(--teal)}
-
-/* ══ TYPE CHIP ══ */
-.type-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap}
-.type-ret{background:var(--red-lt);color:#991B1B;border:1px solid #FECACA}
-.type-exc{background:var(--amber-lt);color:#92400E;border:1px solid #FCD34D}
 
 /* ══ STOCK STATUS INDICATOR ══ */
 .stock-ind{display:flex;align-items:center;gap:5px;font-size:12px}
@@ -104,30 +95,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .pg-btn:hover{border-color:var(--blue);color:var(--blue)}
 .pg-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 
-/* ══ INNER TABS (이력 탭 안) ══ */
-.inner-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--gray6);margin-bottom:14px}
-.inner-tab{padding:8px 18px;font-size:12px;font-weight:700;color:var(--gray4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px}
-.inner-tab.on{color:var(--blue);border-bottom-color:var(--blue)}
-.inner-tab:hover:not(.on){color:var(--gray2)}
-.inner-cnt{font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;color:#fff}
-
-/* ══ FILTER BAR ══ */
-.filter-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--white);border:1px solid var(--gray6);border-radius:10px;margin-bottom:14px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(15,32,68,.05)}
-.f-label{font-size:11px;font-weight:700;color:var(--gray3);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-.date-in{padding:7px 10px;border:1.5px solid var(--gray5);border-radius:6px;font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none;transition:border .15s}
-.date-in:focus{border-color:var(--blue)}
-
-/* ══ MODAL ══ */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,32,68,.48);z-index:300;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--white);width:560px;max-height:90vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,32,68,.25)}
-.modal-hdr{padding:18px 22px;border-bottom:1px solid var(--gray6);display:flex;align-items:center;justify-content:space-between;background:var(--navy)}
-.modal-title{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
-.modal-x{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;line-height:1;padding:0;transition:color .15s}
-.modal-x:hover{color:#fff}
-.modal-body{padding:22px;overflow-y:auto;flex:1}
-.modal-foot{padding:14px 22px;border-top:1px solid var(--gray6);display:flex;gap:8px;justify-content:flex-end;background:var(--bg2)}
-
 /* DETAIL ROWS */
 .dr{display:flex;padding:10px 0;border-bottom:1px solid var(--gray7)}
 .dr:last-child{border-bottom:none}
@@ -135,33 +102,16 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .dv{font-size:13px;color:var(--gray1);flex:1}
 
 /* SECTION TITLE */
-.sec-ttl{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray7);display:flex;align-items:center;gap:6px}
-.sec-ttl::before{content:'';width:3px;height:12px;background:var(--blue);border-radius:2px;display:inline-block}
-
-/* INSPECTION CARD */
-.inspect-card{border:1.5px solid var(--gray5);border-radius:8px;overflow:hidden;margin-bottom:14px}
-.inspect-hdr{padding:10px 14px;background:var(--gray7);font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em}
-.inspect-body{padding:14px}
-
-/* ACTION CONFIRM BOX */
-.action-box{border-radius:8px;padding:14px 16px;margin-top:12px;border:1.5px solid}
-.action-box-good{background:var(--green-lt);border-color:#6EE7B7}
-.action-box-bad{background:var(--red-lt);border-color:#FECACA}
-.action-box-title{font-size:12px;font-weight:700;margin-bottom:4px}
-.action-box-desc{font-size:11.5px;color:var(--gray3);line-height:1.6}
+.sec-title{font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray7);display:flex;align-items:center;gap:6px}
+.sec-title::before{content:'';width:3px;height:12px;background:var(--blue);border-radius:2px;display:inline-block}
 
 /* TOAST */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* SUMMARY PILLS */
-.pills{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.pill{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid;font-size:12px;font-weight:600}
-.pill-num{font-family:'DM Mono',monospace;font-size:16px;font-weight:700}
 </style>
 </head>
 <body>
-	<jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
+    <jsp:include page="/WEB-INF/views/common/log_header.jsp"/>
 <main class="main">
   <div class="topbar">
     <div class="breadcrumb">
@@ -173,120 +123,118 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 
   <div class="content">
     <div class="tab-bar">
-      <div class="tab-btn on" id="tab-claim-btn" onclick="switchTab('claim')">
-        🔄 접수된 클레임 처리 <span class="tab-cnt" id="claimWaitCnt">${claimList.size()}</span>
-      </div>
-      <div class="tab-btn" id="tab-hist-btn" onclick="switchTab('hist')">
-        📋 클레임 처리 이력 조회 <span class="tab-cnt tab-cnt-gray">${historyList.size()}</span>
-      </div>
+      <div class="tab on" onclick="switchTab('sec-claim', this)">접수된 클레임 처리</div>
+      <div class="tab" onclick="switchTab('sec-hist', this)">클레임 처리 이력 조회</div>
     </div>
 
-    <div id="sec-claim">
-      <div class="tbl-card">
-        <div class="tbl-top">
-          <div class="tbl-top-info">처리 대기 목록 (총 <strong>${claimList.size()}</strong>건)</div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>접수번호</th>
-                <th>주문번호</th>
-                <th>구분</th>
-                <th>상품명</th>
-                <th>신청 사유</th>
-                <th>상태</th>
-                <th>처리하기</th>
-              </tr>
-            </thead>
-            <tbody>
-              <c:forEach var="c" items="${claimList}">
-				  <tr>
-				    <td>${c.ret_num}</td>
-				    <td>#${c.order_num}</td>
-				    <td>
-				      <c:choose>
-				        <c:when test="${c.tp == 1}"><span class="bdg bdg-red">반품</span></c:when>
-				        <c:otherwise><span class="bdg bdg-blue">교환</span></c:otherwise>
-				      </c:choose>
-				    </td>
-				    <td style="text-align:left; font-weight:600;">${c.prod_name}</td>
-				    <td style="color:var(--gray3);">${c.reason}</td>
-				    <td><span class="bdg bdg-amber">쇼핑몰완료</span></td>
-				    <td>
-					  <button type="button" class="btn btn-blue btn-xs" 
-					          data-retnum="${c.ret_num}"
-					          data-ordernum="${c.order_num}"
-					          data-tp="${c.tp}"
-					          data-prodname="${c.prod_name}"
-					          data-color="${c.color}"
-					          data-sizeval="${c.size_val}"
-					          data-recvname="${c.recv_name}"
-					          data-recvphone="${c.recv_phone}"
-					          data-recvaddr="${c.recv_addr}"
-					          data-reason="${c.reason}"
-					          data-retnote="${c.ret_note}"
-					          data-isgood="${c.is_good_str}"
-					          onclick="openClaimModal(this)">
-					    검수 및 처리
-					  </button>
-					</td>
-				  </tr>
-				</c:forEach>
-              <c:if var="isEmpty" test="${empty claimList}">
-                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--gray4);">📥 처리 대기 중인 반품/교환 내역이 없습니다.</td></tr>
-              </c:if>
-            </tbody>
-          </table>
-        </div>
+  <div id="sec-claim">
+    <div style="background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
+      <form id="searchFilterForm" onsubmit="applyFilters(event)" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; flex-wrap: wrap;">
         
-        <div class="pagination-wrap">
-          <div class="page-info" id="claimPageInfo"></div>
-          <div class="page-btns" id="claimPageBtns"></div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">📅 접수 기간</span>
+          <input type="date" id="filter-start-date" style="padding: 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
+          <span style="color: var(--gray3);">~</span>
+          <input type="date" id="filter-end-date" style="padding: 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
         </div>
-      </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">🔄 구분</span>
+          <select id="filter-tp" style="padding: 5px 10px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px; cursor: pointer;">
+            <option value="ALL">전체</option>
+            <option value="1">반품</option>
+            <option value="2">교환</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">🔢 검색 조건</span>
+          <select id="filter-search-type" style="padding: 5px 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px; cursor: pointer;">
+            <option value="RET_NUM">접수 번호</option>
+            <option value="ORDER_NUM">주문 번호</option>
+            <option value="PROD_NAME">상품명</option>
+          </select>
+          <input type="text" id="filter-search-keyword" placeholder="검색어 입력..." style="width: 180px; padding: 5px 10px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
+        </div>
+
+        <div style="display: flex; gap: 6px; margin-left: auto;">
+          <button type="button" class="btn btn-gray btn-sm" onclick="resetFilters()" style="padding: 6px 12px; font-size:12.5px;">🔄 초기화</button>
+          <button type="submit" class="btn btn-blue btn-sm" style="padding: 6px 18px; font-weight: 600; font-size:12.5px;">🔍 필터 적용</button>
+        </div>
+
+      </form>
     </div>
 
-    <div id="sec-hist" style="display:none">
-      <div class="tbl-card">
-        <div class="tbl-top"><div class="tbl-top-info">최종 완결 이력 목록</div></div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>접수번호</th>
-                <th>주문번호</th>
-                <th>구분</th>
-                <th>상품명</th>
-                <th>처리방식</th>
-                <th>교환 운송장</th>
-                <th>관리자 메모</th>
-                <th>상태</th>
-              </tr>
-            </thead>
-            <tbody id="histTbody">
-              </tbody>
-          </table>
-        </div>
-        <div class="pagination-wrap">
-          <div class="page-info" id="histPageInfo"></div>
-          <div class="page-btns" id="histPageBtns"></div>
-        </div>
+    <div class="tbl-card">
+      <div class="tbl-top">
+        <div class="tbl-top-info">검색 결과 대기 목록 (총 <strong id="filteredWaitCnt">0</strong>건)</div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>접수번호</th>
+              <th>주문번호</th>
+              <th>구분</th>
+              <th>상품명</th>
+              <th>신청 사유</th>
+              <th>상태</th>
+              <th>처리하기</th>
+            </tr>
+          </thead>
+          <tbody id="claimWaitTbody">
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination-wrap" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 10px;">
+        <div class="page-info" id="claimPageInfo" style="font-size: 13px; color: var(--gray3);">1 / 1 페이지</div>
+        <div class="page-btns" id="claimPageBtns" style="display: flex; gap: 4px;"></div>
       </div>
     </div>
   </div>
+
+  <div id="sec-hist" style="display:none">
+    <div class="tbl-card">
+      <div class="tbl-top"><div class="tbl-top-info">최종 완결 이력 목록</div></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>접수번호</th>
+              <th>주문번호</th>
+              <th>구분</th>
+              <th>상품명</th>
+              <th>처리방식</th>
+              <th>교환 운송장</th>
+              <th>관리자 메모</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="histTbody">
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrap" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 10px;">
+        <div class="page-info" id="histPageInfo" style="font-size: 13px; color: var(--gray3);">1 / 1 페이지</div>
+        <div class="page-btns" id="histPageBtns" style="display: flex; gap: 4px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 </main>
 
 <form id="claimProcessForm" method="post" action="${pageContext.request.contextPath}/logistics/claim/process.do" style="display:none;">
   <input type="hidden" name="retNum" id="f-retNum">
   <input type="hidden" name="orderNum" id="f-orderNum">
   <input type="hidden" name="tp" id="f-tp">
-  <input type="hidden" name="processType" id="f-processType"> <input type="hidden" name="courier" id="f-courier">
+  <input type="hidden" name="processType" id="f-processType"> 
+  <input type="hidden" name="courier" id="f-courier">
   <input type="hidden" name="invoiceNo" id="f-invoiceNo">
   <input type="hidden" name="adminMemo" id="f-adminMemo">
 </form>
 
-	<div class="modal-bg" id="claimModal">
+<div class="modal-bg" id="claimModal">
   <div class="modal" style="width:520px;">
     
     <div class="modal-hdr">
@@ -297,47 +245,23 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
       
       <div class="sec-title">👤 수령자(주문자) 배송 정보</div>
-      <div class="dr">
-        <div class="dk">수령인</div>
-        <div class="dv" id="m-recvName"></div>
-      </div>
-      <div class="dr">
-        <div class="dk">연락처</div>
-        <div class="dv" id="m-recvPhone"></div>
-      </div>
-      <div class="dr">
-        <div class="dk">반송 주소</div>
-        <div class="dv" id="m-recvAddr"></div>
-      </div>
+      <div class="dr"><div class="dk">수령인</div><div class="dv" id="m-recvName"></div></div>
+      <div class="dr"><div class="dk">연락처</div><div class="dv" id="m-recvPhone"></div></div>
+      <div class="dr"><div class="dk">반송 주소</div><div class="dv" id="m-recvAddr"></div></div>
       
       <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
       
       <div class="sec-title">👟 검수 대상 상품 및 클레임 정보</div>
-      <div class="dr">
-        <div class="dk">접수/주문번호</div>
-        <div class="dv" id="m-nums"></div>
-      </div>
-      <div class="dr">
-        <div class="dk">상품명</div>
-        <div class="dv" id="m-prodName" style="font-weight:700;"></div>
-      </div>
-      <div class="dr">
-        <div class="dk">색상 / 사이즈</div>
-        <div class="dv" id="m-option"></div>
-      </div>
+      <div class="dr"><div class="dk">접수/주문번호</div><div class="dv" id="m-nums"></div></div>
+      <div class="dr"><div class="dk">상품명</div><div class="dv" id="m-prodName" style="font-weight:700;"></div></div>
+      <div class="dr"><div class="dk">색상 / 사이즈</div><div class="dv" id="m-option"></div></div>
       
       <hr style="border:0; border-top:1px dashed var(--gray6); margin:10px 0;">
       
-      <div class="dr">
-        <div class="dk">고객 신청사유</div>
-        <div class="dv" id="m-reason" style="color:var(--red); font-weight:600;"></div>
-      </div>
-      <div class="dr">
-        <div class="dk">쇼핑몰 판정</div>
-        <div class="dv" id="m-isGood" style="color:var(--blue); font-weight:600;"></div>
-      </div>
+      <div class="dr"><div class="dk">고객 신청사유</div><div class="dv" id="m-reason" style="color:var(--red); font-weight:600;"></div></div>
+      <div class="dr"><div class="dk">쇼핑몰 판정</div><div class="dv" id="m-isGood" style="color:var(--blue); font-weight:600;"></div></div>
       <div class="dr" style="align-items:flex-start;">
-        <div class="dk" style="margin-top:4px;">쇼핑몰 전달메모</div>
+        <div class="dk" style="margin-top:4px;">특이사항</div>
         <div class="dv" id="m-retNote" style="background:#f4f6fa; padding:10px; border-radius:6px; font-size:12.5px; line-height:1.4; white-space:pre-wrap; width:100%;"></div>
       </div>
 
@@ -384,42 +308,241 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
   </div>
 </div>
 
+<div class="modal-bg" id="historyModal">
+  <div class="modal" style="width:460px;">
+    <div class="modal-hdr" style="background:var(--gray1);">
+      <div class="modal-title">⚙️ 완결 이력 수정 / 취소 처리</div>
+      <button class="modal-x" onclick="closeHistoryModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sec-title">📄 선택된 이력 정보</div>
+      <div class="dr"><div class="dk">접수 / 주문</div><div class="dv" id="h-m-nums"></div></div>
+      <div class="dr"><div class="dk">품목명</div><div class="dv" id="h-m-prodName" style="font-weight:700;"></div></div>
+      <div class="dr"><div class="dk">기존 처리</div><div class="dv" id="h-m-procType"></div></div>
+      
+      <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
+      
+      <div class="sec-title">📝 물류 담당자 특이사항 메모 수정</div>
+      <div style="margin-top:6px;">
+        <textarea id="h-m-memo" style="width:100%; height:75px; padding:10px; border:1px solid var(--gray5); border-radius:6px; resize:none; font-size:13px;"></textarea>
+      </div>
+      
+      <div style="background:#fff5f5; border:1px solid #feb2b2; padding:12px; border-radius:6px; margin-top:15px;">
+        <span style="font-size:12px; font-weight:700; color:#c53030;">⚠️ 처리 취소(삭제) 경고</span>
+        <p style="font-size:11.5px; color:#742a2a; margin-top:4px; line-height:1.4;">이력 취소 시 해당 품목은 다시 <b>'접수된 클레임 처리(대기)'</b> 목록으로 돌아가며, 변동되었던 창고 재고 및 교환 운송장 정보가 자동으로 완벽하게 역산 원상복구 됩니다.</p>
+      </div>
+    </div>
+    <div class="modal-foot" style="background:var(--gray7); display:flex; gap:8px;">
+      <button class="btn btn-red btn-sm" onclick="submitHistoryModify('CANCEL')" style="margin-right:auto;">🗑️ 이력 취소(삭제)</button>
+      <button class="btn btn-outline btn-sm" onclick="closeHistoryModal()">닫기</button>
+      <button class="btn btn-blue btn-sm" onclick="submitHistoryModify('UPDATE')">💾 메모 저장</button>
+    </div>
+  </div>
+</div>
+
+<form id="historyModifyForm" method="post" action="${pageContext.request.contextPath}/logistics/claim/historyModify.do" style="display:none;">
+  <input type="hidden" name="mode" id="h-f-mode">
+  <input type="hidden" name="retNum" id="h-f-retNum">
+  <input type="hidden" name="orderNum" id="h-f-orderNum">
+  <input type="hidden" name="tp" id="h-f-tp">
+  <input type="hidden" name="currentStatus" id="h-f-status">
+  <input type="hidden" name="adminMemo" id="h-f-memo">
+</form>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// 이력 데이터 임시 Mock 객체 (형님 자바 리스트 연동용 포맷팅)
+// 📦 [1] 대기 데이터 파싱
+const rawClaimList = [
+      <c:forEach var="c" items="${claimList}">
+      {
+        ret_num: "${c.ret_num}",
+        order_num: "${c.order_num}",
+        tp: "${c.tp}",
+        prod_name: `<c:out value="${c.prod_name}" escapeXml="true"/>`,
+        color: `<c:out value="${c.color}" escapeXml="true"/>`,
+        size_val: "${c.size_val}",
+        recv_name: `<c:out value="${c.recv_name}" escapeXml="true"/>`,
+        recv_phone: "${c.recv_phone}",
+        recv_addr: `<c:out value="${c.recv_addr}" escapeXml="true"/>`,
+        reason: `<c:out value="${c.reason}" escapeXml="true"/>`,
+        ret_note: `<c:out value="${c.ret_note}" escapeXml="true"/>`,
+        is_good_str: "${c.is_good_str}",
+        created_at: "2026-05-21" 
+      },
+      </c:forEach>
+    ];
+
+// 📋 [2] 이력 데이터 파싱
 const historyData = [
   <c:forEach var="h" items="${historyList}">
   {
-    ret_num: '${h.ret_num}',
-    order_num: '${h.order_num}',
-    tp: '${h.tp == 1 ? "반품" : "교환"}',
-    // 🚨 홑따옴표나 특수문자가 들어와도 깨지지 않게 백틱과 c:out 조합!
+    ret_num: "${h.ret_num}",
+    order_num: "${h.order_num}",
+    tp: "${h.tp == 1 ? '반품' : '교환'}",
     prod_name: `<c:out value="${h.prod_name}" escapeXml="true"/>`,
-    proc_type: '${h.reason}', 
-    invoice: '${empty h.invoice_no ? "-" : h.invoice_no}',
-    // 🚨 관리자 메모의 엔터(줄바꿈)나 따옴표도 완벽하게 무력화시켜서 담습니다!
-    memo: `<c:out value="${h.ret_note}" escapeXml="true"/>`
+    proc_type: "${h.reason}", 
+    invoice: "${empty h.invoice_no ? '-' : h.invoice_no}",
+    memo: `<c:out value="${h.ret_note}" escapeXml="true"/>`,
+    ret_status: "${h.ret_status}",
+    created_at: "2026-05-21"
   },
   </c:forEach>
 ];
 
+let filteredClaimList = [...rawClaimList]; 
 let currentClaimPage = 1;
 let currentHistPage = 1;
-const itemsPerPage = 10; // 🎯 형님이 요구하신 10개씩 페이징!
+const itemsPerPage = 10;
 
-function switchTab(tab) {
-    const isClaim = tab === 'claim';
-    document.getElementById('sec-claim').style.display = isClaim ? '' : 'none';
-    document.getElementById('sec-hist').style.display = isClaim ? 'none' : '';
-    document.getElementById('tab-claim-btn').classList.toggle('on', isClaim);
-    document.getElementById('tab-hist-btn').classList.toggle('on', !isClaim);
-    if(!isClaim) renderHistTable();
+// 📅 날짜 계산 서브 포맷터
+function getDateFormat(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `\${y}-\${m}-\${d}`;
 }
 
-// 팝업 데이터 셋업 및 오픈
+// 🚀 엔진 스타터 (동적 실시간 날짜 가동)
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1); 
+    
+    document.getElementById('filter-start-date').value = getDateFormat(lastMonth);
+    document.getElementById('filter-end-date').value = getDateFormat(today);
+    
+    applyFilters(null);
+    renderHistTable(); 
+});
+
+// 🔄 필터 초기화 함수
+function resetFilters() {
+    document.getElementById('filter-tp').value = "ALL";
+    document.getElementById('filter-search-type').value = "RET_NUM";
+    document.getElementById('filter-search-keyword').value = "";
+    
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    
+    document.getElementById('filter-start-date').value = getDateFormat(lastMonth);
+    document.getElementById('filter-end-date').value = getDateFormat(today);
+    
+    applyFilters(null);
+}
+
+// 🔍 핵심 스크리닝 필터 엔진
+function applyFilters(e) {
+    if(e) e.preventDefault();
+    
+    const startDt = document.getElementById('filter-start-date').value;
+    const endDt = document.getElementById('filter-end-date').value;
+    const tp = document.getElementById('filter-tp').value;
+    const searchType = document.getElementById('filter-search-type').value;
+    const keyword = document.getElementById('filter-search-keyword').value.trim().toLowerCase();
+    
+    filteredClaimList = rawClaimList.filter(item => {
+        if(startDt && item.created_at < startDt) return false;
+        if(endDt && item.created_at > endDt) return false;
+        if(tp !== "ALL" && item.tp !== tp) return false;
+        
+        if(keyword !== "") {
+            if(searchType === "RET_NUM" && !item.ret_num.toLowerCase().includes(keyword)) return false;
+            if(searchType === "ORDER_NUM" && !item.order_num.toLowerCase().includes(keyword)) return false;
+            if(searchType === "PROD_NAME" && !item.prod_name.toLowerCase().includes(keyword)) return false;
+        }
+        return true;
+    });
+    
+    currentClaimPage = 1; 
+    renderClaimTable();
+}
+
+// 📋 대기 목록 테이블 드로잉
+function renderClaimTable() {
+    const tbody = document.getElementById('claimWaitTbody');
+    if(!tbody) return;
+    
+    document.getElementById('filteredWaitCnt').innerText = filteredClaimList.length;
+    
+    const start = (currentClaimPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageData = filteredClaimList.slice(start, end);
+    
+    if(pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:var(--gray4);">📥 조회 조건에 부합하는 클레임이 없습니다.</td></tr>';
+        document.getElementById('claimPageInfo').textContent = "0 / 0 페이지";
+        document.getElementById('claimPageBtns').innerHTML = "";
+        return;
+    }
+    
+    let html = '';
+    pageData.forEach(c => {
+        const tpBdg = (c.tp === '1') ? 'bdg-red' : 'bdg-blue';
+        const tpText = (c.tp === '1') ? '반품' : '교환';
+        
+        html += `<tr>
+            <td>\${c.ret_num}</td>
+            <td>#\${c.order_num}</td>
+            <td><span class="bdg \${tpBdg}">\${tpText}</span></td>
+            <td style="text-align:left; font-weight:600;">\${c.prod_name}</td>
+            <td style="color:var(--gray3);">\${c.reason}</td>
+            <td><span class="bdg bdg-amber">쇼핑몰완료</span></td>
+            <td>
+              <button type="button" class="btn btn-blue btn-xs" 
+                      data-retnum="\${c.ret_num}" data-ordernum="\${c.order_num}" data-tp="\${c.tp}"
+                      data-prodname="\${c.prod_name}" data-color="\${c.color}" data-sizeval="\${c.size_val}"
+                      data-recvname="\${c.recv_name}" data-recvphone="\${c.recv_phone}" data-recvaddr="\${c.recv_addr}"
+                      data-reason="\${c.reason}" data-retnote="\${c.ret_note}" data-isgood="\${c.is_good_str}"
+                      onclick="openClaimModal(this)">
+                검수 및 처리
+              </button>
+            </td>
+        </tr>`;
+    });
+    
+    tbody.innerHTML = html;
+    renderClaimPagination();
+}
+
+// 🔢 대기 목록 페이징 버튼 생성기
+function renderClaimPagination() {
+    const totalPages = Math.ceil(filteredClaimList.length / itemsPerPage) || 1;
+    document.getElementById('claimPageInfo').textContent = `\${currentClaimPage} / \${totalPages} 페이지`;
+    
+    let btnHtml = '';
+    for(let i = 1; i <= totalPages; i++) {
+        const isCurrent = (i === currentClaimPage);
+        btnHtml += `<div class="pg-btn \${isCurrent ? 'on' : ''}" onclick="changeClaimPage(\${i})" 
+                         style="cursor:pointer; padding:5px 11px; border:1px solid var(--gray5); border-radius:4px; font-size:12px; font-weight:600; 
+                                background:\${isCurrent ? 'var(--blue)' : '#fff'}; color:\${isCurrent ? '#fff' : 'var(--gray2)'};">\${i}</div>`;
+    }
+    document.getElementById('claimPageBtns').innerHTML = btnHtml;
+}
+
+function changeClaimPage(page) {
+    currentClaimPage = page;
+    renderClaimTable();
+}
+
+// 🎯 완벽한 탭 전환 구동 함수
+function switchTab(tabId, btn) {
+    const secClaim = document.getElementById('sec-claim');
+    const secHist = document.getElementById('sec-hist');
+    if(secClaim) secClaim.style.display = 'none';
+    if(secHist) secHist.style.display = 'none';
+    
+    const targetSec = document.getElementById(tabId);
+    if(targetSec) targetSec.style.display = 'block';
+    
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('on'));
+    if(btn) btn.classList.add('on');
+}
+
+// 🔄 상세 검수 모달 데이터 로드 및 토글 (잔해물 완벽 제거 완료!)
 function openClaimModal(btn) {
-    // 1. 브라우저가 강제 소문자로 바꾼 dataset에서 값 추출 (대소문자 미스매치 완전 차단)
     const retnum = btn.dataset.retnum;
     const ordernum = btn.dataset.ordernum;
     const tp = btn.dataset.tp;
@@ -430,61 +553,61 @@ function openClaimModal(btn) {
     const recvphone = btn.dataset.recvphone;
     const recvaddr = btn.dataset.recvaddr;
     const reason = btn.dataset.reason;
-    const retnote = btn.dataset.retnote;
+    const retnote = btn.dataset.retnote; // 오라클에서 받아온 순정 RET_NOTE 전체 데이터
     const isgood = btn.dataset.isgood;
 
-    // 2. 서버 전송용 hidden 폼 바인딩
     if(document.getElementById('f-retNum')) document.getElementById('f-retNum').value = retnum;
     if(document.getElementById('f-orderNum')) document.getElementById('f-orderNum').value = ordernum;
     if(document.getElementById('f-tp')) document.getElementById('f-tp').value = tp;
     
-    // 3. 모달 상단 타이틀 세팅
     if(document.getElementById('m-title')) {
         document.getElementById('m-title').innerText = (tp == 1) ? "🔄 [반품] 상세 검수 및 재고 처리" : "🔄 [교환] 상세 검수 및 교환 출고";
     }
-    
-    // 4. 수령자 배송 정보 주입 (짤림 없이 깔끔하게 대입)
     if(document.getElementById('m-recvName')) document.getElementById('m-recvName').innerText = recvname;
     if(document.getElementById('m-recvPhone')) document.getElementById('m-recvPhone').innerText = recvphone;
     if(document.getElementById('m-recvAddr')) document.getElementById('m-recvAddr').innerText = recvaddr;
-    
-    // 5. 🎯 [긴급 수정 구역] 누락되던 껍데기 구역에 강제 값 주입!
     if(document.getElementById('m-nums')) {
-        document.getElementById('m-nums').innerHTML = `접수번호: <b style="color:var(--navy); font-family:'DM Mono';">\${retnum}</b> / 주문번호: <b style="color:var(--navy); font-family:'DM Mono';">#\${ordernum}</b>`;
+        document.getElementById('m-nums').innerHTML = `접수번호: <b>\${retnum}</b> / 주문번호: <b>#\${ordernum}</b>`;
     }
-    if(document.getElementById('m-prodName')) {
-        document.getElementById('m-prodName').innerText = prodname;
-    }
-    if(document.getElementById('m-option')) {
-        document.getElementById('m-option').innerText = `\${color} / \${sizeval}mm`;
-    }
-    
-    // 6. 하단 쇼핑몰 정보 주입 (이미 잘 나오던 구역 안전장치)
+    if(document.getElementById('m-prodName')) document.getElementById('m-prodName').innerText = prodname;
+    if(document.getElementById('m-option')) document.getElementById('m-option').innerText = `\${color} / \${sizeval}mm`;
     if(document.getElementById('m-reason')) document.getElementById('m-reason').innerText = reason;
     if(document.getElementById('m-isGood')) document.getElementById('m-isGood').innerText = isgood;
-    if(document.getElementById('m-retNote')) {
-        document.getElementById('m-retNote').innerText = (retnote && retnote.trim() !== "") ? retnote : "쇼핑몰에서 전달한 메모가 없습니다.";
-    }
 
-    // 7. 교환 전용 출고 폼 토글 제어
-    const dlvArea = document.getElementById('exchange-delivery-area');
-    if(dlvArea) {
-        if(tp == 2) {
-            dlvArea.style.setProperty("display", "block", "important");
+    // 🎯 [줄바꿈 분리 알고리즘] 엔터(\n)를 기준으로 상단 특이사항과 하단 입력란에 깔끔하게 배분합니다.
+    let mallMemo = "";
+    let logiMemo = "";
+    
+    if (retnote && retnote.trim() !== "" && retnote !== 'null') {
+        const markerIndex = retnote.indexOf('\n'); 
+        if (markerIndex > -1) {
+            mallMemo = retnote.substring(0, markerIndex).trim();
+            logiMemo = retnote.substring(markerIndex + 1).trim(); 
         } else {
-            dlvArea.style.setProperty("display", "none", "important");
+            mallMemo = retnote;
         }
     }
-    
-    // 8. 입력 폼 초기화 및 모달 활성화
-    if(document.getElementById('m-courier-sel')) document.getElementById('m-courier-sel').value = "";
-    if(document.getElementById('m-invoice-input')) document.getElementById('m-invoice-input').value = "";
-    if(document.getElementById('m-memo')) document.getElementById('m-memo').value = "";
+
+    // 🚀 데이터 락인 및 화면 표출 최신화
+    if(document.getElementById('m-retNote')) {
+        document.getElementById('m-retNote').innerText = (mallMemo !== "") ? mallMemo : "등록된 특이사항 정보가 없습니다.";
+    }
+    if(document.getElementById('m-memo')) {
+        document.getElementById('m-memo').value = logiMemo; 
+    }
+
+    const dlvArea = document.getElementById('exchange-delivery-area');
+    if(dlvArea) {
+        if(tp == 2) dlvArea.style.setProperty("display", "block", "important");
+        else dlvArea.style.setProperty("display", "none", "important");
+    }
     
     document.getElementById('claimModal').classList.add('open');
 }
 
-function closeModal() { document.getElementById('claimModal').classList.remove('open'); }
+function closeModal() {
+    document.getElementById('claimModal').classList.remove('open');
+}
 
 // 🚚 교환용 일련 랜덤 운송장 발행 로직
 function generateExchangeInvoice() {
@@ -495,35 +618,28 @@ function generateExchangeInvoice() {
         return;
     }
 
-    // 날짜 조합 (YYYYMMDD)
     const now = new Date();
     const dateStr = now.getFullYear() + 
                     String(now.getMonth() + 1).padStart(2, '0') + 
                     String(now.getDate()).padStart(2, '0');
 
-    // 택배사별 식별 프리픽스
     let prefix = "CJ";
     if(courier === '롯데택배') prefix = "LOTTE";
     else if(courier === '한진택배') prefix = "HJ";
     else if(courier === '우체국택배') prefix = "POST";
 
-    // 랜덤 4자리 난수
     const randNum = String(Math.floor(Math.random() * 9000) + 1000);
-
-    // 최종 결과물: 예) CJ-20260520-EX-1234
     const finalInvoice = prefix + "-" + dateStr + "-EX-" + randNum;
 
-    // input 창에 즉시 기입
     document.getElementById('m-invoice-input').value = finalInvoice;
 }
 
-// 최종 완료 전송
+// 최종 검수 승인 폼 전송
 function submitProcess(type) {
     const tp = document.getElementById('f-tp').value;
     document.getElementById('f-processType').value = type;
     document.getElementById('f-adminMemo').value = document.getElementById('m-memo').value;
     
-    // 교환인데 정보 기입 누락 시 락 차단
     if(tp === '2') {
         const courier = document.getElementById('m-courier-sel').value;
         const invoice = document.getElementById('m-invoice-input').value;
@@ -540,7 +656,7 @@ function submitProcess(type) {
     document.getElementById('claimProcessForm').submit();
 }
 
-// 📋 이력조회 전용 10개 단위 페이징 테이블 렌더러
+// 📋 이력조회 테이블 렌더러
 function renderHistTable() {
     const tbody = document.getElementById('histTbody');
     if(!tbody) return;
@@ -551,14 +667,16 @@ function renderHistTable() {
     
     if(!pageData.length) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--gray4);">📭 처리 완료된 클레임 이력이 없습니다.</td></tr>';
+        document.getElementById('histPageInfo').textContent = "0 / 0 페이지";
+        document.getElementById('histPageBtns').innerHTML = "";
         return;
     }
     
     let html = '';
     pageData.forEach(h => {
-        // 🎯 완벽 수정: DAO에서 디코딩해온 글자 그대로 비교해서 녹색/빨간색 배지를 입힙니다!
         const procBdg = (h.proc_type === '양품복구') ? 'bdg-green' : 'bdg-red';
         const tpBdg = (h.tp === '반품') ? 'bdg-red' : 'bdg-blue';
+        const rawTp = (h.tp === '반품') ? 1 : 2;
         
         html += `<tr>
             <td>\${h.ret_num}</td>
@@ -567,30 +685,86 @@ function renderHistTable() {
             <td style="text-align:left; font-weight:600;">\${h.prod_name}</td>
             <td><span class="bdg \${procBdg}">\${h.proc_type}</span></td>
             <td style="font-family:'DM Mono',monospace;">\${h.invoice}</td>
-            <td style="text-align:left; color:var(--gray2); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">\${h.memo}</td>
-            <td><span class="bdg bdg-gray">처리완료</span></td>
+            <td style="text-align:left; color:var(--gray2);">\${h.memo}</td>
+            <td>
+                <button type="button" class="btn btn-outline btn-xs" 
+                        data-retnum="\${h.ret_num}" data-ordernum="\${h.order_num}" data-tp="\${rawTp}" 
+                        data-prodname="\${h.prod_name}" data-proctype="\${h.proc_type}" data-memo="\${h.memo}" data-status="\${h.ret_status}"
+                        onclick="openHistoryModal(this)">⚙️ 관리</button>
+            </td>
         </tr>`;
     });
     tbody.innerHTML = html;
-    renderHistPagination();
+    renderHistPagination(); 
 }
 
+// 🔢 이력 목록 페이징 버튼 생성 엔진
 function renderHistPagination() {
     const totalPages = Math.ceil(historyData.length / itemsPerPage) || 1;
     const pageBtns = document.getElementById('histPageBtns');
+    if(!pageBtns) return;
+    
     document.getElementById('histPageInfo').textContent = `\${currentHistPage} / \${totalPages} 페이지`;
     
     let btnHtml = '';
     for(let i=1; i<=totalPages; i++) {
-        btnHtml += `<div class="pg-btn \${i === currentHistPage ? 'on' : ''}" onclick="changeHistPage(\${i})">\${i}</div>`;
+        const isCurrent = (i === currentHistPage);
+        btnHtml += `<div class="pg-btn \${isCurrent ? 'on' : ''}" onclick="changeHistPage(\${i})"
+                         style="cursor:pointer; padding:5px 11px; border:1px solid var(--gray5); border-radius:4px; font-size:12px; font-weight:600; 
+                                background:\${isCurrent ? 'var(--blue)' : '#fff'}; color:\${isCurrent ? '#fff' : 'var(--gray2)'};">\${i}</div>`;
     }
     pageBtns.innerHTML = btnHtml;
 }
 
-function changeHistPage(p) { currentHistPage = p; renderHistTable(); }
+function changeHistPage(p) { 
+    currentHistPage = p; 
+    renderHistTable(); 
+}
 
-// 초기 가동
-function showToast(msg) { /* 토스트 로직 생략 */ }
+// ⚙️ 이력 제어 모달 핸들러 구역
+function openHistoryModal(btn) {
+    const retnum = btn.dataset.retnum;
+    const ordernum = btn.dataset.ordernum;
+    const tp = btn.dataset.tp;
+    const prodname = btn.dataset.prodname;
+    const proctype = btn.dataset.proctype;
+    const memo = btn.dataset.memo;
+    const status = btn.dataset.status;
+
+    document.getElementById('h-f-retNum').value = retnum;
+    document.getElementById('h-f-orderNum').value = ordernum;
+    document.getElementById('h-f-tp').value = tp;
+    document.getElementById('h-f-status').value = status;
+
+    document.getElementById('h-m-nums').innerHTML = `접수: <b>\${retnum}</b> / 주문: <b>#\${ordernum}</b> (\${tp == 1 ? '반품' : '교환'})`;
+    document.getElementById('h-m-prodName').innerText = prodname;
+    document.getElementById('h-m-procType').innerHTML = `<span class="bdg \${proctype === '양품복구' ? 'bdg-green' : 'bdg-red'}">\${proctype}완료</span>`;
+    
+    // 이력 탭에서도 줄바꿈 데이터 분리!
+    let logiMemo = "";
+    if (memo && memo !== 'null') {
+        const markerIndex = memo.indexOf('\n'); 
+        logiMemo = (markerIndex > -1) ? memo.substring(markerIndex + 1).trim() : "";
+    }
+    document.getElementById('h-m-memo').value = logiMemo;
+
+    document.getElementById('historyModal').classList.add('open');
+}
+
+function closeHistoryModal() {
+    document.getElementById('historyModal').classList.remove('open');
+}
+
+function submitHistoryModify(mode) {
+    document.getElementById('h-f-mode').value = mode;
+    document.getElementById('h-f-memo').value = document.getElementById('h-m-memo').value;
+
+    if (mode === 'CANCEL') {
+        if (!confirm("🚨 이 결정을 취소하고 전산 및 실재고를 다시 대기 상태로 원상복구 하시겠습니까?\n(창고 실재고가 실시간으로 재계산됩니다.)")) return;
+    } else {
+        if (!confirm("물류 담당자 특이사항 메모를 수정하시겠습니까?")) return;
+    }
+
+    document.getElementById('historyModifyForm').submit();
+}
 </script>
-</body>
-</html>

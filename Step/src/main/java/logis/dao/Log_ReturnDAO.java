@@ -109,41 +109,38 @@ public class Log_ReturnDAO {
         
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // 트랜잭션 시작
+            conn.setAutoCommit(false); // 트랜잭션 락 가동
 
-            int stockDelta = 0; // 물류 검수 시점의 재고 변동값
-            int nextStatus = 4; // 기본값 4: 물류 양품복구 완료 상태
+            int stockDelta = 0;
+            int nextStatus = 4;
 
-            // 🎯 형님의 WMS 철학과 주문 시점(-1)을 반영한 완벽 재고 가감 공식
-            if (tp == 1) { 
-                // 🔄 [반품 상품] 일 때
-                if (processType.equals("RECOVERY")) {
-                    stockDelta = 1;     // ✨ 양품이면 창고에 다시 채우기 (+1) -> 최종 누적재고: 0
-                    nextStatus = 4;     // 양품복구완료(4)
-                } else if (processType.equals("DISPOSAL")) {
-                    stockDelta = 0;     // 🗑️ 불량이 오면 창고에 넣을 게 없음 (0) -> 주문할 때 깎인 상태 그대로 최종 누적재고: -1
-                    nextStatus = 5;     // 불량폐기완료(5)
-                }
-            } else if (tp == 2) { 
-                // 🔄 [교환 상품] 일 때
-                if (processType.equals("RECOVERY")) {
-                    stockDelta = 0;     // ✨ 양품 반입(+1) + 새 상품 출고(-1) = 변동 없음 (0) -> 최종 누적재고: -1
-                    nextStatus = 4;     // 양품복구완료(4)
-                } else if (processType.equals("DISPOSAL")) {
-                    stockDelta = -1;    // 🗑️ 불량 반입(0) + 새 상품 출고(-1) = 재고 차감 (-1) -> 최종 누적재고: -2
-                    nextStatus = 5;     // 불량폐기완료(5)
-                }
+            if (tp == 1) { // [반품]
+                if ("RECOVERY".equals(processType)) { stockDelta = 1; nextStatus = 4; }
+                else if ("DISPOSAL".equals(processType)) { stockDelta = 0; nextStatus = 5; }
+            } else if (tp == 2) { // [교환]
+                if ("RECOVERY".equals(processType)) { stockDelta = 0; nextStatus = 4; }
+                else if ("DISPOSAL".equals(processType)) { stockDelta = -1; nextStatus = 5; }
             }
 
-            // 1. RETURNS 테이블 상태를 완료(4 또는 5)로 업데이트하여 대기실에서 아웃!
-            String updateRetSql = "UPDATE RETURNS SET RET_STATUS = ?, RET_NOTE = ? WHERE RET_NUM = ?";
+            // 1. RETURNS 테이블 상태 및 메모 스왑 쿼리 (물음표 총 5개)
+            String updateRetSql = "UPDATE RETURNS SET RET_STATUS = ?, "
+                               + "       RET_NOTE = CASE WHEN ? IS NULL OR TRIM(?) = '' THEN "
+                               + "                     TRIM(TRAILING CHR(10) FROM CASE WHEN INSTR(RET_NOTE, CHR(10)) > 0 THEN SUBSTR(RET_NOTE, 1, INSTR(RET_NOTE, CHR(10)) - 1) ELSE RET_NOTE END) "
+                               + "                  ELSE "
+                               + "                     TRIM(TRAILING CHR(10) FROM CASE WHEN INSTR(RET_NOTE, CHR(10)) > 0 THEN SUBSTR(RET_NOTE, 1, INSTR(RET_NOTE, CHR(10)) - 1) ELSE RET_NOTE END) || CHR(10) || ? "
+                               + "                  END "
+                               + "WHERE RET_NUM = ?";
+                               
             pstmtRet = conn.prepareStatement(updateRetSql);
+            // 🚨 물음표 매핑 번호 정밀 싱크 매칭
             pstmtRet.setInt(1, nextStatus);
             pstmtRet.setString(2, adminMemo);
-            pstmtRet.setInt(3, retNum);
+            pstmtRet.setString(3, adminMemo);
+            pstmtRet.setString(4, adminMemo); 
+            pstmtRet.setInt(5, retNum); // 🎯 정확하게 5번째 인덱스로 꽂아 넣습니다.
             pstmtRet.executeUpdate();
 
-            // 2. 창고 실재고(STOCK) 증감 타격 (변동치인 stockDelta가 0이 아닐 때만 오라클에 레이저 사격)
+            // 2. 창고 실재고 증감 타격 (물음표 총 2개)
             if (stockDelta != 0) {
                 String updateStockSql = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ? "
                                      + "WHERE OPT_NUM = (SELECT OPT_NUM FROM RETURNS WHERE RET_NUM = ?)";
@@ -153,19 +150,105 @@ public class Log_ReturnDAO {
                 pstmtStock.executeUpdate();
             }
 
-            // 3. 교환 처리 시 기존 DELIVERY 레코드에 새 송장 번호 UPDATE 
+            // 3. [교환전용] 새 송장 번호 DELIVERY 테이블 UPDATE (물음표 총 3개)
             if (tp == 2 && courier != null && !courier.trim().isEmpty()) {
                 String updateDlvSql = "UPDATE DELIVERY SET COURIER = ?, INVOICE_NO = ?, DLV_STATUS = 1 WHERE ORDER_NUM = ?";
                 pstmtDlv = conn.prepareStatement(updateDlvSql);
+                
+                // 🚨 독립된 pstmtDlv 객체이므로 다시 1번부터 차례대로 매핑해야 에러가 안 납니다!
                 pstmtDlv.setString(1, courier);
                 pstmtDlv.setString(2, invoiceNo);
-                pstmtDlv.setInt(3, orderNum);
+                pstmtDlv.setInt(3, orderNum); 
                 pstmtDlv.executeUpdate();
             }
 
-            conn.commit(); // 모든 연산 무사 통과 시 오라클 최종 저장!
-            System.out.println("✅ [재고 동기화 완결] 구분: " + (tp==1?"반품":"교환") + " | 판정: " + processType + " | 이번 변동치: " + stockDelta);
+            conn.commit(); // 트랜잭션 완결 성공!
+            System.out.println("🚀 [WMS] 클레임 접수번호 " + retNum + "번 처리 및 교환 송장 반영 완결!");
             
+        } catch (Exception e) {
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            DBUtil.executeClose(null, pstmtRet, null);
+            DBUtil.executeClose(null, pstmtStock, null);
+            DBUtil.executeClose(null, pstmtDlv, conn);
+        }
+    }
+    
+ // ── [신규 1] 이력 건에 대한 물류 담당자 특이사항(메모)만 실시간 수정 ──
+    public void updateClaimMemo(int retNum, String adminMemo) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        String sql = "UPDATE RETURNS SET "
+                + "       RET_NOTE = CASE WHEN ? IS NULL OR TRIM(?) = '' THEN "
+                + "                     TRIM(TRAILING CHR(10) FROM CASE WHEN INSTR(RET_NOTE, CHR(10)) > 0 THEN SUBSTR(RET_NOTE, 1, INSTR(RET_NOTE, CHR(10)) - 1) ELSE RET_NOTE END) "
+                + "                  ELSE "
+                + "                     TRIM(TRAILING CHR(10) FROM CASE WHEN INSTR(RET_NOTE, CHR(10)) > 0 THEN SUBSTR(RET_NOTE, 1, INSTR(RET_NOTE, CHR(10)) - 1) ELSE RET_NOTE END) || CHR(10) || ? "
+                + "                  END "
+                + "WHERE RET_NUM = ?";
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, adminMemo);
+            pstmt.setString(2, adminMemo);
+            pstmt.setString(3, adminMemo);
+            pstmt.setInt(4, retNum);
+            pstmt.executeUpdate();
+            
+            System.out.println("⚙️ [WMS 순정 스왑] 접수번호 " + retNum + "번 물류메모 깔끔하게 교체 완료!");
+        } finally {
+            DBUtil.executeClose(null, pstmt, conn);
+        }
+    }
+    
+    // ── [신규 2] 처리 완료 건 취소 및 재고 원상복구 트랜잭션 (핵심 정밀 수식) ──
+    public void cancelClaimTransaction(int retNum, int orderNum, int tp, int currentStatus) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmtRet = null;
+        PreparedStatement pstmtStock = null;
+        PreparedStatement pstmtDlv = null;
+        
+        try {
+            conn = DBUtil.getConnection();
+            conn.setAutoCommit(false);
+
+            int rollbackStockDelta = 0;
+
+            if (tp == 1) { // [반품 취소]
+                if (currentStatus == 4) rollbackStockDelta = -1;
+                else if (currentStatus == 5) rollbackStockDelta = 0;
+            } else if (tp == 2) { // [교환 취소]
+                if (currentStatus == 4) rollbackStockDelta = 0;
+                else if (currentStatus == 5) rollbackStockDelta = 1;
+            }
+
+            // 🎯 [범인 체포 및 수정] 기존에 있던 RET_NOTE = NULL을 완전히 삭제했습니다!
+            // 이제 원래 들어있던 쇼핑몰 전달메모는 건드리지 않고, 상태(RET_STATUS)만 대기(3)로 되돌립니다.
+            String sqlRet = "UPDATE RETURNS SET RET_STATUS = 3 WHERE RET_NUM = ?";
+            pstmtRet = conn.prepareStatement(sqlRet);
+            pstmtRet.setInt(1, retNum);
+            pstmtRet.executeUpdate();
+
+            // 창고 실재고 역산 타격
+            if (rollbackStockDelta != 0) {
+                String sqlStock = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ? "
+                                + "WHERE OPT_NUM = (SELECT OPT_NUM FROM RETURNS WHERE RET_NUM = ?)";
+                pstmtStock = conn.prepareStatement(sqlStock);
+                pstmtStock.setInt(1, rollbackStockDelta);
+                pstmtStock.setInt(2, retNum);
+                pstmtStock.executeUpdate();
+            }
+
+            // 교환 운송장 폭파
+            if (tp == 2) {
+                String sqlDlv = "UPDATE DELIVERY SET COURIER = NULL, INVOICE_NO = NULL, DLV_STATUS = 0 WHERE ORDER_NUM = ?";
+                pstmtDlv = conn.prepareStatement(sqlDlv);
+                pstmtDlv.setInt(1, orderNum);
+                pstmtDlv.executeUpdate();
+            }
+
+            conn.commit();
         } catch (Exception e) {
             if (conn != null) conn.rollback();
             throw e;
