@@ -189,9 +189,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="order-foot">
-								<button class="btn btn-gray btn-sm">배송 추적</button>
-							</div>
+							
 						</div>
 					</c:forEach>
 				</div>
@@ -326,10 +324,7 @@
 										</form>
 									</c:when>
 
-									<%-- 배송준비중 / 배송중: 배송 추적 --%>
-									<c:when test="${order.order_status == 2 || order.order_status == 3}">
-										<button class="btn btn-gray btn-sm">🔍 배송 추적</button>
-									</c:when>
+								
 
 									<%-- 배송완료: 반품/교환 + 리뷰 작성 --%>
 									<c:when test="${order.order_status == 4}">
