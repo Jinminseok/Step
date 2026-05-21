@@ -254,124 +254,113 @@
 					</c:forEach>
 				</div>
 
-				<!-- 3. 전체 주문 내역 탭 ✅ 상태별 배지 + 조건부 버튼 적용 -->
-				<div class="my-sub" id="my-orders">
-					<div class="tabs">
-						<div class="tab on" onclick="filterOrders(this, 0)">전체</div>
-						<div class="tab" onclick="filterOrders(this, 1)">배송대기</div>
-						<div class="tab" onclick="filterOrders(this, 4)">배송완료</div>
-					</div>
+				<!-- 3. 전체 주문 내역 탭 -->
+<div class="my-sub" id="my-orders">
+    <div class="tabs">
+        <div class="tab on" onclick="filterOrders(this, 0)">전체</div>
+        <div class="tab" onclick="filterOrders(this, 1)">배송대기</div>
+        <div class="tab" onclick="filterOrders(this, 4)">배송완료</div>
+    </div>
 
-					<c:if test="${empty orderList}">
-						<div
-							style="text-align: center; padding: 40px; color: var(--gray4); background: var(--gray7); border: 1px solid var(--border); margin-top: 16px;">
-							주문하신 내역이 없습니다.</div>
-					</c:if>
+    <c:if test="${empty groupedOrders}">
+        <div style="text-align:center; padding:40px; color:var(--gray4); background:var(--gray7); border:1px solid var(--border); margin-top:16px;">
+            주문하신 내역이 없습니다.
+        </div>
+    </c:if>
 
-					<c:forEach var="order" items="${orderList}">
-						<div class="order-card order-item"
-							data-status="${order.order_status}" style="margin-top: 16px;">
-							<div class="order-hdr">
-								<span class="order-num">#${order.order_num}</span>
+    <%-- ✅ 주문번호별 그룹 카드 --%>
+    <c:forEach var="entry" items="${groupedOrders}">
+        <c:set var="items"     value="${entry.value}"/>
+        <c:set var="firstItem" value="${items[0]}"/>
 
-								<%-- ✅ 실제 배송 상태 배지 --%>
-								<c:choose>
-									<c:when test="${order.order_status == 1}">
-										<span class="badge b-orange">📦 배송대기</span>
-									</c:when>
-									<c:when test="${order.order_status == 2}">
-										<span class="badge"
-											style="background: #e0f2fe; color: #0369a1;">🏭 배송준비중</span>
-									</c:when>
-									<c:when test="${order.order_status == 3}">
-										<span class="badge b-blue">🚚 배송중</span>
-									</c:when>
-									<c:when test="${order.order_status == 4}">
-										<span class="badge"
-											style="background: #dcfce7; color: #15803d;">✅ 배송완료</span>
-									</c:when>
-									<c:when test="${order.order_status == 5}">
-										<span class="badge"
-											style="background: #fef2f2; color: #dc2626;">🚫 취소됨</span>
-									</c:when>
-								</c:choose>
-							</div>
+        <div class="order-card order-item" data-status="${firstItem.order_status}" style="margin-top:16px;">
 
-							<div class="order-body">
-								<div class="order-thumb">
-									<img
-										src="${pageContext.request.contextPath}/upload/${order.prod_img_url}"
-										style="width: 100%; height: 100%; object-fit: cover;"
-										alt="상품이미지">
-								</div>
-								<div>
-									<div class="order-info-name">${order.prod_name}</div>
-									<div class="order-info-price">
-										<fmt:formatNumber value="${order.pay_price}" pattern="#,###" />
-										원
-									</div>
-								</div>
-							</div>
+            <%-- 주문 헤더 --%>
+            <div class="order-hdr">
+                <span class="order-num">#${firstItem.order_num}</span>
+                <c:choose>
+                    <c:when test="${firstItem.order_status == 1}"><span class="badge b-orange">📦 배송대기</span></c:when>
+                    <c:when test="${firstItem.order_status == 2}"><span class="badge" style="background:#e0f2fe;color:#0369a1;">🏭 배송준비중</span></c:when>
+                    <c:when test="${firstItem.order_status == 3}"><span class="badge b-blue">🚚 배송중</span></c:when>
+                    <c:when test="${firstItem.order_status == 4}"><span class="badge" style="background:#dcfce7;color:#15803d;">✅ 배송완료</span></c:when>
+                    <c:when test="${firstItem.order_status == 5}"><span class="badge" style="background:#fef2f2;color:#dc2626;">🚫 취소됨</span></c:when>
+                </c:choose>
+                <span style="font-size:12px; color:var(--gray4); margin-left:auto;">${firstItem.order_created_at}</span>
+            </div>
 
-							<%-- ✅ 상태별 조건부 버튼 --%>
-							<div class="order-foot">
-								<c:choose>
+            <%-- ✅ 상품 목록 (여러 개 표시) --%>
+            <c:forEach var="item" items="${items}">
+                <div class="order-body" style="border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px;">
+                    <div class="order-thumb">
+                        <img src="${pageContext.request.contextPath}/upload/${item.prod_img_url}"
+                             style="width:100%; height:100%; object-fit:cover;" alt="상품이미지">
+                    </div>
+                    <div style="flex:1;">
+                        <div class="order-info-name">${item.prod_name}</div>
+                        <div style="font-size:12px; color:var(--gray4); margin-top:2px;">${item.opt_info} · ${item.order_item_qty}개</div>
+                        <div class="order-info-price">
+                            <fmt:formatNumber value="${item.order_item_price * item.order_item_qty}" pattern="#,###"/>원
+                        </div>
+                    </div>
 
-									<%-- 배송대기: 주문 취소만 가능 --%>
-									<c:when test="${order.order_status == 1}">
-										<form
-											action="${pageContext.request.contextPath}/shop/user/orderCancel.do"
-											method="post"
-											onsubmit="return confirm('주문 #${order.order_num}을 취소하시겠습니까?\n취소 후에는 되돌릴 수 없습니다.')">
-											<input type="hidden" name="orderNum"
-												value="${order.order_num}">
-											<button type="submit" class="btn btn-red btn-sm">🚫
-												주문 취소</button>
-										</form>
-									</c:when>
+                    <%-- ✅ 배송완료: 상품별 리뷰 버튼 --%>
+                    <c:if test="${firstItem.order_status == 4}">
+                        <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
+                            <c:if test="${item.review_num == 0}">
+                                <button class="btn btn-black btn-sm"
+                                    onclick="openReviewModal(${item.order_num}, ${item.prod_num}, '${item.prod_name}')">
+                                    ✏️ 리뷰 작성
+                                </button>
+                            </c:if>
+                            <c:if test="${item.review_num != 0}">
+                                <button class="btn btn-outline btn-sm"
+                                    onclick="openEditReviewModal(${item.review_num}, ${item.review_rating}, '${item.review_content}', '${item.prod_name}')">
+                                    🖊️ 리뷰 수정
+                                </button>
+                                <form action="${pageContext.request.contextPath}/shop/review/deleteReview.do"
+                                      method="post" onsubmit="return confirm('리뷰를 삭제하시겠습니까?')">
+                                    <input type="hidden" name="reviewNum" value="${item.review_num}">
+                                    <button type="submit" class="btn btn-red btn-sm">🗑️ 삭제</button>
+                                </form>
+                            </c:if>
+                        </div>
+                    </c:if>
+                </div>
+            </c:forEach>
 
+            <%-- 총 결제금액 --%>
+            <div style="text-align:right; font-size:13px; color:var(--gray3); padding:4px 0 8px;">
+                총 결제금액: <strong style="color:var(--black); font-size:15px;">
+                    <fmt:formatNumber value="${firstItem.pay_price}" pattern="#,###"/>원
+                </strong>
+            </div>
 
+            <%-- ✅ 주문 단위 버튼 --%>
+            <div class="order-foot">
+                <c:choose>
+                    <c:when test="${firstItem.order_status == 1}">
+                        <form action="${pageContext.request.contextPath}/shop/user/orderCancel.do"
+                              method="post"
+                              onsubmit="return confirm('주문 #${firstItem.order_num}을 취소하시겠습니까?')">
+                            <input type="hidden" name="orderNum" value="${firstItem.order_num}">
+                            <button type="submit" class="btn btn-red btn-sm">🚫 주문 취소</button>
+                        </form>
+                    </c:when>
+                    <c:when test="${firstItem.order_status == 4}">
+                        <button class="btn btn-outline btn-sm"
+                            onclick="setMy(document.querySelector('.my-menu-item:nth-child(6)'), 'my-return')">
+                            ↩️ 반품/교환
+                        </button>
+                    </c:when>
+                    <c:when test="${firstItem.order_status == 5}">
+                        <span style="font-size:12px; color:var(--gray4);">처리 완료된 주문입니다.</span>
+                    </c:when>
+                </c:choose>
+            </div>
 
-									<%-- 배송완료: 리뷰 작성 여부에 따라 버튼 분기 --%>
-									<c:when test="${order.order_status == 4}">
-										<button class="btn btn-outline btn-sm"
-											onclick="setMy(document.querySelector('.my-menu-item:nth-child(6)'), 'my-return')">
-											↩️ 반품/교환</button>
-
-										<%--리뷰 미작성 --%>
-										<c:if test="${order.review_num == 0}">
-											<button class="btn btn-black btn-sm"
-												onclick="openReviewModal(${order.order_num}, ${order.prod_num}, '${order.prod_name}')">
-												✏️ 리뷰 작성</button>
-										</c:if>
-
-										<%-- 리뷰 작성 완료 --%>
-										<c:if test="${order.review_num != 0}">
-											<button class="btn btn-outline btn-sm"
-												onclick="openEditReviewModal(${order.review_num}, ${order.review_rating}, '${order.review_content}', '${order.prod_name}')">
-												🖊️ 리뷰 수정</button>
-											<form
-												action="${pageContext.request.contextPath}/shop/review/deleteReview.do"
-												method="post" onsubmit="return confirm('리뷰를 삭제하시겠습니까?')">
-												<input type="hidden" name="reviewNum"
-													value="${order.review_num}">
-												<button type="submit" class="btn btn-red btn-sm">🗑️
-													리뷰 삭제</button>
-											</form>
-										</c:if>
-									</c:when>
-
-									<%-- 취소됨 --%>
-									<c:when test="${order.order_status == 5}">
-										<span style="font-size: 12px; color: var(--gray4);">처리
-											완료된 주문입니다.</span>
-									</c:when>
-
-								</c:choose>
-							</div>
-						</div>
-					</c:forEach>
-				</div>
+        </div>
+    </c:forEach>
+</div>
 
 				<!-- 4. 내 정보 수정 탭 -->
 				<div class="my-sub" id="my-info">

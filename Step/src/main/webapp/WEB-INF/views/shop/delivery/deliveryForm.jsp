@@ -138,14 +138,20 @@ tr:hover td { background: #f8fafc; }
 /* ── MODAL OVERLAY & BOX (통일감 구현) ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal-box { background: #fff; width: 560px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
+.modal-box { background: #fff; width: 560px; border-radius: 12px; height: 90vh; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
 .modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
 .modal-title { font-size: 17px; font-weight: 700; color: #0f172a; }
 .modal-close { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 22px; padding: 0; transition: color 0.2s; }
 .modal-close:hover { color: #ef4444; }
-.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.modal-body { padding: 24px; overflow-y: auto; flex: 1; min-height: 0; }
 .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; justify-content: flex-end; background: #f8fafc; }
-
+.modal-box > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
 /* FORM & DETAILED BOX */
 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .f-label { font-size: 13px; font-weight: 600; color: #334155; }

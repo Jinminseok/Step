@@ -265,66 +265,66 @@ public class UserDAO {
 	
 	// ── 🌟 마이페이지용: 내 주문 내역 전체 가져오기 ──
 	public List<AdminOrderVO> getMyOrderList(long user_num) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		List<AdminOrderVO> list = new ArrayList<>();
-		
-		try {
-			conn = DBUtil.getConnection();
-			
-			String sql = "SELECT o.ORDER_NUM, o.PAY_PRICE, o.ORDER_STATUS, "
-			           + "  TO_CHAR(o.ORDER_CREATED_AT, 'YYYY.MM.DD') AS ORDER_CREATED_AT, "
-			           + "  (SELECT p.PROD_NAME FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM "
-			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_NAME, "
-			           + "  (SELECT p.PROD_NUM FROM ORDER_ITEMS oi JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM "
-			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS PROD_NUM, "
-			           + "  (SELECT img.PROD_IMG_URL FROM ORDER_ITEMS oi JOIN PROD_IMGS img ON oi.PROD_NUM = img.PROD_NUM "
-			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND img.IS_MAIN = 'Y' AND ROWNUM = 1) AS PROD_IMG_URL, "
-			           + "  (SELECT po.SIZE_VAL || 'mm / ' || po.COLOR FROM ORDER_ITEMS oi "
-			           + "   JOIN PROD_OPTIONS po ON oi.OPT_NUM = po.OPT_NUM "
-			           + "   WHERE oi.ORDER_NUM = o.ORDER_NUM AND ROWNUM = 1) AS OPT_INFO, "
-			           + "  (SELECT COUNT(*) FROM ORDER_ITEMS oi WHERE oi.ORDER_NUM = o.ORDER_NUM) AS ITEM_COUNT, "
-			           
-			           + "  (SELECT r.REVIEW_NUM FROM REVIEWS r "
-			           + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM AND ROWNUM = 1) AS REVIEW_NUM, "
-			           + "  (SELECT r.RATING FROM REVIEWS r "
-			           + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM AND ROWNUM = 1) AS REVIEW_RATING, "
-			           + "  (SELECT r.REVIEW_CONTENT FROM REVIEWS r "
-			           + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM AND ROWNUM = 1) AS REVIEW_CONTENT "
-			           + "FROM ORDERS o "
-			           + "WHERE o.USER_NUM = ? "
-			           + "ORDER BY o.ORDER_NUM DESC";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, user_num);
-			rs = pstmt.executeQuery();
-			
-			while (rs.next()) {
-				AdminOrderVO order = new AdminOrderVO();
-				order.setOrder_num(rs.getInt("ORDER_NUM"));
-				order.setPay_price(rs.getInt("PAY_PRICE"));
-				order.setOrder_status(rs.getInt("ORDER_STATUS"));
-				order.setProd_name(rs.getString("PROD_NAME"));
-				order.setProd_num(rs.getInt("PROD_NUM"));
-				order.setProd_img_url(rs.getString("PROD_IMG_URL")); 
-				order.setOrder_created_at(rs.getString("ORDER_CREATED_AT"));
-				order.setOpt_info(rs.getString("OPT_INFO"));
-				order.setItem_count(rs.getInt("ITEM_COUNT"));
-				
-				order.setReview_num(rs.getInt("REVIEW_NUM"));
-			    order.setReview_rating(rs.getInt("REVIEW_RATING"));
-			    order.setReview_content(rs.getString("REVIEW_CONTENT"));
-				
-				list.add(order);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		return list;
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    List<AdminOrderVO> list = new ArrayList<>();
+
+	    try {
+	        conn = DBUtil.getConnection();
+
+	        String sql = "SELECT o.ORDER_NUM, o.PAY_PRICE, o.ORDER_STATUS, "
+	                   + "  TO_CHAR(o.ORDER_CREATED_AT, 'YYYY.MM.DD') AS ORDER_CREATED_AT, "
+	                   + "  p.PROD_NUM, p.PROD_NAME, "
+	                   + "  (SELECT img.PROD_IMG_URL FROM PROD_IMGS img "
+	                   + "   WHERE img.PROD_NUM = p.PROD_NUM AND img.IS_MAIN = 'Y' AND ROWNUM = 1) AS PROD_IMG_URL, "
+	                   + "  po.SIZE_VAL || 'mm / ' || po.COLOR AS OPT_INFO, "
+	                   + "  oi.ORDER_ITEM_QTY, oi.ORDER_ITEM_PRICE, "
+	                   
+	                   + "  (SELECT r.REVIEW_NUM FROM REVIEWS r "
+	                   + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM "
+	                   + "   AND r.PROD_NUM = p.PROD_NUM AND ROWNUM = 1) AS REVIEW_NUM, "
+	                   + "  (SELECT r.RATING FROM REVIEWS r "
+	                   + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM "
+	                   + "   AND r.PROD_NUM = p.PROD_NUM AND ROWNUM = 1) AS REVIEW_RATING, "
+	                   + "  (SELECT r.REVIEW_CONTENT FROM REVIEWS r "
+	                   + "   WHERE r.ORDER_NUM = o.ORDER_NUM AND r.USER_NUM = o.USER_NUM "
+	                   + "   AND r.PROD_NUM = p.PROD_NUM AND ROWNUM = 1) AS REVIEW_CONTENT "
+	                   + "FROM ORDERS o "
+	                   + "JOIN ORDER_ITEMS oi ON o.ORDER_NUM = oi.ORDER_NUM "
+	                   + "JOIN PRODUCTS p ON oi.PROD_NUM = p.PROD_NUM "
+	                   + "JOIN PROD_OPTIONS po ON oi.OPT_NUM = po.OPT_NUM "
+	                   + "WHERE o.USER_NUM = ? "
+	                   + "ORDER BY o.ORDER_NUM DESC, oi.ITEM_NUM ASC";
+
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setLong(1, user_num);
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            AdminOrderVO order = new AdminOrderVO();
+	            order.setOrder_num(rs.getInt("ORDER_NUM"));
+	            order.setPay_price(rs.getInt("PAY_PRICE"));
+	            order.setOrder_status(rs.getInt("ORDER_STATUS"));
+	            order.setOrder_created_at(rs.getString("ORDER_CREATED_AT"));
+	            order.setProd_num(rs.getInt("PROD_NUM"));
+	            order.setProd_name(rs.getString("PROD_NAME"));
+	            order.setProd_img_url(rs.getString("PROD_IMG_URL"));
+	            order.setOpt_info(rs.getString("OPT_INFO"));
+	            order.setOrder_item_qty(rs.getInt("ORDER_ITEM_QTY"));       
+	            order.setOrder_item_price(rs.getInt("ORDER_ITEM_PRICE"));   
+	            order.setReview_num(rs.getInt("REVIEW_NUM"));
+	            order.setReview_rating(rs.getInt("REVIEW_RATING"));
+	            order.setReview_content(rs.getString("REVIEW_CONTENT"));
+	            list.add(order);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new Exception(e);
+	    } finally {
+	        DBUtil.executeClose(rs, pstmt, conn);
+	    }
+	    return list;
 	}
 	
 	// ── 🌟 [추가 1] 마이페이지 반품 콤보박스용: 배송완료(상태4)된 개별 상품 목록 조회 ──
