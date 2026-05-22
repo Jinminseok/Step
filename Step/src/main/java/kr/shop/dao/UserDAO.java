@@ -20,43 +20,77 @@ public class UserDAO {
 	private UserDAO() {}
 	
 	// 회원가입
-	public int insertUser(UserVO user) throws Exception {
+	public void insertUser(UserVO user) throws Exception {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
+	    PreparedStatement pstmt2 = null;
+	    PreparedStatement pstmt3 = null;
 	    ResultSet rs = null;
-	    int newUserNum = 0;
+	    String sql = null;
+	    long user_num = 0;
+	    int cnt = 0;
 
 	    try {
 	        conn = DBUtil.getConnection();
+	        conn.setAutoCommit(false);
 
-	        // 1. 시퀀스에서 다음 번호 미리 조회
-	        String seqSql = "SELECT USER_SEQ.NEXTVAL FROM DUAL";
-	        pstmt = conn.prepareStatement(seqSql);
+	        sql = "SELECT users_seq.nextval FROM dual";
+	        pstmt = conn.prepareStatement(sql);
 	        rs = pstmt.executeQuery();
 	        if (rs.next()) {
-	            newUserNum = rs.getInt(1);
+	            user_num = rs.getLong(1);
 	        }
-	        DBUtil.executeClose(rs, pstmt, null);
 
-	        // 2. INSERT 시 조회한 번호 직접 사용
-	        String sql = "INSERT INTO USERS (USER_NUM, USER_ID, USER_NAME, PWD, PHONE, EMAIL, ZIPCODE, ADDR1, ADDR2, AUTH) " +
-	                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 2)";
-	        pstmt = conn.prepareStatement(sql);
-	        pstmt.setInt(1, newUserNum);
-	        pstmt.setString(2, user.getUser_id());
-	        pstmt.setString(3, user.getUser_name());
-	        pstmt.setString(4, user.getPwd());
-	        pstmt.setString(5, user.getPhone());
-	        pstmt.setString(6, user.getEmail());
-	        pstmt.setString(7, user.getZipcode());
-	        pstmt.setString(8, user.getAddr1());
-	        pstmt.setString(9, user.getAddr2());
-	        pstmt.executeUpdate();
+	        sql = "INSERT INTO users (user_num, user_id) VALUES (?,?)";
+	        pstmt2 = conn.prepareStatement(sql);
+	        pstmt2.setLong(1, user_num);
+	        pstmt2.setString(2, user.getUser_id());
+	        pstmt2.executeUpdate();
 
+	        sql = """
+	                INSERT INTO users_detail
+	                (user_num, user_name, pwd, phone, email, zipcode, addr1, addr2)
+	                VALUES (?,?,?,?,?,?,?,?)
+	                """;
+	        pstmt3 = conn.prepareStatement(sql);
+	        pstmt3.setLong(++cnt, user_num);
+	        pstmt3.setString(++cnt, user.getUser_name());
+	        pstmt3.setString(++cnt, user.getPwd());
+	        pstmt3.setString(++cnt, user.getPhone());
+	        pstmt3.setString(++cnt, user.getEmail());
+	        pstmt3.setString(++cnt, user.getZipcode());
+	        pstmt3.setString(++cnt, user.getAddr1());
+	        pstmt3.setString(++cnt, user.getAddr2());
+	        pstmt3.executeUpdate();
+
+	        conn.commit();
+	    } catch (Exception e) {
+	        conn.rollback();
+	        throw new Exception(e);
 	    } finally {
-	        DBUtil.executeClose(null, pstmt, conn);
+	        DBUtil.executeClose(null, pstmt3, null);
+	        DBUtil.executeClose(null, pstmt2, null);
+	        DBUtil.executeClose(rs, pstmt, conn);
 	    }
-	    return newUserNum; // ← user_num 반환
+	}
+
+	// 가입한 user_id로 user_num 조회
+	public long getUserNumByUserId(String user_id) throws Exception {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    long user_num = 0;
+	    try {
+	        conn = DBUtil.getConnection();
+	        String sql = "SELECT USER_NUM FROM USERS WHERE USER_ID = ?";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, user_id);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) user_num = rs.getLong("USER_NUM");
+	    } finally {
+	        DBUtil.executeClose(rs, pstmt, conn);
+	    }
+	    return user_num;
 	}
 	
 	// 아이디 중복 체크, 로그인 처리
