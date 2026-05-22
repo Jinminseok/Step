@@ -165,7 +165,7 @@ public class UserProductDAO {
 		List<AdminProductVO> list = null;
 		String sql = null;
 		
-		// 판매중(prod_status = 1) 조건
+		// 브랜드 조건(brand_num)을 위한 변수 추가
 		String sub_sql = "WHERE p.prod_status = 1 ";
 		int cnt = 0;
 
@@ -180,6 +180,10 @@ public class UserProductDAO {
 			}
 			if (filter.getCat_num() > 0) {
 				sub_sql += "AND p.cat_num = ? ";
+			}
+			// 브랜드 번호가 0보다 클 때 SQL 조건 추가
+			if (filter.getBrand_num() > 0) {
+				sub_sql += "AND p.brand_num = ? ";
 			}
 
 			sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
@@ -201,6 +205,10 @@ public class UserProductDAO {
 			}
 			if (filter.getCat_num() > 0) {
 				pstmt.setInt(++cnt, filter.getCat_num());
+			}
+			// 브랜드 파라미터 세팅
+			if (filter.getBrand_num() > 0) {
+				pstmt.setInt(++cnt, filter.getBrand_num());
 			}
 
 			pstmt.setInt(++cnt, filter.getStart_row());

@@ -1,6 +1,8 @@
 package kr.main.action;
 
 import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -8,8 +10,9 @@ import kr.controller.Action;
 import kr.shop.dao.UserProductDAO;
 import kr.shop.vo.AdminProductVO;
 
-// [추가] 배너 DAO와 VO를 사용하기 위해 import 합니다.
 import kr.shop.dao.BannerDAO;
+import kr.shop.dao.BrandDAO;
+import kr.shop.dao.CategoryDAO;
 import kr.shop.vo.BannerVO;
 
 public class MainAction implements Action {
@@ -19,12 +22,10 @@ public class MainAction implements Action {
 
 		UserProductDAO dao = UserProductDAO.getInstance();
 
-
 		// 메인 화면 슬라이드 배너 가져오기
 		BannerDAO bannerDao = BannerDAO.getInstance();
 		List<BannerVO> mainBannerList = bannerDao.getMainBanners();
 		request.setAttribute("mainBannerList", mainBannerList);
-		// =========================================================
 
 		// 사용자가 누른 페이지 번호 받기
 		String pageNumStr = request.getParameter("pageNum");
@@ -34,18 +35,20 @@ public class MainAction implements Action {
 		}
 
 		AdminProductVO filter = new AdminProductVO();
-		filter.setGender(-1);
+		filter.setGender(-1); // 기본값 세팅
 		
-		// 헤더의 카테고리 번호 받기
+		// 카테고리 번호와 브랜드 번호를 둘 다 받아서 filter에 세팅
 		String cat_num_param = request.getParameter("cat_num");
-		if (cat_num_param != null && !cat_num_param.isEmpty()) {
-			filter.setCat_num(Integer.parseInt(cat_num_param));
+		if (cat_num_param != null) {
+		    filter.setCat_num(Integer.parseInt(cat_num_param));
 		}
 		
-		// 카테고리의 탭 활성화
-		request.setAttribute("cat_num", filter.getCat_num());
-
-		// 전체 상품 개수를
+		String brand_num_param = request.getParameter("brand_num");
+		if (brand_num_param != null) {
+		    filter.setBrand_num(Integer.parseInt(brand_num_param));
+		}
+		
+		// 전체 상품 개수
 		int count = dao.getMainProductCount(filter); 
 
 		// 페이징 계산을 위한 변수 세팅
@@ -70,13 +73,28 @@ public class MainAction implements Action {
 		int startPage = ((pageNum - 1) / pageBlock) * pageBlock + 1;
 		int endPage = startPage + pageBlock - 1;
 		if (endPage > totalPage) endPage = totalPage;
+		
+		// DB에서 사용 중인 카테고리 목록 가져오기
+		CategoryDAO catDao = CategoryDAO.getInstance();
+		BrandDAO brandDao = BrandDAO.getInstance();
+		
+		// 사용 중인 카테고리, 브랜드 가져오기
+		List<Map<String, Object>> categoryList = catDao.getCategoryList(null, "Y");
+		List<Map<String, Object>> brandList = brandDao.getBrandList(null, "Y");
 
+		// request 속성 세팅
 		request.setAttribute("productList", productList);
-		request.setAttribute("count", count);             // 총 상품 수
-		request.setAttribute("currentPage", pageNum);     // 현재 페이지
-		request.setAttribute("totalPage", totalPage);     // 전체 페이지
-		request.setAttribute("startPage", startPage);     // 시작 페이지 번호
-		request.setAttribute("endPage", endPage);         // 끝 페이지 번호
+		request.setAttribute("count", count);
+		request.setAttribute("currentPage", pageNum);
+		request.setAttribute("totalPage", totalPage);
+		request.setAttribute("startPage", startPage);
+		request.setAttribute("endPage", endPage);
+		request.setAttribute("categoryList", categoryList); 
+		request.setAttribute("brandList", brandList);
+
+		// 화면에서 라디오 버튼 체크 유지를 위해 선택된 번호를 넘김
+		request.setAttribute("selected_cat", filter.getCat_num());
+		request.setAttribute("selected_brand", filter.getBrand_num());
 
 		return "shop/user/main.jsp";
 	}

@@ -241,52 +241,48 @@
         <%-- 좌측 필터 + 우측 상품 --%>
         <div class="home-layout">
 
-            <%-- 좌측 필터 사이드바 --%>
-            <div class="filter-side">
-                <form id="filterForm" action="${pageContext.request.contextPath}/shop/user/main.do" method="get">
-                    <input type="hidden" name="cat_num" value="${empty cat_num ? '0' : cat_num}">
-
-                    <div class="filter-box">
-                        <div class="filter-title">카테고리 ▾</div>
-                        <div class="filter-opts">
-                            <label class="filter-opt">
-                                <input type="radio" name="cat_num" value="0"
-                                       ${selected_cat == 0 ? 'checked' : ''}
-                                       onchange="document.getElementById('filterForm').submit();">
-                                전체보기
-                            </label>
-                            <c:forEach var="cat" items="${categoryList}">
-                                <label class="filter-opt">
-                                    <input type="radio" name="cat_num" value="${cat.cat_num}"
-                                           ${selected_cat == cat.cat_num ? 'checked' : ''}
-                                           onchange="document.getElementById('filterForm').submit();">
-                                    ${cat.cat_name}
-                                </label>
-                            </c:forEach>
-                        </div>
-                    </div>
-
-                    <div class="filter-box">
-                        <div class="filter-title">브랜드 ▾</div>
-                        <div class="filter-opts">
-                            <label class="filter-opt">
-                                <input type="radio" name="brand_num" value="0"
-                                       ${selected_brand == 0 ? 'checked' : ''}
-                                       onchange="document.getElementById('filterForm').submit();">
-                                전체 브랜드
-                            </label>
-                            <c:forEach var="brand" items="${brandList}">
-                                <label class="filter-opt">
-                                    <input type="radio" name="brand_num" value="${brand.brand_num}"
-                                           ${selected_brand == brand.brand_num ? 'checked' : ''}
-                                           onchange="document.getElementById('filterForm').submit();">
-                                    ${brand.brand_name}
-                                </label>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <%-- 좌측 필터 사이드바 (기존 form 제거 및 onclick 방식 적용) --%>
+			<div class="filter-side">
+			    <div class="filter-box">
+			        <div class="filter-title">카테고리 ▾</div>
+			        <div class="filter-opts">
+			            <label class="filter-opt">
+			                <input type="radio" name="cat_num" value="0"
+			                       ${selected_cat == 0 ? 'checked' : ''}
+			                       onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=0&brand_num=${selected_brand}'">
+			                전체보기
+			            </label>
+			            <c:forEach var="cat" items="${categoryList}">
+			                <label class="filter-opt">
+			                    <input type="radio" name="cat_num" value="${cat.catNum}"
+			                           ${selected_cat == cat.catNum ? 'checked' : ''}
+			                           onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${cat.catNum}&brand_num=${selected_brand}'">
+			                    ${cat.catName}
+			                </label>
+			            </c:forEach>
+			        </div>
+			    </div>
+			
+			    <div class="filter-box">
+			        <div class="filter-title">브랜드 ▾</div>
+			        <div class="filter-opts">
+			            <label class="filter-opt">
+			                <input type="radio" name="brand_num" value="0"
+			                       ${selected_brand == 0 ? 'checked' : ''}
+			                       onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${selected_cat}&brand_num=0'">
+			                전체 브랜드
+			            </label>
+			            <c:forEach var="brand" items="${brandList}">
+			                <label class="filter-opt">
+			                    <input type="radio" name="brand_num" value="${brand.brandNum}"
+			                           ${selected_brand == brand.brandNum ? 'checked' : ''}
+			                           onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${selected_cat}&brand_num=${brand.brandNum}'">
+			                    ${brand.brandName}
+			                </label>
+			            </c:forEach>
+			        </div>
+			    </div>
+			</div>
 
             <%-- 우측 상품 리스트 --%>
             <div class="prod-wrap" id="prod-list-area" style="flex:1;margin:0;padding:0;max-width:none;">
