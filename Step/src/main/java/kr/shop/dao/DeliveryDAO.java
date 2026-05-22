@@ -285,6 +285,26 @@ public class DeliveryDAO {
 	    }
 	    return dlvNum;
 	}
+	// 배송번호로 주문한 user_num 조회 (알림 발송용)
+	public int getUserNumByDlvNum(int dlvNum) throws Exception {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int userNum = 0;
+	    try {
+	        conn = DBUtil.getConnection();
+	        String sql = "SELECT o.USER_NUM FROM DELIVERY d " +
+	                     "JOIN ORDERS o ON d.ORDER_NUM = o.ORDER_NUM " +
+	                     "WHERE d.DLV_NUM = ?";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, dlvNum);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) userNum = rs.getInt("USER_NUM");
+	    } finally {
+	        DBUtil.executeClose(rs, pstmt, conn);
+	    }
+	    return userNum;
+	}
 }
 
 

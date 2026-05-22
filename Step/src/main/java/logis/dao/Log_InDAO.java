@@ -282,4 +282,23 @@ public class Log_InDAO {
         }
         return list;
     }
+  // 10. 입고번호로 prodNum 조회 (재입고 알림 발송용)
+    public int getProdNumByInNum(int inNum) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int prodNum = 0;
+        try {
+            conn = DBUtil.getConnection();
+            String sql = "SELECT PROD_NUM FROM INBOUND WHERE IN_NUM = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, inNum);
+            rs = pstmt.executeQuery();
+            if (rs.next()) prodNum = rs.getInt("PROD_NUM");
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return prodNum;
+    }
+
 }
