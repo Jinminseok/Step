@@ -39,7 +39,7 @@ public class ProductDetailAction implements Action {
 		List<String> colorList = dao.getProductColors(prod_num);
 		List<Integer> sizeList = dao.getProductSizes(prod_num);
 		int totalStock = dao.getProductTotalStock(prod_num);
-		
+
 		String optionJson = dao.getOptionStockJson(prod_num);
 		request.setAttribute("optionJson", optionJson);
 
@@ -70,25 +70,36 @@ public class ProductDetailAction implements Action {
 		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인
 		boolean isWished = false;
 		boolean hasPurchased = false;
-		
+
 		if(isLogin) {
 			// 회원이 상품을 찜했는지 검사
 			UserWishListDAO wishDao = UserWishListDAO.getInstance();
 			isWished = wishDao.checkWish(user_num, prod_num);
-			
+
 			// 회원이 상품을 구매했는지 검사
 			UserOrderDAO orderDao = UserOrderDAO.getInstance();
 			hasPurchased = orderDao.checkUserPurchase(user_num, prod_num);
 		}
-		
+
 		ReviewDAO revDao = ReviewDAO.getInstance();
 		List<Map<String, Object>> reviewList = revDao.getReviewListByProd(prod_num);
-		
+
+		// 리뷰 요약 정보(개수, 평균 평점) 가져오기
+		Map<String, Object> reviewSummary = revDao.getReviewSummary(prod_num);
+
 		// JSP로 반환
 		request.setAttribute("isWished", isWished);
 		request.setAttribute("hasPurchased", hasPurchased);
 		request.setAttribute("reviewList", reviewList);
-		request.setAttribute("reviewCount", reviewList.size()); // 리뷰 총 개수 표시용
+
+		// 리뷰 총 개수, 평균 평점, 반올림된 정수 평점을 JSP로 전송
+		request.setAttribute("reviewCount", reviewSummary.get("count"));
+		request.setAttribute("avgRating", reviewSummary.get("avgRating"));
+
+		// 정수 평점 계산
+		Double avgRatingDouble = (Double) reviewSummary.get("avgRating");
+		int floorRating = (int) Math.floor(avgRatingDouble);
+		request.setAttribute("floorRating", floorRating);
 
 		return "shop/product/productdetail.jsp";
 	}

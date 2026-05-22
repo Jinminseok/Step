@@ -42,15 +42,16 @@
                 <div class="detail-name">${product.prod_name}</div>
                 <div class="detail-eng" style="margin-bottom: 16px;">SKU: ${product.sku}</div>
                 
-                <div style="font-size:13px; color:var(--gray3); margin-bottom: 20px;">
-				    <span style="color:#fbc02d; font-size:15px;">
-				        <c:choose>
-				            <c:when test="${reviewCount > 0}">★★★★☆</c:when>
-				            <c:otherwise>☆☆☆☆☆</c:otherwise>
-				        </c:choose>
+                <div style="font-size:13px; color:var(--gray3); margin-bottom: 20px; display: flex; align-items: center;">
+				    <span style="position: relative; display: inline-block; color: #e2e8f0; font-size: 16px; letter-spacing: -1px;">
+				        ★★★★★
+				        <span style="position: absolute; top: 0; left: 0; overflow: hidden; white-space: nowrap; color: #fbc02d; width: ${reviewCount > 0 ? (avgRating / 5.0) * 100 : 0}%;">★★★★★</span>
 				    </span> 
-				    <span style="color:var(--black); font-weight:700;">${reviewCount > 0 ? 4.5 : 0}</span> 
-				    (리뷰 ${reviewCount}개)
+				    
+				    <span style="color:var(--black); font-weight:700; margin-left:6px;">
+				    	<fmt:formatNumber value="${avgRating}" pattern="0.0"/>
+				    </span> 
+				    <span style="margin-left: 4px;">(리뷰 ${reviewCount}개)</span>
 				</div>
                 
                 <%-- 가격 영역 --%>
@@ -191,10 +192,10 @@
 
             <div id="content-review" class="scroll-section" style="min-height: 500px; padding-top: 60px;">
 			    <div style="max-width: 900px; margin: 0 auto;">
-			        <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+			        <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: -5px; display: flex; justify-content: space-between; align-items: flex-end;">
 			            <h3 style="font-size: 18px; font-weight: 700;">상품 리뷰 (${reviewCount})</h3>
 			            
-			            <%-- 에러/성공 메시지 출력--%>
+			            <%-- 에러/성공 메시지 출력 --%>
 			            <c:if test="${not empty reviewMsg}">
 			                <script>
 			                    alert('${reviewMsg}');
@@ -216,9 +217,12 @@
 			            <div style="padding: 20px 0; border-bottom: 1px solid var(--border);">
 			                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
 			                    <span style="font-weight:700;">${rev.user_name}</span>
-			                    <span style="color:#fbc02d;">
-			                        <c:forEach begin="1" end="${rev.rating}">★</c:forEach>
+			                    
+			                    <span style="position: relative; display: inline-block; color: #e2e8f0; font-size: 14px; letter-spacing: -1px;">
+			                        ★★★★★
+			                        <span style="position: absolute; top: 0; left: 0; overflow: hidden; white-space: nowrap; color: #fbc02d; width: ${(rev.rating / 5.0) * 100}%;">★★★★★</span>
 			                    </span>
+			                    
 			                </div>
 			                <div style="font-size: 14px; color: var(--gray2); line-height: 1.6;">${rev.content}</div>
 			                <div style="font-size: 12px; color: var(--gray4); margin-top:8px;"><fmt:formatDate value="${rev.date}" pattern="yyyy.MM.dd"/></div>
@@ -228,41 +232,6 @@
 			</div>
         </div>
     </div>
-	<%-- ✅ 리뷰 작성 모달 --%>
-	<div id="modal-review" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 9999; align-items: center; justify-content: center;">
-	    <div style="background: #fff; width: 480px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, .2);">
-	        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--gray7);">
-	            <div style="font-size: 17px; font-weight: 700;">✏️ 리뷰 작성</div>
-	            <button onclick="closeReviewModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray4);">×</button>
-	        </div>
-	        
-	        <%-- 🌟 수정: form action을 새로운 상세페이지 전용 액션으로 변경 --%>
-	        <form action="${pageContext.request.contextPath}/shop/review/writeReviewDetail.do" method="post" id="reviewForm">
-	            <input type="hidden" name="prodNum" id="reviewProdNum">
-	            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-	                <div>
-	                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">상품명</div>
-	                    <div id="reviewProdName" style="font-weight: 600; font-size: 15px;"></div>
-	                </div>
-	                <div>
-	                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 8px;">별점 <span style="color: var(--red);">*</span></div>
-	                    <div class="star-wrap" style="display: flex; gap: 6px; font-size: 32px; cursor: pointer;">
-	                        <span class="star" data-val="1">☆</span> <span class="star" data-val="2">☆</span> <span class="star" data-val="3">☆</span> <span class="star" data-val="4">☆</span> <span class="star" data-val="5">☆</span>
-	                    </div>
-	                    <input type="hidden" name="rating" id="reviewRating" value="0">
-	                </div>
-	                <div>
-	                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">리뷰 내용 <span style="color: var(--red);">*</span></div>
-	                    <textarea name="reviewContent" id="reviewContent" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" placeholder="상품에 대한 솔직한 리뷰를 남겨주세요."></textarea>
-	                </div>
-	            </div>
-	            <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: var(--gray7);">
-	                <button type="button" onclick="closeReviewModal()" style="flex: 1; height: 44px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">취소</button>
-	                <button type="submit" style="flex: 2; height: 44px; background: var(--black); color: #fff; border: none; border-radius: 4px; cursor: pointer;">리뷰 등록</button>
-	            </div>
-	        </form>
-	    </div>
-	</div>
 
 <script>
 const isLogin = ${isLogin};
@@ -440,26 +409,26 @@ $(document).ready(function() {
 	    setStars(parseInt($('#reviewRating').val()) || 0);
 	});
 	
-	// 폼 검사
+	<%-- 폼 검사 로직 --%>
 	$('#reviewForm').on('submit', function(e) {
 	    const rating = parseInt($('#reviewRating').val()) || 0;
-	    const content = $('#reviewContent').val().trim(); // 입력된 글자 양쪽 공백 제거
+	    const content = $('#reviewContent').val().trim();
 
 	    if (rating === 0) {
 	        alert("별점을 선택해주세요.");
-	        e.preventDefault(); // 전송 막기
+	        e.preventDefault();
 	        return false;
 	    }
 
 	    if (content.length < 10) {
 	        alert("리뷰 내용을 최소 10자 이상 입력해주세요. (현재 " + content.length + "자)");
-	        e.preventDefault(); // 전송 막기
+	        e.preventDefault();
 	        return false;
 	    }
 	});
 });
 
-//별점 색상 변경 함수
+// 별점 색상 변경 함수
 function setStars(val) {
 	$('.star').each(function() {
 	    const starVal = parseInt($(this).data('val'));
@@ -468,7 +437,7 @@ function setStars(val) {
 	});
 }
 
-//모달 열기
+// 모달 열기
 function openReviewModalFromDetail(prodNum, prodName) {
 	$('#reviewProdNum').val(prodNum);
 	$('#reviewProdName').text(prodName);
@@ -478,13 +447,13 @@ function openReviewModalFromDetail(prodNum, prodName) {
 	$('#modal-review').css('display', 'flex');
 }
 
-//모달 닫기
+// 모달 닫기
 function closeReviewModal() {
 	$('#modal-review').hide();
 }
 </script>
 
-<%-- ✅ 리뷰 작성 모달 (상세페이지 전용) --%>
+<%-- 리뷰 작성 모달 (상세페이지 전용) --%>
 <div id="modal-review" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 9999; align-items: center; justify-content: center;">
 	<div style="background: #fff; width: 480px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, .2);">
     	<div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--gray7);">
@@ -492,6 +461,7 @@ function closeReviewModal() {
         	<button type="button" onclick="closeReviewModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray4);">×</button>
     	</div>
      
+	    <%-- 상세페이지 전용 액션 --%>
 	    <form action="${pageContext.request.contextPath}/shop/review/writeReviewDetail.do" method="post" id="reviewForm">
 	        <input type="hidden" name="prodNum" id="reviewProdNum">
 	        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">

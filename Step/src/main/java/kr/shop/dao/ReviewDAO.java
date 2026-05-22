@@ -132,7 +132,7 @@ public class ReviewDAO {
 	    try {
 	        conn = DBUtil.getConnection();
 	        String sql = "SELECT MAX(o.order_num) FROM orders o JOIN order_items oi ON o.order_num = oi.order_num "
-	                   + "WHERE o.user_num = ? AND oi.prod_num = ? AND o.order_status = 4"; // 4: 배송완료
+	                   + "WHERE o.user_num = ? AND oi.prod_num = ? AND o.order_status = 4";
 	        pstmt = conn.prepareStatement(sql);
 	        pstmt.setLong(1, userNum);
 	        pstmt.setInt(2, prodNum);
@@ -142,6 +142,30 @@ public class ReviewDAO {
 	        DBUtil.executeClose(rs, pstmt, conn);
 	    }
 	    return orderNum;
+	}
+	
+	// 해당 상품의 리뷰 총 개수와 평균 평점
+	public Map<String, Object> getReviewSummary(int prod_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Map<String, Object> map = new java.util.HashMap<>();
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "SELECT COUNT(*) cnt, TRUNC(AVG(rating), 1) avg_rating FROM reviews WHERE prod_num = ? AND review_status = 1";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, prod_num);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				map.put("count", rs.getInt("cnt"));
+				// 평점이 없을 땐 0.0
+				map.put("avgRating", rs.getObject("avg_rating") == null ? 0.0 : rs.getDouble("avg_rating"));
+			}
+		} finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		return map;
 	}
 	
 }
