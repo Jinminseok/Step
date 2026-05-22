@@ -20,58 +20,43 @@ public class UserDAO {
 	private UserDAO() {}
 	
 	// 회원가입
-	public void insertUser(UserVO user) throws Exception{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		PreparedStatement pstmt2 = null;
-		PreparedStatement pstmt3 = null;
-		ResultSet rs = null;
-		String sql = null;
-		long user_num = 0;
-		int cnt = 0;
-		
-		try {
-			conn = DBUtil.getConnection();
-			conn.setAutoCommit(false);
-			sql = "SELECT users_seq.nextval FROM dual";
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			if(rs.next()) {
-				user_num = rs.getLong(1);
-			}
-			
-			sql = "INSERT INTO users (user_num, user_id) VALUES (?,?)";
-			pstmt2 = conn.prepareStatement(sql);
-			pstmt2.setLong(1, user_num);
-			pstmt2.setString(2, user.getUser_id());
-			pstmt2.executeUpdate();
-			
-			sql = """
-					INSERT INTO users_detail
-					(user_num, user_name, pwd, phone, email, zipcode, addr1, addr2)
-					VALUES (?,?,?,?,?,?,?,?)
-					""";
-			pstmt3 = conn.prepareStatement(sql);
-			
-			pstmt3.setLong(++cnt, user_num);
-			pstmt3.setString(++cnt, user.getUser_name());
-			pstmt3.setString(++cnt, user.getPwd());
-			pstmt3.setString(++cnt, user.getPhone());
-			pstmt3.setString(++cnt, user.getEmail());
-			pstmt3.setString(++cnt, user.getZipcode());
-			pstmt3.setString(++cnt, user.getAddr1());
-			pstmt3.setString(++cnt, user.getAddr2());
-			
-			pstmt3.executeUpdate();
-			conn.commit();
-		} catch(Exception e) {
-			conn.rollback();
-			throw new Exception(e);
-		} finally {
-			DBUtil.executeClose(null, pstmt3, null);
-			DBUtil.executeClose(null, pstmt2, null);
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
+	public int insertUser(UserVO user) throws Exception {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int newUserNum = 0;
+
+	    try {
+	        conn = DBUtil.getConnection();
+
+	        // 1. 시퀀스에서 다음 번호 미리 조회
+	        String seqSql = "SELECT USER_SEQ.NEXTVAL FROM DUAL";
+	        pstmt = conn.prepareStatement(seqSql);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            newUserNum = rs.getInt(1);
+	        }
+	        DBUtil.executeClose(rs, pstmt, null);
+
+	        // 2. INSERT 시 조회한 번호 직접 사용
+	        String sql = "INSERT INTO USERS (USER_NUM, USER_ID, USER_NAME, PWD, PHONE, EMAIL, ZIPCODE, ADDR1, ADDR2, AUTH) " +
+	                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 2)";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, newUserNum);
+	        pstmt.setString(2, user.getUser_id());
+	        pstmt.setString(3, user.getUser_name());
+	        pstmt.setString(4, user.getPwd());
+	        pstmt.setString(5, user.getPhone());
+	        pstmt.setString(6, user.getEmail());
+	        pstmt.setString(7, user.getZipcode());
+	        pstmt.setString(8, user.getAddr1());
+	        pstmt.setString(9, user.getAddr2());
+	        pstmt.executeUpdate();
+
+	    } finally {
+	        DBUtil.executeClose(null, pstmt, conn);
+	    }
+	    return newUserNum; // ← user_num 반환
 	}
 	
 	// 아이디 중복 체크, 로그인 처리

@@ -279,7 +279,7 @@
 			href="${pageContext.request.contextPath}/shop/admin/adminStoreList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'store') ? 'active' : ''}">
 			<span class="nav-icon">🗺️</span>매장 정보 관리
-		</a> <a href="${pageContext.request.contextPath}/shop/admin/notifyList.do"
+		</a> <a href="${pageContext.request.contextPath}/shop/notify/notifyList.do"
 			class="nav-item ${fn:contains(pageContext.request.servletPath, 'notify') ? 'active' : ''}">
 			<span class="nav-icon">🔔</span>알림 발송 관리
 		</a>

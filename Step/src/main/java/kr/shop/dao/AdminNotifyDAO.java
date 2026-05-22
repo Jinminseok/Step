@@ -7,202 +7,205 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.util.DBUtil;
-import kr.shop.vo.AdminNotifyVO;
+import kr.shop.vo.UserNotifyVO; // ← AdminNotifyVO 없으므로 UserNotifyVO 사용
 
 public class AdminNotifyDAO {
 
-	private static AdminNotifyDAO instance = new AdminNotifyDAO();
+    private static AdminNotifyDAO instance = new AdminNotifyDAO();
+    public static AdminNotifyDAO getInstance() { return instance; }
+    private AdminNotifyDAO() {}
 
-	public static AdminNotifyDAO getInstance() {
-		return instance;
-	}
+    // ─────────────────────────────────────────
+    // 1. 공지 일괄 발송 (전체 / 등급 / 특정회원)
+    // ─────────────────────────────────────────
+    public int insertNoticeByCondition(UserNotifyVO vo, String targetType, String targetValue) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        int insertedCount = 0;
+        try {
+            conn = DBUtil.getConnection();
+            String sql = "";
 
-	private AdminNotifyDAO() {
-	}
+            if ("USER".equals(targetType)) {
+                sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) " +
+                      "SELECT NOTIFY_SEQ.NEXTVAL, USER_NUM, ?, ?, ? " +
+                      "FROM USERS WHERE USER_ID = ? AND AUTH = 2";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, vo.getNotify_type());
+                pstmt.setString(2, vo.getNotify_title());
+                pstmt.setString(3, vo.getNotify_content());
+                pstmt.setString(4, targetValue);
 
-	// 1. 일반 개별 알림 발송 (배송/재입고 등)
-	public void insertNotify(AdminNotifyVO vo) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		String sql = "";
+            } else if ("GRADE".equals(targetType)) {
+                sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) " +
+                      "SELECT NOTIFY_SEQ.NEXTVAL, u.USER_NUM, ?, ?, ? " +
+                      "FROM USERS u JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM " +
+                      "WHERE u.AUTH = 2 AND ud.GRADE = ?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, vo.getNotify_type());
+                pstmt.setString(2, vo.getNotify_title());
+                pstmt.setString(3, vo.getNotify_content());
+                pstmt.setInt(4, Integer.parseInt(targetValue));
 
-		try {
-			conn = DBUtil.getConnection();
-			sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT, REF_ID) "
-					+ "VALUES (NOTIFY_SEQ.NEXTVAL, ?, ?, ?, ?, ?)";
+            } else { // ALL
+                sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) " +
+                      "SELECT NOTIFY_SEQ.NEXTVAL, USER_NUM, ?, ?, ? " +
+                      "FROM USERS WHERE AUTH = 2";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, vo.getNotify_type());
+                pstmt.setString(2, vo.getNotify_title());
+                pstmt.setString(3, vo.getNotify_content());
+            }
 
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, vo.getUser_num());
-			pstmt.setInt(2, vo.getNotify_type());
-			pstmt.setString(3, vo.getNotify_title());
-			pstmt.setString(4, vo.getNotify_content());
+            insertedCount = pstmt.executeUpdate();
+        } finally {
+            DBUtil.executeClose(null, pstmt, conn);
+        }
+        return insertedCount;
+    }
 
-			if (vo.getRef_id() == 0) {
-				pstmt.setNull(5, java.sql.Types.NUMERIC);
-			} else {
-				pstmt.setInt(5, vo.getRef_id());
-			}
-			pstmt.executeUpdate();
-		} finally {
-			DBUtil.executeClose(null, pstmt, conn);
-		}
-	}
+    // ─────────────────────────────────────────
+    // 2. 알림 이력 총 개수
+    // ─────────────────────────────────────────
+    public int getNotifyTotalCount(UserNotifyVO vo) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int count = 0;
+        StringBuilder sql = new StringBuilder();
+        try {
+            conn = DBUtil.getConnection();
+            sql.append("SELECT COUNT(*) FROM NOTIFY n ")
+               .append("JOIN USERS u ON n.USER_NUM = u.USER_NUM ")
+               .append("LEFT JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM ");
 
-	// 2. [동적 발송] 발송 대상(전체, 등급, 특정ID)에 따른 공지 일괄 전송
-	public int insertNoticeByCondition(AdminNotifyVO vo, String targetType, String targetValue) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		String sql = "";
-		int insertedCount = 0;
+            boolean hasType    = (vo.getNotify_type() > 0);
+            boolean hasKeyword = (vo.getKeyword() != null && !vo.getKeyword().trim().isEmpty());
 
-		try {
-			conn = DBUtil.getConnection();
+            if (hasType || hasKeyword) sql.append("WHERE ");
+            if (hasType)               sql.append("n.NOTIFY_TYPE = ? ");
+            if (hasType && hasKeyword) sql.append("AND ");
+            if (hasKeyword)            sql.append("(u.USER_ID LIKE ? OR ud.USER_NAME LIKE ? OR n.NOTIFY_TITLE LIKE ?) ");
 
-			if ("USER".equals(targetType)) {
-				// 특정 회원 ID 발송
-				sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) "
-						+ "SELECT NOTIFY_SEQ.NEXTVAL, USER_NUM, ?, ?, ? " + "FROM USERS WHERE USER_ID = ? AND AUTH = 2";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, vo.getNotify_type());
-				pstmt.setString(2, vo.getNotify_title());
-				pstmt.setString(3, vo.getNotify_content());
-				pstmt.setString(4, targetValue);
+            pstmt = conn.prepareStatement(sql.toString());
+            int idx = 1;
+            if (hasType) pstmt.setInt(idx++, vo.getNotify_type());
+            if (hasKeyword) {
+                String kw = "%" + vo.getKeyword() + "%";
+                pstmt.setString(idx++, kw);
+                pstmt.setString(idx++, kw);
+                pstmt.setString(idx++, kw);
+            }
+            rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return count;
+    }
 
-			} else if ("GRADE".equals(targetType)) {
-				// 특정 등급 발송
-				sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) "
-						+ "SELECT NOTIFY_SEQ.NEXTVAL, u.USER_NUM, ?, ?, ? "
-						+ "FROM USERS u JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM "
-						+ "WHERE u.AUTH = 2 AND ud.GRADE = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, vo.getNotify_type());
-				pstmt.setString(2, vo.getNotify_title());
-				pstmt.setString(3, vo.getNotify_content());
-				pstmt.setInt(4, Integer.parseInt(targetValue));
+    // ─────────────────────────────────────────
+    // 3. 알림 이력 목록 조회 (페이징)
+    // ─────────────────────────────────────────
+    public List<UserNotifyVO> getNotifyList(UserNotifyVO vo) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<UserNotifyVO> list = new ArrayList<>();
+        StringBuilder sub_sql = new StringBuilder();
 
-			} else {
-				// ALL: 전체 회원 발송
-				sql = "INSERT INTO NOTIFY (NOTIFY_NUM, USER_NUM, NOTIFY_TYPE, NOTIFY_TITLE, NOTIFY_CONTENT) "
-						+ "SELECT NOTIFY_SEQ.NEXTVAL, USER_NUM, ?, ?, ? " + "FROM USERS WHERE AUTH = 2";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, vo.getNotify_type());
-				pstmt.setString(2, vo.getNotify_title());
-				pstmt.setString(3, vo.getNotify_content());
-			}
+        try {
+            conn = DBUtil.getConnection();
+            boolean hasType    = (vo.getNotify_type() > 0);
+            boolean hasKeyword = (vo.getKeyword() != null && !vo.getKeyword().trim().isEmpty());
 
-			insertedCount = pstmt.executeUpdate();
-		} finally {
-			DBUtil.executeClose(null, pstmt, conn);
-		}
-		return insertedCount;
-	}
+            if (hasType || hasKeyword) sub_sql.append("WHERE ");
+            if (hasType)               sub_sql.append("n.NOTIFY_TYPE = ? ");
+            if (hasType && hasKeyword) sub_sql.append("AND ");
+            if (hasKeyword)            sub_sql.append("(u.USER_ID LIKE ? OR ud.USER_NAME LIKE ? OR n.NOTIFY_TITLE LIKE ?) ");
 
-	// 3. 알림 발송 이력 카운트
-	public int getNotifyTotalCount(AdminNotifyVO vo) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		int count = 0;
-		StringBuilder sql = new StringBuilder();
+            String sql = "SELECT * FROM ( " +
+                         "  SELECT a.*, ROWNUM rnum FROM ( " +
+                         "    SELECT n.NOTIFY_NUM, n.NOTIFY_TYPE, n.NOTIFY_TITLE, n.NOTIFY_CONTENT, " +
+                         "           n.READ_YN, n.NOTIFY_CREATED_AT, u.USER_ID, ud.USER_NAME " +
+                         "    FROM NOTIFY n " +
+                         "    JOIN USERS u ON n.USER_NUM = u.USER_NUM " +
+                         "    LEFT JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM " +
+                         sub_sql.toString() +
+                         "    ORDER BY n.NOTIFY_NUM DESC " +
+                         "  ) a " +
+                         ") WHERE rnum >= ? AND rnum <= ?";
 
-		try {
-			conn = DBUtil.getConnection();
-			sql.append("SELECT COUNT(*) FROM NOTIFY n " + "JOIN USERS u ON n.USER_NUM = u.USER_NUM "
-					+ "LEFT JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM ");
+            pstmt = conn.prepareStatement(sql);
+            int idx = 1;
+            if (hasType) pstmt.setInt(idx++, vo.getNotify_type());
+            if (hasKeyword) {
+                String kw = "%" + vo.getKeyword() + "%";
+                pstmt.setString(idx++, kw);
+                pstmt.setString(idx++, kw);
+                pstmt.setString(idx++, kw);
+            }
+            pstmt.setInt(idx++, vo.getStart_row());
+            pstmt.setInt(idx++, vo.getEnd_row());
 
-			boolean hasType = (vo.getNotify_type() > 0);
-			boolean hasKeyword = (vo.getKeyword() != null && !vo.getKeyword().trim().isEmpty());
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                UserNotifyVO nvo = new UserNotifyVO();
+                nvo.setNotify_num(rs.getInt("NOTIFY_NUM"));
+                nvo.setNotify_type(rs.getInt("NOTIFY_TYPE"));
+                nvo.setNotify_title(rs.getString("NOTIFY_TITLE"));
+                nvo.setNotify_content(rs.getString("NOTIFY_CONTENT"));
+                nvo.setRead_yn(rs.getString("READ_YN"));
+                nvo.setNotify_created_at(rs.getDate("NOTIFY_CREATED_AT"));
+                nvo.setUser_id(rs.getString("USER_ID"));
+                nvo.setUser_name(rs.getString("USER_NAME"));
+                list.add(nvo);
+            }
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return list;
+    }
 
-			if (hasType || hasKeyword)
-				sql.append("WHERE ");
-			if (hasType)
-				sql.append("n.NOTIFY_TYPE = ? ");
-			if (hasType && hasKeyword)
-				sql.append("AND ");
-			if (hasKeyword)
-				sql.append("(u.USER_ID LIKE ? OR ud.USER_NAME LIKE ? OR n.NOTIFY_TITLE LIKE ?) ");
+    // ─────────────────────────────────────────
+    // 4. 재입고: 해당 상품 찜한 유저 목록
+    // ─────────────────────────────────────────
+    public List<Integer> getUserNumsByProdNum(int prod_num) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<Integer> userNums = new ArrayList<>();
+        try {
+            conn = DBUtil.getConnection();
+            String sql = "SELECT USER_NUM FROM WISH WHERE PROD_NUM = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, prod_num);
+            rs = pstmt.executeQuery();
+            while (rs.next()) userNums.add(rs.getInt("USER_NUM"));
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return userNums;
+    }
 
-			pstmt = conn.prepareStatement(sql.toString());
-
-			int idx = 1;
-			if (hasType)
-				pstmt.setInt(idx++, vo.getNotify_type());
-			if (hasKeyword) {
-				String keyword = "%" + vo.getKeyword() + "%";
-				pstmt.setString(idx++, keyword);
-				pstmt.setString(idx++, keyword);
-				pstmt.setString(idx++, keyword);
-			}
-
-			rs = pstmt.executeQuery();
-			if (rs.next())
-				count = rs.getInt(1);
-		} finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		return count;
-	}
-
-	// 4. 알림 발송 이력 조회
-	public List<AdminNotifyVO> getNotifyList(AdminNotifyVO vo) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		List<AdminNotifyVO> list = new ArrayList<>();
-		StringBuilder sub_sql = new StringBuilder();
-
-		try {
-			conn = DBUtil.getConnection();
-
-			boolean hasType = (vo.getNotify_type() > 0);
-			boolean hasKeyword = (vo.getKeyword() != null && !vo.getKeyword().trim().isEmpty());
-
-			if (hasType || hasKeyword)
-				sub_sql.append("WHERE ");
-			if (hasType)
-				sub_sql.append("n.NOTIFY_TYPE = ? ");
-			if (hasType && hasKeyword)
-				sub_sql.append("AND ");
-			if (hasKeyword)
-				sub_sql.append("(u.USER_ID LIKE ? OR ud.USER_NAME LIKE ? OR n.NOTIFY_TITLE LIKE ?) ");
-
-			String sql = "SELECT * FROM ( " + "  SELECT a.*, ROWNUM rnum FROM ( "
-					+ "    SELECT n.NOTIFY_NUM, n.NOTIFY_TYPE, n.NOTIFY_TITLE, n.NOTIFY_CONTENT, "
-					+ "           n.READ_YN, n.NOTIFY_CREATED_AT, u.USER_ID, ud.USER_NAME " + "    FROM NOTIFY n "
-					+ "    JOIN USERS u ON n.USER_NUM = u.USER_NUM "
-					+ "    LEFT JOIN USERS_DETAIL ud ON u.USER_NUM = ud.USER_NUM " + sub_sql.toString()
-					+ "    ORDER BY n.NOTIFY_NUM DESC " + "  ) a " + ") WHERE rnum >= ? AND rnum <= ?";
-
-			pstmt = conn.prepareStatement(sql);
-
-			int idx = 1;
-			if (hasType)
-				pstmt.setInt(idx++, vo.getNotify_type());
-			if (hasKeyword) {
-				String keyword = "%" + vo.getKeyword() + "%";
-				pstmt.setString(idx++, keyword);
-				pstmt.setString(idx++, keyword);
-				pstmt.setString(idx++, keyword);
-			}
-			pstmt.setInt(idx++, vo.getStart_row());
-			pstmt.setInt(idx++, vo.getEnd_row());
-
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				AdminNotifyVO nvo = new AdminNotifyVO();
-				nvo.setNotify_num(rs.getInt("NOTIFY_NUM"));
-				nvo.setNotify_type(rs.getInt("NOTIFY_TYPE"));
-				nvo.setNotify_title(rs.getString("NOTIFY_TITLE"));
-				nvo.setNotify_content(rs.getString("NOTIFY_CONTENT"));
-				nvo.setRead_yn(rs.getString("READ_YN"));
-				nvo.setNotify_created_at(rs.getDate("NOTIFY_CREATED_AT"));
-				nvo.setUser_id(rs.getString("USER_ID"));
-				nvo.setUser_name(rs.getString("USER_NAME"));
-				list.add(nvo);
-			}
-		} finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		return list;
-	}
+    // ─────────────────────────────────────────
+    // 5. 상품명 조회
+    // ─────────────────────────────────────────
+    public String getProdNameByNum(int prod_num) throws Exception {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String prodName = "";
+        try {
+            conn = DBUtil.getConnection();
+            String sql = "SELECT PROD_NAME FROM PRODUCT WHERE PROD_NUM = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, prod_num);
+            rs = pstmt.executeQuery();
+            if (rs.next()) prodName = rs.getString("PROD_NAME");
+        } finally {
+            DBUtil.executeClose(rs, pstmt, conn);
+        }
+        return prodName;
+    }
 }
