@@ -324,14 +324,16 @@ if (initMsgs.length > 0) {
     renderMsgs(initMsgs);
 }
 
+let isSending = false;
+
 function sendMsg() {
     var input   = document.getElementById('msgInput');
     var content = input.value.trim();
-    if (!content) return;
+    if (!content || isSending) return; 
 
+    isSending = true;
     document.getElementById('sendBtn').disabled = true;
 
-    // 낙관적 UI: 전송 즉시 화면에 표시
     var tempMsg = {
         msgNum: -1,
         msgSender: 1,
@@ -343,7 +345,7 @@ function sendMsg() {
     document.getElementById('chatMsgs').insertAdjacentHTML('beforeend', buildMsgHtml(tempMsg));
     scrollBottom();
     input.value = '';
-    input.style.height = 'auto'; // 입력창 높이 초기화
+    input.style.height = 'auto';
 
     fetch(CTX + '/shop/chat/chatSend.do', {
         method: 'POST',
@@ -354,11 +356,12 @@ function sendMsg() {
     .then(function(data) {
         if (data.result === 'ok') {
             ROOM_NUM = data.roomNum; 
-            loadMsgs();             
+            loadMsgs();
         }
-        document.getElementById('sendBtn').disabled = false;
     })
-    .catch(function() {
+    .catch(function(e) { console.log('전송 오류:', e); })
+    .finally(function() {
+        isSending = false; 
         document.getElementById('sendBtn').disabled = false;
     });
 }

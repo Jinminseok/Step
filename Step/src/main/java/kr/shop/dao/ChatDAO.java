@@ -87,26 +87,39 @@ public class ChatDAO {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // ← 트랜잭션 시작
+            conn.setAutoCommit(false); 
 
             // 방이 없으면 같은 커넥션으로 생성
             if (roomNum <= 0) {
+                //먼저 기존 방이 있는지 확인
                 pstmt = conn.prepareStatement(
-                    "INSERT INTO CHAT_ROOMS (ROOM_NUM, USER_NUM, ROOM_STATUS, ROOM_CREATED_AT) " +
-                    "VALUES (CHAT_ROOMS_SEQ.NEXTVAL, ?, 1, SYSDATE)");
-                pstmt.setInt(1, userNum);
-                pstmt.executeUpdate();
-                pstmt.close();
-
-                // 생성된 방 번호 조회 (같은 커넥션)
-                pstmt = conn.prepareStatement(
-                    "SELECT ROOM_NUM FROM CHAT_ROOMS WHERE USER_NUM = ? AND ROOM_STATUS = 1 " +
-                    "ORDER BY ROOM_NUM DESC");
+                    "SELECT ROOM_NUM FROM CHAT_ROOMS WHERE USER_NUM = ? AND ROOM_STATUS = 1");
                 pstmt.setInt(1, userNum);
                 rs = pstmt.executeQuery();
-                if (rs.next()) roomNum = rs.getInt("ROOM_NUM");
+                if (rs.next()) {
+                    roomNum = rs.getInt("ROOM_NUM"); // 기존 방 재사용
+                }
                 rs.close();
                 pstmt.close();
+
+                //기존 방이 없을 때만 새로 생성
+                if (roomNum <= 0) {
+                    pstmt = conn.prepareStatement(
+                        "INSERT INTO CHAT_ROOMS (ROOM_NUM, USER_NUM, ROOM_STATUS, ROOM_CREATED_AT) " +
+                        "VALUES (CHAT_ROOMS_SEQ.NEXTVAL, ?, 1, SYSDATE)");
+                    pstmt.setInt(1, userNum);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+
+                    pstmt = conn.prepareStatement(
+                        "SELECT ROOM_NUM FROM CHAT_ROOMS WHERE USER_NUM = ? AND ROOM_STATUS = 1 " +
+                        "ORDER BY ROOM_NUM DESC");
+                    pstmt.setInt(1, userNum);
+                    rs = pstmt.executeQuery();
+                    if (rs.next()) roomNum = rs.getInt("ROOM_NUM");
+                    rs.close();
+                    pstmt.close();
+                }
             }
 
             // 메시지 INSERT (방이 확실히 존재하는 상태)
