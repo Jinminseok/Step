@@ -19,33 +19,36 @@
 .tab.on{color:var(--blue);border-bottom-color:var(--blue)}
 .tab:hover:not(.on){color:var(--gray2)}
 
-/* ══ ALERT ══ */
-.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:8px;font-size:12.5px;line-height:1.6;border:1px solid;margin-bottom:16px}
-.alert-amber{background:var(--amber-lt);border-color:#FCD34D;color:#78350F}
-.alert-red{background:var(--red-lt);border-color:#FECACA;color:#991B1B}
-.alert-green{background:var(--green-lt);border-color:#6EE7B7;color:#065F46}
-.alert-blue{background:var(--blue-lt);border-color:#93C5FD;color:#1E3A8A}
-.alert-ico{flex-shrink:0;font-size:15px;margin-top:1px}
+.date-input{
+  padding:7px 10px;border:1.5px solid var(--gray5);background:var(--white);
+  font-size:12px;font-family:'Pretendard',sans-serif;color:var(--gray2);
+  outline:none;border-radius:6px;transition:border .15s;
+}
+.date-input:focus{border-color:var(--blue)}
 
-/* ══ KPI ══ */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.kpi{background:var(--white);border:1px solid var(--gray6);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(15,32,68,.06);position:relative;overflow:hidden}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.kpi.red::before{background:var(--red)}.kpi.amber::before{background:var(--amber)}.kpi.blue::before{background:var(--blue)}.kpi.green::before{background:var(--green)}
-.kpi-label{font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.kpi-val{font-family:'DM Mono',monospace;font-size:26px;font-weight:700;margin-bottom:4px}
-.kpi-val.c-red{color:var(--red)}.kpi-val.c-amber{color:var(--amber)}.kpi-val.c-blue{color:var(--blue)}.kpi-val.c-green{color:var(--green)}
-.kpi-sub{font-size:11px;color:var(--gray4)}
-
-/* ══ TOOLBAR ══ */
-.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.search-wrap{position:relative;flex:1;min-width:200px;max-width:280px}
-.search-wrap input{width:100%;padding:9px 12px 9px 32px;border:1.5px solid var(--gray5);background:var(--white);border-radius:7px;font-size:12.5px;color:var(--gray1);font-family:'Pretendard',sans-serif;outline:none;transition:all .15s}
-.search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,228,.08)}
-.search-wrap input::placeholder{color:var(--gray4)}
-.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray4);font-size:13px}
-.sel{padding:9px 12px;border:1.5px solid var(--gray5);background:var(--white);font-size:12.5px;font-family:'Pretendard',sans-serif;color:var(--gray2);outline:none;border-radius:7px;cursor:pointer;transition:border .15s}
-.sel:focus{border-color:var(--blue)}
+/* ══ TOOLBAR & FILTER BAR ══ */
+.filter-container {
+  background: #fff; padding: 15px 20px; border-radius: 8px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;
+}
+.filter-form {
+  display: flex; align-items: center; justify-content: flex-start; 
+  gap: 15px; flex-wrap: wrap;
+}
+.filter-group {
+  display: flex; align-items: center; gap: 8px;
+}
+.filter-label {
+  font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;
+}
+.filter-select {
+  padding: 5px 10px; border: 1px solid var(--gray5); border-radius: 4px; 
+  font-size: 13px; cursor: pointer; background: #fff; height: 30px;
+}
+.filter-input {
+  width: 160px; padding: 5px 10px; border: 1px solid var(--gray5); 
+  border-radius: 4px; font-size: 13px; height: 30px; box-sizing: border-box;
+}
 
 /* ══ BUTTONS ══ */
 .btn{padding:9px 16px;border:none;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
@@ -53,8 +56,6 @@
 .btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#059669}
 .btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#DC2626}
 .btn-outline{background:var(--white);color:var(--gray2);border:1.5px solid var(--gray5)}.btn-outline:hover{border-color:var(--gray3);color:var(--gray1)}
-.btn-ghost{background:transparent;color:var(--gray3);border:1.5px solid var(--gray5)}.btn-ghost:hover{color:var(--gray1);border-color:var(--gray3)}
-.btn-amber{background:var(--amber);color:#fff}.btn-amber:hover{background:#D97706}
 .btn-sm{padding:7px 13px;font-size:12px}
 .btn-xs{padding:4px 10px;font-size:11px}
 
@@ -64,14 +65,9 @@
 .tbl-top-info{font-size:12px;color:var(--gray3)}.tbl-top-info strong{color:var(--gray1)}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-thead{position:sticky;top:0;z-index:5}
 th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.08em;background:var(--gray7);border-bottom:1px solid var(--gray6);text-align:left;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid var(--gray7);font-size:12.5px;color:var(--gray2);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.tbl-row{cursor:pointer;transition:background .12s}
-.tbl-row:hover td{background:#F5F8FF}
-td:first-child{border-left:3px solid transparent;padding-left:11px}
-.tbl-row.selected td{background:var(--blue-lt)}.tbl-row.selected td:first-child{border-left-color:var(--blue)}
 
 /* ══ BADGE ══ */
 .bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10.5px;font-weight:700;white-space:nowrap;gap:4px}
@@ -81,11 +77,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 .bdg-green{background:var(--green-lt);color:#065F46}
 .bdg-blue{background:var(--blue-lt);color:var(--blue)}
 .bdg-gray{background:var(--gray7);color:var(--gray3)}
-
-/* ══ STOCK STATUS INDICATOR ══ */
-.stock-ind{display:flex;align-items:center;gap:5px;font-size:12px}
-.stock-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.s-good{background:var(--green)}.s-bad{background:var(--red)}.s-pend{background:var(--gray4)}
 
 /* ══ PAGINATION ══ */
 .pagination-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--gray6)}
@@ -104,10 +95,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 /* SECTION TITLE */
 .sec-title{font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray7);display:flex;align-items:center;gap:6px}
 .sec-title::before{content:'';width:3px;height:12px;background:var(--blue);border-radius:2px;display:inline-block}
-
-/* TOAST */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:8px}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -128,40 +115,35 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
     </div>
 
   <div id="sec-claim">
-    <div style="background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
-      <form id="searchFilterForm" onsubmit="applyFilters(event)" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; flex-wrap: wrap;">
-        
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">📅 접수 기간</span>
-          <input type="date" id="filter-start-date" style="padding: 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
+    <div class="filter-container">
+      <form id="searchFilterForm" onsubmit="applyFilters(event)" class="filter-form">
+        <div class="filter-group">
+          <span class="filter-label">📅 접수 기간</span>
+          <input type="date" id="filter-start-date" class="date-input">
           <span style="color: var(--gray3);">~</span>
-          <input type="date" id="filter-end-date" style="padding: 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
+          <input type="date" id="filter-end-date" class="date-input">
         </div>
-
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">🔄 구분</span>
-          <select id="filter-tp" style="padding: 5px 10px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px; cursor: pointer;">
+        <div class="filter-group">
+          <span class="filter-label">🔄 구분</span>
+          <select id="filter-tp" class="filter-select">
             <option value="ALL">전체</option>
             <option value="1">반품</option>
             <option value="2">교환</option>
           </select>
         </div>
-
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap;">🔢 검색 조건</span>
-          <select id="filter-search-type" style="padding: 5px 5px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px; cursor: pointer;">
+        <div class="filter-group">
+          <span class="filter-label">🔢 검색 조건</span>
+          <select id="filter-search-type" class="filter-select">
             <option value="RET_NUM">접수 번호</option>
             <option value="ORDER_NUM">주문 번호</option>
             <option value="PROD_NAME">상품명</option>
           </select>
-          <input type="text" id="filter-search-keyword" placeholder="검색어 입력..." style="width: 180px; padding: 5px 10px; border: 1px solid var(--gray5); border-radius: 4px; font-size: 13px;">
+          <input type="text" id="filter-search-keyword" placeholder="검색어 입력..." class="filter-input">
         </div>
-
         <div style="display: flex; gap: 6px; margin-left: auto;">
-          <button type="button" class="btn btn-gray btn-sm" onclick="resetFilters()" style="padding: 6px 12px; font-size:12.5px;">🔄 초기화</button>
-          <button type="submit" class="btn btn-blue btn-sm" style="padding: 6px 18px; font-weight: 600; font-size:12.5px;">🔍 필터 적용</button>
+          <button type="button" class="btn btn-gray btn-sm" onclick="resetFilters()">🔄 초기화</button>
+          <button type="submit" class="btn btn-blue btn-sm">🔍 필터 적용</button>
         </div>
-
       </form>
     </div>
 
@@ -186,17 +168,58 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
           </tbody>
         </table>
       </div>
-      
-      <div class="pagination-wrap" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 10px;">
-        <div class="page-info" id="claimPageInfo" style="font-size: 13px; color: var(--gray3);">1 / 1 페이지</div>
-        <div class="page-btns" id="claimPageBtns" style="display: flex; gap: 4px;"></div>
+      <div class="pagination-wrap">
+        <div class="page-info" id="claimPageInfo">1 / 1 페이지</div>
+        <div class="page-btns" id="claimPageBtns"></div>
       </div>
     </div>
   </div>
 
   <div id="sec-hist" style="display:none">
+    <div class="filter-container">
+      <form id="histFilterForm" onsubmit="applyHistFilters(event)" class="filter-form">
+        <div class="filter-group">
+          <span class="filter-label">📅 완료 기간</span>
+          <input type="date" id="hist-start-date" class="date-input">
+          <span style="color: var(--gray3);">~</span>
+          <input type="date" id="hist-end-date" class="date-input">
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">🔄 구분</span>
+          <select id="hist-tp" class="filter-select">
+            <option value="ALL">전체</option>
+            <option value="1">반품</option>
+            <option value="2">교환</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">🚦 처리 상태</span>
+          <select id="hist-status" class="filter-select">
+            <option value="ALL">전체 상태</option>
+            <option value="4">✨ 양품 복구 완료</option>
+            <option value="5">🗑️ 불량 폐기 완료</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">🔢 검색 조건</span>
+          <select id="hist-search-type" class="filter-select">
+            <option value="RET_NUM">접수 번호</option>
+            <option value="ORDER_NUM">주문 번호</option>
+            <option value="PROD_NAME">상품명</option>
+          </select>
+          <input type="text" id="hist-search-keyword" placeholder="이력 검색어 입력..." class="filter-input" style="width: 170px;">
+        </div>
+        <div style="display: flex; gap: 6px; margin-left: auto;">
+          <button type="button" class="btn btn-gray btn-sm" onclick="resetHistFilters()">🔄 초기화</button>
+          <button type="submit" class="btn btn-blue btn-sm">🔍 이력 검색</button>
+        </div>
+      </form>
+    </div>
+
     <div class="tbl-card">
-      <div class="tbl-top"><div class="tbl-top-info">최종 완결 이력 목록</div></div>
+      <div class="tbl-top">
+        <div class="tbl-top-info">최종 완결 이력 목록 (총 <strong id="filteredHistCnt">0</strong>건)</div>
+      </div>
       <div class="tbl-wrap">
         <table>
           <thead>
@@ -215,9 +238,9 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
           </tbody>
         </table>
       </div>
-      <div class="pagination-wrap" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 10px;">
-        <div class="page-info" id="histPageInfo" style="font-size: 13px; color: var(--gray3);">1 / 1 페이지</div>
-        <div class="page-btns" id="histPageBtns" style="display: flex; gap: 4px;"></div>
+      <div class="pagination-wrap">
+        <div class="page-info" id="histPageInfo">1 / 1 페이지</div>
+        <div class="page-btns" id="histPageBtns"></div>
       </div>
     </div>
   </div>
@@ -236,38 +259,29 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
 
 <div class="modal-bg" id="claimModal">
   <div class="modal" style="width:520px;">
-    
     <div class="modal-hdr">
       <div class="modal-title" id="m-title">📦 반품/교환 상세 검수</div>
       <button class="modal-x" onclick="closeModal()">✕</button>
     </div>
-    
     <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
-      
       <div class="sec-title">👤 수령자(주문자) 배송 정보</div>
       <div class="dr"><div class="dk">수령인</div><div class="dv" id="m-recvName"></div></div>
       <div class="dr"><div class="dk">연락처</div><div class="dv" id="m-recvPhone"></div></div>
       <div class="dr"><div class="dk">반송 주소</div><div class="dv" id="m-recvAddr"></div></div>
-      
       <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
-      
       <div class="sec-title">👟 검수 대상 상품 및 클레임 정보</div>
       <div class="dr"><div class="dk">접수/주문번호</div><div class="dv" id="m-nums"></div></div>
       <div class="dr"><div class="dk">상품명</div><div class="dv" id="m-prodName" style="font-weight:700;"></div></div>
       <div class="dr"><div class="dk">색상 / 사이즈</div><div class="dv" id="m-option"></div></div>
-      
       <hr style="border:0; border-top:1px dashed var(--gray6); margin:10px 0;">
-      
       <div class="dr"><div class="dk">고객 신청사유</div><div class="dv" id="m-reason" style="color:var(--red); font-weight:600;"></div></div>
       <div class="dr"><div class="dk">쇼핑몰 판정</div><div class="dv" id="m-isGood" style="color:var(--blue); font-weight:600;"></div></div>
       <div class="dr" style="align-items:flex-start;">
         <div class="dk" style="margin-top:4px;">특이사항</div>
         <div class="dv" id="m-retNote" style="background:#f4f6fa; padding:10px; border-radius:6px; font-size:12.5px; line-height:1.4; white-space:pre-wrap; width:100%;"></div>
       </div>
-
       <div id="exchange-delivery-area" style="display:none; background: #f8faff; padding: 15px; border-radius: 8px; border: 1px solid #e1e8f5; margin-top: 10px;">
         <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px;">🚚 교환 상품 재출고 정보 (필수)</div>
-        
         <div class="dr" style="margin-bottom: 8px;">
           <div class="dk" style="font-size: 12px; width: 80px;">택배사</div>
           <div class="dv">
@@ -280,7 +294,6 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
             </select>
           </div>
         </div>
-
         <div class="dr">
           <div class="dk" style="font-size: 12px; width: 80px;">송장번호</div>
           <div class="dv" style="display:flex; gap:6px;">
@@ -289,22 +302,17 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
           </div>
         </div>
       </div>
-
       <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
-      
       <div class="sec-title">📝 물류 담당자 특이사항 기록 (특수문자 허용)</div>
       <div style="margin-top:6px;">
         <textarea id="m-memo" style="width:100%; height:80px; padding:10px; border:1px solid var(--gray5); border-radius:6px; resize:none; font-size:13px;" placeholder="물류창고 상품 입고 상태 및 폐기 사유 기입..."></textarea>
       </div>
-      
     </div>
-    
     <div class="modal-foot" style="display:flex; gap:10px; justify-content:flex-end;">
       <button class="btn btn-outline" onclick="closeModal()">닫기</button>
       <button class="btn btn-red" onclick="submitProcess('DISPOSAL')">🗑️ 불량 폐기 처리</button>
       <button class="btn btn-green" onclick="submitProcess('RECOVERY')">✨ 양품 복구 입고</button>
     </div>
-    
   </div>
 </div>
 
@@ -319,14 +327,11 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
       <div class="dr"><div class="dk">접수 / 주문</div><div class="dv" id="h-m-nums"></div></div>
       <div class="dr"><div class="dk">품목명</div><div class="dv" id="h-m-prodName" style="font-weight:700;"></div></div>
       <div class="dr"><div class="dk">기존 처리</div><div class="dv" id="h-m-procType"></div></div>
-      
       <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
-      
       <div class="sec-title">📝 물류 담당자 특이사항 메모 수정</div>
       <div style="margin-top:6px;">
         <textarea id="h-m-memo" style="width:100%; height:75px; padding:10px; border:1px solid var(--gray5); border-radius:6px; resize:none; font-size:13px;"></textarea>
       </div>
-      
       <div style="background:#fff5f5; border:1px solid #feb2b2; padding:12px; border-radius:6px; margin-top:15px;">
         <span style="font-size:12px; font-weight:700; color:#c53030;">⚠️ 처리 취소(삭제) 경고</span>
         <p style="font-size:11.5px; color:#742a2a; margin-top:4px; line-height:1.4;">이력 취소 시 해당 품목은 다시 <b>'접수된 클레임 처리(대기)'</b> 목록으로 돌아가며, 변동되었던 창고 재고 및 교환 운송장 정보가 자동으로 완벽하게 역산 원상복구 됩니다.</p>
@@ -373,24 +378,27 @@ const rawClaimList = [
       </c:forEach>
     ];
 
-// 📋 [2] 이력 데이터 파싱
+// 📋 [2] 이력 데이터 파싱 (🚨 데이터 누락 완전 차단 연동 보강)
 const historyData = [
   <c:forEach var="h" items="${historyList}">
   {
     ret_num: "${h.ret_num}",
     order_num: "${h.order_num}",
-    tp: "${h.tp == 1 ? '반품' : '교환'}",
-    prod_name: `<c:out value="${h.prod_name}" escapeXml="true"/>`,
+    tp: "${h.tp == 1 ? '1' : '2'}", // 🎯 검색 스크리닝을 위해 숫자로 일치화
+    tp_text: "${h.tp == 1 ? '반품' : '교환'}",
     proc_type: "${h.reason}", 
     invoice: "${empty h.invoice_no ? '-' : h.invoice_no}",
     memo: `<c:out value="${h.ret_note}" escapeXml="true"/>`,
-    ret_status: "${h.ret_status}",
-    created_at: "2026-05-21"
+    ret_status: "${h.ret_status}", // 4: 양품, 5: 불량폐기
+    created_at: "2026-05-21" // 완결 날짜 세팅 (필요시 DB 날짜 컬럼 연동)
   },
   </c:forEach>
 ];
 
+// 전역 필터링 핸들러 라인
 let filteredClaimList = [...rawClaimList]; 
+let filteredHistList = [...historyData]; // 🎯 이력 전용 서치 배열 독립 분리
+
 let currentClaimPage = 1;
 let currentHistPage = 1;
 const itemsPerPage = 10;
@@ -409,14 +417,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const lastMonth = new Date();
     lastMonth.setMonth(today.getMonth() - 1); 
     
-    document.getElementById('filter-start-date').value = getDateFormat(lastMonth);
-    document.getElementById('filter-end-date').value = getDateFormat(today);
+    const formattedToday = getDateFormat(today);
+    const formattedLastMonth = getDateFormat(lastMonth);
+    
+    // 대기 목록 달력 바인딩
+    document.getElementById('filter-start-date').value = formattedLastMonth;
+    document.getElementById('filter-end-date').value = formattedToday;
+    
+    // 🎯 [신규] 이력 목록 달력 초기 바인딩 완료
+    document.getElementById('hist-start-date').value = formattedLastMonth;
+    document.getElementById('hist-end-date').value = formattedToday;
     
     applyFilters(null);
-    renderHistTable(); 
+    applyHistFilters(null); // 이력 필터 최초 기동
 });
 
-// 🔄 필터 초기화 함수
+// 🔄 대기 필터 초기화 함수
 function resetFilters() {
     document.getElementById('filter-tp').value = "ALL";
     document.getElementById('filter-search-type').value = "RET_NUM";
@@ -432,7 +448,24 @@ function resetFilters() {
     applyFilters(null);
 }
 
-// 🔍 핵심 스크리닝 필터 엔진
+// 🔄 🎯 [신규] 이력 전용 필터 초기화 함수
+function resetHistFilters() {
+    document.getElementById('hist-tp').value = "ALL";
+    document.getElementById('hist-status').value = "ALL";
+    document.getElementById('hist-search-type').value = "RET_NUM";
+    document.getElementById('hist-search-keyword').value = "";
+    
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    
+    document.getElementById('hist-start-date').value = getDateFormat(lastMonth);
+    document.getElementById('hist-end-date').value = getDateFormat(today);
+    
+    applyHistFilters(null);
+}
+
+// 🔍 대기 목록 스크리닝 필터 엔진
 function applyFilters(e) {
     if(e) e.preventDefault();
     
@@ -459,6 +492,38 @@ function applyFilters(e) {
     renderClaimTable();
 }
 
+// 🔍 🎯 [신규] 완결 이력 목록 다기능 필터 코어 스크리닝 엔진
+function applyHistFilters(e) {
+    if(e) e.preventDefault();
+    
+    const startDt = document.getElementById('hist-start-date').value;
+    const endDt = document.getElementById('hist-end-date').value;
+    const tp = document.getElementById('hist-tp').value;
+    const status = document.getElementById('hist-status').value;
+    const searchType = document.getElementById('hist-search-type').value;
+    const keyword = document.getElementById('hist-search-keyword').value.trim().toLowerCase();
+    
+    filteredHistList = historyData.filter(item => {
+        // 1. 완료 기간 필터링
+        if(startDt && item.created_at < startDt) return false;
+        if(endDt && item.created_at > endDt) return false;
+        // 2. 구분 필터링 (반품/교환)
+        if(tp !== "ALL" && item.tp !== tp) return false;
+        // 3. 상태 필터링 (양품복구/불량폐기)
+        if(status !== "ALL" && item.ret_status !== status) return false;
+        // 4. 동적 텍스트 검색 키워드 스크리닝
+        if(keyword !== "") {
+            if(searchType === "RET_NUM" && !item.ret_num.toLowerCase().includes(keyword)) return false;
+            if(searchType === "ORDER_NUM" && !item.order_num.toLowerCase().includes(keyword)) return false;
+            if(searchType === "PROD_NAME" && !item.prod_name.toLowerCase().includes(keyword)) return false;
+        }
+        return true;
+    });
+    
+    currentHistPage = 1;
+    renderHistTable();
+}
+
 // 📋 대기 목록 테이블 드로잉
 function renderClaimTable() {
     const tbody = document.getElementById('claimWaitTbody');
@@ -471,7 +536,7 @@ function renderClaimTable() {
     const pageData = filteredClaimList.slice(start, end);
     
     if(pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:var(--gray4);">📥 조회 조건에 부합하는 클레임이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:var(--gray4);">📥 조회 조건에 부합하는 클레임이 없습니다 형님.</td></tr>';
         document.getElementById('claimPageInfo').textContent = "0 / 0 페이지";
         document.getElementById('claimPageBtns').innerHTML = "";
         return;
@@ -541,7 +606,7 @@ function switchTab(tabId, btn) {
     if(btn) btn.classList.add('on');
 }
 
-// 🔄 상세 검수 모달 데이터 로드 및 토글 (잔해물 완벽 제거 완료!)
+// 🔄 상세 검수 모달 데이터 로드 및 토글
 function openClaimModal(btn) {
     const retnum = btn.dataset.retnum;
     const ordernum = btn.dataset.ordernum;
@@ -553,7 +618,7 @@ function openClaimModal(btn) {
     const recvphone = btn.dataset.recvphone;
     const recvaddr = btn.dataset.recvaddr;
     const reason = btn.dataset.reason;
-    const retnote = btn.dataset.retnote; // 오라클에서 받아온 순정 RET_NOTE 전체 데이터
+    const retnote = btn.dataset.retnote; 
     const isgood = btn.dataset.isgood;
 
     if(document.getElementById('f-retNum')) document.getElementById('f-retNum').value = retnum;
@@ -574,7 +639,6 @@ function openClaimModal(btn) {
     if(document.getElementById('m-reason')) document.getElementById('m-reason').innerText = reason;
     if(document.getElementById('m-isGood')) document.getElementById('m-isGood').innerText = isgood;
 
-    // 🎯 [줄바꿈 분리 알고리즘] 엔터(\n)를 기준으로 상단 특이사항과 하단 입력란에 깔끔하게 배분합니다.
     let mallMemo = "";
     let logiMemo = "";
     
@@ -588,7 +652,6 @@ function openClaimModal(btn) {
         }
     }
 
-    // 🚀 데이터 락인 및 화면 표출 최신화
     if(document.getElementById('m-retNote')) {
         document.getElementById('m-retNote').innerText = (mallMemo !== "") ? mallMemo : "등록된 특이사항 정보가 없습니다.";
     }
@@ -656,17 +719,20 @@ function submitProcess(type) {
     document.getElementById('claimProcessForm').submit();
 }
 
-// 📋 이력조회 테이블 렌더러
+// 📋 🎯 [필터 연동형 교정] 이력조회 테이블 렌더러
 function renderHistTable() {
     const tbody = document.getElementById('histTbody');
     if(!tbody) return;
     
+    // 실시간 총 카운트 바인딩
+    document.getElementById('filteredHistCnt').innerText = filteredHistList.length;
+    
     const start = (currentHistPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const pageData = historyData.slice(start, end);
+    const pageData = filteredHistList.slice(start, end); // 🎯 동적 필터 배열 슬라이싱으로 변경!
     
     if(!pageData.length) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--gray4);">📭 처리 완료된 클레임 이력이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:50px; color:var(--gray4);">📭 조건에 부합하는 완료된 클레임 이력이 없습니다 형님.</td></tr>';
         document.getElementById('histPageInfo').textContent = "0 / 0 페이지";
         document.getElementById('histPageBtns').innerHTML = "";
         return;
@@ -675,20 +741,19 @@ function renderHistTable() {
     let html = '';
     pageData.forEach(h => {
         const procBdg = (h.proc_type === '양품복구') ? 'bdg-green' : 'bdg-red';
-        const tpBdg = (h.tp === '반품') ? 'bdg-red' : 'bdg-blue';
-        const rawTp = (h.tp === '반품') ? 1 : 2;
+        const tpBdg = (h.tp_text === '반품') ? 'bdg-red' : 'bdg-blue';
         
         html += `<tr>
             <td>\${h.ret_num}</td>
             <td>#\${h.order_num}</td>
-            <td><span class="bdg \${tpBdg}">\${h.tp}</span></td>
+            <td><span class="bdg \${tpBdg}">\${h.tp_text}</span></td>
             <td style="text-align:left; font-weight:600;">\${h.prod_name}</td>
             <td><span class="bdg \${procBdg}">\${h.proc_type}</span></td>
             <td style="font-family:'DM Mono',monospace;">\${h.invoice}</td>
             <td style="text-align:left; color:var(--gray2);">\${h.memo}</td>
             <td>
                 <button type="button" class="btn btn-outline btn-xs" 
-                        data-retnum="\${h.ret_num}" data-ordernum="\${h.order_num}" data-tp="\${rawTp}" 
+                        data-retnum="\${h.ret_num}" data-ordernum="\${h.order_num}" data-tp="\${h.tp}" 
                         data-prodname="\${h.prod_name}" data-proctype="\${h.proc_type}" data-memo="\${h.memo}" data-status="\${h.ret_status}"
                         onclick="openHistoryModal(this)">⚙️ 관리</button>
             </td>
@@ -698,9 +763,9 @@ function renderHistTable() {
     renderHistPagination(); 
 }
 
-// 🔢 이력 목록 페이징 버튼 생성 엔진
+// 🔢 🎯 [필터 연동형 교정] 이력 목록 페이징 버튼 생성 엔진
 function renderHistPagination() {
-    const totalPages = Math.ceil(historyData.length / itemsPerPage) || 1;
+    const totalPages = Math.ceil(filteredHistList.length / itemsPerPage) || 1; // 🎯 filteredHistList 기준으로 가동!
     const pageBtns = document.getElementById('histPageBtns');
     if(!pageBtns) return;
     
@@ -740,7 +805,6 @@ function openHistoryModal(btn) {
     document.getElementById('h-m-prodName').innerText = prodname;
     document.getElementById('h-m-procType').innerHTML = `<span class="bdg \${proctype === '양품복구' ? 'bdg-green' : 'bdg-red'}">\${proctype}완료</span>`;
     
-    // 이력 탭에서도 줄바꿈 데이터 분리!
     let logiMemo = "";
     if (memo && memo !== 'null') {
         const markerIndex = memo.indexOf('\n'); 
@@ -768,3 +832,5 @@ function submitHistoryModify(mode) {
     document.getElementById('historyModifyForm').submit();
 }
 </script>
+</body>
+</html>
