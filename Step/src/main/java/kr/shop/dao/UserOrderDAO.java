@@ -90,6 +90,14 @@ public class UserOrderDAO {
 				pstmt.setLong(i + 1, Long.parseLong(cartNums[i]));
 			}
 			pstmt.executeUpdate();
+			DBUtil.executeClose(null, pstmt, null);
+			
+			// 회원의 총 누적 결제 금액 업데이트
+			String sql6 = "UPDATE USERS_DETAIL SET TOTAL_AMOUNT = TOTAL_AMOUNT + ? WHERE USER_NUM = ?";
+			pstmt = conn.prepareStatement(sql6);
+			pstmt.setInt(1, totalPrice);
+			pstmt.setLong(2, userNum);
+			pstmt.executeUpdate();
 
 			// 전부 성공했다면 커밋
 			conn.commit();
