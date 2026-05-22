@@ -48,6 +48,11 @@ public class MainAction implements Action {
 		    filter.setBrand_num(Integer.parseInt(brand_num_param));
 		}
 		
+		String gender_param = request.getParameter("gender");
+		if (gender_param != null) {
+			filter.setGender(Integer.parseInt(gender_param));
+		}
+		
 		// 전체 상품 개수
 		int count = dao.getMainProductCount(filter); 
 
@@ -95,6 +100,7 @@ public class MainAction implements Action {
 		// 화면에서 라디오 버튼 체크 유지를 위해 선택된 번호를 넘김
 		request.setAttribute("selected_cat", filter.getCat_num());
 		request.setAttribute("selected_brand", filter.getBrand_num());
+		request.setAttribute("selected_gender", filter.getGender());
 
 		return "shop/user/main.jsp";
 	}

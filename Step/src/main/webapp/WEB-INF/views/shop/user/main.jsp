@@ -243,45 +243,45 @@
 
             <%-- 좌측 필터 사이드바 (기존 form 제거 및 onclick 방식 적용) --%>
 			<div class="filter-side">
-			    <div class="filter-box">
-			        <div class="filter-title">카테고리 ▾</div>
-			        <div class="filter-opts">
-			            <label class="filter-opt">
-			                <input type="radio" name="cat_num" value="0"
-			                       ${selected_cat == 0 ? 'checked' : ''}
-			                       onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=0&brand_num=${selected_brand}'">
-			                전체보기
-			            </label>
-			            <c:forEach var="cat" items="${categoryList}">
-			                <label class="filter-opt">
-			                    <input type="radio" name="cat_num" value="${cat.catNum}"
-			                           ${selected_cat == cat.catNum ? 'checked' : ''}
-			                           onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${cat.catNum}&brand_num=${selected_brand}'">
-			                    ${cat.catName}
-			                </label>
-			            </c:forEach>
+			    <form id="filterForm" action="${pageContext.request.contextPath}/shop/user/main.do" method="get">
+			        
+			        <div class="filter-box">
+			            <div class="filter-title">카테고리 ▾</div>
+			            <div class="filter-opts">
+			                <label class="filter-opt"><input type="radio" name="cat_num" value="0" ${selected_cat == 0 ? 'checked' : ''}> 전체보기</label>
+			                <c:forEach var="cat" items="${categoryList}">
+			                    <label class="filter-opt">
+			                        <input type="radio" name="cat_num" value="${cat.catNum}" ${selected_cat == cat.catNum ? 'checked' : ''}>
+			                        ${cat.catName}
+			                    </label>
+			                </c:forEach>
+			            </div>
 			        </div>
-			    </div>
 			
-			    <div class="filter-box">
-			        <div class="filter-title">브랜드 ▾</div>
-			        <div class="filter-opts">
-			            <label class="filter-opt">
-			                <input type="radio" name="brand_num" value="0"
-			                       ${selected_brand == 0 ? 'checked' : ''}
-			                       onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${selected_cat}&brand_num=0'">
-			                전체 브랜드
-			            </label>
-			            <c:forEach var="brand" items="${brandList}">
-			                <label class="filter-opt">
-			                    <input type="radio" name="brand_num" value="${brand.brandNum}"
-			                           ${selected_brand == brand.brandNum ? 'checked' : ''}
-			                           onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do?cat_num=${selected_cat}&brand_num=${brand.brandNum}'">
-			                    ${brand.brandName}
-			                </label>
-			            </c:forEach>
+			        <div class="filter-box">
+			            <div class="filter-title">브랜드 ▾</div>
+			            <div class="filter-opts">
+			                <label class="filter-opt"><input type="radio" name="brand_num" value="0" ${selected_brand == 0 ? 'checked' : ''}> 전체 브랜드</label>
+			                <c:forEach var="brand" items="${brandList}">
+			                    <label class="filter-opt">
+			                        <input type="radio" name="brand_num" value="${brand.brandNum}" ${selected_brand == brand.brandNum ? 'checked' : ''}>
+			                        ${brand.brandName}
+			                    </label>
+			                </c:forEach>
+			            </div>
 			        </div>
-			    </div>
+			
+			        <div class="filter-box">
+			            <div class="filter-title">성별 ▾</div>
+			            <div class="filter-opts">
+			                <label class="filter-opt"><input type="radio" name="gender" value="-1" ${selected_gender == -1 ? 'checked' : ''}> 전체</label>
+			                <label class="filter-opt"><input type="radio" name="gender" value="1" ${selected_gender == 1 ? 'checked' : ''}> 남성</label>
+			                <label class="filter-opt"><input type="radio" name="gender" value="2" ${selected_gender == 2 ? 'checked' : ''}> 여성</label>
+			            </div>
+			        </div>
+			
+			        <button type="submit" class="btn btn-black" style="width:100%; margin-top:20px; padding:12px;">검색하기</button>
+			    </form>
 			</div>
 
             <%-- 우측 상품 리스트 --%>
