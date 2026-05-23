@@ -39,7 +39,7 @@ public class OrderCancelAction implements Action {
 		try {
 			long orderNum = Long.parseLong(request.getParameter("orderNum"));
 
-			// 🌟 1. DB에서 해당 주문의 결제 정보 가져오기 (결제수단, tid, 결제금액)
+			// DB에서 해당 주문의 결제 정보 가져오기
 			String payMethod = "";
 			String tid = "";
 			int cancelAmount = 0;
@@ -60,7 +60,7 @@ public class OrderCancelAction implements Action {
 			DBUtil.executeClose(rs, pstmt, conn);
 			conn = null;
 
-			// 🌟 2. 카카오페이 결제인 경우 취소(환불) API 호출
+			// 카카오페이 결제인 경우 환불 API 호출
 			if ("카카오페이".equals(payMethod) && tid != null && !tid.isEmpty()) {
 				
 				URL url = new URL("https://open-api.kakaopay.com/online/v1/payment/cancel");
@@ -87,10 +87,10 @@ public class OrderCancelAction implements Action {
 				
 				int resultCode = httpConn.getResponseCode();
 				if(resultCode == 200) {
-					// 취소 성공 (고객 핸드폰으로 환불 알림톡 발송됨)
+					// 취소 성공
 					System.out.println("카카오페이 환불 승인 완료 (주문번호: " + orderNum + ")");
 				} else {
-					// 환불 실패 시 (이미 취소되었거나 오류 발생)
+					// 환불 실패 시
 					BufferedReader br = new BufferedReader(new InputStreamReader(httpConn.getErrorStream(), "utf-8"));
 					StringBuilder resBuilder = new StringBuilder();
 					String line;
@@ -104,7 +104,7 @@ public class OrderCancelAction implements Action {
 				}
 			}
 
-			// 🌟 3. 카카오페이 환불이 성공했거나 일반 결제(무통장/카드)일 경우 기존 DB 취소 로직 실행
+			// 카카오페이 환불이 성공했거나 일반 결제(무통장/카드)일 경우 기존 DB 취소 로직 실행
 			OrderCancelDAO.getInstance().cancelOrder(orderNum, user_num);
 			session.setAttribute("cancelMsg", "주문이 정상적으로 취소(환불) 되었습니다.");
 
