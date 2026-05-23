@@ -158,14 +158,14 @@ public class UserProductDAO {
 	}
 
 	// 메인 화면용 상품 목록 조회
-	public List<AdminProductVO> getMainProductList(AdminProductVO filter) throws Exception {
+	public List<AdminProductVO> getMainProductList(AdminProductVO filter, String sort) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<AdminProductVO> list = null;
 		String sql = null;
 		
-		// 브랜드 조건(brand_num)을 위한 변수 추가
+		// p. 별칭 사용
 		String sub_sql = "WHERE p.prod_status = 1 ";
 		int cnt = 0;
 
@@ -175,8 +175,9 @@ public class UserProductDAO {
 			if (filter.getGender() != -1) {
 				sub_sql += "AND p.gender = ? ";
 			}
-			if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
-				sub_sql += "AND p.prod_name LIKE ? ";
+			// 검색어 통합 처리
+			if (filter.getKeyword() != null && !filter.getKeyword().trim().isEmpty()) {
+				sub_sql += "AND (p.prod_name LIKE ? OR b.brand_name LIKE ? OR c.cat_name LIKE ?) ";
 			}
 			if (filter.getCat_num() > 0) {
 				sub_sql += "AND p.cat_num = ? ";
@@ -185,14 +186,28 @@ public class UserProductDAO {
 			if (filter.getBrand_num() > 0) {
 				sub_sql += "AND p.brand_num = ? ";
 			}
+			
+			String order_sql = "";
+			if ("popular".equals(sort)) {
+				// 인기순: 위시리스트(찜)에 많이 담긴 순서
+				order_sql = " ORDER BY (SELECT COUNT(*) FROM wishlist w WHERE w.prod_num = p.prod_num) DESC, p.prod_num DESC ";
+			} else if ("new".equals(sort)) {
+				// 최신순: 최근에 등록된 상품 순서
+				order_sql = " ORDER BY p.prod_created_at DESC, p.prod_num DESC ";
+			} else {
+				// 추천순: 누적 판매 수량이 높은 순서
+				order_sql = " ORDER BY (SELECT NVL(SUM(oi.order_item_qty), 0) FROM order_items oi JOIN orders o ON oi.order_num = o.order_num WHERE oi.prod_num = p.prod_num AND o.order_status >= 1) DESC, p.prod_num DESC ";
+			}
 
+			// 카테고리 테이블 조인 추가
 			sql = "SELECT * FROM (SELECT a.*, rownum rnum FROM "
 					+ "(SELECT p.prod_num, p.prod_name, p.prod_price, p.gender, p.prod_status, p.prod_created_at, p.cat_num, "
 					+ "b.brand_name, i.prod_img_url " 
 					+ "FROM products p "
 					+ "LEFT JOIN brands b ON p.brand_num = b.brand_num "
+					+ "LEFT JOIN categories c ON p.cat_num = c.cat_num " 
 					+ "LEFT JOIN prod_imgs i ON p.prod_num = i.prod_num AND i.is_main = 'Y' "
-					+ sub_sql + " ORDER BY p.prod_created_at DESC) a) " 
+					+ sub_sql + order_sql + ") a) "
 					+ "WHERE rnum >= ? AND rnum <= ?";
 
 			pstmt = conn.prepareStatement(sql);
@@ -200,8 +215,11 @@ public class UserProductDAO {
 			if (filter.getGender() != -1) {
 				pstmt.setInt(++cnt, filter.getGender());
 			}
-			if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
-				pstmt.setString(++cnt, "%" + filter.getKeyword() + "%");
+			
+			if (filter.getKeyword() != null && !filter.getKeyword().trim().isEmpty()) {
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
 			}
 			if (filter.getCat_num() > 0) {
 				pstmt.setInt(++cnt, filter.getCat_num());
@@ -248,28 +266,42 @@ public class UserProductDAO {
 
 		try {
 			conn = DBUtil.getConnection();
+			
+			if(filter.getGender() != -1) {
+				sub_sql += " AND p.gender = ? ";
+			}
+			// 검색어 통합 처리
+			if (filter.getKeyword() != null && !filter.getKeyword().trim().isEmpty()) {
+				sub_sql += " AND (p.prod_name LIKE ? OR b.brand_name LIKE ? OR c.cat_name LIKE ?) ";
+			}
 			if(filter.getCat_num() > 0) {
-				sub_sql += " AND cat_num = ? ";
+				sub_sql += " AND p.cat_num = ? ";
 			}
 			if(filter.getBrand_num() > 0) {
-				sub_sql += " AND brand_num = ? ";
+				sub_sql += " AND p.brand_num = ? ";
 			}
-			if(filter.getGender() != -1) {
-				sub_sql += " AND gender = ? ";
-			}
-
-			sql = "SELECT COUNT(*) FROM PRODUCTS WHERE prod_status = 1 " + sub_sql;
+			
+			sql = "SELECT COUNT(*) FROM products p "
+			    + "LEFT JOIN brands b ON p.brand_num = b.brand_num "
+			    + "LEFT JOIN categories c ON p.cat_num = c.cat_num "
+			    + "WHERE p.prod_status = 1 " + sub_sql;
 
 			pstmt = conn.prepareStatement(sql);
 
+			if(filter.getGender() != -1) {
+				pstmt.setInt(++cnt, filter.getGender());
+			}
+			
+			if(filter.getKeyword() != null && !filter.getKeyword().trim().isEmpty()) {
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
+				pstmt.setString(++cnt, "%" + filter.getKeyword().trim() + "%");
+			}
 			if(filter.getCat_num() > 0) {
 				pstmt.setInt(++cnt, filter.getCat_num());
 			}
 			if(filter.getBrand_num() > 0) {
 				pstmt.setInt(++cnt, filter.getBrand_num());
-			}
-			if(filter.getGender() != -1) {
-				pstmt.setInt(++cnt, filter.getGender());
 			}
 
 			rs = pstmt.executeQuery();

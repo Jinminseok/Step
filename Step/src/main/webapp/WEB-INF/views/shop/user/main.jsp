@@ -244,6 +244,8 @@
             <%-- 좌측 필터 사이드바 (기존 form 제거 및 onclick 방식 적용) --%>
 			<div class="filter-side">
 			    <form id="filterForm" action="${pageContext.request.contextPath}/shop/user/main.do" method="get">
+			    <input type="hidden" name="keyword" value="${param.keyword}">
+			    <input type="hidden" name="sort" id="sortInput" value="${empty param.sort ? 'recommend' : param.sort}">
 			        
 			        <div class="filter-box">
 			            <div class="filter-title">카테고리 ▾</div>
@@ -286,6 +288,12 @@
 
             <%-- 우측 상품 리스트 --%>
             <div class="prod-wrap" id="prod-list-area" style="flex:1;margin:0;padding:0;max-width:none;">
+            	<!-- 검색창 -->
+            	<c:if test="${not empty param.keyword}">
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--black);">
+                        '<span style="color: var(--blue);">${param.keyword}</span>' 검색 결과 (총 ${count}건)
+                    </div>
+                </c:if>
                 <div class="sort-header">
                     <div class="sort-tabs">
                         <a href="#" data-sort="recommend" class="sort-tab ${param.sort == 'recommend' || empty param.sort ? 'active' : ''}">추천순</a>
@@ -405,7 +413,11 @@ $(document).ready(function () {
         $('.sort-tab').removeClass('active');
         $(this).addClass('active');
         var sortType  = $(this).data('sort');
-        var targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + $('#filterForm').serialize() + '&sort=' + sortType;
+        
+        $('#sortInput').val(sortType);
+        
+        var targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + $('#filterForm').serialize();
+        
         $('.prod-grid').css('opacity', '0.4');
         $('.prod-grid').load(targetUrl + ' .prod-grid > *', function () { $('.prod-grid').css('opacity', '1'); });
     });
@@ -418,6 +430,21 @@ $(document).ready(function () {
         var targetUrl = '${pageContext.request.contextPath}/shop/user/main.do?' + $('#filterForm').serialize() + '&sort=' + sortType + '&pageNum=' + pageNum;
         $('#prod-list-area').css('opacity', '0.4');
         $('#prod-list-area').load(targetUrl + ' #prod-list-area > *', function () { $('#prod-list-area').css('opacity', '1'); });
+    });
+    
+	/* ===== 스크롤 위치 유지 ===== */
+    let savedScrollY = sessionStorage.getItem("mainScrollY");
+    if (savedScrollY) {
+        window.scrollTo(0, parseInt(savedScrollY));
+        sessionStorage.removeItem("mainScrollY");
+    }
+
+    $('#filterForm, .hdr-search').on('submit', function() {
+        sessionStorage.setItem("mainScrollY", window.scrollY);
+    });
+
+    $('.cat-item').on('click', function() {
+        sessionStorage.setItem("mainScrollY", window.scrollY);
     });
 
 });

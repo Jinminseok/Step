@@ -148,10 +148,10 @@
             onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">
             Shoe<span>Mall</span>
         </div>
-        <div class="hdr-search">
-            <input type="text" placeholder="브랜드, 상품, 카테고리 검색">
-            <button class="hdr-search-btn">🔍</button>
-        </div>
+        <form class="hdr-search" action="${pageContext.request.contextPath}/shop/user/main.do" method="get">
+            <input type="text" name="keyword" value="${param.keyword}" placeholder="브랜드, 상품, 카테고리 검색">
+            <button type="submit" class="hdr-search-btn">🔍</button>
+        </form>
         <div class="hdr-actions">
             <c:choose>
                 <%-- 로그인 상태 --%>

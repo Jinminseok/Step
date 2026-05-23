@@ -37,7 +37,7 @@ public class MainAction implements Action {
 		AdminProductVO filter = new AdminProductVO();
 		filter.setGender(-1); // 기본값 세팅
 		
-		// 카테고리 번호와 브랜드 번호를 둘 다 받아서 filter에 세팅
+		// 피라미터 받기
 		String cat_num_param = request.getParameter("cat_num");
 		if (cat_num_param != null) {
 		    filter.setCat_num(Integer.parseInt(cat_num_param));
@@ -51,6 +51,16 @@ public class MainAction implements Action {
 		String gender_param = request.getParameter("gender");
 		if (gender_param != null) {
 			filter.setGender(Integer.parseInt(gender_param));
+		}
+		
+		String keyword = request.getParameter("keyword");
+		if (keyword != null && !keyword.trim().isEmpty()) {
+		    filter.setKeyword(keyword.trim());
+		}
+		
+		String sort = request.getParameter("sort");
+		if (sort == null || sort.isEmpty()) {
+			sort = "recommend";
 		}
 		
 		// 전체 상품 개수
@@ -70,7 +80,7 @@ public class MainAction implements Action {
 		// 계산된 번호로 상품 목록 받아오기
 		List<AdminProductVO> productList = null;
 		if (count > 0) {
-			productList = dao.getMainProductList(filter);
+			productList = dao.getMainProductList(filter, sort);
 		}
 
 		// 하단 버튼 생성을 위한 페이지 연산
