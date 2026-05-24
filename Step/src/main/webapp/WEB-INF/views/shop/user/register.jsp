@@ -118,14 +118,8 @@
                     if(extraAddr !== ''){
                         extraAddr = ' (' + extraAddr + ')';
                     }
-                    //(주의)address1에 참고항목이 보여지도록 수정
-                    // 조합된 참고항목을 해당 필드에 넣는다.
-                    //(수정) document.getElementById("address2").value = extraAddr;
                 
                 } 
-                //(수정) else {
-                //(수정)    document.getElementById("address2").value = '';
-                //(수정) }
 
                 // 우편번호와 주소 정보를 해당 필드에 넣는다.
                 document.getElementById('zipcode').value = data.zonecode;

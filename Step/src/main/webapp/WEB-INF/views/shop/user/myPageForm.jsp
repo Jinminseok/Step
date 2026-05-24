@@ -45,8 +45,13 @@
 
 			<%-- 오른쪽 본문 영역 --%>
 			<div class="my-body">
-
-				<%-- ✅ 주문 취소 결과 메시지 --%>
+				
+				<%-- 내 정보 수정 결과 메시지 --%>
+			    <c:if test="${not empty modifyMsg}">
+			        <script>alert('${modifyMsg}');</script>
+			        <c:remove var="modifyMsg" scope="session" />
+			    </c:if>
+				<%-- 주문 취소 결과 메시지 --%>
 				<c:if test="${not empty cancelMsg}">
 					<script>alert('${cancelMsg}');</script>
 					<c:remove var="cancelMsg" scope="session" />
@@ -394,13 +399,12 @@
 									<input class="form-input" name="zipcode" id="zipcode"
 										value="${user.zipcode}" readonly
 										style="width: 110px; flex: 0 0 110px">
-									<button type="button" class="btn btn-outline btn-sm">우편번호
-										찾기</button>
+									<button type="button" class="btn btn-outline btn-sm" onclick="execDaumPostcode()">우편번호 찾기</button>
 								</div>
 								<input class="form-input" name="addr1" id="addr1"
-									value="${user.addr1}" style="margin-bottom: 6px"> <input
-									class="form-input" name="addr2" id="addr2"
-									value="${user.addr2}">
+									value="${user.addr1}" style="margin-bottom: 6px" readonly> 
+								<input class="form-input" name="addr2" id="addr2"
+									value="${user.addr2}" placeholder="상세주소">
 							</div>
 							<div class="form-group">
 								<label class="form-label">현재 비밀번호 (필수)</label><input
@@ -984,6 +988,96 @@ document.getElementById('reviewForm')?.addEventListener('submit', function(e) {
 document.getElementById('modal-review')?.addEventListener('click', function(e) {
     if (e.target === this) closeReviewModal();
 });
+
+// 내 정보 수정 유효성 검사
+document.getElementById('modifyForm')?.addEventListener('submit', function(e) {
+    const currentPwd = this.passwd.value;
+    const newPwd = this.new_passwd.value;
+    const newPwdConfirm = this.new_passwd_confirm.value;
+
+    // 현재 비밀번호 미입력 시
+    if (!currentPwd) {
+        alert("정보를 수정하려면 현재 비밀번호를 꼭 입력해야 합니다.");
+        this.passwd.focus();
+        e.preventDefault();
+        return false;
+    }
+
+    // 새 비밀번호가 확인과 다를 경우
+    if (newPwd !== "" && newPwd !== newPwdConfirm) {
+        alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        this.new_passwd_confirm.focus();
+        e.preventDefault();
+        return false;
+    }
+});
+
 	</script>
+	
+	
+<!-- 우편번호 찾기 버튼 -->
+<div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:9999;-webkit-overflow-scrolling:touch;">
+	<img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" onclick="closeDaumPostcode()" alt="닫기 버튼">
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    var element_layer = document.getElementById('layer');
+
+    function closeDaumPostcode() {
+        element_layer.style.display = 'none';
+    }
+
+    function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = ''; 
+                var extraAddr = ''; 
+
+                if (data.userSelectedType === 'R') { 
+                    addr = data.roadAddress;
+                } else { 
+                    addr = data.jibunAddress;
+                }
+
+                if(data.userSelectedType === 'R'){
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                } 
+
+                document.getElementById('zipcode').value = data.zonecode;
+                document.getElementById("addr1").value = addr + extraAddr;
+                document.getElementById("addr2").focus();
+                
+                element_layer.style.display = 'none';
+            },
+            width : '100%',
+            height : '100%',
+            maxSuggestItems : 5
+        }).embed(element_layer);
+
+        element_layer.style.display = 'block';
+        initLayerPosition();
+    }
+
+    function initLayerPosition(){
+        var width = 300; 
+        var height = 400; 
+        var borderWidth = 5; 
+
+        element_layer.style.width = width + 'px';
+        element_layer.style.height = height + 'px';
+        element_layer.style.border = borderWidth + 'px solid';
+        element_layer.style.left = (((window.innerWidth || document.documentElement.clientWidth) - width)/2 - borderWidth) + 'px';
+        element_layer.style.top = (((window.innerHeight || document.documentElement.clientHeight) - height)/2 - borderWidth) + 'px';
+    }
+</script>
 </body>
 </html>

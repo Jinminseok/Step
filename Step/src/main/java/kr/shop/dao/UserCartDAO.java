@@ -205,7 +205,6 @@ public class UserCartDAO {
 		return cart_num;
 	}
 	
-	
 	// 장바구니 전체 개수 가져오기
 	public int getCartCount(Long user_num) throws Exception {
 		Connection conn = null;
@@ -230,5 +229,43 @@ public class UserCartDAO {
 		
 		return count;
 	}
+	
+	// 장바구니 수량 업데이트
+		public void updateCartQty(long cart_num, int cart_qty) throws Exception {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = DBUtil.getConnection();
+				String sql = "UPDATE cart SET cart_qty = ? WHERE cart_num = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, cart_qty);
+				pstmt.setLong(2, cart_num);
+				pstmt.executeUpdate();
+			} finally {
+				DBUtil.executeClose(null, pstmt, conn);
+			}
+		}
+		
+		// 장바구니 선택 삭제
+		public void deleteSelectedCarts(String[] cartNums) throws Exception {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = DBUtil.getConnection();
+				String placeholders = "";
+				for(int i = 0; i < cartNums.length; i++) {
+					placeholders += "?";
+					if(i < cartNums.length - 1) placeholders += ",";
+				}
+				String sql = "DELETE FROM cart WHERE cart_num IN (" + placeholders + ")";
+				pstmt = conn.prepareStatement(sql);
+				for(int i = 0; i < cartNums.length; i++) {
+					pstmt.setLong(i + 1, Long.parseLong(cartNums[i]));
+				}
+				pstmt.executeUpdate();
+			} finally {
+				DBUtil.executeClose(null, pstmt, conn);
+			}
+		}
 		
 }

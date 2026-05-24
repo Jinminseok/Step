@@ -46,9 +46,9 @@
                             <div class="cart-name">${cart.prod_name}</div>
                             <div class="cart-opt">옵션: ${cart.color} / ${cart.size_val}</div>
                             <div class="qty-row">
-                                <button class="qty-btn" onclick="alert('수량 변경 기능은 준비 중입니다!')">-</button>
+                                <button class="qty-btn" onclick="updateQty(${cart.cart_num}, -1, ${cart.prod_price}, this)">-</button>
                                 <div class="qty-num">${cart.cart_qty}</div>
-                                <button class="qty-btn" onclick="alert('수량 변경 기능은 준비 중입니다!')">+</button>
+                                <button class="qty-btn" onclick="updateQty(${cart.cart_num}, 1, ${cart.prod_price}, this)">+</button>
                             </div>
                         </div>
                         
@@ -168,6 +168,82 @@ function goOrder() {
     form.appendTo('body');
     form.submit();
 }
+
+// 수량 변경
+function updateQty(cart_num, change, unit_price, btnElem) {
+    let qtyElem = $(btnElem).siblings('.qty-num');
+    let currentQty = parseInt(qtyElem.text());
+    let newQty = currentQty + change;
+
+    if (newQty < 1) {
+        alert("수량은 최소 1개 이상이어야 합니다.");
+        return;
+    }
+
+    $.ajax({
+        url: '${pageContext.request.contextPath}/shop/cart/updateCartQty.do',
+        type: 'post',
+        data: { cart_num: cart_num, cart_qty: newQty },
+        dataType: 'json',
+        success: function(param) {
+        	// 로그인 확인
+            if (param.result === 'logout') {
+                alert("로그인이 필요합니다.");
+                location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
+            } else if (param.result === 'success') {
+                // 수량 텍스트 업데이트
+                qtyElem.text(newQty);
+                
+                // 개별 상품 총액 계산 및 업데이트
+                let newPrice = unit_price * newQty;
+                let cartItem = $(btnElem).closest('.cart-item');
+                
+                cartItem.find('.cart-price').text(newPrice.toLocaleString('ko-KR') + '원');
+                cartItem.find('.cart-checkbox').data('price', newPrice); // 우측 주문 요약을 위해 데이터 갱신
+                
+                calcTotal(); // 전체 주문 요약 금액 다시 계산
+            }
+        },
+        error: function() {
+            alert("통신 오류가 발생했습니다.");
+        }
+    });
+}
+
+// 선택 삭제
+$('.btn-del-selected').click(function() {
+    let checkedCarts = $('.cart-checkbox:checked');
+    if(checkedCarts.length === 0) {
+        alert("삭제할 상품을 선택해 주세요.");
+        return;
+    }
+    if(!confirm("선택한 상품을 장바구니에서 삭제하시겠습니까?")) return;
+
+    // 체크된 장바구니 번호 수집
+    let cartNums = [];
+    checkedCarts.each(function() {
+        cartNums.push($(this).val());
+    });
+
+    $.ajax({
+        url: '${pageContext.request.contextPath}/shop/cart/deleteSelectedCart.do',
+        type: 'post',
+        data: { 'cart_nums': cartNums },
+        dataType: 'json',
+        traditional: true,
+        success: function(param) {
+            if(param.result === 'logout') {
+                alert("로그인이 필요합니다.");
+                location.href = '${pageContext.request.contextPath}/shop/user/loginForm.do';
+            } else if(param.result === 'success') {
+                location.reload(); // 성공 시 화면 새로고침
+            }
+        },
+        error: function() {
+            alert("통신 오류가 발생했습니다.");
+        }
+    });
+});
 </script>
 </body>
 </html>

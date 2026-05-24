@@ -38,6 +38,10 @@
                         안전하게 주문 및 결제 처리가 완료되었습니다.<br>
                         멋진 상품으로 빠르게 보답하겠습니다.
                     </c:when>
+                    <c:when test="${result_title == '정보 수정 완료'}">
+                        회원님의 소중한 정보가 안전하게 변경되었습니다.<br>
+                        변경된 정보를 마이페이지에서 확인해 보세요.
+                    </c:when>
                     <c:otherwise>
                         요청하신 작업이 정상적으로 완료되었습니다.
                     </c:otherwise>
@@ -60,7 +64,13 @@
                             onclick="location.href='${pageContext.request.contextPath}/shop/user/main.do'">계속 쇼핑하기</button>
                 </c:when>
                 
-                <%-- 3. 회원 가입 완료 --%>
+                <%-- 3. 정보 수정 완료 --%>
+                <c:when test="${result_title == '정보 수정 완료'}">
+                    <button class="btn btn-black btn-full" style="height:54px; font-size:15px;" 
+                            onclick="location.href='${pageContext.request.contextPath}/shop/user/myPageForm.do'">마이페이지로 돌아가기</button>
+                </c:when>
+                
+                <%-- 4. 회원 가입 완료 --%>
                 <c:otherwise>
                     <button class="btn btn-black btn-full" style="height:54px; font-size:15px; margin-bottom:10px;" 
                             onclick="location.href='${pageContext.request.contextPath}/shop/user/loginForm.do'">지금 로그인하기</button>
