@@ -46,7 +46,7 @@
 			<%-- 오른쪽 본문 영역 --%>
 			<div class="my-body">
 				
-				<%-- 내 정보 수정 결과 메시지 --%>
+				<%-- 내 정보 수정 완료 --%>
 			    <c:if test="${not empty modifyMsg}">
 			        <script>alert('${modifyMsg}');</script>
 			        <c:remove var="modifyMsg" scope="session" />
@@ -62,7 +62,6 @@
 					<c:remove var="reviewMsg" scope="session" />
 				</c:if>
 
-				<!-- 1. 내 정보 탭 -->
 				<div class="my-sub on" id="my-page">
 					<div class="sec-title">나의 쇼핑 혜택</div>
 
@@ -175,8 +174,14 @@
 					<c:forEach var="order" items="${recentOrderList}">
 						<div class="order-card">
 							<div class="order-hdr">
-								<span class="order-num">#${order.order_num}</span> <span
-									class="badge b-orange">결제완료</span>
+								<span class="order-num">#${order.order_num}</span>
+								<c:choose>
+								    <c:when test="${order.order_status == 1}"><span class="badge b-orange">📦 배송대기</span></c:when>
+								    <c:when test="${order.order_status == 2}"><span class="badge" style="background:#e0f2fe;color:#0369a1;">🏭 배송준비중</span></c:when>
+								    <c:when test="${order.order_status == 3}"><span class="badge b-blue">🚚 배송중</span></c:when>
+								    <c:when test="${order.order_status == 4}"><span class="badge" style="background:#dcfce7;color:#15803d;">✅ 배송완료</span></c:when>
+								    <c:when test="${order.order_status == 5}"><span class="badge" style="background:#fef2f2;color:#dc2626;">🚫 취소됨</span></c:when>
+								</c:choose>
 							</div>
 							<div class="order-body">
 								<div class="order-thumb">
@@ -199,7 +204,6 @@
 				</div>
 
 
-				<!-- 2. 재입고 알림 탭 -->
 				<div class="my-sub" id="my-restock">
 					<div class="sec-title" style="margin-bottom: 16px;">신청한 재입고
 						알림</div>
@@ -259,8 +263,7 @@
 					</c:forEach>
 				</div>
 
-				<!-- 3. 전체 주문 내역 탭 -->
-<div class="my-sub" id="my-orders">
+				<div class="my-sub" id="my-orders">
     <div class="tabs">
         <div class="tab on" onclick="filterOrders(this, 0)">전체</div>
         <div class="tab" onclick="filterOrders(this, 1)">배송대기</div>
@@ -367,7 +370,6 @@
     </c:forEach>
 </div>
 
-				<!-- 4. 내 정보 수정 탭 -->
 				<div class="my-sub" id="my-info">
 					<form
 						action="${pageContext.request.contextPath}/shop/user/modify.do"
@@ -429,7 +431,6 @@
 					</form>
 				</div>
 
-				<!-- 5. 반품/교환 탭 -->
 				<div class="my-sub" id="my-return">
 
 					<div class="tabs" id="return-tabs" style="margin-bottom: 24px;">
@@ -621,7 +622,6 @@
 					</div>
 				</div>
 
-				<!-- 6. 회원 탈퇴 탭 -->
 				<div class="my-sub" id="my-deleteuser">
 					<div class="sec-title"
 						style="margin-bottom: 16px; color: var(--red);">회원 탈퇴</div>
@@ -1015,7 +1015,6 @@ document.getElementById('modifyForm')?.addEventListener('submit', function(e) {
 	</script>
 	
 	
-<!-- 우편번호 찾기 버튼 -->
 <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:9999;-webkit-overflow-scrolling:touch;">
 	<img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" onclick="closeDaumPostcode()" alt="닫기 버튼">
 </div>
