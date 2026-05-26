@@ -11,176 +11,161 @@
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-    <div class="auth-page-wrap">
-
-        <%-- ── 왼쪽 비주얼 패널 ── --%>
-        <div class="auth-left">
-            <div class="auth-left-content">
-
-                <div class="auth-left-logo">Shoe<span>Mall</span></div>
-
-                <div class="auth-left-title">
-                    지금 가입하고<br>
-                    <em>첫 구매 혜택</em>
-                </div>
-                <div class="auth-left-desc">
-                    회원가입 즉시 BRONZE 등급으로 시작!<br>
-                    누적 구매 금액에 따라 VIP까지 승급됩니다.
-                </div>
-
-                <div class="auth-features">
-                    <div class="auth-feat-item">
-                        <div class="auth-feat-ico">🎁</div>
-                        <div class="auth-feat-txt">
-                            <strong>가입 즉시 혜택</strong>
-                            <span>신규 회원 전용 웰컴 할인 쿠폰 지급</span>
-                        </div>
-                    </div>
-                    <div class="auth-feat-item">
-                        <div class="auth-feat-ico">📦</div>
-                        <div class="auth-feat-txt">
-                            <strong>주문 · 배송 관리</strong>
-                            <span>내 주문 현황을 한눈에 확인</span>
-                        </div>
-                    </div>
-                    <div class="auth-feat-item">
-                        <div class="auth-feat-ico">🤍</div>
-                        <div class="auth-feat-txt">
-                            <strong>찜 목록 저장</strong>
-                            <span>마음에 드는 상품을 저장해두고 나중에</span>
-                        </div>
-                    </div>
-                    <div class="auth-feat-item">
-                        <div class="auth-feat-ico">💬</div>
-                        <div class="auth-feat-txt">
-                            <strong>1:1 채팅 문의</strong>
-                            <span>빠른 고객센터 채팅 지원</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <%-- ── 오른쪽 폼 패널 ── --%>
-        <div class="auth-right scroll">
-
-            <div class="auth-right-logo" style="margin-bottom:6px">Shoe<span>Mall</span></div>
-            <div class="auth-form-title">회원가입</div>
-            <div class="auth-sub">ShoeMall 회원이 되어보세요</div>
-
-            <form action="${pageContext.request.contextPath}/shop/user/register.do" method="post" id="register_form">
-
-                <div class="auth-section-label">계정 정보</div>
-
+    <div class="wrap">
+        <form action="${pageContext.request.contextPath}/shop/user/register.do" method="post" id="register_form">
+            <div class="auth-wrap" style="max-width:480px; margin: 0 auto;">
+                <div class="auth-logo">회원가입</div>
+                <div class="auth-sub">ShoeMall 회원이 되어보세요</div>
+                
                 <div class="form-group">
                     <label class="form-label">아이디</label>
                     <div class="input-with-btn">
-                        <input class="form-input" type="text" name="user_id" id="user_id"
-                               placeholder="아이디" required>
-                        <button type="button" class="btn btn-outline">중복확인</button>
+                        <input class="form-input" type="text" name="user_id" id="user_id" placeholder="아이디" required>
+                        <button type="button" class="btn btn-outline btn-sm">중복확인</button>
                     </div>
                 </div>
-
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">비밀번호</label>
-                        <input class="form-input" type="password" name="pwd" id="pwd"
-                               placeholder="비밀번호" required>
+                        <input class="form-input" type="password" name="pwd" id="pwd" placeholder="비밀번호" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">비밀번호 확인</label>
-                        <input class="form-input" type="password" id="passwd_check"
-                               placeholder="확인" required>
+                        <input class="form-input" type="password" id="passwd_check" placeholder="확인" required>
                     </div>
                 </div>
-
-                <div class="auth-section-label">개인 정보</div>
-
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input class="form-input" type="text" name="user_name" id="user_name"
-                               placeholder="이름" required>
+                        <input class="form-input" type="text" name="user_name" id="user_name" placeholder="이름" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">연락처</label>
-                        <input class="form-input" type="text" name="phone" id="phone"
-                               placeholder="010-0000-0000" required>
+                        <input class="form-input" type="text" name="phone" id="phone" placeholder="010-0000-0000" required>
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <label class="form-label">이메일</label>
-                    <input class="form-input" type="email" name="email" id="email"
-                           placeholder="hong@email.com" required>
+                    <input class="form-input" type="email" name="email" id="email" placeholder="hong@email.com" required>
                 </div>
-
-                <div class="auth-section-label">배송지 정보</div>
-
+                
                 <div class="form-group">
                     <label class="form-label">주소</label>
-                    <div class="input-with-btn" style="margin-bottom:8px">
-                        <input class="form-input" type="text" name="zipcode" id="zipcode"
-                               placeholder="우편번호" style="flex:0 0 120px;width:120px" readonly required>
-                        <button type="button" class="btn btn-outline"
-                                onclick="execDaumPostcode()">우편번호 찾기</button>
+                    <div class="input-with-btn" style="margin-bottom:6px">
+                        <input class="form-input" type="text" name="zipcode" id="zipcode" placeholder="우편번호" style="width:110px;flex:0 0 110px" readonly required>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="execDaumPostcode()">우편번호 찾기</button>
                     </div>
-                    <input class="form-input" type="text" name="addr1" id="addr1"
-                           placeholder="기본주소" style="margin-bottom:8px;display:block" readonly required>
-                    <input class="form-input" type="text" name="addr2" id="addr2"
-                           placeholder="상세주소" style="display:block">
+                    <input class="form-input" type="text" name="addr1" id="addr1" placeholder="기본주소" style="margin-bottom:6px" readonly required>
+                    <input class="form-input" type="text" name="addr2" id="addr2" placeholder="상세주소">
                 </div>
-
-                <button type="submit" class="btn btn-black btn-full"
-                        style="margin-top:8px">회원가입 완료</button>
-
-            </form>
-
-            <div class="auth-divider">또는</div>
-
-            <div style="text-align:center; font-size:13px; color:var(--gray4)">
-                이미 회원이신가요?&nbsp;
-                <a href="${pageContext.request.contextPath}/shop/user/loginForm.do" class="auth-link">로그인</a>
+                
+                <button type="submit" class="btn btn-black btn-full" style="margin-top:6px">회원가입 완료</button>
+                
+                <div style="text-align:center;font-size:13px;color:var(--gray4);margin-top:14px">
+                    이미 회원이신가요? 
+                    <a href="${pageContext.request.contextPath}/shop/user/loginForm.do" class="auth-link" style="text-decoration:none;">로그인</a>
+                </div>
             </div>
+        </form>
+<!-- 우편번호 처리 시작 -->	
+<!-- iOS에서는 position:fixed 버그가 있음, 적용하는 사이트에 맞게 position:absolute 등을 이용하여 top,left값 조정 필요 -->
+<div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:1;-webkit-overflow-scrolling:touch;">
+<img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" onclick="closeDaumPostcode()" alt="닫기 버튼">
+</div>
 
-        </div>
-    </div>
-
-    <%-- 우편번호 (기존 기능 그대로) --%>
-    <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:9999;-webkit-overflow-scrolling:touch;">
-        <img src="//t1.daumcdn.net/postcode/resource/images/close.png"
-             style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1"
-             onclick="closeDaumPostcode()" alt="닫기 버튼">
-    </div>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    // 우편번호 찾기 화면을 넣을 element
     var element_layer = document.getElementById('layer');
-    function closeDaumPostcode() { element_layer.style.display = 'none'; }
+
+    function closeDaumPostcode() {
+        // iframe을 넣은 element를 안보이게 한다.
+        element_layer.style.display = 'none';
+    }
+
     function execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
-                var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-                var extra = '';
-                if (data.userSelectedType === 'R') {
-                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) extra += data.bname;
-                    if (data.buildingName !== '' && data.apartment === 'Y')
-                        extra += (extra !== '' ? ', ' + data.buildingName : data.buildingName);
-                    if (extra !== '') extra = ' (' + extra + ')';
+                // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
                 }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                
+                } 
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
                 document.getElementById('zipcode').value = data.zonecode;
-                document.getElementById('addr1').value = addr + extra;
-                document.getElementById('addr2').focus();
+                //(수정) + extraAddr를 추가해서 address1에 참고항목이 보여지도록 수정
+                document.getElementById("addr1").value = addr + extraAddr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("addr2").focus();
+                
+                //주소 안내 메시지 초기화
+                document.getElementById('zipcode').dispatchEvent(new Event('input'));
+                document.getElementById('addr1').dispatchEvent(new Event('input'));
+
+                // iframe을 넣은 element를 안보이게 한다.
+                // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
                 element_layer.style.display = 'none';
             },
-            width: '100%', height: '100%', maxSuggestItems: 5
+            width : '100%',
+            height : '100%',
+            maxSuggestItems : 5
         }).embed(element_layer);
+
+        // iframe을 넣은 element를 보이게 한다.
         element_layer.style.display = 'block';
-        var w=300, h=400, b=5;
-        element_layer.style.cssText += ';width:'+w+'px;height:'+h+'px;border:'+b+'px solid;'
-            +'left:'+(((window.innerWidth||document.documentElement.clientWidth)-w)/2-b)+'px;'
-            +'top:'+(((window.innerHeight||document.documentElement.clientHeight)-h)/2-b)+'px';
+
+        // iframe을 넣은 element의 위치를 화면의 가운데로 이동시킨다.
+        initLayerPosition();
     }
-    </script>
+
+    // 브라우저의 크기 변경에 따라 레이어를 가운데로 이동시키고자 하실때에는
+    // resize이벤트나, orientationchange이벤트를 이용하여 값이 변경될때마다 아래 함수를 실행 시켜 주시거나,
+    // 직접 element_layer의 top,left값을 수정해 주시면 됩니다.
+    function initLayerPosition(){
+        var width = 300; //우편번호서비스가 들어갈 element의 width
+        var height = 400; //우편번호서비스가 들어갈 element의 height
+        var borderWidth = 5; //샘플에서 사용하는 border의 두께
+
+        // 위에서 선언한 값들을 실제 element에 넣는다.
+        element_layer.style.width = width + 'px';
+        element_layer.style.height = height + 'px';
+        element_layer.style.border = borderWidth + 'px solid';
+        // 실행되는 순간의 화면 너비와 높이 값을 가져와서 중앙에 뜰 수 있도록 위치를 계산한다.
+        element_layer.style.left = (((window.innerWidth || document.documentElement.clientWidth) - width)/2 - borderWidth) + 'px';
+        element_layer.style.top = (((window.innerHeight || document.documentElement.clientHeight) - height)/2 - borderWidth) + 'px';
+    }
+</script>
+<!-- 우편번호 처리 끝 -->	
+    </div>
 </body>
 </html>
