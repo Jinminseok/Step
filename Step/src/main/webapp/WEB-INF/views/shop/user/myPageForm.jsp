@@ -529,6 +529,7 @@ textarea.form-input {
                             </div>
                         </div>
                     </c:forEach>
+                    <div id="order-pagination" class="pagination" style="margin-top: 24px; padding-bottom: 20px;"></div>
                 </div>
 
                 <%-- ══ 내 정보 수정 ══ --%>
@@ -834,18 +835,81 @@ textarea.form-input {
         document.querySelectorAll('.my-sub').forEach(s => s.classList.remove('on'));
         document.getElementById(id).classList.add('on');
     }
+
+	// ✅ 주문내역 페이징 변수 설정
+    let currentOrderPage = 1;
+    const ordersPerPage = 5; 
+    let currentOrderStatus = 0; 
+
+    // ✅ 주문내역 탭 필터 및 페이징 렌더링 함수
+    function renderOrderPagination(status) {
+        const allCards = document.querySelectorAll('.order-item');
+        let filteredCards = [];
+
+        // 현재 탭에 맞는 카드만 추려내기
+        allCards.forEach(card => {
+            const s = parseInt(card.dataset.status);
+            if (status === 0 || s === status) {
+                filteredCards.push(card);
+            }
+            card.style.display = 'none';
+        });
+
+        const totalItems = filteredCards.length;
+        const totalPages = Math.ceil(totalItems / ordersPerPage) || 1;
+
+        // 페이지 초과 방지
+        if (currentOrderPage > totalPages) currentOrderPage = totalPages;
+
+        // 현재 페이지에 해당하는 카드만 화면에 보여주기
+        const start = (currentOrderPage - 1) * ordersPerPage;
+        const end = start + ordersPerPage;
+        
+        for (let i = start; i < end; i++) {
+            if (filteredCards[i]) {
+                filteredCards[i].style.display = '';
+            }
+        }
+
+        // 페이징 버튼 생성
+        const pageWrap = document.getElementById('order-pagination');
+        if (!pageWrap) return;
+
+        let pageHtml = '';
+        
+        if (totalItems > 0) {
+            for (let i = 1; i <= totalPages; i++) {
+                const isActive = (i === currentOrderPage) ? 'active' : '';
+                pageHtml += '<a href="#" class="page-btn ' + isActive + '" onclick="changeOrderPage(' + i + '); return false;">' + i + '</a>';
+            }
+        }
+        pageWrap.innerHTML = pageHtml;
+    }
+
+    // ✅ 페이지 번호 클릭 시 실행되는 함수
+    function changeOrderPage(page) {
+        currentOrderPage = page;
+        renderOrderPagination(currentOrderStatus);
+        document.getElementById('my-orders').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ✅ 탭 클릭 시 필터링
     function filterOrders(el, status) {
         document.querySelectorAll('#my-orders .tab').forEach(t => t.classList.remove('on'));
         el.classList.add('on');
-        document.querySelectorAll('.order-item').forEach(card => {
-            const s = parseInt(card.dataset.status);
-            card.style.display = (status === 0 || s === status) ? '' : 'none';
-        });
+        
+        currentOrderStatus = status; 
+        currentOrderPage = 1;        
+        
+        renderOrderPagination(status);
     }
-    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', function() {
-        this.closest('.tabs').querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
-        this.classList.add('on');
-    }));
+
+    // 화면 로드 시 초기 페이징 세팅
+    document.addEventListener('DOMContentLoaded', function() {
+        renderOrderPagination(0);
+    });
+
+    // 회원 탈퇴 유효성 체크
     function checkDelete() {
         const inputId = document.getElementById('del_id').value;
         const inputEmail = document.getElementById('del_email').value;
@@ -859,6 +923,8 @@ textarea.form-input {
         if (inputPwd !== inputPwdConfirm) { alert("비밀번호와 비밀번호 확인이 일치하지 않습니다."); document.getElementById('del_pwd_confirm').focus(); return false; }
         return confirm("정말로 ShoeMall에서 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없습니다.");
     }
+
+    // 반품/교환 탭 및 모달 제어
     function switchReturnTab(tabName) {
         const tabs = document.querySelectorAll('#return-tabs .tab');
         tabs.forEach(t => t.classList.remove('on'));
@@ -895,6 +961,8 @@ textarea.form-input {
         document.getElementById('modal-edit-review').style.display = 'flex';
     }
     function closeEditReviewModal() { document.getElementById('modal-edit-review').style.display = 'none'; }
+    
+    // 별점 렌더링
     function setStars(val) {
         document.querySelectorAll('.star').forEach(s => {
             s.textContent = parseInt(s.dataset.val) <= val ? '★' : '☆';
@@ -917,6 +985,8 @@ textarea.form-input {
         s.addEventListener('mouseenter', function() { setEditStars(parseInt(this.dataset.val)); });
     });
     document.querySelector('.edit-star-wrap')?.addEventListener('mouseleave', function() { setEditStars(parseInt(document.getElementById('editReviewRating').value)); });
+    
+    // 리뷰 폼 제출 검증
     document.getElementById('reviewForm')?.addEventListener('submit', function(e) {
         const rating = parseInt(document.getElementById('reviewRating').value);
         const content = document.getElementById('reviewContent').value.trim();
@@ -931,6 +1001,8 @@ textarea.form-input {
     });
     document.getElementById('modal-review')?.addEventListener('click', function(e) { if (e.target === this) closeReviewModal(); });
     document.getElementById('modal-edit-review')?.addEventListener('click', function(e) { if (e.target === this) closeEditReviewModal(); });
+    
+    // 정보 수정 검증
     document.getElementById('modifyForm')?.addEventListener('submit', function(e) {
         const currentPwd = this.passwd.value;
         const newPwd = this.new_passwd.value;
@@ -940,7 +1012,7 @@ textarea.form-input {
     });
     </script>
 
-    <%-- 우편번호 (기존 기능 그대로) --%>
+    <%-- 우편번호 --%>
     <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:9999;-webkit-overflow-scrolling:touch;">
         <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer"
              style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1"
