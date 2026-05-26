@@ -17,7 +17,7 @@
 
     <div class="wrap">
         <form action="${pageContext.request.contextPath}/shop/user/login.do" method="post" id="login_form">
-            <div class="auth-wrap">
+            <div class="auth-wrap" style="max-width:480px; margin: 0 auto;">
                 <div class="auth-logo">ShoeMall</div>
                 <div class="auth-sub">ShoeMall에 오신 것을 환영합니다</div>
                 

@@ -67,7 +67,7 @@ public class MainAction implements Action {
 		int count = dao.getMainProductCount(filter); 
 
 		// 페이징 계산을 위한 변수 세팅
-		int pageSize = 10;
+		int pageSize = 12;
 		int pageBlock = 5;
 
 		// 시작 번호와 끝 번호 계산
