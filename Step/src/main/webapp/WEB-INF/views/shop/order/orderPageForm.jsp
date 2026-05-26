@@ -92,11 +92,26 @@
                     
                     <div class="cs-row"><span>총 상품 금액</span> <span><fmt:formatNumber value="${totalProductPrice}" pattern="#,###"/>원</span></div>
                     <div class="cs-row"><span>배송비</span> <span>무료</span></div>
-                    <div class="cs-row" style="color:var(--red);"><span>할인 금액</span> <span>-0원</span></div>
+                    
+                    <%-- 등급별 할인 금액 및 뱃지 --%>
+                    <div class="cs-row" style="color:var(--red);">
+                        <span style="display:flex; align-items:center; gap:6px;">
+                            할인 금액
+                            <c:if test="${user.grade >= 2}">
+                                <c:choose>
+                                    <c:when test="${user.grade == 2}"><span style="background:#e0f2fe;color:#0369a1;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">SILVER 3%</span></c:when>
+                                    <c:when test="${user.grade == 3}"><span style="background:#fef08a;color:#b45309;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">GOLD 5%</span></c:when>
+                                    <c:when test="${user.grade == 4}"><span style="background:#000;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">VIP 10%</span></c:when>
+                                </c:choose>
+                            </c:if>
+                        </span> 
+                        <span>-<fmt:formatNumber value="${discountAmount}" pattern="#,###"/>원</span>
+                    </div>
                     
                     <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
                     
-                    <div class="cs-total"><span>최종 결제 금액</span> <span style="color:var(--blue);"><fmt:formatNumber value="${totalProductPrice}" pattern="#,###"/>원</span></div>
+                    <%-- 최종 결제 금액 --%>
+                    <div class="cs-total"><span>최종 결제 금액</span> <span style="color:var(--blue);"><fmt:formatNumber value="${finalPayPrice}" pattern="#,###"/>원</span></div>
                     
                     <button type="submit" class="btn btn-black btn-full" style="margin-top:20px; height:52px; font-size:16px;">결제하기</button>
                 </div>

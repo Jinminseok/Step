@@ -14,7 +14,7 @@ public class UserOrderDAO {
 	private UserOrderDAO() {}
 
 	// 주문 처리
-	public void processOrder(Long userNum, int totalPrice, String recvName, String recvPhone, 
+	public void processOrder(Long userNum, int totalPrice, int discPrice, int payPrice, String recvName, String recvPhone, 
                              String recvZip, String recvAddr1, String recvAddr2, 
                              String[] cartNums, String payMethod, String tid) throws Exception {
 		
@@ -35,18 +35,19 @@ public class UserOrderDAO {
 			DBUtil.executeClose(rs, pstmt, null);
 
 			// 주문 정보 추가
-			String sql1 = "INSERT INTO orders (order_num, user_num, total_price, pay_price, recv_name, recv_phone, recv_zip, recv_addr1, recv_addr2, order_status) "
-					    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
+			String sql1 = "INSERT INTO orders (order_num, user_num, total_price, disc_price, pay_price, recv_name, recv_phone, recv_zip, recv_addr1, recv_addr2, order_status) "
+					    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 			pstmt = conn.prepareStatement(sql1);
 			pstmt.setLong(1, orderNum);
 			pstmt.setLong(2, userNum);
-			pstmt.setInt(3, totalPrice);
-			pstmt.setInt(4, totalPrice);
-			pstmt.setString(5, recvName);
-			pstmt.setString(6, recvPhone);
-			pstmt.setString(7, recvZip);
-			pstmt.setString(8, recvAddr1);
-			pstmt.setString(9, recvAddr2);
+			pstmt.setInt(3, totalPrice); // 원가
+			pstmt.setInt(4, discPrice);  // 할인액
+			pstmt.setInt(5, payPrice);   // 실결제액
+			pstmt.setString(6, recvName);
+			pstmt.setString(7, recvPhone);
+			pstmt.setString(8, recvZip);
+			pstmt.setString(9, recvAddr1);
+			pstmt.setString(10, recvAddr2);
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
 			
@@ -79,7 +80,7 @@ public class UserOrderDAO {
 			pstmt.setLong(1, orderNum);
 			pstmt.setString(2, payMethod);
 			pstmt.setString(3, tid); // 카카오페이면 고유번호, 일반 결제면 null
-			pstmt.setInt(4, totalPrice);
+			pstmt.setInt(4, payPrice); // 결제 테이블엔 실제로 낸 돈(payPrice)을 기록
 			pstmt.executeUpdate();
 			DBUtil.executeClose(null, pstmt, null);
 			
@@ -95,7 +96,7 @@ public class UserOrderDAO {
 			// 회원의 총 누적 결제 금액 업데이트
 			String sql6 = "UPDATE USERS_DETAIL SET TOTAL_AMOUNT = TOTAL_AMOUNT + ? WHERE USER_NUM = ?";
 			pstmt = conn.prepareStatement(sql6);
-			pstmt.setInt(1, totalPrice);
+			pstmt.setInt(1, totalPrice); // 등급 상승을 위한 누적금액은 할인 전 가격으로
 			pstmt.setLong(2, userNum);
 			pstmt.executeUpdate();
 

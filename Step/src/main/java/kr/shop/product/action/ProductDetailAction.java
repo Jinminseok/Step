@@ -12,7 +12,9 @@ import kr.shop.dao.UserProductDAO;
 import kr.shop.dao.UserWishListDAO;
 import kr.shop.dao.ReviewDAO;
 import kr.shop.dao.UserOrderDAO;
+import kr.shop.dao.UserDAO;
 import kr.shop.vo.AdminProductVO;
+import kr.shop.vo.UserVO;
 
 public class ProductDetailAction implements Action {
 
@@ -70,6 +72,7 @@ public class ProductDetailAction implements Action {
 		// 로그인한 회원의 찜 상태 및 구매 여부(리뷰 권한) 확인
 		boolean isWished = false;
 		boolean hasPurchased = false;
+		int grade = 1; // 기본 등급을 1(BRONZE)로 세팅
 
 		if(isLogin) {
 			// 회원이 상품을 찜했는지 검사
@@ -79,6 +82,13 @@ public class ProductDetailAction implements Action {
 			// 회원이 상품을 구매했는지 검사
 			UserOrderDAO orderDao = UserOrderDAO.getInstance();
 			hasPurchased = orderDao.checkUserPurchase(user_num, prod_num);
+			
+			// 로그인한 회원의 상세 정보를 가져와 최신 등급 파악
+			UserDAO userDao = UserDAO.getInstance();
+			UserVO userVo = userDao.getUserDetail(user_num);
+			if(userVo != null) {
+				grade = userVo.getGrade();
+			}
 		}
 
 		ReviewDAO revDao = ReviewDAO.getInstance();
@@ -91,6 +101,7 @@ public class ProductDetailAction implements Action {
 		request.setAttribute("isWished", isWished);
 		request.setAttribute("hasPurchased", hasPurchased);
 		request.setAttribute("reviewList", reviewList);
+		request.setAttribute("grade", grade);
 
 		// 리뷰 총 개수, 평균 평점, 반올림된 정수 평점을 JSP로 전송
 		request.setAttribute("reviewCount", reviewSummary.get("count"));

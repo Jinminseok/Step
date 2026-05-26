@@ -40,13 +40,31 @@ public class UserOrderPageAction implements Action {
         // 총 상품 금액 계산하기
         int totalProductPrice = 0;
         for(kr.shop.vo.UserCartVO item : orderItemList) {
-        	totalProductPrice += (item.getProd_price() * item.getCart_qty());
+            totalProductPrice += (item.getProd_price() * item.getCart_qty());
         }
+        
+        // 등급별 할인율 및 최종 결제 금액 계산 로직
+        int grade = user.getGrade(); // 1: BRONZE, 2: SILVER, 3: GOLD, 4: VIP
+        double discountRate = 0.0;
+        
+        if (grade == 2) discountRate = 0.03; // SILVER 3%
+        else if (grade == 3) discountRate = 0.05; // GOLD 5%
+        else if (grade == 4) discountRate = 0.10; // VIP 10%
+        
+        // 할인 금액 계산 (소수점 버림 처리)
+        int discountAmount = (int) (totalProductPrice * discountRate);
+        
+        // 최종 결제 금액 계산
+        int finalPayPrice = totalProductPrice - discountAmount;
         
         request.setAttribute("orderItemList", orderItemList);
         request.setAttribute("totalProductPrice", totalProductPrice);
+        
+        request.setAttribute("discountRate", discountRate);
+        request.setAttribute("discountAmount", discountAmount);
+        request.setAttribute("finalPayPrice", finalPayPrice);
 
-        // 주문서 JSP로 이동
+        // 주문서로 이동
         return "shop/order/orderPageForm.jsp";
     }
 }

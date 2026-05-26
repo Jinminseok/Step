@@ -66,11 +66,24 @@
                 </div>
                 
                 <%-- 로그인 혜택 --%>
-                <c:if test="${isLogin}">
+                <c:if test="${isLogin and grade >= 2}">
+                    <%-- 회원의 등급에 맞춰 할인율 세팅 --%>
+                    <c:choose>
+                        <c:when test="${grade == 2}"><c:set var="userDiscount" value="0.03" /><c:set var="gradeName" value="SILVER" /></c:when>
+                        <c:when test="${grade == 3}"><c:set var="userDiscount" value="0.05" /><c:set var="gradeName" value="GOLD" /></c:when>
+                        <c:when test="${grade == 4}"><c:set var="userDiscount" value="0.10" /><c:set var="gradeName" value="VIP" /></c:when>
+                    </c:choose>
+                    
+                    <%-- 할인가 계산 (소수점 버림) --%>
+                    <c:set var="finalBenefitPrice" value="${salePrice - (salePrice * userDiscount)}" />
+                    
                     <div style="background:#e8f5e9; padding:12px 16px; border-radius:4px; margin-bottom:24px; font-size:13px; display:flex; align-items:center; gap:8px;">
                         <span>👑</span>
-                        <span><strong>${grade}등급</strong> 회원 추가 혜택가:</span>
-                        <strong style="color:#2e7d32; font-size:16px;"><fmt:formatNumber value="${salePrice - 5000}" pattern="#,###"/>원</strong>
+                        <span><strong>${gradeName}</strong> 회원 추가 혜택가:</span>
+                        <strong style="color:#2e7d32; font-size:16px;">
+                            <fmt:formatNumber value="${finalBenefitPrice}" maxFractionDigits="0" pattern="#,###"/>원
+                        </strong>
+                        <span style="font-size:11px; color:#2e7d32; font-weight:700;">(-<fmt:formatNumber value="${salePrice * userDiscount}" maxFractionDigits="0" pattern="#,###"/>원)</span>
                     </div>
                 </c:if>
                 

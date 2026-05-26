@@ -32,6 +32,8 @@ public class KakaoSuccessAction implements Action {
 		String address2 = (String) session.getAttribute("order_address2");
 		String[] cartNums = (String[]) session.getAttribute("order_cartNums");
 		Integer totalPrice = (Integer) session.getAttribute("order_totalPrice");
+		Integer discPrice = (Integer) session.getAttribute("order_discPrice");
+		Integer payPrice = (Integer) session.getAttribute("order_payPrice");
 
 		// 만약 세션이 날아갔다면 에러 처리
 		if(user_num == null || tid == null) {
@@ -40,9 +42,7 @@ public class KakaoSuccessAction implements Action {
 			return "common/alert_view.jsp"; 
 		}
 
-		// ----------------------------------------------------
 		// 카카오페이 최종 결제 승인
-		// ----------------------------------------------------
 		URL url = new URL("https://open-api.kakaopay.com/online/v1/payment/approve");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		
@@ -68,9 +68,8 @@ public class KakaoSuccessAction implements Action {
 
 		int resultCode = conn.getResponseCode();
 		if(resultCode == 200) { 
-			// DB에 주문 내역을 인서트
 			UserOrderDAO orderDao = UserOrderDAO.getInstance();
-			orderDao.processOrder(user_num, totalPrice, name, phone, zipcode, address1, address2, cartNums, "카카오페이", tid);
+			orderDao.processOrder(user_num, totalPrice, discPrice, payPrice, name, phone, zipcode, address1, address2, cartNums, "카카오페이", tid);
 
 			// DB 저장이 끝났으므로 세션의 임시 데이터 삭제
 			session.removeAttribute("kakao_tid");
@@ -81,8 +80,10 @@ public class KakaoSuccessAction implements Action {
 			session.removeAttribute("order_address2");
 			session.removeAttribute("order_cartNums");
 			session.removeAttribute("order_totalPrice");
+			session.removeAttribute("order_discPrice");
+			session.removeAttribute("order_payPrice");
 
-			// 고객을 환영해 줄 완료 화면으로 안내합니다.
+			// 완료 화면
 			request.setAttribute("result_title", "결제 완료");
 			request.setAttribute("result_msg", "카카오페이 결제가 성공적으로 완료되었습니다!<br>ShoeMall을 이용해 주셔서 감사합니다.");
 			request.setAttribute("result_url", request.getContextPath() + "/shop/user/myPageForm.do");

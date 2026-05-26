@@ -836,12 +836,12 @@ textarea.form-input {
         document.getElementById(id).classList.add('on');
     }
 
-	// ✅ 주문내역 페이징 변수 설정
+	// 주문내역 페이징 변수 설정
     let currentOrderPage = 1;
     const ordersPerPage = 5; 
     let currentOrderStatus = 0; 
 
-    // ✅ 주문내역 탭 필터 및 페이징 렌더링 함수
+    // 주문내역 탭 필터 및 페이징 렌더링 함수
     function renderOrderPagination(status) {
         const allCards = document.querySelectorAll('.order-item');
         let filteredCards = [];
@@ -886,14 +886,14 @@ textarea.form-input {
         pageWrap.innerHTML = pageHtml;
     }
 
-    // ✅ 페이지 번호 클릭 시 실행되는 함수
+    // 페이지 번호 클릭 시 실행되는 함수
     function changeOrderPage(page) {
         currentOrderPage = page;
         renderOrderPagination(currentOrderStatus);
         document.getElementById('my-orders').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ✅ 탭 클릭 시 필터링
+    // 탭 클릭 시 필터링
     function filterOrders(el, status) {
         document.querySelectorAll('#my-orders .tab').forEach(t => t.classList.remove('on'));
         el.classList.add('on');

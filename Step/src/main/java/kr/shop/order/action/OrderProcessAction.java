@@ -12,8 +12,10 @@ import jakarta.servlet.http.HttpSession;
 
 import kr.controller.Action;
 import kr.shop.dao.UserCartDAO;
+import kr.shop.dao.UserDAO;
 import kr.shop.dao.UserOrderDAO;
 import kr.shop.vo.UserCartVO;
+import kr.shop.vo.UserVO;
 
 public class OrderProcessAction implements Action {
 
@@ -48,6 +50,19 @@ public class OrderProcessAction implements Action {
 			totalPrice += (item.getProd_price() * item.getCart_qty());
 		}
 		
+		// 등급별 할인율 및 최종 결제 금액 계산
+		UserDAO userDao = UserDAO.getInstance();
+		UserVO user = userDao.getUserDetail(user_num);
+		int grade = user.getGrade(); 
+		
+		double discountRate = 0.0;
+		if (grade == 2) discountRate = 0.03;
+		else if (grade == 3) discountRate = 0.05;
+		else if (grade == 4) discountRate = 0.10;
+		
+		int discountAmount = (int) (totalPrice * discountRate);
+		int finalPayPrice = totalPrice - discountAmount; 
+		
 		// 카카오페이에 보낼 상품명 조합 (예: 에어포스 외 1건)
 		String itemName = "ShoeMall 상품";
 		if(orderItemList.size() > 0) {
@@ -57,9 +72,8 @@ public class OrderProcessAction implements Action {
 
 		// 결제 수단에 따른 분기 처리
 		if (!"3".equals(payType)) {
-			// 일반 결제 (신용카드, 무통장입금)
 			UserOrderDAO orderDao = UserOrderDAO.getInstance();
-			orderDao.processOrder(user_num, totalPrice, name, phone, zipcode, address1, address2, cartNums, payMethod, null);
+			orderDao.processOrder(user_num, totalPrice, discountAmount, finalPayPrice, name, phone, zipcode, address1, address2, cartNums, payMethod, null);
 
 			request.setAttribute("result_title", "주문 완료");
 			request.setAttribute("result_msg", "주문 및 결제가 성공적으로 완료되었습니다.<br>이용해 주셔서 감사합니다.");
@@ -87,7 +101,7 @@ public class OrderProcessAction implements Action {
 					+ "\"partner_user_id\":\"user_" + user_num + "\","
 					+ "\"item_name\":\"" + itemName + "\","
 					+ "\"quantity\":1,"
-					+ "\"total_amount\":" + totalPrice + ","
+					+ "\"total_amount\":" + finalPayPrice + ","
 					+ "\"tax_free_amount\":0,"
 					+ "\"approval_url\":\"" + approval_url + "\","
 					+ "\"cancel_url\":\"" + cancel_url + "\","
@@ -115,13 +129,12 @@ public class OrderProcessAction implements Action {
 			br.close();
 			
 			String responseData = resBuilder.toString();
-			System.out.println("카카오페이 응답: " + responseData); // 콘솔창 확인용
 			
 			// JSON 추출
 			String tid = responseData.split("\"tid\":\"")[1].split("\"")[0];
 			String redirectUrl = responseData.split("\"next_redirect_pc_url\":\"")[1].split("\"")[0];
 			
-			// 세션에 보관 (결제 완료 후 DB에 넣기 위함)
+			// 카카오페이 성공 후 처리를 위해 세션에 모두 보관
 			session.setAttribute("kakao_tid", tid);
 			session.setAttribute("order_name", name);
 			session.setAttribute("order_phone", phone);
@@ -129,7 +142,9 @@ public class OrderProcessAction implements Action {
 			session.setAttribute("order_address1", address1);
 			session.setAttribute("order_address2", address2);
 			session.setAttribute("order_cartNums", cartNums);
-			session.setAttribute("order_totalPrice", totalPrice);
+			session.setAttribute("order_totalPrice", totalPrice);      // 원가
+			session.setAttribute("order_discPrice", discountAmount);   // 할인액
+			session.setAttribute("order_payPrice", finalPayPrice);     // 실결제액
 			
 			// JSON 반환
 			request.setAttribute("notice_msg", "카카오페이 결제창으로 이동합니다.");
