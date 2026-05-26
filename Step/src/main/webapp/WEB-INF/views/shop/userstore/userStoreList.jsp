@@ -1,388 +1,353 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>ShoeMall - 매장 찾기</title>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
-/* --- 🚨 전역 스타일 --- */
-*, *::before, *::after { box-sizing: border-box; }
+*,*::before,*::after{box-sizing:border-box}
 
-body {
-    font-family: 'Pretendard', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    color: #333;
+body{
+  background:#f2f3f5;
+  font-family:'Noto Sans KR',sans-serif;
+  color:#111; margin:0;
 }
 
-/* --- 메인 레이아웃 --- */
-.wrap {
-    max-width: 1280px;
-    margin: 40px auto;
-    padding: 0 20px;
-    min-height: calc(100vh - 100px);
+.store-page{
+  max-width:1280px;
+  margin:0 auto;
+  padding:32px 24px 60px;
 }
 
-.page-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
-    margin-bottom: 24px;
-    letter-spacing: -0.5px;
+/* ── 페이지 타이틀 ── */
+.store-page-title{
+  font-size:22px;font-weight:900;
+  letter-spacing:-0.5px;color:#0d0d0d;
+  margin-bottom:24px;
 }
 
-/* 2단 그리드 (리스트 / 지도) */
-.map-layout {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 24px;
-    background: #fff;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    border: 1px solid #e2e8f0;
+/* ── 2단 레이아웃 ── */
+.map-layout{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:20px;
+  align-items:start;
 }
 
-/* --- 좌측: 매장 리스트 영역 --- */
-.store-list {
-    height: 650px;
-    overflow-y: auto;
-    padding-right: 12px;
-    display: flex;
-    flex-direction: column;
+/* ── 왼쪽 패널 ── */
+.store-panel{
+  background:#fff;
+  border:1px solid #e4e6ea;
+  border-radius:14px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  height:660px;
 }
-.store-list::-webkit-scrollbar { width: 6px; }
-.store-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* 검색바 영역 */
-.search-area {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    flex-shrink: 0;
+/* 패널 헤더 */
+.store-panel-hdr{
+  padding:16px 18px 0;
+  border-bottom:1px solid #f0f0f0;
+  background:#fff;
+  flex-shrink:0;
 }
-.search-input-wrap {
-    position: relative;
-    flex: 1;
+
+/* 검색 */
+.search-area{
+  display:flex;gap:8px;
+  margin-bottom:14px;
 }
-.search-input-wrap input {
-    width: 100%;
-    height: 44px;
-    padding: 0 40px 0 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s;
-    background: #f8fafc;
+.search-input-wrap{
+  position:relative;flex:1;
 }
-.search-input-wrap input:focus {
-    border-color: #111827;
-    background: #fff;
+.search-input-wrap input{
+  width:100%;height:42px;
+  padding:0 40px 0 14px;
+  border:1.5px solid #e4e6ea;
+  border-radius:8px;font-size:13px;
+  outline:none;background:#f8f9fb;
+  color:#111;font-family:inherit;
+  transition:border-color .18s,background .18s;
 }
-.search-btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    font-size: 16px;
+.search-input-wrap input:focus{
+  border-color:#0d0d0d;background:#fff;
 }
-.btn-reset {
-    height: 44px;
-    padding: 0 16px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    color: #475569;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: all 0.2s;
+.search-input-wrap input::placeholder{color:#bbb}
+.search-icon-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  font-size:15px;color:#aaa;line-height:1;padding:0;
 }
-.btn-reset:hover {
-    background: #f1f5f9;
-    color: #111827;
+.search-icon-btn:hover{color:#0d0d0d}
+.btn-reset{
+  height:42px;padding:0 14px;
+  border:1.5px solid #e4e6ea;background:#fff;
+  color:#666;border-radius:8px;cursor:pointer;
+  font-size:12px;font-weight:600;
+  white-space:nowrap;font-family:inherit;
+  transition:all .15s;
 }
+.btn-reset:hover{border-color:#0d0d0d;color:#0d0d0d;background:#f8f9fb}
 
 /* 브랜드 탭 */
-.brand-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    flex-shrink: 0;
+.brand-tabs{
+  display:flex;gap:6px;
+  overflow-x:auto;padding-bottom:14px;
+  flex-shrink:0;
 }
-.brand-tabs::-webkit-scrollbar { height: 4px; }
-.brand-tabs::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+.brand-tabs::-webkit-scrollbar{height:3px}
+.brand-tabs::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:2px}
+.brand-btn{
+  height:32px;padding:0 14px;
+  border:1.5px solid #e4e6ea;background:#fff;
+  color:#666;border-radius:20px;
+  font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;
+  font-family:inherit;transition:all .15s;
+}
+.brand-btn:hover{border-color:#999;color:#111}
+.brand-btn.active{
+  background:#0d0d0d;color:#fff;
+  border-color:#0d0d0d;
+}
 
-.brand-btn {
-    padding: 8px 16px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    color: #475569;
-    border-radius: 24px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
+/* 카드 목록 */
+.store-card-list{
+  flex:1;overflow-y:auto;
+  padding:14px 14px 14px 16px;
 }
-.brand-btn:hover { border-color: #94a3b8; }
-.brand-btn.active {
-    background: #111827;
-    color: #fff;
-    border-color: #111827;
-}
+.store-card-list::-webkit-scrollbar{width:4px}
+.store-card-list::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
 
 /* 매장 카드 */
-.store-card {
-    padding: 20px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    background: #fff;
-    transition: all 0.2s ease;
+.store-card{
+  padding:16px;
+  border:1.5px solid #ebebeb;
+  border-radius:10px;
+  margin-bottom:10px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .18s,box-shadow .18s,transform .15s;
 }
-.store-card:hover {
-    border-color: #94a3b8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.store-card:last-child{margin-bottom:0}
+.store-card:hover{
+  border-color:#bbb;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+  transform:translateY(-1px);
 }
-.store-card.active {
-    border-color: #3b82f6;
-    background: #eff6ff; /* 파란색 아주 연한 배경 */
+.store-card.active{
+  border-color:#1a6ef5;
+  background:#f0f6ff;
+  box-shadow:0 3px 16px rgba(26,110,245,.12);
 }
-.store-nm {
-    font-weight: 700;
-    font-size: 16px;
-    color: #0f172a;
-    margin-bottom: 8px;
-}
-.store-addr {
-    font-size: 13.5px;
-    color: #64748b;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-.store-info {
-    font-size: 12.5px;
-    color: #475569;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.store-info i { width: 16px; color: #94a3b8; }
 
-/* --- 우측: 지도 영역 --- */
-#map {
-    width: 100%;
-    height: 650px;
-    border-radius: 12px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+.store-nm{
+  font-size:14px;font-weight:700;
+  color:#0d0d0d;margin-bottom:6px;
+}
+.store-card.active .store-nm{color:#1a6ef5}
+
+.store-addr{
+  font-size:12.5px;color:#777;
+  margin-bottom:10px;line-height:1.45;
+}
+.store-info-row{
+  display:flex;flex-direction:column;gap:3px;
+}
+.store-info-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:#999;
+}
+.store-info-icon{font-size:12px;width:14px;text-align:center;color:#bbb;flex-shrink:0}
+
+/* 빈 상태 */
+.store-empty{
+  padding:60px 0;text-align:center;color:#ccc;font-size:14px;
+}
+.store-empty-icon{font-size:40px;margin-bottom:12px}
+
+/* ── 오른쪽: 지도 ── */
+#map{
+  width:100%;height:660px;
+  border-radius:14px;
+  border:1px solid #e4e6ea;
+  background:#f2f3f5;
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
 }
 </style>
 </head>
 <body>
-    <jsp:include page="/WEB-INF/views/common/header.jsp"/>
+<jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-    <div class="wrap">
-        <div class="page-title">오프라인 매장 찾기</div>
-        
-        <div class="map-layout">
-            <%-- 왼쪽: 매장 리스트 --%>
-            <div class="store-list">
-                <div class="search-area">				    
-				    <div class="search-input-wrap">
-				        <input type="text" id="storeSearch" placeholder="지역명 또는 매장명 입력" onkeyup="if(event.keyCode==13) filterList();">
-				        <button class="search-btn" onclick="filterList()"><i class="fa-solid fa-magnifying-glass"></i></button>
-				    </div>				    
-				    <button class="btn-reset" onclick="resetList()"><i class="fa-solid fa-rotate-right"></i> 초기화</button>				    
-				</div>
-				
-                <div class="brand-tabs">
-				    <button class="brand-btn active" onclick="selectBrand('ALL', this)">전체보기</button>				   			    
-				    <c:forEach var="brand" items="${brandList}">
-				        <button class="brand-btn" onclick="selectBrand('${brand.brandName}', this)">${brand.brandName}</button>
-				    </c:forEach>
-				</div>
-                
-                <div id="storeCardContainer">
-                    <c:forEach var="s" items="${storeList}" varStatus="status">
-                        <div class="store-card" id="card-${status.index}" onclick="panToStore('${s.storeAddr}', ${status.index})">
-                            <div class="store-nm">${s.storeName}</div>
-                            <div class="store-addr">${s.storeAddr}</div>
-                            <div class="store-info">
-                                <span><i class="fa-solid fa-phone"></i> ${s.storePhone}</span>
-                                <span><i class="fa-regular fa-clock"></i> ${s.openTime}</span>
-                            </div>
-                        </div>
-                    </c:forEach>
-                    <c:if test="${empty storeList}">
-                        <div style="text-align:center; padding:80px 0; color:#94a3b8;">
-                            <i class="fa-solid fa-store-slash" style="font-size:36px; color:#cbd5e1; margin-bottom:12px; display:block;"></i>
-                            등록된 매장이 없습니다.
-                        </div>
-                    </c:if>
-                </div>
-            </div>
+<div class="store-page">
+  <div class="store-page-title">🗺️ 오프라인 매장 찾기</div>
 
-            <%-- 오른쪽: 지도 영역 --%>
-            <div id="map"></div>
+  <div class="map-layout">
+
+    <%-- ── 왼쪽: 매장 리스트 ── --%>
+    <div class="store-panel">
+
+      <div class="store-panel-hdr">
+        <%-- 검색 --%>
+        <div class="search-area">
+          <div class="search-input-wrap">
+            <input type="text" id="storeSearch"
+                   placeholder="지역명 또는 매장명 입력"
+                   onkeyup="if(event.keyCode==13) filterList();">
+            <button class="search-icon-btn" onclick="filterList()">🔍</button>
+          </div>
+          <button class="btn-reset" onclick="resetList()">초기화</button>
         </div>
+
+        <%-- 브랜드 탭 --%>
+        <div class="brand-tabs">
+          <button class="brand-btn active" onclick="selectBrand('ALL', this)">전체</button>
+          <c:forEach var="brand" items="${brandList}">
+            <button class="brand-btn" onclick="selectBrand('${brand.brandName}', this)">${brand.brandName}</button>
+          </c:forEach>
+        </div>
+      </div>
+
+      <%-- 카드 목록 --%>
+      <div class="store-card-list" id="storeCardContainer">
+        <c:forEach var="s" items="${storeList}" varStatus="status">
+          <div class="store-card" id="card-${status.index}"
+               onclick="panToStore('${s.storeAddr}', ${status.index})">
+            <div class="store-nm">${s.storeName}</div>
+            <div class="store-addr">${s.storeAddr}</div>
+            <div class="store-info-row">
+              <div class="store-info-item">
+                <span class="store-info-icon">📞</span>
+                <span>${s.storePhone}</span>
+              </div>
+              <div class="store-info-item">
+                <span class="store-info-icon">🕐</span>
+                <span>${s.openTime}</span>
+              </div>
+            </div>
+          </div>
+        </c:forEach>
+
+        <c:if test="${empty storeList}">
+          <div class="store-empty">
+            <div class="store-empty-icon">🏪</div>
+            등록된 매장이 없습니다.
+          </div>
+        </c:if>
+      </div>
+
     </div>
 
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
+    <%-- ── 오른쪽: 지도 ── --%>
+    <div id="map"></div>
 
-    <script>
-    // ── 1. 지도 초기화 ──────────────────────────────────────────
-    var mapContainer = document.getElementById('map'); 
-    var mapOption = { 
-        center: new kakao.maps.LatLng(37.566826, 126.978656), // 기본 서울 중심
-        level: 4 
-    };
-    var map = new kakao.maps.Map(mapContainer, mapOption); 
-    var geocoder = new kakao.maps.services.Geocoder();
-    var markers = []; 
-    var infowindows = []; 
+  </div>
+</div>
 
-    // ── 2. 서버에서 넘어온 데이터를 JS 배열로 변환 ─────────────────────
-    var stores = [
-        <c:forEach var="s" items="${storeList}">
-        {
-            name: '${s.storeName}',
-            addr: '${s.storeAddr}',
-            phone: '${s.storePhone}',
-            time: '${s.openTime}'
-        },
-        </c:forEach>
-    ];
+<%-- 카카오맵 SDK --%>
+<script type="text/javascript"
+  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c976ca361528bd86cd80021916dd7c88&libraries=services"></script>
 
-    // ── 3. 주소로 좌표 검색 및 마커 표시 ─────────────────────────────
-    stores.forEach(function(store, index) {
-        geocoder.addressSearch(store.addr, function(result, status) {
-            if (status === kakao.maps.services.Status.OK) {
-                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+<script>
+/* ── 지도 초기화 ── */
+var mapContainer = document.getElementById('map');
+var map = new kakao.maps.Map(mapContainer, {
+    center: new kakao.maps.LatLng(37.566826, 126.978656),
+    level: 4
+});
+var geocoder    = new kakao.maps.services.Geocoder();
+var markers     = [];
+var infowindows = [];
 
-                var marker = new kakao.maps.Marker({
-                    map: map,
-                    position: coords
-                });
-                
-                markers[index] = marker; 
+/* ── 서버 데이터 ── */
+var stores = [
+    <c:forEach var="s" items="${storeList}">
+    { name:'${s.storeName}', addr:'${s.storeAddr}', phone:'${s.storePhone}', time:'${s.openTime}' },
+    </c:forEach>
+];
 
-                // 인포윈도우 디자인 개선
-                var content = '<div style="padding:15px; width:220px; font-family:\'Pretendard\', sans-serif; border-radius:8px; border:none;">' +
-                              '  <div style="font-weight:700; font-size:14px; margin-bottom:6px; color:#111827;">' + store.name + '</div>' +
-                              '  <div style="font-size:12px; color:#64748b; line-height:1.4;">' + store.addr + '</div>' +
-                              '</div>';
+/* ── 마커 & 인포윈도우 생성 ── */
+stores.forEach(function(store, index) {
+    geocoder.addressSearch(store.addr, function(result, status) {
+        if (status !== kakao.maps.services.Status.OK) return;
+        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-                var infowindow = new kakao.maps.InfoWindow({
-                    content: content
-                });
-                
-                infowindows[index] = infowindow;
+        var marker = new kakao.maps.Marker({ map: map, position: coords });
+        markers[index] = marker;
 
-                kakao.maps.event.addListener(marker, 'click', function() {
-                    closeAllInfoWindows();
-                    infowindow.open(map, marker);
-                    highlightCard(index);
-                });
+        var content =
+            '<div style="padding:14px 16px;min-width:200px;font-family:\'Noto Sans KR\',sans-serif;">' +
+            '<div style="font-weight:700;font-size:13px;color:#0d0d0d;margin-bottom:5px;">' + store.name + '</div>' +
+            '<div style="font-size:12px;color:#777;line-height:1.5;">' + store.addr + '</div>' +
+            '</div>';
 
-                // 첫 번째 매장을 중심 좌표로 설정
-                if (index === 0) map.setCenter(coords);
-            }
+        var iw = new kakao.maps.InfoWindow({ content: content });
+        infowindows[index] = iw;
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+            closeAllInfoWindows();
+            iw.open(map, marker);
+            highlightCard(index);
         });
+
+        if (index === 0) map.setCenter(coords);
     });
+});
 
-    // ── 4. 리스트 클릭 시 해당 위치로 이동 ───────────────────────────
-    function panToStore(addr, index) {
-        geocoder.addressSearch(addr, function(result, status) {
-            if (status === kakao.maps.services.Status.OK) {
-                var moveLatLon = new kakao.maps.LatLng(result[0].y, result[0].x);
-                map.panTo(moveLatLon); 
-                
-                closeAllInfoWindows();
-                
-                if(infowindows[index] && markers[index]) {
-                    infowindows[index].open(map, markers[index]);
-                }
-                
-                highlightCard(index);
-            } 
-            else {
-                alert("카카오맵에서 해당 주소 좌표를 찾을 수 없습니다.\n(" + addr + ")");
-            }
-        });
-    }
-
-    function closeAllInfoWindows() {
-        infowindows.forEach(function(iw) { if(iw) iw.close(); });
-    }
-
-    // 카드 선택(하이라이트) 처리: 인라인 스타일 대신 클래스 사용
-    function highlightCard(index) {
-        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
-        var activeCard = document.getElementById('card-' + index);
-        if(activeCard) {
-            activeCard.classList.add('active');
-            activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+/* ── 카드 클릭 시 지도 이동 ── */
+function panToStore(addr, index) {
+    geocoder.addressSearch(addr, function(result, status) {
+        if (status !== kakao.maps.services.Status.OK) {
+            alert("주소 좌표를 찾을 수 없습니다.\n(" + addr + ")");
+            return;
         }
-    }
+        map.panTo(new kakao.maps.LatLng(result[0].y, result[0].x));
+        closeAllInfoWindows();
+        if (infowindows[index] && markers[index]) infowindows[index].open(map, markers[index]);
+        highlightCard(index);
+    });
+}
 
-    // ── 5. 브랜드 탭 다중 필터링 ───────────────────────────────
-    var currentBrand = 'ALL'; 
+function closeAllInfoWindows() {
+    infowindows.forEach(function(iw) { if (iw) iw.close(); });
+}
 
-    function selectBrand(brand, btnElement) {
-        currentBrand = brand;
+function highlightCard(index) {
+    document.querySelectorAll('.store-card').forEach(function(c) { c.classList.remove('active'); });
+    var card = document.getElementById('card-' + index);
+    if (card) { card.classList.add('active'); card.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+}
 
-        // 모든 브랜드 버튼에서 active 클래스 제거 후 클릭한 버튼만 추가
-        document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
+/* ── 브랜드 탭 ── */
+var currentBrand = 'ALL';
 
-        filterList();
-    }
+function selectBrand(brand, btn) {
+    currentBrand = brand;
+    document.querySelectorAll('.brand-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    filterList();
+}
 
-    function filterList() {
-        var searchVal = document.getElementById('storeSearch').value.toLowerCase();
-        
-        document.querySelectorAll('.store-card').forEach(card => {
-            var name = card.querySelector('.store-nm').innerText;
-            var nameLower = name.toLowerCase();
-            var addrLower = card.querySelector('.store-addr').innerText.toLowerCase();
-            
-            // 매장명에 브랜드 이름 포함 여부 검사
-            var isBrandMatch = (currentBrand === 'ALL' || name.includes(currentBrand));
-            
-            // 검색어 검사
-            var isSearchMatch = (nameLower.includes(searchVal) || addrLower.includes(searchVal));
-            
-            if (isBrandMatch && isSearchMatch) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-    
-    // ── 6. 검색 초기화 기능 ────────────────────────────────────────
-    function resetList() {
-        document.getElementById('storeSearch').value = '';
-        filterList(); 
-    }
-    </script>
+/* ── 검색 필터 ── */
+function filterList() {
+    var kw = document.getElementById('storeSearch').value.toLowerCase();
+    document.querySelectorAll('.store-card').forEach(function(card) {
+        var name = card.querySelector('.store-nm').innerText;
+        var addr = card.querySelector('.store-addr').innerText.toLowerCase();
+        var brandOk  = (currentBrand === 'ALL' || name.includes(currentBrand));
+        var searchOk = (name.toLowerCase().includes(kw) || addr.includes(kw));
+        card.style.display = (brandOk && searchOk) ? '' : 'none';
+    });
+}
+
+function resetList() {
+    document.getElementById('storeSearch').value = '';
+    filterList();
+}
+</script>
 </body>
 </html>

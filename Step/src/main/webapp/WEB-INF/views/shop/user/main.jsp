@@ -11,6 +11,7 @@
 <title>ShoeMall</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+
 <style>
 /* ===== 배너 슬라이더 ===== */
 .slider-wrap {

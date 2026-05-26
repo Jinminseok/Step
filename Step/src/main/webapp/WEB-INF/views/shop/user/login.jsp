@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    // 로그인 에러 메시지 처리용 변수
     String loginError = (String) request.getAttribute("loginError");
 %>
 <!DOCTYPE html>
@@ -15,35 +14,38 @@
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-    <div class="wrap">
+    <div class="auth-page-wrap">
         <form action="${pageContext.request.contextPath}/shop/user/login.do" method="post" id="login_form">
             <div class="auth-wrap">
-                <div class="auth-logo">ShoeMall</div>
+
+                <div class="auth-logo">Shoe<span>Mall</span></div>
                 <div class="auth-sub">ShoeMall에 오신 것을 환영합니다</div>
-                
-                <!-- 로그인 에러 메시지 -->
+
                 <% if (loginError != null) { %>
-				<script>
-       			 alert('<%= loginError %>');
-    			</script>
-				<% } %>
-                
+                <div class="auth-error">⚠️ <%= loginError %></div>
+                <% } %>
+
                 <div class="form-group">
                     <label class="form-label" for="id">아이디</label>
-                    <input class="form-input" type="text" name="id" id="id" placeholder="아이디를 입력하세요" required>
+                    <input class="form-input" type="text" name="id" id="id"
+                           placeholder="아이디를 입력하세요" required autocomplete="username">
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" style="margin-bottom:24px">
                     <label class="form-label" for="passwd">비밀번호</label>
-                    <input class="form-input" type="password" name="passwd" id="passwd" placeholder="비밀번호를 입력하세요" required>
+                    <input class="form-input" type="password" name="passwd" id="passwd"
+                           placeholder="비밀번호를 입력하세요" required autocomplete="current-password">
                 </div>
-                
-                <button type="submit" class="btn btn-black btn-full" style="margin-top:4px">로그인</button>
-                
-                <div class="auth-divider"></div>
+
+                <button type="submit" class="btn btn-black btn-full">로그인</button>
+
+                <div class="auth-divider">또는</div>
+
                 <div style="text-align:center; font-size:13px; color:var(--gray4)">
-                    아직 회원이 아니신가요? 
-                    <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" class="auth-link" style="text-decoration:none;">회원가입</a>
+                    아직 회원이 아니신가요?&nbsp;
+                    <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" class="auth-link">회원가입</a>
                 </div>
+
             </div>
         </form>
     </div>
