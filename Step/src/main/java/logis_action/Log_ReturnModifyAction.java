@@ -29,11 +29,12 @@ public class Log_ReturnModifyAction implements Action {
             int tp = Integer.parseInt(request.getParameter("tp"));
             int currentStatus = Integer.parseInt(request.getParameter("currentStatus"));
             
+            // 🎯 개조된 역연산 트랜잭션 엔진 작동! (기존 상품 되감기 및 출고 상품 창고 복귀 동시 타격)
             dao.cancelClaimTransaction(retNum, orderNum, tp, currentStatus);
         }
         
         try {
-            Thread.sleep(150); // 150ms 브레이크
+            Thread.sleep(150); // DB 격리성 유지를 위한 150ms 브레이크
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

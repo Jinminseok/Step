@@ -255,7 +255,7 @@ tr:last-child td{border-bottom:none}
   <input type="hidden" name="courier" id="f-courier">
   <input type="hidden" name="invoiceNo" id="f-invoiceNo">
   <input type="hidden" name="adminMemo" id="f-adminMemo">
-</form>
+  <input type="hidden" name="exColor" id="f-exColor"> <input type="hidden" name="exSize" id="f-exSize">   </form>
 
 <div class="modal-bg" id="claimModal">
   <div class="modal" style="width:520px;">
@@ -280,8 +280,28 @@ tr:last-child td{border-bottom:none}
         <div class="dk" style="margin-top:4px;">특이사항</div>
         <div class="dv" id="m-retNote" style="background:#f4f6fa; padding:10px; border-radius:6px; font-size:12.5px; line-height:1.4; white-space:pre-wrap; width:100%;"></div>
       </div>
+      
       <div id="exchange-delivery-area" style="display:none; background: #f8faff; padding: 15px; border-radius: 8px; border: 1px solid #e1e8f5; margin-top: 10px;">
-        <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px;">🚚 교환 상품 재출고 정보 (필수)</div>
+        
+        <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px;">🔄 교환 출고 상품 옵션 변경 (동일 브랜드 한정)</div>
+        
+        <div class="dr" style="margin-bottom: 8px;">
+          <div class="dk" style="font-size: 12px; width: 80px; color:#1e3a8a;">변경 컬러</div>
+          <div class="dv">
+            <select id="m-excolor-sel" class="modal-input" style="width: 100%; padding: 6px; cursor:pointer; font-weight: 600; border: 1px solid var(--blue);">
+              </select>
+          </div>
+        </div>
+
+        <div class="dr" style="margin-bottom: 15px;">
+          <div class="dk" style="font-size: 12px; width: 80px; color:#1e3a8a;">변경 사이즈</div>
+          <div class="dv">
+            <select id="m-exsize-sel" class="modal-input" style="width: 100%; padding: 6px; cursor:pointer; font-weight: 600; border: 1px solid var(--blue);">
+              </select>
+          </div>
+        </div>
+
+        <div class="sec-title" style="color:var(--blue); font-size: 13px; margin-bottom: 10px; border-top:1px dashed #ced4da; padding-top:10px;">🚚 교환 상품 재출고 정보 (필수)</div>
         <div class="dr" style="margin-bottom: 8px;">
           <div class="dk" style="font-size: 12px; width: 80px;">택배사</div>
           <div class="dv">
@@ -302,6 +322,7 @@ tr:last-child td{border-bottom:none}
           </div>
         </div>
       </div>
+      
       <hr style="border:0; border-top:1px solid var(--gray6); margin:15px 0;">
       <div class="sec-title">📝 물류 담당자 특이사항 기록 (특수문자 허용)</div>
       <div style="margin-top:6px;">
@@ -363,6 +384,7 @@ const rawClaimList = [
       {
         ret_num: "${c.ret_num}",
         order_num: "${c.order_num}",
+        prod_num: "${c.prod_num}",
         tp: "${c.tp}",
         prod_name: `<c:out value="${c.prod_name}" escapeXml="true"/>`,
         color: `<c:out value="${c.color}" escapeXml="true"/>`,
@@ -378,32 +400,31 @@ const rawClaimList = [
       </c:forEach>
     ];
 
-// 📋 [2] 이력 데이터 파싱 (🚨 데이터 누락 완전 차단 연동 보강)
+// 📋 [2] 이력 데이터 파싱
 const historyData = [
   <c:forEach var="h" items="${historyList}">
   {
     ret_num: "${h.ret_num}",
     order_num: "${h.order_num}",
-    tp: "${h.tp == 1 ? '1' : '2'}", // 🎯 검색 스크리닝을 위해 숫자로 일치화
+    tp: "${h.tp == 1 ? '1' : '2'}", 
     tp_text: "${h.tp == 1 ? '반품' : '교환'}",
     proc_type: "${h.reason}", 
+    prod_name: `<c:out value="${h.prod_name}" escapeXml="true"/>`,
     invoice: "${empty h.invoice_no ? '-' : h.invoice_no}",
     memo: `<c:out value="${h.ret_note}" escapeXml="true"/>`,
-    ret_status: "${h.ret_status}", // 4: 양품, 5: 불량폐기
-    created_at: "2026-05-21" // 완결 날짜 세팅 (필요시 DB 날짜 컬럼 연동)
+    ret_status: "${h.ret_status}", 
+    created_at: "2026-05-21"
   },
   </c:forEach>
 ];
 
-// 전역 필터링 핸들러 라인
 let filteredClaimList = [...rawClaimList]; 
-let filteredHistList = [...historyData]; // 🎯 이력 전용 서치 배열 독립 분리
+let filteredHistList = [...historyData]; 
 
 let currentClaimPage = 1;
 let currentHistPage = 1;
 const itemsPerPage = 10;
 
-// 📅 날짜 계산 서브 포맷터
 function getDateFormat(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -411,7 +432,6 @@ function getDateFormat(date) {
     return `\${y}-\${m}-\${d}`;
 }
 
-// 🚀 엔진 스타터 (동적 실시간 날짜 가동)
 window.addEventListener('DOMContentLoaded', () => {
     const today = new Date();
     const lastMonth = new Date();
@@ -420,19 +440,16 @@ window.addEventListener('DOMContentLoaded', () => {
     const formattedToday = getDateFormat(today);
     const formattedLastMonth = getDateFormat(lastMonth);
     
-    // 대기 목록 달력 바인딩
     document.getElementById('filter-start-date').value = formattedLastMonth;
     document.getElementById('filter-end-date').value = formattedToday;
     
-    // 🎯 [신규] 이력 목록 달력 초기 바인딩 완료
     document.getElementById('hist-start-date').value = formattedLastMonth;
     document.getElementById('hist-end-date').value = formattedToday;
     
     applyFilters(null);
-    applyHistFilters(null); // 이력 필터 최초 기동
+    applyHistFilters(null); 
 });
 
-// 🔄 대기 필터 초기화 함수
 function resetFilters() {
     document.getElementById('filter-tp').value = "ALL";
     document.getElementById('filter-search-type').value = "RET_NUM";
@@ -448,7 +465,6 @@ function resetFilters() {
     applyFilters(null);
 }
 
-// 🔄 🎯 [신규] 이력 전용 필터 초기화 함수
 function resetHistFilters() {
     document.getElementById('hist-tp').value = "ALL";
     document.getElementById('hist-status').value = "ALL";
@@ -465,7 +481,6 @@ function resetHistFilters() {
     applyHistFilters(null);
 }
 
-// 🔍 대기 목록 스크리닝 필터 엔진
 function applyFilters(e) {
     if(e) e.preventDefault();
     
@@ -492,7 +507,6 @@ function applyFilters(e) {
     renderClaimTable();
 }
 
-// 🔍 🎯 [신규] 완결 이력 목록 다기능 필터 코어 스크리닝 엔진
 function applyHistFilters(e) {
     if(e) e.preventDefault();
     
@@ -504,14 +518,10 @@ function applyHistFilters(e) {
     const keyword = document.getElementById('hist-search-keyword').value.trim().toLowerCase();
     
     filteredHistList = historyData.filter(item => {
-        // 1. 완료 기간 필터링
         if(startDt && item.created_at < startDt) return false;
         if(endDt && item.created_at > endDt) return false;
-        // 2. 구분 필터링 (반품/교환)
         if(tp !== "ALL" && item.tp !== tp) return false;
-        // 3. 상태 필터링 (양품복구/불량폐기)
         if(status !== "ALL" && item.ret_status !== status) return false;
-        // 4. 동적 텍스트 검색 키워드 스크리닝
         if(keyword !== "") {
             if(searchType === "RET_NUM" && !item.ret_num.toLowerCase().includes(keyword)) return false;
             if(searchType === "ORDER_NUM" && !item.order_num.toLowerCase().includes(keyword)) return false;
@@ -524,7 +534,6 @@ function applyHistFilters(e) {
     renderHistTable();
 }
 
-// 📋 대기 목록 테이블 드로잉
 function renderClaimTable() {
     const tbody = document.getElementById('claimWaitTbody');
     if(!tbody) return;
@@ -536,7 +545,7 @@ function renderClaimTable() {
     const pageData = filteredClaimList.slice(start, end);
     
     if(pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:var(--gray4);">📥 조회 조건에 부합하는 클레임이 없습니다 형님.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:var(--gray4);">📥 조회 조건에 부합하는 클레임이 없습니다.</td></tr>';
         document.getElementById('claimPageInfo').textContent = "0 / 0 페이지";
         document.getElementById('claimPageBtns').innerHTML = "";
         return;
@@ -557,6 +566,7 @@ function renderClaimTable() {
             <td>
               <button type="button" class="btn btn-blue btn-xs" 
                       data-retnum="\${c.ret_num}" data-ordernum="\${c.order_num}" data-tp="\${c.tp}"
+                      data-prodnum="\${c.prod_num}" <%-- 🎯 [핵심 수술 부위] 자바스크립트가 오라클 실재고를 긁어갈 수 있도록 상품 일련번호 전격 주입! --%>
                       data-prodname="\${c.prod_name}" data-color="\${c.color}" data-sizeval="\${c.size_val}"
                       data-recvname="\${c.recv_name}" data-recvphone="\${c.recv_phone}" data-recvaddr="\${c.recv_addr}"
                       data-reason="\${c.reason}" data-retnote="\${c.ret_note}" data-isgood="\${c.is_good_str}"
@@ -571,7 +581,6 @@ function renderClaimTable() {
     renderClaimPagination();
 }
 
-// 🔢 대기 목록 페이징 버튼 생성기
 function renderClaimPagination() {
     const totalPages = Math.ceil(filteredClaimList.length / itemsPerPage) || 1;
     document.getElementById('claimPageInfo').textContent = `\${currentClaimPage} / \${totalPages} 페이지`;
@@ -591,7 +600,6 @@ function changeClaimPage(page) {
     renderClaimTable();
 }
 
-// 🎯 완벽한 탭 전환 구동 함수
 function switchTab(tabId, btn) {
     const secClaim = document.getElementById('sec-claim');
     const secHist = document.getElementById('sec-hist');
@@ -661,18 +669,114 @@ function openClaimModal(btn) {
 
     const dlvArea = document.getElementById('exchange-delivery-area');
     if(dlvArea) {
-        if(tp == 2) dlvArea.style.setProperty("display", "block", "important");
-        else dlvArea.style.setProperty("display", "none", "important");
+        if(tp == 2) {
+            dlvArea.style.setProperty("display", "block", "important");
+            
+            // 📌 [수정 완결] 기존 하드코딩 호출을 폐기하고, btn 데이터셋에 바인딩된 실제 prod_num까지 3개 인자로 전달!
+            // (※ 만약 버튼 데이터셋에 prodnum이 없다면 c.prod_num을 루프 돌 때 버튼 태그에 data-prodnum="${c.prod_num}"으로 얹어주시면 됩니다!)
+            const prodnum = btn.dataset.prodnum ? btn.dataset.prodnum : btn.dataset.retnum; // 예방 방어 코드
+            setupExchangeOptions(prodnum, color, sizeval);
+            
+        } else {
+            dlvArea.style.setProperty("display", "none", "important");
+        }
     }
     
     document.getElementById('claimModal').classList.add('open');
+}
+
+let liveAvailableOptions = [];
+
+// 🎯 [신규] 교환 가능한 옵션 세트를 셀렉트 박스에 동적으로 빌드하는 함수
+function setupExchangeOptions(prodNum, currentColor, currentSize) {
+	console.log("🚀 현재 모달창이 요청한 상품 일련번호(prodNum) ->", prodNum);
+    const colorSel = document.getElementById('m-excolor-sel');
+    const sizeSel = document.getElementById('m-exsize-sel');
+    if(!colorSel || !sizeSel) return;
+
+    // 1. 매장 실재고를 긁어오기 전, 로딩 상태로 사용자 인터페이스 보호
+    colorSel.innerHTML = '<option value="">가용 컬러 로딩중...</option>';
+    sizeSel.innerHTML = '<option value="">가용 사이즈 로딩중...</option>';
+
+    // 🎯 [핵심 수술 부위] 백틱(``)과 불완전한 템플릿 리터럴을 제거하고 
+    // JSP 컨텍스트 패스 문자열과 순수 JS 변수 연산을 완벽하게 분리했습니다.
+    var contextPath = "${pageContext.request.contextPath}";
+    var ajaxUrl = contextPath + "/logistics/claim/getAvailableOptions.do?prodNum=" + prodNum;
+
+    // 2. 아까 백엔드 매핑 프로퍼티에 등록한 주소로 AJAX(Fetch) 초고속 타격!
+    fetch(ajaxUrl)
+        .then(function(response) {
+            // 🚨 404 Not Found 또는 500 Internal Error 방어막 설치
+            if (!response.ok) {
+                throw new Error("HTTP 에러 상태코드: " + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            // 자바 백엔드가 뱉어준 실시간 재고 옵션 풀(Array) 저장
+            liveAvailableOptions = data; 
+
+            if(liveAvailableOptions.length === 0) {
+                colorSel.innerHTML = '<option value="">⚠️ 창고 품절 (교환 불가)</option>';
+                sizeSel.innerHTML = '<option value="">⚠️ 창고 품절 (교환 불가)</option>';
+                return;
+            }
+
+            // 3. 중복 제거된 순수 가용 컬러 리스트만 추출 (Set 객체 활용)
+            var uniqueColors = [];
+            for (var i = 0; i < liveAvailableOptions.length; i++) {
+                var cUpper = liveAvailableOptions[i].color.toUpperCase();
+                if (uniqueColors.indexOf(cUpper) === -1) {
+                    uniqueColors.push(cUpper);
+                }
+            }
+
+            // 4. 컬러 셀렉트 박스 빌드
+            let colorHtml = '';
+            uniqueColors.forEach(function(c) {
+                // 기존 고객 주문 컬러와 일치하면 기본 selected 처리
+                var selected = (c === currentColor.toUpperCase()) ? "selected" : "";
+                colorHtml += '<option value="' + c + '" ' + selected + '>' + c + '</option>';
+            });
+            colorSel.innerHTML = colorHtml;
+
+            // 5. [핵심 2단 체인] 현재 선택된 컬러에 종속된 진짜 남은 사이즈 목록 매핑 함수 호출
+            updateSizeOptionsByColor(colorSel.value, currentSize);
+
+            // 6. 이벤트 리스너 장착: 물류 담당자가 컬러를 변경할 때마다 사이즈 박스도 실시간 재필터링!
+            colorSel.onchange = function() {
+                updateSizeOptionsByColor(this.value, "");
+            };
+        })
+        .catch(err => {
+            console.error("🚨 실시간 재고 파이프라인 통신 에러 발생:", err);
+            colorSel.innerHTML = '<option value="">데이터 통신 실패</option>';
+            sizeSel.innerHTML = '<option value="">데이터 통신 실패</option>';
+        });
+}
+
+//🎯 [신규] 선택된 컬러에 맞는 실제 잔여 재고 사이즈만 발라내서 2단 박스를 그리는 함수
+function updateSizeOptionsByColor(selectedColor, defaultSize) {
+    const sizeSel = document.getElementById('m-exsize-sel');
+    if(!sizeSel) return;
+
+    // 현재 선택된 컬러와 일치하는 재고 로우만 스크리닝
+    const matchedSizes = liveAvailableOptions.filter(opt => opt.color.toUpperCase() === selectedColor.toUpperCase());
+
+    let sizeHtml = '';
+    matchedSizes.forEach(opt => {
+        // 기존 고객 주문 사이즈와 일치하면 기본 selected 처리
+        var selected = (opt.size_val === defaultSize) ? "selected" : "";
+        sizeHtml += '<option value="' + opt.size_val + '" ' + selected + '>' + opt.size_val + ' mm</option>';
+    });
+    
+    sizeSel.innerHTML = sizeHtml;
 }
 
 function closeModal() {
     document.getElementById('claimModal').classList.remove('open');
 }
 
-// 🚚 교환용 일련 랜덤 운송장 발행 로직
 function generateExchangeInvoice() {
     const courier = document.getElementById('m-courier-sel').value;
     if(!courier) {
@@ -712,6 +816,10 @@ function submitProcess(type) {
         }
         document.getElementById('f-courier').value = courier;
         document.getElementById('f-invoiceNo').value = invoice;
+        
+        // 🎯 [옵션 레일 락인] 담당자가 최종 선택한 변경 색상/사이즈를 히든 태그에 바인딩하여 폼 전송!
+        document.getElementById('f-exColor').value = document.getElementById('m-excolor-sel').value;
+        document.getElementById('f-exSize').value = document.getElementById('m-exsize-sel').value;
     }
     
     if(!confirm(`해당 건을 정말로 \${type === 'DISPOSAL' ? '불량 폐기' : '양품 복구입고'} 처리 완료하시겠습니까?`)) return;
@@ -719,17 +827,15 @@ function submitProcess(type) {
     document.getElementById('claimProcessForm').submit();
 }
 
-// 📋 🎯 [필터 연동형 교정] 이력조회 테이블 렌더러
 function renderHistTable() {
     const tbody = document.getElementById('histTbody');
     if(!tbody) return;
     
-    // 실시간 총 카운트 바인딩
     document.getElementById('filteredHistCnt').innerText = filteredHistList.length;
     
     const start = (currentHistPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const pageData = filteredHistList.slice(start, end); // 🎯 동적 필터 배열 슬라이싱으로 변경!
+    const pageData = filteredHistList.slice(start, end); 
     
     if(!pageData.length) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:50px; color:var(--gray4);">📭 조건에 부합하는 완료된 클레임 이력이 없습니다 형님.</td></tr>';
@@ -763,9 +869,8 @@ function renderHistTable() {
     renderHistPagination(); 
 }
 
-// 🔢 🎯 [필터 연동형 교정] 이력 목록 페이징 버튼 생성 엔진
 function renderHistPagination() {
-    const totalPages = Math.ceil(filteredHistList.length / itemsPerPage) || 1; // 🎯 filteredHistList 기준으로 가동!
+    const totalPages = Math.ceil(filteredHistList.length / itemsPerPage) || 1; 
     const pageBtns = document.getElementById('histPageBtns');
     if(!pageBtns) return;
     
@@ -786,7 +891,6 @@ function changeHistPage(p) {
     renderHistTable(); 
 }
 
-// ⚙️ 이력 제어 모달 핸들러 구역
 function openHistoryModal(btn) {
     const retnum = btn.dataset.retnum;
     const ordernum = btn.dataset.ordernum;
