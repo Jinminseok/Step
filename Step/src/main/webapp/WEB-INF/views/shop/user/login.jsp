@@ -40,9 +40,10 @@
                 <button type="submit" class="btn btn-black btn-full" style="margin-top:4px">로그인</button>
                 
                 <div class="auth-divider"></div>
-                <div style="text-align:center; font-size:13px; color:var(--gray4)">
-                    아직 회원이 아니신가요? 
-                    <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" class="auth-link" style="text-decoration:none;">회원가입</a>
+                <div style="text-align:center; font-size:13px; color:var(--gray4); display:flex; justify-content:center; align-items:center; gap:16px;">
+                    <span>아직 회원이 아니신가요? <a href="${pageContext.request.contextPath}/shop/user/registerForm.do" class="auth-link" style="text-decoration:none;">회원가입</a></span>
+                    <span style="color:var(--border);">|</span>
+                    <span><a href="${pageContext.request.contextPath}/shop/user/findPasswordForm.do" class="auth-link" style="text-decoration:none; font-weight:500;">비밀번호 찾기</a></span>
                 </div>
             </div>
         </form>

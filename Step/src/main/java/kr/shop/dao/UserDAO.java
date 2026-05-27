@@ -282,6 +282,29 @@ public class UserDAO {
 		}
 	}
 	
+	// 임시 비밀번호 변경
+	public void updatePassword(String pwd, long user_num) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "UPDATE users_detail SET pwd=? WHERE user_num=?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pwd);
+			pstmt.setLong(2, user_num);
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
+	}
+	
 	// ── 🌟 마이페이지용: 내 주문 내역 전체 가져오기 ──
 	public List<AdminOrderVO> getMyOrderList(long user_num) throws Exception {
 	    Connection conn = null;
