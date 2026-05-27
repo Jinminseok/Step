@@ -7,6 +7,66 @@
 <title>ShoeMall - 회원가입</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.7.1.min.js"></script>
+<script>
+$(function(){
+	let idChecked = 0; // 0: 중복체크 안됨, 1: 중복체크 완료
+	
+	// 1. 아이디 중복 체크 버튼 클릭 이벤트
+	$('#id_check_btn').click(function(){
+		// 빈 값 검사
+		if($('#user_id').val().trim() == ''){
+			$('#msg_id').css('color','var(--red)').text('아이디를 먼저 입력해주세요.');
+			$('#user_id').val('').focus();
+			return;
+		}
+		
+		// AJAX 서버 통신
+		$.ajax({
+			url: '${pageContext.request.contextPath}/shop/user/checkId.do',
+			type: 'post',
+			data: {id: $('#user_id').val()},
+			dataType: 'json',
+			success: function(param){
+				if(param.result == 'notFound'){
+					idChecked = 1;
+					$('#msg_id').css('color','var(--blue)').text('사용 가능한 아이디입니다.');
+				} else if(param.result == 'duplicated'){
+					idChecked = 0;
+					$('#msg_id').css('color','var(--red)').text('이미 사용중인 아이디입니다.');
+					$('#user_id').val('').focus();
+				} else {
+					idChecked = 0;
+					alert('아이디 중복 체크 오류 발생');
+				}
+			},
+			error: function(xhr, status, error){
+				idChecked = 0;
+				alert('네트워크 오류 발생!');
+				console.log("AJAX 에러 상태: ", status);
+				console.log("AJAX 에러 내용: ", error);
+			}
+		});
+	});
+
+	// 2. 아이디 입력창의 값이 변하면 중복체크 상태 초기화
+	$('#user_id').on('input',function(){
+		idChecked = 0;
+		$('#msg_id').text('');
+	});
+	
+	// 3. 폼 제출 시 최종 유효성 검사
+	$('#register_form').submit(function(event){
+		// 중복 체크를 하지 않았을 경우 제출 차단
+		if(idChecked == 0){
+			$('#msg_id').css('color','var(--red)').text('아이디 중복 확인을 진행해주세요.');
+			$('#user_id').focus();
+			event.preventDefault(); // 데이터 전송 막기
+			return false;
+		}
+	});
+});
+</script>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
@@ -21,8 +81,9 @@
                     <label class="form-label">아이디</label>
                     <div class="input-with-btn">
                         <input class="form-input" type="text" name="user_id" id="user_id" placeholder="아이디" required>
-                        <button type="button" class="btn btn-outline btn-sm">중복확인</button>
+                        <button type="button" id="id_check_btn" class="btn btn-outline btn-sm">중복확인</button>
                     </div>
+                    <div id="msg_id" class="error-msg" style="font-size:11px; margin-top:6px; font-weight:500;"></div>
                 </div>
                 
                 <div class="form-row">
