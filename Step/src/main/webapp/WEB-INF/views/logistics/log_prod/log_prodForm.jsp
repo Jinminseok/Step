@@ -109,8 +109,7 @@ textarea.fi{resize:vertical;min-height:72px}
       <span class="breadcrumb-cur">상품 마스터 관리</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date" id="realTimeClock"></div>      
     </div>
   </div>
 

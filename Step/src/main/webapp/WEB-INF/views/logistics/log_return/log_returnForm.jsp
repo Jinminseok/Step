@@ -106,6 +106,9 @@ tr:last-child td{border-bottom:none}
       <span class="breadcrumb-sep">›</span>
       <span class="breadcrumb-cur">반품 / 교환 관리</span>
     </div>
+        <div class="topbar-right">
+      <div class="tb-date" id="realTimeClock"></div>      
+    </div>
   </div>
 
   <div class="content">
@@ -378,6 +381,30 @@ tr:last-child td{border-bottom:none}
 <div class="toast" id="toast"></div>
 
 <script>
+//── 시계 ────────────────────────────────────────────
+function updateClock() {
+    var now = new Date();
+    var s = now.getFullYear() + "-"
+          + String(now.getMonth()+1).padStart(2,'0') + "-"
+          + String(now.getDate()).padStart(2,'0') + " "
+          + String(now.getHours()).padStart(2,'0') + ":"
+          + String(now.getMinutes()).padStart(2,'0');
+    document.getElementById("realTimeClock").innerText = s;
+}
+updateClock(); setInterval(updateClock, 60000);
+
+function updateSyncTime() {
+    var now = new Date();
+    var s = now.getFullYear() + "-"
+          + String(now.getMonth()+1).padStart(2,'0') + "-"
+          + String(now.getDate()).padStart(2,'0') + " "
+          + String(now.getHours()).padStart(2,'0') + ":"
+          + String(now.getMinutes()).padStart(2,'0') + ":"
+          + String(now.getSeconds()).padStart(2,'0');
+    document.getElementById("syncTime").innerText = "최종 동기화: " + s;
+    showToast('✅ 재고 동기화 완료');
+}
+
 // 📦 [1] 대기 데이터 파싱
 const rawClaimList = [
       <c:forEach var="c" items="${claimList}">

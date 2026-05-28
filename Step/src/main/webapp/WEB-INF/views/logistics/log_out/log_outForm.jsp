@@ -151,8 +151,7 @@ tr:last-child td{border-bottom:none}
       <span class="breadcrumb-cur" id="pg-title">출고 관리</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date" id="realTimeClock"></div>      
     </div>
   </div>
   

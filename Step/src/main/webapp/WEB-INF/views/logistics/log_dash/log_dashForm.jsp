@@ -30,7 +30,7 @@
     </div>
     <div class="topbar-right">
       <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      
     </div>
   </div>
 

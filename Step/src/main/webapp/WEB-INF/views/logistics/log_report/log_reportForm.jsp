@@ -48,8 +48,7 @@
       <span class="breadcrumb-cur">물류 리포트</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date" id="realTimeClock"></div>      
     </div>
   </div>
 

@@ -106,8 +106,7 @@ td:first-child{border-left:3px solid transparent;padding-left:11px}
       <span class="breadcrumb-cur">재고현황 조회</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date" id="realTimeClock"></div>      
     </div>
   </div>
 

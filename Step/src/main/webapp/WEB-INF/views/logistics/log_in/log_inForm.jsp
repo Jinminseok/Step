@@ -219,8 +219,7 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
       <span class="breadcrumb-cur" id="pg-title">입고 관리</span>
     </div>
     <div class="topbar-right">
-      <div class="tb-date" id="realTimeClock"></div>
-      <div class="tb-btn">🔔<div class="notif-dot"></div></div>
+      <div class="tb-date" id="realTimeClock"></div>      
     </div>
   </div>
  
