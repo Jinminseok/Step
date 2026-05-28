@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%-- 🌟 추가: 문자열 분리(split)를 위한 fn 태그라이브러리 --%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +13,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
     .sticky-tabs { display: flex; position: sticky; top: 107px; background: #fff; z-index: 100; border-bottom: 2px solid var(--black); margin-bottom: 40px; }
-    
     .sticky-tab { flex: 1; text-align: center; padding: 18px 0; font-size: 16px; font-weight: 700; cursor: pointer; background: #fff; color: var(--gray3); border: 1px solid var(--border); border-bottom: none; transition: background-color 0.2s, color 0.2s; }
     .sticky-tab.active { background: var(--black); color: #fff; border-color: var(--black); }
     .scroll-section { scroll-margin-top: 175px; }
@@ -229,22 +230,35 @@
 			        <c:forEach var="rev" items="${reviewList}">
 			            <div style="padding: 20px 0; border-bottom: 1px solid var(--border);">
 			                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-			                    <span style="font-weight:700;">${rev.user_name}</span>
+			                    <div>
+                                    <span style="font-weight:700;">${rev.user_name}</span>
+                                    <span style="position: relative; display: inline-block; color: #e2e8f0; font-size: 14px; letter-spacing: -1px; margin-left: 8px;">
+                                        ★★★★★
+                                        <span style="position: absolute; top: 0; left: 0; overflow: hidden; white-space: nowrap; color: #fbc02d; width: ${(rev.rating / 5.0) * 100}%;">★★★★★</span>
+                                    </span>
+                                </div>
 			                    
-			                    <span style="position: relative; display: inline-block; color: #e2e8f0; font-size: 14px; letter-spacing: -1px;">
-			                        ★★★★★
-			                        <span style="position: absolute; top: 0; left: 0; overflow: hidden; white-space: nowrap; color: #fbc02d; width: ${(rev.rating / 5.0) * 100}%;">★★★★★</span>
-			                    </span>
-			                    
+                                <%-- 🌟 추가: 내가 쓴 리뷰일 때만 수정 버튼 노출 --%>
+                                <c:if test="${not empty user_num and user_num == rev.user_num}">
+                                    <button type="button" class="btn btn-outline btn-sm" 
+                                            onclick="openEditReviewModalFromDetail(this)"
+                                            data-num="${rev.review_num}" 
+                                            data-rating="${rev.rating}" 
+                                            data-content="<c:out value='${rev.content}'/>">
+                                        수정
+                                    </button>
+                                </c:if>
 			                </div>
 			                <div style="font-size: 14px; color: var(--gray2); line-height: 1.6;">${rev.content}</div>
                             
-                            <%-- 🌟 추가: 리뷰 이미지 출력 및 확대 이벤트 --%>
-                            <c:if test="${not empty rev.img_url}">
-                                <div style="margin-top: 14px;">
-                                    <img src="${pageContext.request.contextPath}/upload/${rev.img_url}" 
-                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--border);"
-                                         onclick="openImageModal(this.src)" alt="리뷰 이미지">
+                            <%-- 🌟 수정: 콤마(,)로 구분된 다중 이미지를 잘라서 모두 출력 --%>
+                            <c:if test="${not empty rev.img_urls}">
+                                <div style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <c:forEach var="imgUrl" items="${fn:split(rev.img_urls, ',')}">
+                                        <img src="${pageContext.request.contextPath}/upload/${imgUrl}" 
+                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--border);"
+                                             onclick="openImageModal(this.src)" alt="리뷰 이미지">
+                                    </c:forEach>
                                 </div>
                             </c:if>
 
@@ -416,26 +430,39 @@ function handleAction(type) {
 
 $(document).ready(function() {
 	// 별점 클릭
-	$('.star').on('click', function() {
+	$('.star, .edit-star').on('click', function() {
 	    const val = parseInt($(this).data('val'));
-	    $('#reviewRating').val(val);
-	    setStars(val);
+        if ($(this).hasClass('edit-star')) {
+            $('#editReviewRating').val(val);
+	        setEditStars(val);
+        } else {
+            $('#reviewRating').val(val);
+	        setStars(val);
+        }
 	});
 	
 	// 별점 호버
-	$('.star').on('mouseenter', function() {
-	    setStars(parseInt($(this).data('val')));
+	$('.star, .edit-star').on('mouseenter', function() {
+        if ($(this).hasClass('edit-star')) {
+            setEditStars(parseInt($(this).data('val')));
+        } else {
+	        setStars(parseInt($(this).data('val')));
+        }
 	});
 	
 	// 별점 호버 해제
 	$('.star-wrap').on('mouseleave', function() {
 	    setStars(parseInt($('#reviewRating').val()) || 0);
 	});
+    $('.edit-star-wrap').on('mouseleave', function() {
+	    setEditStars(parseInt($('#editReviewRating').val()) || 0);
+	});
 	
 	<%-- 폼 검사 로직 --%>
-	$('#reviewForm').on('submit', function(e) {
-	    const rating = parseInt($('#reviewRating').val()) || 0;
-	    const content = $('#reviewContent').val().trim();
+	$('#reviewForm, #editReviewForm').on('submit', function(e) {
+        const isEdit = $(this).attr('id') === 'editReviewForm';
+	    const rating = parseInt(isEdit ? $('#editReviewRating').val() : $('#reviewRating').val()) || 0;
+	    const content = (isEdit ? $('#editReviewContent').val() : $('#reviewContent').val()).trim();
 
 	    if (rating === 0) {
 	        alert("별점을 선택해주세요.");
@@ -459,6 +486,13 @@ function setStars(val) {
 	    $(this).css('color', starVal <= val ? '#f59e0b' : '#ccc');
 	});
 }
+function setEditStars(val) {
+	$('.edit-star').each(function() {
+	    const starVal = parseInt($(this).data('val'));
+	    $(this).text(starVal <= val ? '★' : '☆');
+	    $(this).css('color', starVal <= val ? '#f59e0b' : '#ccc');
+	});
+}
 
 // 모달 열기
 function openReviewModalFromDetail(prodNum, prodName) {
@@ -469,10 +503,25 @@ function openReviewModalFromDetail(prodNum, prodName) {
 	setStars(0);
 	$('#modal-review').css('display', 'flex');
 }
+// 🌟 추가: 상세페이지에서 수정 모달 열기
+function openEditReviewModalFromDetail(btn) {
+    const reviewNum = btn.getAttribute('data-num');
+    const rating = parseInt(btn.getAttribute('data-rating'));
+    const content = btn.getAttribute('data-content');
+    
+    $('#editReviewNum').val(reviewNum);
+    $('#editReviewRating').val(rating);
+    $('#editReviewContent').val(content);
+    setEditStars(rating);
+    $('#modal-edit-review').css('display', 'flex');
+}
 
 // 모달 닫기
 function closeReviewModal() {
 	$('#modal-review').hide();
+}
+function closeEditReviewModal() {
+	$('#modal-edit-review').hide();
 }
 
 // 이미지 클릭 시 확대 모달 제어
@@ -498,7 +547,7 @@ function closeImageModal() {
             <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">상품명</div>
-                    <div id="reviewProdName" style="font-weight: 700; font-size: 16px; color: #000;"></div>
+                    <div id="reviewProdName" style="font-weight: 700; font-size: 16px; color: #000;">${product.prod_name}</div>
                 </div>
                 <div>
                     <div style="font-size: 12px; color: var(--gray3); margin-bottom: 8px;">별점 <span style="color: var(--red);">*</span></div>
@@ -511,15 +560,57 @@ function closeImageModal() {
                     <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">리뷰 내용 <span style="color: var(--red);">*</span></div>
                     <textarea name="reviewContent" id="reviewContent" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box;" placeholder="상품에 대한 솔직한 리뷰를 남겨주세요. (최소 10자)"></textarea>
                 </div>
-                <%-- 사진 첨부 영역 --%>
+                <%-- 🌟 다중 사진 첨부 영역 --%>
                 <div>
-                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">사진 첨부 (선택)</div>
-                    <input type="file" name="uploadFile" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; background: #fff; box-sizing: border-box;">
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">사진 첨부 (다중 선택 가능)</div>
+                    <input type="file" name="uploadFiles" multiple accept="image/*" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; background: #fff; box-sizing: border-box;">
                 </div>
             </div>
             <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: #fff;">
                 <button type="button" onclick="closeReviewModal()" style="flex: 1; height: 48px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;">취소</button>
                 <button type="submit" style="flex: 2; height: 48px; background: var(--black); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit;">리뷰 등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- 🌟 추가: 리뷰 수정 모달 --%>
+<div id="modal-edit-review" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: #fff; width: 480px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, .2);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); background: #fff;">
+            <div style="font-size: 17px; font-weight: 700;">🖊️ 리뷰 수정</div>
+            <button type="button" onclick="closeEditReviewModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray4);">×</button>
+        </div>
+     
+        <%-- 상세페이지용 수정 Action 호출 --%>
+        <form action="${pageContext.request.contextPath}/shop/review/updateReviewDetail.do" method="post" id="editReviewForm" enctype="multipart/form-data">
+            <input type="hidden" name="reviewNum" id="editReviewNum">
+            <input type="hidden" name="prodNum" value="${product.prod_num}">
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">상품명</div>
+                    <div style="font-weight: 700; font-size: 16px; color: #000;">${product.prod_name}</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 8px;">별점 <span style="color: var(--red);">*</span></div>
+                    <div class="edit-star-wrap" style="display: flex; gap: 6px; font-size: 32px; cursor: pointer;">
+                        <span class="edit-star" data-val="1">☆</span> <span class="edit-star" data-val="2">☆</span> <span class="edit-star" data-val="3">☆</span> <span class="edit-star" data-val="4">☆</span> <span class="edit-star" data-val="5">☆</span>
+                    </div>
+                    <input type="hidden" name="rating" id="editReviewRating" value="0">
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">리뷰 내용 <span style="color: var(--red);">*</span></div>
+                    <textarea name="reviewContent" id="editReviewContent" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box;" placeholder="수정할 내용을 입력해주세요. (최소 10자)"></textarea>
+                </div>
+                <%-- 🌟 다중 사진 수정 영역 --%>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">새로운 사진 첨부 (기존 사진 대체)</div>
+                    <input type="file" name="uploadFiles" multiple accept="image/*" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; background: #fff; box-sizing: border-box;">
+                </div>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: #fff;">
+                <button type="button" onclick="closeEditReviewModal()" style="flex: 1; height: 48px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;">취소</button>
+                <button type="submit" style="flex: 2; height: 48px; background: var(--black); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit;">수정 완료</button>
             </div>
         </form>
     </div>

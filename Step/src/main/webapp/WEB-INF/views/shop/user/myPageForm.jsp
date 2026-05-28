@@ -780,10 +780,9 @@ textarea.form-input {
                                   style="width:100%;min-height:120px;padding:12px 14px;border:1.5px solid #e4e6ea;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;outline:none;"
                                   placeholder="상품에 대한 솔직한 리뷰를 남겨주세요. (최소 10자)"></textarea>
                     </div>
-                    <%-- 사진 첨부 영역 --%>
                     <div>
-                        <div class="modal-label">사진 첨부 (선택)</div>
-                        <input type="file" name="uploadFile" accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
+                        <div class="modal-label">사진 첨부 (다중 선택 가능)</div>
+                        <input type="file" name="uploadFiles" multiple accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -823,10 +822,9 @@ textarea.form-input {
                                   style="width:100%;min-height:120px;padding:12px 14px;border:1.5px solid #e4e6ea;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;outline:none;"
                                   placeholder="수정할 내용을 입력해주세요. (최소 10자)"></textarea>
                     </div>
-                    <%-- 사진 수정 영역 --%>
                     <div>
-                        <div class="modal-label">사진 수정 (선택)</div>
-                        <input type="file" name="uploadFile" accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
+                        <div class="modal-label">새로운 사진 첨부 (기존 사진 대체)</div>
+                        <input type="file" name="uploadFiles" multiple accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
                     </div>
                 </div>
                 <div class="modal-footer">

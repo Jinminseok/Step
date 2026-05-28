@@ -1,6 +1,8 @@
 package kr.shop.review;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,9 +17,7 @@ public class WriteReviewDetailAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession();
-
+    	HttpSession session = request.getSession();
         Long user_num = (Long) session.getAttribute("user_num");
 
         if (user_num == null) {
@@ -33,20 +33,18 @@ public class WriteReviewDetailAction implements Action {
             File uploadDir = new File(savePath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String filename = null;
-            Part filePart = request.getPart("uploadFile");
-            
             // 파일이 정상적으로 첨부되었다면
-            if (filePart != null && filePart.getSize() > 0) {
-                String originalFileName = filePart.getSubmittedFileName();
-                // UUID를 활용해 고유한 파일명 생성
-                filename = UUID.randomUUID().toString() + "_" + originalFileName;
-                filePart.write(savePath + File.separator + filename);
+            List<String> filenames = new ArrayList<>();
+            for (Part part : request.getParts()) {
+                if ("uploadFiles".equals(part.getName()) && part.getSize() > 0) {
+                    String originalFileName = part.getSubmittedFileName();
+                    String filename = UUID.randomUUID().toString() + "_" + originalFileName;
+                    part.write(savePath + File.separator + filename);
+                    filenames.add(filename);
+                }
             }
 
             ReviewDAO reviewDAO = ReviewDAO.getInstance();
-            
-            // 구매 내역에서 가장 최근 상품 번호 가져오기
             Long orderNum = reviewDAO.getRecentOrderNum(user_num, prodNum);
 
             if (orderNum == null) {
@@ -57,7 +55,7 @@ public class WriteReviewDetailAction implements Action {
                 session.setAttribute("reviewMsg", "별점과 리뷰 내용을 최소 10자 이상 정확히 입력해주세요.");
             } else {
                 // 검증 통과 시 리뷰 및 파일명 저장
-                reviewDAO.insertReview(user_num, orderNum, prodNum, rating, content, filename);
+            	reviewDAO.insertReview(user_num, orderNum, prodNum, rating, content, filenames);
                 session.setAttribute("reviewMsg", "리뷰가 성공적으로 등록되었습니다! 😊");
             }
 
