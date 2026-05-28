@@ -10,10 +10,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
-    .sticky-tabs { display: flex; position: sticky; top: 56px; background: #fff; z-index: 100; border-bottom: 2px solid var(--black); margin-bottom: 40px; }
+    .sticky-tabs { display: flex; position: sticky; top: 107px; background: #fff; z-index: 100; border-bottom: 2px solid var(--black); margin-bottom: 40px; }
+    
     .sticky-tab { flex: 1; text-align: center; padding: 18px 0; font-size: 16px; font-weight: 700; cursor: pointer; background: #fff; color: var(--gray3); border: 1px solid var(--border); border-bottom: none; transition: background-color 0.2s, color 0.2s; }
     .sticky-tab.active { background: var(--black); color: #fff; border-color: var(--black); }
-    .scroll-section { scroll-margin-top: 170px; }
+    .scroll-section { scroll-margin-top: 175px; }
 </style>
 </head>
 <body>
@@ -208,7 +209,6 @@
 			        <div style="border-bottom: 1px solid var(--black); padding-bottom: 14px; margin-bottom: -5px; display: flex; justify-content: space-between; align-items: flex-end;">
 			            <h3 style="font-size: 18px; font-weight: 700;">상품 리뷰 (${reviewCount})</h3>
 			            
-			            <%-- 에러/성공 메시지 출력 --%>
 			            <c:if test="${not empty reviewMsg}">
 			                <script>
 			                    alert('${reviewMsg}');
@@ -238,7 +238,17 @@
 			                    
 			                </div>
 			                <div style="font-size: 14px; color: var(--gray2); line-height: 1.6;">${rev.content}</div>
-			                <div style="font-size: 12px; color: var(--gray4); margin-top:8px;"><fmt:formatDate value="${rev.date}" pattern="yyyy.MM.dd"/></div>
+                            
+                            <%-- 🌟 추가: 리뷰 이미지 출력 및 확대 이벤트 --%>
+                            <c:if test="${not empty rev.img_url}">
+                                <div style="margin-top: 14px;">
+                                    <img src="${pageContext.request.contextPath}/upload/${rev.img_url}" 
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--border);"
+                                         onclick="openImageModal(this.src)" alt="리뷰 이미지">
+                                </div>
+                            </c:if>
+
+			                <div style="font-size: 12px; color: var(--gray4); margin-top:10px;"><fmt:formatDate value="${rev.date}" pattern="yyyy.MM.dd"/></div>
 			            </div>
 			        </c:forEach>
 			    </div>
@@ -256,7 +266,7 @@ let selectedSize = "";
 function scrollToSection(tabName) {
     const target = document.getElementById('content-' + tabName);
     if(target) {
-        const targetY = target.getBoundingClientRect().top + window.pageYOffset - 114;
+    	const targetY = target.getBoundingClientRect().top + window.pageYOffset - 170;
         window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
 }
@@ -264,7 +274,7 @@ function scrollToSection(tabName) {
 window.addEventListener('scroll', function() {
     let current = 'info'; 
     const sections = ['info', 'size', 'recommend', 'review'];
-    const triggerLine = 130; 
+    const triggerLine = 180;
 
     sections.forEach(sec => {
         const section = document.getElementById('content-' + sec);
@@ -464,42 +474,61 @@ function openReviewModalFromDetail(prodNum, prodName) {
 function closeReviewModal() {
 	$('#modal-review').hide();
 }
+
+// 이미지 클릭 시 확대 모달 제어
+function openImageModal(src) {
+    document.getElementById('enlarged-image').src = src;
+    document.getElementById('modal-image-view').style.display = 'flex';
+}
+function closeImageModal() {
+    document.getElementById('modal-image-view').style.display = 'none';
+}
 </script>
 
-<%-- 리뷰 작성 모달 (상세페이지 전용) --%>
 <div id="modal-review" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 9999; align-items: center; justify-content: center;">
-	<div style="background: #fff; width: 480px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, .2);">
-    	<div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--gray7);">
-        	<div style="font-size: 17px; font-weight: 700;">✏️ 리뷰 작성</div>
-        	<button type="button" onclick="closeReviewModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray4);">×</button>
-    	</div>
+    <div style="background: #fff; width: 480px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, .2);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); background: #fff;">
+            <div style="font-size: 17px; font-weight: 700;">✏️ 리뷰 작성</div>
+            <button type="button" onclick="closeReviewModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray4);">×</button>
+        </div>
      
-	    <%-- 상세페이지 전용 액션 --%>
-	    <form action="${pageContext.request.contextPath}/shop/review/writeReviewDetail.do" method="post" id="reviewForm">
-	        <input type="hidden" name="prodNum" id="reviewProdNum">
-	        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-	            <div>
-	                <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">상품명</div>
-	                <div id="reviewProdName" style="font-weight: 600; font-size: 15px;"></div>
-	            </div>
-	            <div>
-	                <div style="font-size: 12px; color: var(--gray3); margin-bottom: 8px;">별점 <span style="color: var(--red);">*</span></div>
-	                <div class="star-wrap" style="display: flex; gap: 6px; font-size: 32px; cursor: pointer;">
-	                    <span class="star" data-val="1">☆</span> <span class="star" data-val="2">☆</span> <span class="star" data-val="3">☆</span> <span class="star" data-val="4">☆</span> <span class="star" data-val="5">☆</span>
-	                </div>
-	                <input type="hidden" name="rating" id="reviewRating" value="0">
-	            </div>
-	            <div>
-	                <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">리뷰 내용 <span style="color: var(--red);">*</span></div>
-	                <textarea name="reviewContent" id="reviewContent" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" placeholder="상품에 대한 솔직한 리뷰를 남겨주세요."></textarea>
-	            </div>
-	        </div>
-	        <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: var(--gray7);">
-	            <button type="button" onclick="closeReviewModal()" style="flex: 1; height: 44px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">취소</button>
-	            <button type="submit" style="flex: 2; height: 44px; background: var(--black); color: #fff; border: none; border-radius: 4px; cursor: pointer;">리뷰 등록</button>
-	        </div>
-	    </form>
-	</div>
+        <%-- 상세페이지 리뷰 작성 폼 --%>
+        <form action="${pageContext.request.contextPath}/shop/review/writeReviewDetail.do" method="post" id="reviewForm" enctype="multipart/form-data">
+            <input type="hidden" name="prodNum" id="reviewProdNum">
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">상품명</div>
+                    <div id="reviewProdName" style="font-weight: 700; font-size: 16px; color: #000;"></div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 8px;">별점 <span style="color: var(--red);">*</span></div>
+                    <div class="star-wrap" style="display: flex; gap: 6px; font-size: 32px; cursor: pointer;">
+                        <span class="star" data-val="1">☆</span> <span class="star" data-val="2">☆</span> <span class="star" data-val="3">☆</span> <span class="star" data-val="4">☆</span> <span class="star" data-val="5">☆</span>
+                    </div>
+                    <input type="hidden" name="rating" id="reviewRating" value="0">
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">리뷰 내용 <span style="color: var(--red);">*</span></div>
+                    <textarea name="reviewContent" id="reviewContent" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box;" placeholder="상품에 대한 솔직한 리뷰를 남겨주세요. (최소 10자)"></textarea>
+                </div>
+                <%-- 사진 첨부 영역 --%>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">사진 첨부 (선택)</div>
+                    <input type="file" name="uploadFile" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; background: #fff; box-sizing: border-box;">
+                </div>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: #fff;">
+                <button type="button" onclick="closeReviewModal()" style="flex: 1; height: 48px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;">취소</button>
+                <button type="submit" style="flex: 2; height: 48px; background: var(--black); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit;">리뷰 등록</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<%-- 사진 클릭 시 보여줄 확대 모달 --%>
+<div id="modal-image-view" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 10000; align-items: center; justify-content: center; cursor: pointer;" onclick="closeImageModal()">
+    <img id="enlarged-image" src="" style="max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain;">
+</div>
+
 </body>
 </html>

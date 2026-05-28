@@ -39,41 +39,121 @@ public class ReviewDAO {
 	 * 리뷰 INSERT
 	 */
 	public void insertReview(long userNum, long orderNum, int prodNum,
-			int rating, String content) throws Exception {
+			int rating, String content, String filename) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long reviewNum = 0; // 발급받을 리뷰 번호
+		
 		try {
 			conn = DBUtil.getConnection();
-			String sql = "INSERT INTO reviews "
+			// 오토커밋 해제
+			conn.setAutoCommit(false); 
+			
+			// 새 리뷰 번호 생성
+			String sql = "SELECT reviews_seq.nextval FROM DUAL";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				reviewNum = rs.getLong(1);
+			}
+			DBUtil.executeClose(rs, pstmt, null);
+			
+			// REVIEWS 테이블에 기본 내용 저장
+			sql = "INSERT INTO reviews "
 					+ "(review_num, user_num, prod_num, order_num, "
 					+ " rating, review_content, review_status, "
 					+ " review_created_at, review_updated_at) "
-					+ "VALUES (reviews_seq.nextval, ?, ?, ?, ?, ?, 1, SYSDATE, SYSDATE)";
+					+ "VALUES (?, ?, ?, ?, ?, ?, 1, SYSDATE, SYSDATE)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, userNum);
-			pstmt.setInt(2, prodNum);
-			pstmt.setLong(3, orderNum);
-			pstmt.setInt(4, rating);
-			pstmt.setString(5, content);
+			pstmt.setLong(1, reviewNum);
+			pstmt.setLong(2, userNum);
+			pstmt.setInt(3, prodNum);
+			pstmt.setLong(4, orderNum);
+			pstmt.setInt(5, rating);
+			pstmt.setString(6, content);
 			pstmt.executeUpdate();
+			DBUtil.executeClose(null, pstmt, null);
+			
+			// 첨부된 파일이 존재한다면 REVIEWS_IMGS 테이블에 저장
+			if (filename != null && !filename.isEmpty()) {
+				sql = "INSERT INTO reviews_imgs (review_img_num, review_num, review_img_url) "
+					+ "VALUES (reviews_imgs_seq.nextval, ?, ?)";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setLong(1, reviewNum);
+				pstmt.setString(2, filename);
+				pstmt.executeUpdate();
+			}
+			
+			// 전부 성공하면 커밋
+			conn.commit();
+			
+		} catch (Exception e) {
+			// 실패 시 롤백
+			if (conn != null) conn.rollback(); 
+			throw new Exception(e);
 		} finally {
-			DBUtil.executeClose(null, pstmt, conn);
+			if (conn != null) conn.setAutoCommit(true);
+			DBUtil.executeClose(rs, pstmt, conn);
 		}
 	}
 	// 리뷰 수정
-	public void updateReview(int reviewNum, int rating, String content) throws Exception {
+	public void updateReview(int reviewNum, int rating, String content, String filename) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
 		try {
 			conn = DBUtil.getConnection();
-			String sql = "UPDATE REVIEWS SET RATING=?, REVIEW_CONTENT=?, REVIEW_UPDATED_AT=SYSDATE "
-					+ "WHERE REVIEW_NUM=?";
-			pstmt = conn.prepareStatement(sql);
+			// 오토커밋 해제
+			conn.setAutoCommit(false);
+			
+			// 리뷰 기본 내용 수정
+			String sql1 = "UPDATE reviews SET rating=?, review_content=?, review_updated_at=SYSDATE WHERE review_num=?";
+			pstmt = conn.prepareStatement(sql1);
 			pstmt.setInt(1, rating);
 			pstmt.setString(2, content);
 			pstmt.setInt(3, reviewNum);
 			pstmt.executeUpdate();
+			DBUtil.executeClose(null, pstmt, null);
+			
+			// 새로운 사진을 올렸을 경우에만 이미지 처리
+			if (filename != null && !filename.isEmpty()) {
+				// 기존 이미지가 있는지 확인
+				String sqlCheck = "SELECT review_img_num FROM reviews_imgs WHERE review_num=?";
+				pstmt = conn.prepareStatement(sqlCheck);
+				pstmt.setInt(1, reviewNum);
+				rs = pstmt.executeQuery();
+				
+				boolean hasImage = rs.next();
+				DBUtil.executeClose(rs, pstmt, null);
+				
+				if (hasImage) {
+					// 기존 사진이 있으면 교체
+					String sqlUpdateImg = "UPDATE reviews_imgs SET review_img_url=? WHERE review_num=?";
+					pstmt = conn.prepareStatement(sqlUpdateImg);
+					pstmt.setString(1, filename);
+					pstmt.setInt(2, reviewNum);
+					pstmt.executeUpdate();
+				} else {
+					// 기존 사진이 없었다면 새로 추가
+					String sqlInsertImg = "INSERT INTO reviews_imgs (review_img_num, review_num, review_img_url) "
+							            + "VALUES (reviews_imgs_seq.nextval, ?, ?)";
+					pstmt = conn.prepareStatement(sqlInsertImg);
+					pstmt.setInt(1, reviewNum);
+					pstmt.setString(2, filename);
+					pstmt.executeUpdate();
+				}
+			}
+			
+			// 전부 완료되면 커밋
+			conn.commit();
+		} catch (Exception e) {
+			// 실패하면 롤백
+			if (conn != null) conn.rollback();
+			throw new Exception(e);
 		} finally {
+			if (conn != null) conn.setAutoCommit(true);
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
@@ -83,8 +163,8 @@ public class ReviewDAO {
 		PreparedStatement pstmt = null;
 		try {
 			conn = DBUtil.getConnection();
-			// user_num 조건 추가로 본인 리뷰만 삭제 가능
-			String sql = "DELETE FROM REVIEWS WHERE REVIEW_NUM=? AND USER_NUM=?";
+			// 본인 리뷰만 삭제
+			String sql = "DELETE FROM reviews WHERE review_num=? AND user_num=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, reviewNum);
 			pstmt.setLong(2, userNum);
@@ -102,8 +182,9 @@ public class ReviewDAO {
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
 			conn = DBUtil.getConnection();
-			String sql = "SELECT r.*, u.user_name FROM REVIEWS r "
+			String sql = "SELECT r.*, u.user_name, ri.review_img_url FROM REVIEWS r "
 					   + "JOIN USERS_DETAIL u ON r.user_num = u.user_num "
+					   + "LEFT JOIN REVIEWS_IMGS ri ON r.review_num = ri.review_num "
 					   + "WHERE r.prod_num = ? ORDER BY r.review_created_at DESC";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, prod_num);
@@ -115,6 +196,7 @@ public class ReviewDAO {
 				map.put("rating", rs.getInt("rating"));
 				map.put("content", rs.getString("review_content"));
 				map.put("date", rs.getDate("review_created_at"));
+				map.put("img_url", rs.getString("review_img_url"));
 				list.add(map);
 			}
 		} finally {

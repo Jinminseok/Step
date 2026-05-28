@@ -757,7 +757,7 @@ textarea.form-input {
                 <div class="modal-hdr-title">✏️ 리뷰 작성</div>
                 <button class="modal-close" onclick="closeReviewModal()">×</button>
             </div>
-            <form action="${pageContext.request.contextPath}/shop/review/writeReview.do" method="post" id="reviewForm">
+            <form action="${pageContext.request.contextPath}/shop/review/writeReview.do" method="post" id="reviewForm" enctype="multipart/form-data">
                 <input type="hidden" name="orderNum" id="reviewOrderNum">
                 <input type="hidden" name="prodNum" id="reviewProdNum">
                 <div class="modal-body">
@@ -780,6 +780,11 @@ textarea.form-input {
                                   style="width:100%;min-height:120px;padding:12px 14px;border:1.5px solid #e4e6ea;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;outline:none;"
                                   placeholder="상품에 대한 솔직한 리뷰를 남겨주세요. (최소 10자)"></textarea>
                     </div>
+                    <%-- 사진 첨부 영역 --%>
+                    <div>
+                        <div class="modal-label">사진 첨부 (선택)</div>
+                        <input type="file" name="uploadFile" accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="closeReviewModal()">취소</button>
@@ -796,7 +801,7 @@ textarea.form-input {
                 <div class="modal-hdr-title">🖊️ 리뷰 수정</div>
                 <button class="modal-close" onclick="closeEditReviewModal()">×</button>
             </div>
-            <form action="${pageContext.request.contextPath}/shop/review/updateReview.do" method="post" id="editReviewForm">
+            <form action="${pageContext.request.contextPath}/shop/review/updateReview.do" method="post" id="editReviewForm" enctype="multipart/form-data">
                 <input type="hidden" name="reviewNum" id="editReviewNum">
                 <div class="modal-body">
                     <div>
@@ -817,6 +822,11 @@ textarea.form-input {
                         <textarea name="reviewContent" id="editReviewContent"
                                   style="width:100%;min-height:120px;padding:12px 14px;border:1.5px solid #e4e6ea;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;outline:none;"
                                   placeholder="수정할 내용을 입력해주세요. (최소 10자)"></textarea>
+                    </div>
+                    <%-- 사진 수정 영역 --%>
+                    <div>
+                        <div class="modal-label">사진 수정 (선택)</div>
+                        <input type="file" name="uploadFile" accept="image/*" class="form-input" style="height:auto; padding:10px 14px;">
                     </div>
                 </div>
                 <div class="modal-footer">
