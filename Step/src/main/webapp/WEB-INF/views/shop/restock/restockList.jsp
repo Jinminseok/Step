@@ -7,6 +7,7 @@
 <title>ShoeMall - 재입고 알림</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
