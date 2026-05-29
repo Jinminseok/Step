@@ -209,9 +209,9 @@ $('#paymentForm').on('submit', function(event) {
                 // 우편번호와 주소 정보를 해당 필드에 넣는다.
                 document.getElementById('zipcode').value = data.zonecode;
                 //(수정) + extraAddr를 추가해서 address1에 참고항목이 보여지도록 수정
-                document.getElementById("addr1").value = addr + extraAddr;
+                document.getElementById("address1").value = addr + extraAddr;
                 // 커서를 상세주소 필드로 이동한다.
-                document.getElementById("addr2").focus();
+                document.getElementById("address2").focus();
                 
                 //주소 안내 메시지 초기화
                 document.getElementById('zipcode').dispatchEvent(new Event('input'));
