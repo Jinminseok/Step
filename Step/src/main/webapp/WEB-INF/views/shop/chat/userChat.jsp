@@ -7,6 +7,7 @@
 <title>ShoeMall - 고객센터 채팅</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/KR_style.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box}
 
