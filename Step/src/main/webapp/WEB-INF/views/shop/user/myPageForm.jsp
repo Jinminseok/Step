@@ -646,7 +646,7 @@ textarea.form-input {
                                         <c:when test="${ret.ret_status == 2}"><span class="badge b-blue">수거 진행중</span></c:when>
                                         <c:when test="${ret.ret_status == 3}"><span class="badge" style="background:#e8f5e9;color:#2e7d32;">처리 완료</span></c:when>
                                         <c:when test="${ret.ret_status == 4}"><span class="badge b-red">반려됨</span></c:when>
-                                        <c:otherwise><span class="badge b-gray">상태 미상</span></c:otherwise>
+                                        <c:otherwise><span class="badge b-gray">처리 완료</span></c:otherwise>
                                     </c:choose>
                                 </div>
                                 <div class="order-body">
