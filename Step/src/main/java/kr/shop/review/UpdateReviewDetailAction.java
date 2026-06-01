@@ -40,9 +40,9 @@ public class UpdateReviewDetailAction implements Action{
 			for (Part part : request.getParts()) {
 				if ("uploadFiles".equals(part.getName()) && part.getSize() > 0) {
 					String originalFileName = part.getSubmittedFileName();
-					String filename = UUID.randomUUID().toString() + "_" + originalFileName;
-					part.write(savePath + File.separator + filename);
-					filenames.add(filename);
+					
+					part.write(savePath + File.separator + originalFileName);
+					filenames.add(originalFileName);
 				}
 			}
 
