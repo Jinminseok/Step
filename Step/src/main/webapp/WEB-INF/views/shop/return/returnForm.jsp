@@ -302,11 +302,18 @@ td {
               <td style="font-size: 12px; color: #64748b;">${item.ret_created_at}</td>
               <td>
                 <c:choose>
-                  <c:when test="${item.ret_status == 1}"><span class="badge b-vip">⏳ 신청대기</span></c:when>
-                  <c:when test="${item.ret_status == 2}"><span class="badge b-gold">🚚 수거진행</span></c:when>
-                  <c:when test="${item.ret_status == 3}"><span class="badge b-normal">✅ 처리완료</span></c:when>
-                  <c:when test="${item.ret_status == 4}"><span class="badge b-silver">🚫 신청반려</span></c:when>
-                  <c:when test="${item.ret_status == 5}"><span class="badge b-normal">✅ 처리완료</span></c:when>
+                  <c:when test="${item.ret_status == 1}">
+                    <span class="badge b-vip">⏳ 신청대기</span>
+                  </c:when>
+                  <c:when test="${item.ret_status == 2}">
+                    <span class="badge b-gold">🚚 수거진행</span>
+                  </c:when>
+                  <c:when test="${item.ret_status == 3 || item.ret_status == 4 || item.ret_status == 5}">
+                    <span class="badge b-normal">✅ 처리완료</span>
+                  </c:when>
+                  <c:when test="${item.ret_status == 6}">
+                    <span class="badge b-silver">🚫 신청반려</span>
+                  </c:when>
                 </c:choose>
               </td>
               <td>
