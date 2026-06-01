@@ -640,15 +640,25 @@ textarea.form-input {
                         <c:forEach var="ret" items="${returnList}">
                             <div class="order-card" style="margin-bottom:12px;">
                                 <div class="order-hdr">
-                                    <span class="order-num">신청번호: #${ret.ret_num} (원주문: #${ret.order_num})</span>
-                                    <c:choose>
-                                        <c:when test="${ret.ret_status == 1}"><span class="badge b-gray">처리 대기중</span></c:when>
-                                        <c:when test="${ret.ret_status == 2}"><span class="badge b-blue">수거 진행중</span></c:when>
-                                        <c:when test="${ret.ret_status == 3}"><span class="badge" style="background:#e8f5e9;color:#2e7d32;">처리 완료</span></c:when>
-                                        <c:when test="${ret.ret_status == 4}"><span class="badge b-red">반려됨</span></c:when>
-                                        <c:otherwise><span class="badge" style="background:#e8f5e9;color:#2e7d32;">처리 완료</span></c:otherwise>
-                                    </c:choose>
-                                </div>
+								    <span class="order-num">신청번호: #${ret.ret_num} (원주문: #${ret.order_num})</span>
+								    <c:choose>
+								        <c:when test="${ret.ret_status == 1}">
+								            <span class="badge b-gray">처리 대기중</span>
+								        </c:when>
+								        <c:when test="${ret.ret_status == 2}">
+								            <span class="badge b-blue">수거 진행중</span>
+								        </c:when>
+								        <c:when test="${ret.ret_status == 3 || ret.ret_status == 4 || ret.ret_status == 5}">
+								            <span class="badge" style="background:#e8f5e9; color:#2e7d32;">처리 완료</span>
+								        </c:when>
+								        <c:when test="${ret.ret_status == 6}">
+								            <span class="badge b-red">반려됨</span>
+								        </c:when>
+								        <c:otherwise>
+								            <span class="badge" style="background:#e8f5e9; color:#2e7d32;">처리 완료</span>
+								        </c:otherwise>
+								    </c:choose>
+								</div>
                                 <div class="order-body">
                                     <div class="order-thumb">
                                         <img src="${pageContext.request.contextPath}/upload/${ret.prod_img_url}"
