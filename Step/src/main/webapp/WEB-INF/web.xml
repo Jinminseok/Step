@@ -37,9 +37,9 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.xhtml</welcome-file>
   </welcome-file-list>
-  <!--GENMINI API 키 -->
+  <!--GENMINI API 키  AIzaSyAnRJtWPUnn6VIfcqAX_nXN2HowLj1jTJE-->
     <context-param>
         <param-name>GEMINI_API_KEY</param-name>
-        <param-value>AIzaSyAnRJtWPUnn6VIfcqAX_nXN2HowLj1jTJE</param-value>
+        <param-value>AQ.Ab8RN6Knt-jL6VLnmzfHV3pFT6E6feSHR2-0lAgbDzyrr38mNg</param-value>
     </context-param>
 </web-app>

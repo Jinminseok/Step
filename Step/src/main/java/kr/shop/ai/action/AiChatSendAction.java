@@ -17,6 +17,13 @@ import kr.shop.dao.AiChatDAO;
 
 public class AiChatSendAction implements Action {
 
+    // 폴백 순서: 2.5-flash → 2.0-flash → 2.0-flash-lite
+    private static final String[] FALLBACK_MODELS = {
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite"
+    };
+
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
@@ -46,22 +53,20 @@ public class AiChatSendAction implements Action {
             return "shop/ai/aiPick.jsp";
         }
 
-     // 4. DB에서 상품 목록 조회
+        // 4. DB에서 상품 목록 조회
         String productContext = "";
         try {
             AiChatDAO dao = AiChatDAO.getInstance();
             List<String> productList = dao.getProductListForAI();
-            
-            // ← 추가: 상품 목록 개수 확인
+
             System.out.println("[AI] 상품 목록 조회 성공: " + productList.size() + "개");
-            
+
             StringBuilder productText = new StringBuilder();
             for (String prod : productList) {
                 productText.append("- ").append(prod).append("\n");
             }
             productContext = productText.toString();
         } catch (Exception e) {
-            // ← 수정: 실제 오류 내용 출력
             System.err.println("[AI] 상품 목록 조회 실패: " + e.getMessage());
             e.printStackTrace();
             productContext = "(상품 목록 조회 실패: " + e.getMessage() + ")";
@@ -104,7 +109,7 @@ public class AiChatSendAction implements Action {
                 + "\"contents\":" + contentsJson.toString()
                 + "}";
 
-        // 7. Gemini API 호출
+        // 7. Gemini API 호출 (폴백 포함)
         String aiResponse = callGeminiAPI(apiKey, requestBody);
 
         // 8. 대화 기록 업데이트
@@ -121,12 +126,37 @@ public class AiChatSendAction implements Action {
         return "shop/ai/aiPick.jsp";
     }
 
+    /**
+     * 폴백 모델 순서대로 시도. 429/503 발생 시 다음 모델로 전환.
+     */
     private String callGeminiAPI(String apiKey, String requestBody) {
+        for (int i = 0; i < FALLBACK_MODELS.length; i++) {
+            String model = FALLBACK_MODELS[i];
+            String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/"
+                            + model + ":generateContent?key=" + apiKey;
+
+            // 첫 번째 시도 제외, 재시도 전 1.5초 대기
+            if (i > 0) {
+                try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
+            }
+
+            String result = callGeminiWithEndpoint(endpoint, requestBody, model);
+            if (result != null) {
+                return result;
+            }
+
+            System.out.println("[AI] " + model + " 실패 → 다음 모델 시도");
+        }
+
+        return "현재 AI 서비스가 일시적으로 혼잡합니다. 잠시 후 다시 시도해주세요. 😊";
+    }
+
+    /**
+     * 단일 엔드포인트 호출. 429/503이면 null 반환(폴백 신호).
+     */
+    private String callGeminiWithEndpoint(String endpoint, String requestBody, String model) {
         try {
-        	String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-        	//String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + apiKey;
-        	//String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
-        	URL url = new URL(endpoint);
+            URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -156,11 +186,12 @@ public class AiChatSendAction implements Action {
             String json = sb.toString();
 
             if (statusCode != 200) {
-                System.err.println("[Gemini 오류] 상태코드: " + statusCode);
+                System.err.println("[Gemini 오류] 모델: " + model + " / 상태코드: " + statusCode);
                 System.err.println("[Gemini 오류] 응답내용: " + json);
 
-                if (statusCode == 429) {
-                    return "현재 AI 추천 서비스 이용자가 많아 잠시 후 다시 시도해주세요. 😊";
+                // 폴백 대상: 할당량 초과 or 서버 과부하 → null 반환
+                if (statusCode == 429 || statusCode == 503) {
+                    return null;
                 }
                 if (statusCode == 400) {
                     return "요청 형식 오류가 발생했습니다. (400)\n상세: " + json;
@@ -168,8 +199,10 @@ public class AiChatSendAction implements Action {
                 if (statusCode == 403) {
                     return "API 키가 유효하지 않습니다. web.xml의 GEMINI_API_KEY를 확인하세요. (403)";
                 }
-                return "일시적인 오류가 발생했습니다. (오류코드: " + statusCode + ")\n" + json;
+                return "일시적인 오류가 발생했습니다. (오류코드: " + statusCode + ")";
             }
+
+            System.out.println("[AI] 응답 성공 - 사용 모델: " + model);
 
             // Gemini 응답 텍스트 추출
             String marker = "\"text\":";
@@ -184,29 +217,30 @@ public class AiChatSendAction implements Action {
             start++;
 
             StringBuilder result = new StringBuilder();
-            int i = start;
-            while (i < json.length()) {
-                char c = json.charAt(i);
-                if (c == '\\' && i + 1 < json.length()) {
-                    char next = json.charAt(i + 1);
+            int idx = start;
+            while (idx < json.length()) {
+                char c = json.charAt(idx);
+                if (c == '\\' && idx + 1 < json.length()) {
+                    char next = json.charAt(idx + 1);
                     switch (next) {
-                        case 'n':  result.append('\n'); i += 2; break;
-                        case 't':  result.append('\t'); i += 2; break;
-                        case '"':  result.append('"');  i += 2; break;
-                        case '\\': result.append('\\'); i += 2; break;
-                        default:   result.append(next); i += 2; break;
+                        case 'n':  result.append('\n'); idx += 2; break;
+                        case 't':  result.append('\t'); idx += 2; break;
+                        case '"':  result.append('"');  idx += 2; break;
+                        case '\\': result.append('\\'); idx += 2; break;
+                        default:   result.append(next); idx += 2; break;
                     }
                 } else if (c == '"') {
                     break;
                 } else {
                     result.append(c);
-                    i++;
+                    idx++;
                 }
             }
 
             return result.toString().trim();
 
         } catch (Exception e) {
+            System.err.println("[AI] 호출 예외 - 모델: " + model + " / " + e.getMessage());
             return "API 호출 중 오류 발생: " + e.getMessage();
         }
     }
