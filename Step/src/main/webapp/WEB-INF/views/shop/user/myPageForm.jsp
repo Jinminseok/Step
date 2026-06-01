@@ -497,7 +497,7 @@ textarea.form-input {
                                                 <form action="${pageContext.request.contextPath}/shop/review/deleteReview.do" method="post"
                                                       onsubmit="return confirm('리뷰를 삭제하시겠습니까?')">
                                                     <input type="hidden" name="reviewNum" value="${item.review_num}">
-                                                    <button type="submit" class="btn btn-red btn-sm">🗑️ 삭제</button>
+                                                    <button type="submit" class="btn btn-red btn-sm">🗑️ 리뷰 삭제</button>
                                                 </form>
                                             </c:if>
                                         </div>
