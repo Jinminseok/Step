@@ -159,6 +159,13 @@
 
                     <%-- 알림 버튼 --%>
                     <div class="noti-wrap">
+                        <button class="hdr-btn" onclick="toggleNoti(event)">
+                            <span class="hdr-btn-icon">🔔</span>
+                            <span class="hdr-btn-label">알림</span>
+                            <span class="hdr-badge" id="notiCountBadge"
+                                style="background:var(--blue); display:none;">0</span>
+                        </button>
+ 
                         <div class="noti-modal" id="notiModal" onclick="event.stopPropagation()">
                             <div class="noti-m-hdr">
                                 <div class="noti-m-title">알림센터</div>
