@@ -27,7 +27,7 @@
 }
 </style>
 
-<!-- ═══ SIDEBAR ═══ -->
+<!--  SIDEBAR  -->
 <aside class="sidebar">
 
     <!-- 헤더 -->

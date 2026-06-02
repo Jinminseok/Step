@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -20,10 +19,9 @@ body {
     margin: 0; 
     font-family: 'Pretendard', sans-serif; 
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll; 
 }
 
-/* 👇 사이드바 너비만큼 본문을 밀어줍니다 */
 .main { 
     margin-left: 260px; 
     padding: 30px; 
@@ -48,7 +46,6 @@ body {
 /* CARD CONTAINER */
 .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
-/* ── 🚨 필터 툴바 (높이 및 배치 완벽 정렬) ── */
 .filter-grid { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
 .filter-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569; font-weight: 500; }
 
@@ -106,13 +103,13 @@ body {
 
 /* STATE BADGES */
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.b-paid    { background: #dcfce7; color: #059669; }   /* 결제완료 (그린) */
-.b-pending { background: #fff4e6; color: #d9480f; }   /* 상품준비중 (오렌지) */
-.b-ship    { background: #dbeafe; color: #2563eb; }   /* 배송중 (블루) */
-.b-done    { background: #f1f5f9; color: #64748b; }   /* 배송완료 (그레이) */
-.b-cancel  { background: #fef2f2; color: #ef4444; }   /* 주문취소 (레드) */
+.b-paid    { background: #dcfce7; color: #059669; }   
+.b-pending { background: #fff4e6; color: #d9480f; }   
+.b-ship    { background: #dbeafe; color: #2563eb; }  
+.b-done    { background: #f1f5f9; color: #64748b; }  
+.b-cancel  { background: #fef2f2; color: #ef4444; }   
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 0 0 0;border-top:1px solid #e2e8f0;background:#fff;margin-top:16px;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -125,7 +122,7 @@ body {
 .txt-bold { font-weight: 600; color: #0f172a; }
 .txt-mono { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX ── */
 .modal-overlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
     display: none; align-items: center; justify-content: center; 
@@ -233,14 +230,12 @@ body {
 								<th>관리</th>
 							</tr>
 						</thead>
-						<%-- 🌟 id="orderTbody" 추가 🌟 --%>
 						<tbody id="orderTbody">
 							<c:if test="${empty orderList}">
 								<tr><td colspan="9" style="text-align:center; padding:60px 0; color:#94a3b8;"><i class="fa-solid fa-folder-open" style="font-size:32px; margin-bottom:12px; display:block; color:#e2e8f0;"></i>조회된 주문 내역이 없습니다.</td></tr>
 							</c:if>
 							
 							<c:forEach var="item" items="${orderList}">
-							<%-- 🌟 class="order-row" 추가 🌟 --%>
 							<tr class="order-row">
 								<td><input type="checkbox"></td>
 								<td style="color:#64748b; font-size:13px;">${item.orderDate}</td>
@@ -266,7 +261,6 @@ body {
 					</table>
 				</div>
 
-				<%-- 🌟 PAGINATION HTML (새로 교체됨) 🌟 --%>
 				<div class="pagination-wrap" id="orderPagination" style="display:none;">
 					<div class="page-info" id="orderPageInfo">총 <strong>0</strong>건</div>
 					<div class="page-btns" id="orderPageBtns"></div>
@@ -393,7 +387,6 @@ body {
 			}
 		}
 
-		// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
 		let currentOrderPage = 1;
 		const orderItemsPerPage = 10; // 한 페이지에 보여줄 개수
 		let allOrderRows = [];

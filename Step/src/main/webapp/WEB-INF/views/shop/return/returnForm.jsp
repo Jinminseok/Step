@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -19,10 +18,9 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll;
 }
 
-/* 👇 사이드바 너비만큼 본문을 완벽히 밀어줍니다 */
 .main {
     margin-left: 260px;
     padding: 30px;
@@ -56,7 +54,7 @@ th {
     border-bottom: 1px solid #e2e8f0; 
     background: #f8fafc; 
     text-align: center; 
-    white-space: nowrap; /* 🌟 타이틀 줄바꿈 차단 */
+    white-space: nowrap; 
 }
 td { 
     padding: 14px 16px; 
@@ -68,7 +66,7 @@ td {
     white-space: nowrap; 
 }
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -83,19 +81,19 @@ td {
 .page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
 .page-hdr-sub { font-size: 14px; color: #666; }
 
-/* STATS ROW (5개 컬럼 그리드 정렬 최적화) */
+/* STATS ROW  */
 .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 30px; }
 .stat-card { background: #fff; padding: 20px 24px; border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 .stat-label { font-size: 12px; font-weight: 600; color: #868e96; margin-bottom: 8px; }
 .stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #212529; }
 .stat-change { font-size: 12px; margin-top: 8px; color: #adb5bd; }
 
-/* ── 🚨 툴바 및 필터 검색창 (높이 균등화 및 겹침 버그 차단) ── */
+/* ── 툴바 및 필터 검색창 ── */
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
 .search-wrap { position: relative; width: 320px; flex-shrink: 0; }
 .search-wrap input {
     width: 100%;
-    height: 40px; /* 높이 40px 통일 */
+    height: 40px; 
     padding: 0 12px 0 38px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -110,7 +108,7 @@ td {
 .search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 14px; }
 
 .sel {
-    height: 40px; /* 높이 40px 통일 */
+    height: 40px; 
     padding: 0 30px 0 14px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -125,7 +123,7 @@ td {
 
 /* BUTTONS */
 .btn {
-    height: 40px; /* 높이 40px 통일 */
+    height: 40px; 
     padding: 0 18px;
     border: none;
     border-radius: 6px;
@@ -153,12 +151,12 @@ td {
 
 /* STATE BADGES */
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.b-vip { background: #fef3c7; color: #92400e; }      /* VIP */
-.b-gold { background: #fff7ed; color: #c2410c; }     /* 골드 */
-.b-silver { background: #f1f5f9; color: #475569; }   /* 실버 */
-.b-normal { background: #dcfce7; color: #059669; }   /* 일반 */
+.b-vip { background: #fef3c7; color: #92400e; }      
+.b-gold { background: #fff7ed; color: #c2410c; }     
+.b-silver { background: #f1f5f9; color: #475569; }   
+.b-normal { background: #dcfce7; color: #059669; }   
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: #fff; width: 520px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
@@ -272,7 +270,6 @@ td {
             <th style="width: 90px;">상세관리</th>
           </tr>
         </thead>
-        <%-- 🌟 id="returnTbody" 추가 🌟 --%>
         <tbody id="returnTbody">
           <c:if test="${empty returnList}">
             <tr>
@@ -284,7 +281,6 @@ td {
           </c:if>
           
           <c:forEach var="item" items="${returnList}">
-            <%-- 🌟 class="return-row" 추가 🌟 --%>
             <tr class="return-row">
               <td style="font-weight: 600; color: #64748b;">RET-${item.ret_num}</td>
               <td style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #1a73e8;">#${item.order_num}</td>
@@ -326,7 +322,7 @@ td {
         </tbody>
       </table>
 
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <%-- PAGINATION HTML --%>
       <div class="pagination-wrap" id="returnPagination" style="display:none;">
         <div class="page-info" id="returnPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="returnPageBtns"></div>
@@ -481,7 +477,6 @@ window.onclick = function(event) {
     }
 }
 
-// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
 let currentReturnPage = 1;
 const returnItemsPerPage = 10; // 한 페이지에 보여줄 개수
 let allReturnRows = [];

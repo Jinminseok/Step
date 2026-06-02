@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -49,7 +48,7 @@ body {
 .stat-val {font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#212529;}
 .stat-change {font-size:12px;margin-top:8px;color:#adb5bd;}
 
-/* --- 🚨 툴바(검색창 겹침 해결) --- */
+/* --- 툴바 --- */
 .toolbar {
     display:flex;
     align-items:center;
@@ -131,7 +130,7 @@ td {padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#3341
 tr:last-child td {border-bottom:none;}
 tr:hover td {background:#f8fafc;}
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -251,7 +250,6 @@ tr:hover td {background:#f8fafc;}
         </thead>
         <tbody id="catTbody">
           <c:forEach var="c" items="${categoryList}">
-            <%-- 🌟 자바스크립트가 인식할 수 있도록 cat-row 클래스를 추가했습니다 --%>
             <tr class="cat-row">
               <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#94a3b8;text-align:center">${c.catSortNo}</td>
               <td style="color:#64748b;font-size:13px;text-align:center">${c.catNum}</td>
@@ -292,7 +290,7 @@ tr:hover td {background:#f8fafc;}
         </tbody>
       </table>
       
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <%-- PAGINATION HTML --%>
       <div class="pagination-wrap" id="catPagination" style="display:none;">
         <div class="page-info" id="catPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="catPageBtns"></div>
@@ -410,7 +408,6 @@ function showToast(msg) {
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
-// 🌟 PAGINATION JAVASCRIPT LOGIC 🌟
 let currentCatPage = 1;
 const catItemsPerPage = 10; // 한 페이지에 보여줄 개수
 let allCatRows = [];

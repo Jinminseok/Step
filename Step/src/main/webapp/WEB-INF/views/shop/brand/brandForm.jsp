@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -19,7 +18,7 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll; 
 }
 
 .main {
@@ -49,22 +48,21 @@ body {
 .stat-val {font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#212529;}
 .stat-change {font-size:12px;margin-top:8px;color:#adb5bd;}
 
-/* --- 🚨 툴바(검색창 겹침 해결) --- */
 .toolbar {
     display:flex;
     align-items:center;
-    gap:12px; /* 요소 간 간격 확실히 확보 */
+    gap:12px; 
     margin-bottom:16px;
     flex-wrap:wrap;
 }
 .search-wrap {
     position:relative;
-    width:320px; /* 크기 고정으로 겹침 방지 */
+    width:320px; 
     flex-shrink:0;
 }
 .search-wrap input {
     width:100%;
-    height:40px; /* 높이 통일 */
+    height:40px;
     padding:0 12px 0 38px;
     border:1px solid #e2e8f0;
     border-radius:6px;
@@ -80,7 +78,7 @@ body {
 .search-ico {position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:14px;}
 
 .sel {
-    height:40px; /* 높이 통일 */
+    height:40px; 
     padding:0 30px 0 14px;
     border:1px solid #e2e8f0;
     border-radius:6px;
@@ -95,7 +93,7 @@ body {
 
 /* BUTTONS */
 .btn {
-    height:40px; /* 높이 통일 */
+    height:40px;
     padding:0 18px;
     border:none;
     border-radius:6px;
@@ -117,7 +115,7 @@ body {
 .btn-danger {background:#fef2f2;color:#ef4444;border:1px solid #fecaca;}
 .btn-danger:hover {background:#ef4444;color:#fff;}
 
-.btn-xs {height:28px; padding:0 10px; font-size:11px;} /* 테이블 내부 작은 버튼 */
+.btn-xs {height:28px; padding:0 10px; font-size:11px;} 
 
 /* BADGE */
 .badge {display:inline-flex;align-items:center;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;}
@@ -132,7 +130,7 @@ td {padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#3341
 tr:last-child td {border-bottom:none;}
 tr:hover td {background:#f8fafc;}
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -249,10 +247,8 @@ tr:hover td {background:#f8fafc;}
             <th style="width:240px; text-align:center;">관리</th>
           </tr>
         </thead>
-        <%-- 🌟 id="brandTbody" 추가 🌟 --%>
         <tbody id="brandTbody">
           <c:forEach var="b" items="${brandList}">
-            <%-- 🌟 class="brand-row" 추가 🌟 --%>
             <tr class="brand-row">
               <td style="color:#64748b;font-size:13px;text-align:center;">${b.brandNum}</td>
               <td style="font-weight:600;font-size:15px;color:#0f172a;">${b.brandName}</td>
@@ -311,7 +307,7 @@ tr:hover td {background:#f8fafc;}
         </tbody>
       </table>
 
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <%-- PAGINATION HTML--%>
       <div class="pagination-wrap" id="brandPagination" style="display:none;">
         <div class="page-info" id="brandPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="brandPageBtns"></div>

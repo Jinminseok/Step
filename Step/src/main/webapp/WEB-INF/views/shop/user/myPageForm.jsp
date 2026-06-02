@@ -845,7 +845,6 @@ textarea.form-input {
         </div>
     </div>
 
-    <%-- ══ JS: 기능 동일 ══ --%>
     <script>
     function setMy(el, id) {
         document.querySelectorAll('.my-menu-item').forEach(m => m.classList.remove('on'));
@@ -1030,8 +1029,7 @@ textarea.form-input {
     });
     </script>
 
-<!-- 우편번호 처리 시작 -->	
-<!-- iOS에서는 position:fixed 버그가 있음, 적용하는 사이트에 맞게 position:absolute 등을 이용하여 top,left값 조정 필요 -->
+<!-- 우편번호 처리 시작 -->
 <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:1;-webkit-overflow-scrolling:touch;">
 <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" onclick="closeDaumPostcode()" alt="닫기 버튼">
 </div>
@@ -1083,7 +1081,7 @@ textarea.form-input {
 
                 // 우편번호와 주소 정보를 해당 필드에 넣는다.
                 document.getElementById('zipcode').value = data.zonecode;
-                //(수정) + extraAddr를 추가해서 address1에 참고항목이 보여지도록 수정
+                // extraAddr를 추가해서 address1에 참고항목이 보여지도록 수정
                 document.getElementById("addr1").value = addr + extraAddr;
                 // 커서를 상세주소 필드로 이동한다.
                 document.getElementById("addr2").focus();

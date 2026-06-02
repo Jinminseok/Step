@@ -405,7 +405,7 @@ function updateSyncTime() {
     showToast('✅ 재고 동기화 완료');
 }
 
-// 📦 [1] 대기 데이터 파싱
+// [1] 대기 데이터 파싱
 const rawClaimList = [
       <c:forEach var="c" items="${claimList}">
       {
@@ -427,7 +427,7 @@ const rawClaimList = [
       </c:forEach>
     ];
 
-// 📋 [2] 이력 데이터 파싱
+// [2] 이력 데이터 파싱
 const historyData = [
   <c:forEach var="h" items="${historyList}">
   {
@@ -641,7 +641,7 @@ function switchTab(tabId, btn) {
     if(btn) btn.classList.add('on');
 }
 
-// 🔄 상세 검수 모달 데이터 로드 및 토글
+// 상세 검수 모달 데이터 로드 및 토글
 function openClaimModal(btn) {
     const retnum = btn.dataset.retnum;
     const ordernum = btn.dataset.ordernum;
@@ -697,10 +697,7 @@ function openClaimModal(btn) {
     const dlvArea = document.getElementById('exchange-delivery-area');
     if(dlvArea) {
         if(tp == 2) {
-            dlvArea.style.setProperty("display", "block", "important");
-            
-            // 📌 [수정 완결] 기존 하드코딩 호출을 폐기하고, btn 데이터셋에 바인딩된 실제 prod_num까지 3개 인자로 전달!
-            // (※ 만약 버튼 데이터셋에 prodnum이 없다면 c.prod_num을 루프 돌 때 버튼 태그에 data-prodnum="${c.prod_num}"으로 얹어주시면 됩니다!)
+            dlvArea.style.setProperty("display", "block", "important");            
             const prodnum = btn.dataset.prodnum ? btn.dataset.prodnum : btn.dataset.retnum; // 예방 방어 코드
             setupExchangeOptions(prodnum, color, sizeval);
             
@@ -714,32 +711,28 @@ function openClaimModal(btn) {
 
 let liveAvailableOptions = [];
 
-// 🎯 [신규] 교환 가능한 옵션 세트를 셀렉트 박스에 동적으로 빌드하는 함수
+// 교환 가능한 옵션 세트를 셀렉트 박스에 동적으로 빌드하는 함수
 function setupExchangeOptions(prodNum, currentColor, currentSize) {
     const colorSel = document.getElementById('m-excolor-sel');
     const sizeSel = document.getElementById('m-exsize-sel');
     if(!colorSel || !sizeSel) return;
 
-    // 1. 매장 실재고를 긁어오기 전, 로딩 상태로 사용자 인터페이스 보호
+    // 매장 실재고를 긁어오기 전, 로딩 상태로 사용자 인터페이스 보호
     colorSel.innerHTML = '<option value="">가용 컬러 로딩중...</option>';
     sizeSel.innerHTML = '<option value="">가용 사이즈 로딩중...</option>';
 
-    // 🎯 [핵심 수술 부위] 백틱(``)과 불완전한 템플릿 리터럴을 제거하고 
-    // JSP 컨텍스트 패스 문자열과 순수 JS 변수 연산을 완벽하게 분리했습니다.
     var contextPath = "${pageContext.request.contextPath}";
     var ajaxUrl = contextPath + "/logistics/claim/getAvailableOptions.do?prodNum=" + prodNum;
 
-    // 2. 아까 백엔드 매핑 프로퍼티에 등록한 주소로 AJAX(Fetch) 초고속 타격!
+    
     fetch(ajaxUrl)
         .then(function(response) {
-            // 🚨 404 Not Found 또는 500 Internal Error 방어막 설치
             if (!response.ok) {
                 throw new Error("HTTP 에러 상태코드: " + response.status);
             }
             return response.json();
         })
         .then(function(data) {
-            // 자바 백엔드가 뱉어준 실시간 재고 옵션 풀(Array) 저장
             liveAvailableOptions = data; 
 
             if(liveAvailableOptions.length === 0) {
@@ -748,7 +741,7 @@ function setupExchangeOptions(prodNum, currentColor, currentSize) {
                 return;
             }
 
-            // 3. 중복 제거된 순수 가용 컬러 리스트만 추출 (Set 객체 활용)
+            // 중복 제거된 순수 가용 컬러 리스트만 추출 (Set 객체 활용)
             var uniqueColors = [];
             for (var i = 0; i < liveAvailableOptions.length; i++) {
                 var cUpper = liveAvailableOptions[i].color.toUpperCase();
@@ -757,7 +750,7 @@ function setupExchangeOptions(prodNum, currentColor, currentSize) {
                 }
             }
 
-            // 4. 컬러 셀렉트 박스 빌드
+            // 컬러 셀렉트 박스 빌드
             let colorHtml = '';
             uniqueColors.forEach(function(c) {
                 // 기존 고객 주문 컬러와 일치하면 기본 selected 처리
@@ -766,10 +759,10 @@ function setupExchangeOptions(prodNum, currentColor, currentSize) {
             });
             colorSel.innerHTML = colorHtml;
 
-            // 5. [핵심 2단 체인] 현재 선택된 컬러에 종속된 진짜 남은 사이즈 목록 매핑 함수 호출
+            // 현재 선택된 컬러에 종속된 남은 사이즈 목록 매핑 함수 호출
             updateSizeOptionsByColor(colorSel.value, currentSize);
 
-            // 6. 이벤트 리스너 장착: 물류 담당자가 컬러를 변경할 때마다 사이즈 박스도 실시간 재필터링!
+            // 이벤트 리스너 장착: 물류 담당자가 컬러를 변경할 때마다 사이즈 박스도 실시간 재필터링
             colorSel.onchange = function() {
                 updateSizeOptionsByColor(this.value, "");
             };
@@ -780,7 +773,7 @@ function setupExchangeOptions(prodNum, currentColor, currentSize) {
         });
 }
 
-//🎯 [신규] 선택된 컬러에 맞는 실제 잔여 재고 사이즈만 발라내서 2단 박스를 그리는 함수
+//선택된 컬러에 맞는 실제 잔여 재고 사이즈만 발라내서 2단 박스를 그리는 함수
 function updateSizeOptionsByColor(selectedColor, defaultSize) {
     const sizeSel = document.getElementById('m-exsize-sel');
     if(!sizeSel) return;
@@ -842,7 +835,7 @@ function submitProcess(type) {
         document.getElementById('f-courier').value = courier;
         document.getElementById('f-invoiceNo').value = invoice;
         
-        // 🎯 [옵션 레일 락인] 담당자가 최종 선택한 변경 색상/사이즈를 히든 태그에 바인딩하여 폼 전송!
+        // 담당자가 최종 선택한 변경 색상/사이즈를 히든 태그에 바인딩하여 폼 전송
         document.getElementById('f-exColor').value = document.getElementById('m-excolor-sel').value;
         document.getElementById('f-exSize').value = document.getElementById('m-exsize-sel').value;
     }

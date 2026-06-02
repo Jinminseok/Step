@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -44,7 +43,7 @@ body {
 .page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
 .page-hdr-sub { font-size: 14px; color: #666; }
 
-/* ── 🚨 필터 툴바 (검색창 겹침 및 높이 40px 통일) ── */
+/* ── 필터 툴바 (검색창 겹침 및 높이 40px 통일) ── */
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
 .search-wrap { position: relative; width: 280px; flex-shrink: 0; }
 .search-wrap input {
@@ -118,11 +117,11 @@ td.addr-cell { text-align: left; white-space: normal; line-height: 1.4; }
     border: 1px solid #e2e8f0; 
     background: #f1f5f9; 
     position: sticky; 
-    top: 90px; /* 탑바 64px + 여백 고려 */
+    top: 90px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
 }
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX  ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: #fff; width: 640px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
@@ -351,7 +350,7 @@ td.addr-cell { text-align: left; white-space: normal; line-height: 1.4; }
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-/* 모달 제어 로직 (클래스 토글 방식으로 변경) */
+/* 모달 제어 로직  */
 function openInsertModal() { document.getElementById('insertModal').classList.add('open'); }
 function closeInsertModal() { document.getElementById('insertModal').classList.remove('open'); document.getElementById('insertForm').reset(); }
 
@@ -399,7 +398,7 @@ var geocoder = new kakao.maps.services.Geocoder();
 var markers = []; 
 var infowindows = []; 
 
-// 데이터 루프 (마커 생성)
+// 마커 생성
 var stores = [
     <c:forEach var="s" items="${adminStoreList}">
     { name: '${s.storeName}', addr: '${s.storeAddr}', status: '${s.storeUseYn}' },
@@ -413,7 +412,6 @@ stores.forEach(function(s, i) {
             var mark = new kakao.maps.Marker({ map: map, position: pos, opacity: (s.status==='N'?0.5:1.0) });
             markers[i] = mark; 
             
-            // 모던 인포윈도우 디자인
             var iw = new kakao.maps.InfoWindow({ 
                 content: '<div style="padding:12px; font-size:13px; font-family:\'Pretendard\', sans-serif; text-align:center; color:#111827;"><b>'+s.name+'</b><br><span style="color:'+(s.status==='Y'?'#059669':'#ef4444')+'; font-size:11px; margin-top:4px; display:block;">'+(s.status==='Y'?'● 운영중':'● 미운영')+'</span></div>' 
             });

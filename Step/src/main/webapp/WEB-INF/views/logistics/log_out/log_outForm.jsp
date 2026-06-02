@@ -375,7 +375,7 @@ function switchTab(tab) {
 const orders = [
 	  <c:forEach var="p" items="${pendingList}">
 	  { 
-	    uid: '${p.orderNum}_${p.optNum}', // 🔥 주문번호와 옵션번호를 합친 절대 중복 안 되는 키값!
+	    uid: '${p.orderNum}_${p.optNum}', // 주문번호와 옵션번호를 합친 중복 안 되는 키값
 	    id: '#${p.orderNum}', 
 	    rawId: ${p.orderNum}, 
 	    optNum: ${p.optNum}, 
@@ -436,7 +436,7 @@ function renderTable() {
 	  let html = '';
 	  for(let i=0; i<pageData.length; i++) {
 	    const o = pageData[i];
-	    // 🔥 o.id 가 아니라 o.uid 를 파라미터로 넘깁니다!
+	    // o.id 가 아니라 o.uid 를 파라미터로 넘김
 	    const actionBtn = '<button type="button" class="btn btn-blue btn-xs" onclick="openSingle(\'' + o.uid + '\')">출고 처리</button>';
 	    html += '<tr class="tbl-row" data-id="' + o.uid + '" onclick="rowClick(this)">'
 	      + '<td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="' + o.uid + '" onchange="updateSel()"></td>'
@@ -494,7 +494,7 @@ function updateSel() {
   if(document.getElementById('chkAll')) document.getElementById('chkAll').checked = (n > 0 && n === document.querySelectorAll('.row-chk').length);
 }
 
-// 🌟 단일 출고 모달 열기 (택배사 선택 및 운송장 기입 폼)
+// 단일 출고 모달 열기 (택배사 선택 및 운송장 기입 폼)
 function openSingle(uid) {
   const o = orders.find(x => x.uid === uid);
   if(!o) return;
@@ -535,7 +535,7 @@ function openSingle(uid) {
   document.getElementById('singleModal').classList.add('open');
 }
 
-// 🌟 직관적인 운송장 번호 랜덤 생성 로직
+// 직관적인 운송장 번호 랜덤 생성 로직
 function generateInvoice() {
     const courier = document.getElementById('modal-courier').value;
     if (!courier) {
@@ -598,7 +598,7 @@ function openBulkConfirm() {
 	    + '<div class="confirm-title" style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--gray1);">선택 주문 일괄 출고</div>'
 	    + '<div class="confirm-desc" style="font-size:13px; color:var(--gray3); margin-bottom:20px;">선택하신 ' + checked.length + '건의 상품을 일괄 출고합니다.</div>'
 	    
-	    // 🎯 단일 출고에 있던 택배사/운송장 폼을 그대로 이식!
+	    // 단일 출고에 있던 택배사/운송장 폼 이식
 	    + '<div style="text-align:left; background:var(--gray7); padding:16px; border-radius:8px; margin-bottom:20px;">'
 	    +   '<div style="margin-bottom:12px;">'
 	    +     '<div style="font-size:12px; font-weight:600; margin-bottom:6px;">일괄 적용 택배사</div>'
@@ -642,7 +642,7 @@ function generateBulkInvoice() {
     else if(courier === '우체국택배') prefix = "POST";
 
     const randomNum = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-    // 일괄 출고용은 송장번호에 BULK 기호를 넣어 구별하기 쉽게 세팅했습니다!
+    // 일괄 출고용은 송장번호에 BULK 기호를 넣어 세팅
     document.getElementById('bulk-invoice').value = prefix + "-" + dateStr + "-BULK-" + randomNum;
     showToast('✅ 일괄 운송장 번호가 기입되었습니다.');
 }
@@ -667,8 +667,8 @@ function doBulk() {
             form.innerHTML += '<input type="hidden" name="orderNum" value="'+o.rawId+'">'
                             + '<input type="hidden" name="optNum" value="'+o.optNum+'">'
                             + '<input type="hidden" name="qty" value="'+o.qty+'">'
-                            + '<input type="hidden" name="courier" value="'+courier+'">' // 선택한 택배사 탑재!
-                            + '<input type="hidden" name="invoiceNo" value="'+invoice+'">'; // 선택한 송장 탑재!
+                            + '<input type="hidden" name="courier" value="'+courier+'">' // 선택한 택배사
+                            + '<input type="hidden" name="invoiceNo" value="'+invoice+'">'; // 선택한 송장
         }
     });
     form.submit();

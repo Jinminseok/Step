@@ -234,8 +234,8 @@ $('#paymentForm').on('submit', function(event) {
     }
 
     // 브라우저의 크기 변경에 따라 레이어를 가운데로 이동시키고자 하실때에는
-    // resize이벤트나, orientationchange이벤트를 이용하여 값이 변경될때마다 아래 함수를 실행 시켜 주시거나,
-    // 직접 element_layer의 top,left값을 수정해 주시면 됩니다.
+    // resize이벤트나, orientationchange이벤트를 이용하여 값이 변경될때마다 아래 함수를 실행 시켜 주거나,
+    // 직접 element_layer의 top,left값을 수정해 주면 됨.
     function initLayerPosition(){
         var width = 300; //우편번호서비스가 들어갈 element의 width
         var height = 400; //우편번호서비스가 들어갈 element의 height

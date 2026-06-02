@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath }/css/YH_style.css" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══ CONTENT AREA ══════════════════ */
+/*  CONTENT AREA  */
 .content{flex:1;overflow-y:auto;padding:22px}
 .content::-webkit-scrollbar{width:5px}
 .content::-webkit-scrollbar-thumb{background:var(--gray5);border-radius:3px}
@@ -621,7 +621,7 @@ function saveSearchState() {
     if(eDate) sessionStorage.setItem('log_eDate', eDate.value);
 }
 
-// ── 4. [페이징 1] 입고 대기 상품 ──────────────────
+// ── 4. 페이징 입고 대기 상품 ──────────────────
 let currentPendingPage = 1;
 const pendingItemsPerPage = 10;
 
@@ -669,7 +669,7 @@ function renderPendingPagination() {
     let btnsHTML = '';
     btnsHTML += `<div class="pg-btn \${currentPendingPage === 1 ? 'disabled' : ''}" style="\${currentPendingPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changePendingPage(\${currentPendingPage - 1})">‹</div>`;
 
-    // 💡 페이징 번호 제한 (최대 9개까지만 표시)
+    //페이징 번호 제한 (최대 9개까지만 표시)
     let maxVisible = 9;
     let startPage = Math.max(1, currentPendingPage - Math.floor(maxVisible / 2));
     let endPage = Math.min(totalPages, startPage + maxVisible - 1);
@@ -693,7 +693,7 @@ function changePendingPage(page) {
     renderPendingDashboard();
 }
 
-// ── 5. [페이징 2] 입고 이력 조회 ──────────────────
+// ── 5. 페이징 2 입고 이력 조회 ──────────────────
 let currentHistPage = 1;
 const histItemsPerPage = 10;
 let currentFilteredHistData = [];
@@ -787,7 +787,7 @@ function renderHistPagination() {
     let btnsHTML = '';
     btnsHTML += `<div class="pg-btn \${currentHistPage === 1 ? 'disabled' : ''}" style="\${currentHistPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : 'cursor:pointer;'}" onclick="changeHistPage(\${currentHistPage - 1})">‹</div>`;
 
-    // 💡 이력 테이블에도 동일하게 페이징 번호 제한 적용
+    // 이력 테이블에도 동일하게 페이징 번호 제한 적용
     let maxVisible = 9;
     let startPage = Math.max(1, currentHistPage - Math.floor(maxVisible / 2));
     let endPage = Math.min(totalPages, startPage + maxVisible - 1);

@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <style>
-/* --- 모던 관리자 사이드바 스타일 --- */
+/* --- 관리자 사이드바 스타일 --- */
 :root {
 	--sb-bg: #111827;
 	--sb-text: #9CA3AF;
@@ -16,7 +16,6 @@
 }
 
 .sidebar {
-	/* 👇 여기가 핵심! 화면 왼쪽에 딱 고정시킵니다. */
 	position: fixed;
 	top: 0;
 	left: 0;

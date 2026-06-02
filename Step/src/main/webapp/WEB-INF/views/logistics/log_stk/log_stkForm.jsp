@@ -471,7 +471,7 @@ function showToast(msg) {
     setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
-// ── 🚀 전체 재고 탭 페이징 로직 (클라이언트 사이드) ───────────────────────
+// ── 전체 재고 탭 페이징 로직  ───────────────────────
 let currentStkPage = 1;
 const stkItemsPerPage = 10; // 한 페이지에 보여줄 개수
 let allStkRows = []; 
@@ -479,7 +479,7 @@ let allStkRows = [];
 window.addEventListener('load', function() {
     const tbody = document.getElementById('allTbody');
     if(tbody) {
-        // 데이터가 없는 경우의 안내 행을 제외하고 데이터 행만 가져옵니다.
+        // 데이터가 없는 경우의 안내 행을 제외하고 데이터 행만 가져옴
         allStkRows = Array.from(tbody.querySelectorAll('.trow'));
         if(allStkRows.length > 0) {
             renderStkTable();
@@ -538,7 +538,6 @@ function changeStkPage(page) {
     if (page < 1 || page > totalPages) return; 
     currentStkPage = page;
     renderStkTable();
-    // 페이지를 이동하면 스크롤을 살짝 올려줍니다.
     document.querySelector('.tbl-wrap').scrollTo(0,0);
 }
 

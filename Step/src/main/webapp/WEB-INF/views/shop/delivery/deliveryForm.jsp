@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -20,10 +19,9 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll; 
 }
 
-/* 👇 사이드바 너비만큼 본문을 밀어줍니다 */
 .main {
     margin-left: 260px;
     padding: 30px;
@@ -50,7 +48,6 @@ body {
 .stat-card { background: #fff; padding: 20px 24px; border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer; transition: all 0.2s ease; }
 .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-/* 활성화된 탭 카드 스타일 스타일리시하게 변경 */
 .stat-card.active { background: #111827; border-color: #111827; }
 .stat-card.active .stat-label { color: #9ca3af; }
 .stat-card.active .stat-val { color: #fff !important; }
@@ -60,12 +57,12 @@ body {
 .stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #212529; }
 .stat-change { font-size: 12px; margin-top: 8px; color: #adb5bd; }
 
-/* ── 🚨 툴바 및 필터 영역 정렬 ── */
+/* ──  툴바 및 필터 영역 정렬 ── */
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
 .search-wrap { position: relative; width: 320px; flex-shrink: 0; }
 .search-wrap input {
     width: 100%;
-    height: 40px; /* 높이 40px 통일 */
+    height: 40px;
     padding: 0 12px 0 38px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -111,11 +108,11 @@ body {
 
 /* STATE BADGES */
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.b-wait { background: #fff4e6; color: #d9480f; }      /* 배송대기 */
-.b-ready { background: #e0f2fe; color: #0369a1; }     /* 준비중 */
-.b-shipping { background: #dbeafe; color: #2563eb; }  /* 배송중 */
-.b-done { background: #dcfce7; color: #059669; }      /* 완료 */
-.b-cancel { background: #fef2f2; color: #ef4444; }    /* 취소 */
+.b-wait { background: #fff4e6; color: #d9480f; }      
+.b-ready { background: #e0f2fe; color: #0369a1; }     
+.b-shipping { background: #dbeafe; color: #2563eb; }  
+.b-done { background: #dcfce7; color: #059669; }      
+.b-cancel { background: #fef2f2; color: #ef4444; }    
 
 /* TABLE LIST */
 .tbl-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
@@ -125,7 +122,7 @@ td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; colo
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f8fafc; }
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -135,7 +132,7 @@ tr:hover td { background: #f8fafc; }
 .pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
 .pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX  ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: #fff; width: 560px; border-radius: 12px; height: 90vh; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
@@ -162,7 +159,7 @@ tr:hover td { background: #f8fafc; }
 .info-section { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 20px; border-radius: 8px; }
 .info-section-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 4px; }
 
-/* ── 🚚 배송 모달 스텝바 그래픽 리디자인 ── */
+/* ──  배송 모달 스텝바 그래픽 리디자인 ── */
 .dlv-track-wrap { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
 .dlv-track-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 20px; }
 .dlv-track { display: flex; align-items: flex-start; justify-content: center; position: relative; }
@@ -287,10 +284,8 @@ tr:hover td { background: #f8fafc; }
             <th style="width:220px;">관리</th>
           </tr>
         </thead>
-        <%-- 🌟 id="deliveryTbody" 추가 🌟 --%>
         <tbody id="deliveryTbody">
           <c:forEach var="d" items="${deliveryList}">
-            <%-- 🌟 class="delivery-row" 추가 🌟 --%>
             <tr class="delivery-row">
               <td style="color:#64748b; font-size:13px; font-family: 'Space Grotesk', sans-serif;">${d.dlvNum}</td>
               <td style="font-size:13px; font-family: 'Space Grotesk', sans-serif;">${d.orderNum}</td>
@@ -354,7 +349,7 @@ tr:hover td { background: #f8fafc; }
         </tbody>
       </table>
 
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <%--  PAGINATION HTML  --%>
       <div class="pagination-wrap" id="deliveryPagination" style="display:none;">
         <div class="page-info" id="deliveryPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="deliveryPageBtns"></div>
@@ -562,7 +557,6 @@ function openDetailModal(orderNum, recvName, orderDate, payPrice) {
         var html = '';
         items.forEach(function(item) {
             
-            // 🚨 이 부분을 수정해 주세요! (경로 중간에 '/upload/' 추가)
             var imgHtml = (item.prodImgUrl && item.prodImgUrl !== '')
                 ? '<img class="item-img" src="' + ctxPath + '/upload/' + item.prodImgUrl + '" onerror="this.outerHTML=\'<div class=item-img-placeholder>👟</div>\'">'
                 : '<div class="item-img-placeholder">👟</div>';
@@ -637,7 +631,6 @@ function showToast(msg) {
     setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
 
-// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
 let currentDeliveryPage = 1;
 const deliveryItemsPerPage = 10; // 한 페이지에 보여줄 개수
 let allDeliveryRows = [];

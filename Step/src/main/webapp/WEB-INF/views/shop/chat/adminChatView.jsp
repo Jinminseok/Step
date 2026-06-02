@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -19,10 +18,9 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: hidden; /* 🚨 채팅창은 전체 스크롤이 아니라 내부 스크롤을 사용하므로 hidden 유지 */
+    overflow-y: hidden; 
 }
 
-/* 👇 사이드바 너비만큼 본문을 완벽히 밀어줍니다 */
 .main {
     margin-left: 260px;
     padding: 30px;
@@ -32,7 +30,6 @@ body {
     flex-direction: column;
 }
 
-/* 탑바 좌측 뒤로가기 버튼 오버라이드용 */
 .topbar-back-btn {
     display: inline-flex;
     align-items: center;
@@ -116,7 +113,7 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .bubble-mine {
-    background: #111827; /* 관리자 다크 모드 말풍선 */
+    background: #111827; 
     color: #fff;
     border-radius: 16px 4px 16px 16px;
 }
@@ -159,7 +156,7 @@ body {
 .chat-inp textarea:focus { border-color: #3b82f6; background: #fff; }
 
 .send-btn {
-    height: 46px; /* textarea 기본 높이 맞춤 */
+    height: 46px; 
     padding: 0 24px;
     background: #111827;
     color: #fff;
@@ -294,7 +291,6 @@ function sendMsg() {
 
     document.getElementById('sendBtn').disabled = true;
 
-    // 낙관적 UI: 즉시 화면에 표시
     var tempMsg = {
         msgNum: -1,
         msgSender: 2,

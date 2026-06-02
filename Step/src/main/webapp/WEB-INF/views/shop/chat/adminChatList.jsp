@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -19,10 +18,9 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll;
 }
 
-/* 👇 사이드바 너비만큼 본문을 완벽히 밀어줍니다 */
 .main {
     margin-left: 260px;
     padding: 30px;
@@ -43,13 +41,13 @@ body {
 .page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
 .page-hdr-sub { font-size: 14px; color: #666; margin-bottom: 24px; }
 
-/* ── 💬 채팅방 목록 인박스(Inbox) 리디자인 ── */
+/* ──  채팅방 목록 인박스 ── */
 .room-list {
     display: flex;
     flex-direction: column;
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px; /* 라운딩 처리 */
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -71,7 +69,7 @@ body {
     border-left: 4px solid #ef4444;
 }
 .room-item.has-unread a {
-    padding-left: -4px; /* 테두리 두께만큼 보정 */
+    padding-left: -4px; 
 }
 
 /* 프로필 아바타 디테일화 */
@@ -176,7 +174,7 @@ body {
     gap: 8px;
 }
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -224,7 +222,6 @@ body {
       <div class="alert-success"><i class="fa-solid fa-circle-check"></i> 채팅방이 안전하게 삭제되었습니다.</div>
     </c:if>
 
-    <%-- 🌟 id="chatRoomContainer" 추가 🌟 --%>
     <div class="room-list" id="chatRoomContainer">
 
       <c:forEach var="r" items="${roomList}">
@@ -293,7 +290,6 @@ function deleteRoom(roomNum, userName) {
     location.href = '${pageContext.request.contextPath}/shop/chat/adminChatDelete.do?roomNum=' + roomNum;
 }
 
-// 🌟 PAGINATION & TOAST JAVASCRIPT LOGIC 🌟
 let currentChatPage = 1;
 const chatItemsPerPage = 10; // 한 페이지에 보여줄 채팅방 개수
 let allChatItems = [];
@@ -328,7 +324,6 @@ function renderChatList() {
     const end = start + chatItemsPerPage;
     
     for (let i = start; i < end && i < allChatItems.length; i++) {
-        // 인라인 스타일을 초기화하여 css 클래스(display: flex)를 그대로 적용
         allChatItems[i].style.display = ''; 
     }
     renderChatPagination();

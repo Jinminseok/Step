@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -20,10 +19,9 @@ body {
     margin: 0; 
     font-family: 'Pretendard', sans-serif; 
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll; 
 }
 
-/* 👇 사이드바 너비만큼 본문을 밀어줍니다 */
 .main { 
     margin-left: 260px; 
     padding: 30px; 
@@ -45,7 +43,7 @@ body {
 .page-hdr-title { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #111827; }
 .page-hdr-sub { font-size: 14px; color: #666; }
 
-/* ── 🚨 검색 툴바 (높이 및 여백 완벽 균등화) ── */
+/* ── 검색 툴바 ── */
 .search-bar { 
     display: flex; 
     align-items: center; 
@@ -121,11 +119,11 @@ body {
 
 /* BADGES */
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.badge-ok { background: #dcfce7; color: #059669; }    /* 정상 */
-.badge-warn { background: #fff4e6; color: #d9480f; }  /* 부족 */
-.badge-out { background: #fef2f2; color: #ef4444; }   /* 품절 */
+.badge-ok { background: #dcfce7; color: #059669; }    
+.badge-warn { background: #fff4e6; color: #d9480f; }  
+.badge-out { background: #fef2f2; color: #ef4444; }   
 
-/* 🌟 PAGINATION (새로 추가/수정된 스타일) 🌟 */
+/*  PAGINATION  */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -139,11 +137,11 @@ body {
 .btn-detail { background: #f0f4ff; color: #1a73e8; border: 1px solid #cce0ff; padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .btn-detail:hover { background: #1a73e8; color: #fff; border-color: #1a73e8; box-shadow: 0 2px 8px rgba(26,115,232,0.2); }
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX  ── */
 .modal-overlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
     display: none; align-items: center; justify-content: center; 
-    z-index: 3000; /* 탑바 영역보다 위에 위치 */
+    z-index: 3000; 
 }
 .modal-box { 
     background: #fff; width: 780px; border-radius: 12px; max-height: 90vh; 
@@ -276,7 +274,7 @@ body {
                 </tbody>
             </table>
             
-            <%-- 🌟 PAGINATION HTML (새로 추가/수정됨) 🌟 --%>
+            <%-- PAGINATION HTML --%>
             <div class="pagination-wrap" id="stockPagination" style="display:none;">
                 <div class="page-info" id="stockPageInfo">총 <strong>0</strong>건</div>
                 <div class="page-btns" id="stockPageBtns"></div>
@@ -316,7 +314,7 @@ body {
 </div>
 
 <script>
-    // ── 데이터 및 페이징 설정 (새로운 디자인 로직 적용) ──
+    // ── 데이터 및 페이징 설정  ──
     let currentStockPage = 1;
     const itemsPerPage = 10;
     let allRows = [];
@@ -427,7 +425,7 @@ body {
         renderTable();
     }
 
-    // ── 🚨 상세 모달 구동 로직 ──
+    // ── 상세 모달 구동 로직 ──
     function openStockDetailModal(trElement) {
         var prodNum = trElement.getAttribute('data-num');
         var brand = trElement.getAttribute('data-brand');
@@ -448,7 +446,6 @@ body {
         matrixArea.innerHTML = '<div style="text-align:center; padding:50px; color:#999;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; margin-bottom:8px; display:block;"></i>데이터 로딩 중...</div>';
         document.getElementById('stockDetailModal').style.display = 'flex';
 
-        // 서버 Fetch API 호출
         fetch('${pageContext.request.contextPath}/shop/stock/getDetail.do?prodNum=' + prodNum)
             .then(res => res.json())
             .then(data => {

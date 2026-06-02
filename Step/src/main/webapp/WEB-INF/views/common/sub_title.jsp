@@ -2,16 +2,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <style>
-/* --- 실무형 모던 탑바(Header) 스타일 --- */
+/* --- 탑바(Header) 스타일 --- */
 .top-header {
-    background-color: #ffffff; /* 깔끔한 화이트 배경 */
+    background-color: #ffffff; 
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
-    border-bottom: 1px solid #e2e8f0; /* 은은한 구분선 */
-    /* main의 패딩을 무시하고 양옆으로 꽉 차게 만듭니다 */
+    border-bottom: 1px solid #e2e8f0; 
     margin: -30px -30px 30px -30px; 
     position: sticky;
     top: 0;
@@ -42,7 +41,7 @@
 }
 .th-breadcrumb i {
     font-size: 10px;
-    color: #cbd5e1; /* 꺾쇠 아이콘 색상 */
+    color: #cbd5e1;
 }
 
 /* 오른쪽: 검색창 및 알림 */

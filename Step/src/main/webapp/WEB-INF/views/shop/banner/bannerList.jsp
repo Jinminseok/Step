@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- 🚨 핵심 디테일 수정: 모든 요소의 테두리/여백을 너비에 포함 --- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -19,10 +18,9 @@ body {
     margin: 0;
     font-family: 'Pretendard', sans-serif;
     color: #333;
-    overflow-y: scroll; /* 🚨 핵심 디테일: 페이지 전환 시 스크롤바 밀림 방지 */
+    overflow-y: scroll; 
 }
 
-/* 👇 사이드바 너비만큼 본문을 완벽히 밀어줍니다 */
 .main {
     margin-left: 260px;
     padding: 30px;
@@ -76,7 +74,7 @@ td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; colo
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f8fafc; }
 
-/* 🌟 PAGINATION (새로 추가된 스타일) 🌟 */
+/* PAGINATION */
 .pagination-wrap {display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #e2e8f0;background:#fff;}
 .page-info {font-size:13px;color:#64748b;}
 .page-info strong {color:#0f172a;}
@@ -86,7 +84,7 @@ tr:hover td { background: #f8fafc; }
 .pg-btn.on {background:#3b82f6;color:#fff;border-color:#3b82f6;}
 .pg-btn.disabled {opacity:0.4;cursor:not-allowed;pointer-events:none;}
 
-/* 배너 미리보기 - 리스트형 와이드 비율 */
+/* 배너 미리보기 */
 .banner-preview-wrap { 
     width: 240px; 
     height: 80px; 
@@ -103,10 +101,10 @@ tr:hover td { background: #f8fafc; }
 
 /* STATE BADGES */
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600; }
-.b-normal { background: #dcfce7; color: #059669; }   /* 노출중 */
-.b-silver { background: #f1f5f9; color: #64748b; }   /* 숨김 */
+.b-normal { background: #dcfce7; color: #059669; }   
+.b-silver { background: #f1f5f9; color: #64748b; }  
 
-/* ── MODAL OVERLAY & BOX (통일감 구현) ── */
+/* ── MODAL OVERLAY & BOX ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 3000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: #fff; width: 560px; border-radius: 12px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
@@ -135,7 +133,7 @@ tr:hover td { background: #f8fafc; }
 .f-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-/* 🚨 이미지 파일 업로드 디자인 */
+/* 이미지 파일 업로드 디자인 */
 .f-file {
     padding: 8px 10px;
     border: 1px dashed #cbd5e1;
@@ -202,10 +200,8 @@ tr:hover td { background: #f8fafc; }
             <th style="width:160px;">관리</th>
           </tr>
         </thead>
-        <%-- 🌟 id="bannerTbody" 추가 🌟 --%>
         <tbody id="bannerTbody">
           <c:forEach var="b" items="${bannerList}">
-            <%-- 🌟 class="banner-row" 추가 🌟 --%>
             <tr class="banner-row">
               <td style="font-weight:700; color:#94a3b8; font-family:'Space Grotesk'; font-size: 16px;">${b.banner_sort_no}</td>
               <td>
@@ -251,7 +247,7 @@ tr:hover td { background: #f8fafc; }
         </tbody>
       </table>
 
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+      <%-- PAGINATION HTML  --%>
       <div class="pagination-wrap" id="bannerPagination" style="display:none;">
         <div class="page-info" id="bannerPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="bannerPageBtns"></div>
@@ -388,7 +384,6 @@ document.getElementById('modal-reg').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });
 
-// 🌟 PAGINATION JAVASCRIPT LOGIC (새로 추가됨) 🌟
 let currentBannerPage = 1;
 const bannerItemsPerPage = 10; // 한 페이지에 보여줄 개수
 let allBannerRows = [];

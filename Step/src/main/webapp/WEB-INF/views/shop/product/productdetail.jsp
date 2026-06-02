@@ -409,7 +409,7 @@
 									</span>
 								</div>
 
-								<%-- 🌟 추가: 내가 쓴 리뷰일 때만 수정 버튼 노출 --%>
+								<%-- 내가 쓴 리뷰일 때만 수정 버튼 노출 --%>
 								<c:if test="${not empty user_num and user_num == rev.user_num}">
 									<button type="button" class="btn btn-outline btn-sm"
 										onclick="openEditReviewModalFromDetail(this)"
@@ -420,7 +420,7 @@
 							<div
 								style="font-size: 14px; color: var(--gray2); line-height: 1.6;">${rev.content}</div>
 
-							<%-- 🌟 수정: 콤마(,)로 구분된 다중 이미지를 잘라서 모두 출력 --%>
+							<%-- 콤마로 구분된 다중 이미지를 잘라서 모두 출력 --%>
 							<c:if test="${not empty rev.img_urls}">
 								<div
 									style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -680,7 +680,7 @@ function openReviewModalFromDetail(prodNum, prodName) {
 	setStars(0);
 	$('#modal-review').css('display', 'flex');
 }
-// 🌟 추가: 상세페이지에서 수정 모달 열기
+// 상세페이지에서 수정 모달 열기
 function openEditReviewModalFromDetail(btn) {
     const reviewNum = btn.getAttribute('data-num');
     const rating = parseInt(btn.getAttribute('data-rating'));
@@ -758,7 +758,7 @@ function closeImageModal() {
 							style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box;"
 							placeholder="상품에 대한 솔직한 리뷰를 남겨주세요. (최소 10자)"></textarea>
 					</div>
-					<%-- 🌟 다중 사진 첨부 영역 --%>
+					<%-- 다중 사진 첨부 영역 --%>
 					<div>
 						<div
 							style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">사진
@@ -779,7 +779,7 @@ function closeImageModal() {
 		</div>
 	</div>
 
-	<%-- 🌟 추가: 리뷰 수정 모달 --%>
+	<%-- 리뷰 수정 모달 --%>
 	<div id="modal-edit-review"
 		style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 9999; align-items: center; justify-content: center;">
 		<div
@@ -827,7 +827,7 @@ function closeImageModal() {
 							style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box;"
 							placeholder="수정할 내용을 입력해주세요. (최소 10자)"></textarea>
 					</div>
-					<%-- 🌟 다중 사진 수정 영역 --%>
+					<%-- 다중 사진 수정 영역 --%>
 					<div>
 						<div
 							style="font-size: 12px; color: var(--gray3); margin-bottom: 6px;">새로운

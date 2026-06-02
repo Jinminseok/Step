@@ -40,7 +40,7 @@
     overflow: hidden;
 }
 
-/* 배너 이미지 - 슬라이드 꽉 채우기 핵심 */
+/* 배너 이미지 */
 .slide-bg {
     position: absolute;
     inset: 0;
