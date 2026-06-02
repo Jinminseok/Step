@@ -21,17 +21,17 @@ public class AdminOrderVO extends AdminBaseVO {
 
 	// ── [3] 반품/교환 관련 (RETURNS) ──
 		private int ret_num;         // RET_NUM
-		private int user_num;        // USER_NUM 🌟 (추가: 신청한 회원 번호)
+		private int user_num;        // USER_NUM  (추가: 신청한 회원 번호)
 		private int tp;              // TP (1:반품, 2:교환)
 		private String reason;       // REASON
-		private int prod_num;        // PROD_NUM 🌟 (추가: 신청된 상품 번호)
-		private int opt_num;         // OPT_NUM 🌟 (추가: 옵션 번호)
+		private int prod_num;        // PROD_NUM  (추가: 신청된 상품 번호)
+		private int opt_num;         // OPT_NUM  (추가: 옵션 번호)
 		private int ret_status;      // RET_STATUS (1:신청대기, 2:수거진행, 3:처리완료, 4:신청반려)
-		private int admin_num;       // ADMIN_NUM 🌟 (추가: 승인/반려 처리한 관리자 번호)
+		private int admin_num;       // ADMIN_NUM  (추가: 승인/반려 처리한 관리자 번호)
 		private String ret_note;     // RET_NOTE (고객 추가 비고)
 		private int is_good;         // IS_GOOD (제품 상태 검수 결과 - 0:대기, 1:정상, 2:파손)
-		private Date ret_created_at; // RET_CREATED_AT 🌟 (추가: 클레임 신청일자)
-		private Date ret_updated_at; // RET_UPDATED_AT 🌟 (추가: 최종 심사일자)
+		private Date ret_created_at; // RET_CREATED_AT (추가: 클레임 신청일자)
+		private Date ret_updated_at; // RET_UPDATED_AT  (추가: 최종 심사일자)
 
 		private String Opt_info;
 		private int qty;

@@ -70,7 +70,7 @@ public class ReviewDAO {
 	        pstmt.executeUpdate();
 	        DBUtil.executeClose(null, pstmt, null);
 	        
-	        // 🌟 다중 첨부파일 Loop 돌며 저장
+	        //다중 첨부파일 Loop 돌며 저장
 	        if (filenames != null && !filenames.isEmpty()) {
 	            sql = "INSERT INTO REVIEWS_IMGS (REVIEW_IMG_NUM, REVIEW_NUM, REVIEW_IMG_URL) "
 	                + "VALUES (REVIEWS_IMGS_SEQ.NEXTVAL, ?, ?)";
@@ -78,7 +78,7 @@ public class ReviewDAO {
 	            for (String fname : filenames) {
 	                pstmt.setLong(1, reviewNum);
 	                pstmt.setString(2, fname);
-	                pstmt.executeUpdate(); // 파일 개수만큼 INSERT
+	                pstmt.executeUpdate(); 
 	            }
 	        }
 	        
@@ -108,7 +108,6 @@ public class ReviewDAO {
 	        pstmt.executeUpdate();
 	        DBUtil.executeClose(null, pstmt, null);
 	        
-	        // 🌟 새 사진들을 올렸다면 기존 사진을 다 지우고 새로 INSERT!
 	        if (filenames != null && !filenames.isEmpty()) {
 	            String sqlDel = "DELETE FROM REVIEWS_IMGS WHERE REVIEW_NUM=?";
 	            pstmt = conn.prepareStatement(sqlDel);
@@ -172,12 +171,12 @@ public class ReviewDAO {
 	        while (rs.next()) {
 	            Map<String, Object> map = new java.util.HashMap<>();
 	            map.put("review_num", rs.getInt("review_num"));
-	            map.put("user_num", rs.getLong("user_num")); // JSP에서 본인 확인용
+	            map.put("user_num", rs.getLong("user_num")); 
 	            map.put("user_name", rs.getString("user_name"));
 	            map.put("rating", rs.getInt("rating"));
 	            map.put("content", rs.getString("review_content"));
 	            map.put("date", rs.getDate("review_created_at"));
-	            map.put("img_urls", rs.getString("img_urls")); // 🌟 여러 장의 파일명 묶음
+	            map.put("img_urls", rs.getString("img_urls"));
 	            list.add(map);
 	        }
 	    } finally {
@@ -222,7 +221,7 @@ public class ReviewDAO {
 			
 			if (rs.next()) {
 				map.put("count", rs.getInt("cnt"));
-				// 평점이 없을 땐 0.0
+				
 				map.put("avgRating", rs.getObject("avg_rating") == null ? 0.0 : rs.getDouble("avg_rating"));
 			}
 		} finally {

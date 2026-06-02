@@ -17,7 +17,7 @@ public class ModifyAction implements Action {
 		// 세션에서 현재 로그인한 유저 정보 꺼내기
 		HttpSession session = request.getSession();
 		String user_id = (String) session.getAttribute("user_id");
-		Long user_num = (Long) session.getAttribute("user_num"); // DAO 업데이트 조건용
+		Long user_num = (Long) session.getAttribute("user_num");
 		
 		// 로그인 확인
 		if (user_id == null) {
@@ -44,9 +44,7 @@ public class ModifyAction implements Action {
 			return "redirect:/shop/user/myPageForm.do";
 		}
 		
-		// --------------------------------------------------------
 		// 업데이트할 정보 세팅 (비어있으면 기존 값, 있으면 새 값)
-		// --------------------------------------------------------
 		UserVO updateUser = new UserVO();
 		updateUser.setUser_num(user_num);
 		
@@ -68,9 +66,7 @@ public class ModifyAction implements Action {
 		String addr2 = request.getParameter("addr2");
 		updateUser.setAddr2( (addr2 == null || addr2.trim().isEmpty()) ? currentUser.getAddr2() : addr2 );
 
-		// --------------------------------------------------------
 		// 새 비밀번호 변경
-		// --------------------------------------------------------
 		String new_passwd = request.getParameter("new_passwd");
 		String new_passwd_confirm = request.getParameter("new_passwd_confirm");
 		

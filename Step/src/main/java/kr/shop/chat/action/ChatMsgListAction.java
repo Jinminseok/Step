@@ -14,7 +14,7 @@ public class ChatMsgListAction implements Action {
         response.setContentType("application/json; charset=UTF-8");
 
         String roomNumStr = request.getParameter("roomNum");
-        String senderType = request.getParameter("senderType"); // 누가 읽는지 (1=사용자, 2=관리자)
+        String senderType = request.getParameter("senderType");
 
         if (roomNumStr == null || roomNumStr.equals("-1")) {
             response.getWriter().write("[]");

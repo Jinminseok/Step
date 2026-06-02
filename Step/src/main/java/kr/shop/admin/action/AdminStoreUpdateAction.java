@@ -12,7 +12,7 @@ public class AdminStoreUpdateAction implements Action {
         request.setCharacterEncoding("utf-8"); // 한글 깨짐 방지
         
         UserStoreVO vo = new UserStoreVO();
-        // 🌟 수정할 때는 반드시 Primary Key(매장 번호)를 받아와야 합니다!
+        //수정할 때는 반드시 Primary Key(매장 번호)를 받아와야 합니다!
         vo.setStoreNum(Integer.parseInt(request.getParameter("storeNum"))); 
         vo.setBrandNum(Integer.parseInt(request.getParameter("brandNum")));
         vo.setStoreName(request.getParameter("storeName"));

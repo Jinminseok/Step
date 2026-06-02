@@ -122,7 +122,7 @@ public class DeliveryDAO {
 			pstmt.close();
 
 			// ORDERS 상태도 동기화
-			int orderStatus = dlvStatus; // 동일한 상태 코드 사용
+			int orderStatus = dlvStatus;
 			pstmt = conn.prepareStatement(
 					"UPDATE ORDERS SET ORDER_STATUS = ? WHERE ORDER_NUM = " +
 							"(SELECT ORDER_NUM FROM DELIVERY WHERE DLV_NUM = ?)"
@@ -145,21 +145,21 @@ public class DeliveryDAO {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 
-			// 1. DELIVERY 상태 취소(5)로 변경
+			//DELIVERY 상태 취소(5)로 변경
 			pstmt = conn.prepareStatement(
 					"UPDATE DELIVERY SET DLV_STATUS = 5 WHERE DLV_NUM = ?");
 			pstmt.setInt(1, dlvNum);
 			pstmt.executeUpdate();
 			pstmt.close();
 
-			// 2. ORDERS 상태 취소(5)로 변경 + 취소일시 기록
+			//ORDERS 상태 취소(5)로 변경 + 취소일시 기록
 			pstmt = conn.prepareStatement(
 					"UPDATE ORDERS SET ORDER_STATUS = 5, ORDER_DELETE_AT = SYSDATE WHERE ORDER_NUM = ?");
 			pstmt.setInt(1, orderNum);
 			pstmt.executeUpdate();
 			pstmt.close();
 
-			// 3. ORDER_ITEMS에서 상품/수량 조회 후 재고 복구
+			//ORDER_ITEMS에서 상품/수량 조회 후 재고 복구
 			pstmt = conn.prepareStatement(
 					"SELECT OPT_NUM, ORDER_ITEM_QTY FROM ORDER_ITEMS WHERE ORDER_NUM = ?");
 			pstmt.setInt(1, orderNum);
@@ -172,7 +172,7 @@ public class DeliveryDAO {
 			rs.close();
 			pstmt.close();
 
-			// 재고 복구
+			//재고 복구
 			for (int[] item : items) {
 				pstmt = conn.prepareStatement(
 						"UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ?, STOCK_UPDATED_AT = SYSDATE " +

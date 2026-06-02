@@ -49,13 +49,13 @@ public class AdminProductListAction implements Action {
 		vo.setSearch_status(search_status);
 		vo.setCat_num(cat_num);
 		vo.setBrand_num(brand_num);
-		vo.setOrder_type(order_type); // 🚨 VO 세팅
+		vo.setOrder_type(order_type);
 
 		AdminProductDAO dao = AdminProductDAO.getInstance();
 
 		int count = dao.getProductTotalCount(vo);
 
-		// 🚨 페이징 쿼리 스트링 유지를 위한 정렬 조건 누적
+		//페이징 쿼리 스트링 유지를 위한 정렬 조건 누적
 		StringBuilder addKey = new StringBuilder();
 		if (search_status != null && !search_status.isEmpty()) {
 			addKey.append("&search_status=").append(search_status);
@@ -92,7 +92,7 @@ public class AdminProductListAction implements Action {
 		request.setAttribute("brandList", brandList);
 		request.setAttribute("cat_num", cat_num);
 		request.setAttribute("brand_num", brand_num);
-		request.setAttribute("order_type", order_type); // 🚨 JSP 바인딩
+		request.setAttribute("order_type", order_type); 
 
 		return "shop/admin/adminProductList.jsp";
 	}

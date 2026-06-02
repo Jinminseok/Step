@@ -15,7 +15,7 @@ public class UserReturnDAO {
     public static UserReturnDAO getInstance() { return instance; }
     private UserReturnDAO() {}
 
-    // ── 🌟 반품/교환 신청 처리 ──
+    //반품/교환 신청 처리
     public void insertReturnRequest(int orderNum, int userNum, int tp, String reason, String retNote) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt1 = null;
@@ -26,7 +26,7 @@ public class UserReturnDAO {
             // 트랜잭션 시작 (둘 다 성공해야 커밋)
             conn.setAutoCommit(false);
 
-            // [1단계] RETURNS 테이블에 데이터 INSERT (ORDER_ITEMS 조인)            
+                    
             String sql1 = "INSERT INTO RETURNS (RET_NUM, ORDER_NUM, USER_NUM, TP, REASON, PROD_NUM, OPT_NUM, RET_NOTE, RET_STATUS, RET_CREATED_AT) "
                        + "SELECT RETURNS_SEQ.NEXTVAL, oi.ORDER_NUM, ?, ?, ?, oi.PROD_NUM, oi.OPT_NUM, ?, 1, SYSDATE "
                        + "FROM ORDER_ITEMS oi "
@@ -34,13 +34,13 @@ public class UserReturnDAO {
 
             pstmt1 = conn.prepareStatement(sql1);
             pstmt1.setInt(1, userNum);
-            pstmt1.setInt(2, tp);       // 1: 반품, 2: 교환
+            pstmt1.setInt(2, tp);       
             pstmt1.setString(3, reason);
             pstmt1.setString(4, retNote);
             pstmt1.setInt(5, orderNum);
             pstmt1.executeUpdate();
             
-            // [2단계] ORDERS 테이블의 주문 상태를 6(반품/교환 처리중)으로 UPDATE
+          
             String sql2 = "UPDATE ORDERS SET ORDER_STATUS = 6 WHERE ORDER_NUM = ?";
             pstmt2 = conn.prepareStatement(sql2);
             pstmt2.setInt(1, orderNum);
@@ -58,7 +58,7 @@ public class UserReturnDAO {
         }
     }
     
- // ── 🌟 [추가] 유저별 반품/교환 신청 내역 조회 ──
+ //유저별 반품/교환 신청 내역 조회
     public List<UserReturnVO> getReturnListByUserNum(int userNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -103,12 +103,12 @@ public class UserReturnDAO {
         return list;
     }
 
-    // ── 🌟 [추가] 반품/교환 신청 내용 수정 ──
+    //반품/교환 신청 내용 수정 ──
     public void updateReturnRequest(UserReturnVO vo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         
-        // 보안을 위해 WHERE 절에 user_num을 포함하여 본인 것만 수정 가능하게 처리
+     
         String sql = "UPDATE RETURNS SET TP = ?, REASON = ?, RET_NOTE = ? "
                    + "WHERE RET_NUM = ? AND USER_NUM = ?";
                    
@@ -119,7 +119,7 @@ public class UserReturnDAO {
             pstmt.setString(2, vo.getReason());
             pstmt.setString(3, vo.getRet_note());
             pstmt.setInt(4, vo.getRet_num());
-            pstmt.setInt(5, vo.getUser_num()); // Action에서 세션의 user_num을 VO에 담아 넘겨야 함
+            pstmt.setInt(5, vo.getUser_num()); 
             pstmt.executeUpdate();
         } catch (Exception e) {
             throw e;
@@ -128,7 +128,7 @@ public class UserReturnDAO {
         }
     }
 
-    // ── 반품/교환 신청 취소 (삭제 및 주문상태 롤백) ──
+    // 반품/교환 신청 취소 (삭제 및 주문상태 롤백)
     public void deleteReturnRequest(int retNum, int userNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt1 = null;
@@ -141,7 +141,7 @@ public class UserReturnDAO {
             // 트랜잭션 시작 (조회 -> 삭제 -> 롤백)
             conn.setAutoCommit(false);
             
-            // [1단계] 삭제할 반품 테이블에서 원주문 번호(ORDER_NUM) 먼저 알아내기
+            //삭제할 반품 테이블에서 원주문 번호(ORDER_NUM) 먼저 알아내기
             int orderNum = 0;
             String sql1 = "SELECT ORDER_NUM FROM RETURNS WHERE RET_NUM = ? AND USER_NUM = ?";
             pstmt1 = conn.prepareStatement(sql1);
@@ -154,13 +154,13 @@ public class UserReturnDAO {
                 throw new Exception("해당 반품/교환 내역을 찾을 수 없거나 권한이 없습니다.");
             }
             
-            // [2단계] 반품/교환 신청 내역(RETURNS) 삭제
+            //반품/교환 신청 내역(RETURNS) 삭제
             String sql2 = "DELETE FROM RETURNS WHERE RET_NUM = ?";
             pstmt2 = conn.prepareStatement(sql2);
             pstmt2.setInt(1, retNum);
             pstmt2.executeUpdate();
             
-            // [3단계] ORDERS 테이블의 주문 상태를 6(처리중) -> 4(배송완료)로 복구
+            //ORDERS 테이블의 주문 상태를 6(처리중) -> 4(배송완료)로 복구
             String sql3 = "UPDATE ORDERS SET ORDER_STATUS = 4 WHERE ORDER_NUM = ?";
             pstmt3 = conn.prepareStatement(sql3);
             pstmt3.setInt(1, orderNum);

@@ -11,7 +11,7 @@ public class ReturnAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        // 1. 인코딩 및 세션 체크 (로그인 유저 식별)
+        //인코딩 및 세션 체크 (로그인 유저 식별)
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         
@@ -21,9 +21,6 @@ public class ReturnAction implements Action {
             // 로그인이 안 되어있으면 로그인 창으로 튕겨냅니다.
             return "redirect:/shop/user/loginForm.do"; 
         }
-
-        // 🌟 자바에서 Long이든 Integer든 모두 상속받는 최상위 숫자 클래스인 'Number'를 이용하여
-        // 어떤 타입이 세션에 들어있든 에러 없이 깔끔하게 int형 숫자로 변환해 줍니다!
         int userNum = ((Number) sessionUserNum).intValue();
 
         // 2. 폼에서 넘어온 파라미터 싹 다 받기
@@ -43,7 +40,7 @@ public class ReturnAction implements Action {
             int orderNum = Integer.parseInt(orderNumStr);
             int tp = Integer.parseInt(tpStr);
 
-            // 3. DAO 호출해서 DB에 확실하게 박아넣기
+            //DAO 호출해서 DB에 확실하게 박아넣기
             UserReturnDAO dao = UserReturnDAO.getInstance();
             dao.insertReturnRequest(orderNum, userNum, tp, reason, retNote);
             
@@ -56,7 +53,7 @@ public class ReturnAction implements Action {
             throw e;
         }
 
-        // 4. 신청이 깔끔하게 끝나면 다시 마이페이지 메인으로 새로고침!
+        //신청이 깔끔하게 끝나면 다시 마이페이지 메인으로 새로고침!
         return "redirect:/shop/user/myPageForm.do"; 
     }
 }

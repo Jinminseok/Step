@@ -38,11 +38,11 @@ public class MyPageAction implements Action {
         UserVO user = dao.getUserDetail(user_num);
         request.setAttribute("user", user);
 
-        // ✅ orderList 한 번만 선언
+        //orderList 한 번만 선언
         List<AdminOrderVO> orderList = dao.getMyOrderList(user_num);
         request.setAttribute("orderList", orderList);
 
-        // ✅ 주문번호별 그룹핑
+        //주문번호별 그룹핑
         LinkedHashMap<Integer, List<AdminOrderVO>> groupedOrders = new LinkedHashMap<>();
         for (AdminOrderVO item : orderList) {
             groupedOrders

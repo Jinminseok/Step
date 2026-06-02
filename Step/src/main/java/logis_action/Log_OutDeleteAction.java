@@ -18,7 +18,7 @@ public class Log_OutDeleteAction implements Action{
         Log_OutDAO dao = new Log_OutDAO();
         dao.cancelOutbound(outNum, orderNum);
 
-        // 다시 메인 화면으로 리다이렉트 (대기 목록에 짠! 하고 나타납니다)
+      
         return "redirect:/logistics/log_out/log_outForm.do";
     }
 

@@ -14,7 +14,7 @@ public class BannerDAO {
     public static BannerDAO getInstance() { return instance; }
     private BannerDAO() {} 
     
-        // 1. 관리자용 리스트 (BANNER_SORT_NO 기준 정렬)
+        //관리자용 리스트 
         public List<BannerVO> getAdminBannerList() throws Exception {
             List<BannerVO> list = new ArrayList<>();
             Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -41,7 +41,7 @@ public class BannerDAO {
             return list;
         }
 
-        // 2. 메인 페이지 노출용 배너
+        //메인 페이지 노출용 배너
         public List<BannerVO> getMainBanners() throws Exception {
             List<BannerVO> list = new ArrayList<>();
             Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -63,7 +63,7 @@ public class BannerDAO {
             return list;
         }
 
-        // 3. 신규 배너 등록
+        //신규 배너 등록
         public void insertBanner(BannerVO vo) throws Exception {
             Connection conn = null; PreparedStatement pstmt = null;
             
@@ -82,8 +82,8 @@ public class BannerDAO {
         }
 
 
-        // 4. 배너 1건 상세 조회 (수정 폼에 데이터 불러올 때 사용)
-
+        
+        //배너 1건 상세 조회
         public BannerVO getBanner(int banner_num) throws Exception {
             Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
             BannerVO vo = null;
@@ -108,15 +108,13 @@ public class BannerDAO {
 
 
         // 5. 배너 수정
-        // (이미지를 새로 올렸을 때와 안 올렸을 때를 구분해서 업데이트)
-
         public void updateBanner(BannerVO vo) throws Exception {
             Connection conn = null; PreparedStatement pstmt = null;
             String sql = "";
             int cnt = 0;
             try {
                 conn = DBUtil.getConnection();
-                // 이미지가 첨부된 경우 (이미지명도 업데이트)
+                
                 if (vo.getBanner_img_url() != null && !vo.getBanner_img_url().isEmpty()) {
                     sql = "UPDATE BANNERS SET BANNER_TITLE=?, PROD_NUM=?, BANNER_SORT_NO=?, BANNER_USE_YN=?, BANNER_IMG_URL=? WHERE BANNER_NUM=?";
                     pstmt = conn.prepareStatement(sql);
@@ -127,7 +125,7 @@ public class BannerDAO {
                     pstmt.setString(++cnt, vo.getBanner_img_url());
                     pstmt.setInt(++cnt, vo.getBanner_num());
                 } 
-                // 이미지를 변경하지 않은 경우 (나머지 정보만 업데이트)
+                
                 else {
                     sql = "UPDATE BANNERS SET BANNER_TITLE=?, PROD_NUM=?, BANNER_SORT_NO=?, BANNER_USE_YN=? WHERE BANNER_NUM=?";
                     pstmt = conn.prepareStatement(sql);
@@ -143,7 +141,6 @@ public class BannerDAO {
 
       
         // 6. 배너 삭제
-      
         public void deleteBanner(int banner_num) throws Exception {
             Connection conn = null; PreparedStatement pstmt = null;
             String sql = "DELETE FROM BANNERS WHERE BANNER_NUM = ?";

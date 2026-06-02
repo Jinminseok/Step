@@ -16,7 +16,7 @@ public class AdminOrderDAO {
     public static AdminOrderDAO getInstance() { return instance; }
     private AdminOrderDAO() {}
 
-    // ── 1. 페이징 및 검색을 위한 전체 주문 개수 구하기 ──
+    //페이징 및 검색을 위한 전체 주문 개수 구하기 
     public int getOrderCount(Map<String, Object> map) throws Exception {
         int count = 0;
         Connection conn = null;
@@ -25,7 +25,7 @@ public class AdminOrderDAO {
         
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) FROM ORDERS o ");
-        // 🌟 USERS 대신 USERS_DETAIL 테이블과 조인!
+        //USERS 대신 USERS_DETAIL 테이블과 조인
         sql.append("JOIN USERS_DETAIL ud ON o.USER_NUM = ud.USER_NUM ");
         sql.append("WHERE 1=1 ");
         
@@ -45,7 +45,7 @@ public class AdminOrderDAO {
         return count;
     }
 
-    // ── 2. 실제 화면에 뿌려줄 주문 목록 조회 (10개씩) ──
+    //실제 화면에 뿌려줄 주문 목록 조회 (10개씩)
     public List<Map<String, Object>> getOrderList(Map<String, Object> map) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null;
@@ -58,7 +58,7 @@ public class AdminOrderDAO {
         sql.append("    SELECT o.ORDER_NUM, ");
         sql.append("           o.ORDER_CREATED_AT, ");
         
-        // 🌟 USERS_DETAIL(ud)의 USER_NAME을 가져옵니다!
+        //USERS_DETAIL(ud)의 USER_NAME을 가져옵니다!
         sql.append("           ud.USER_NAME AS ORDER_NAME, "); 
         
         sql.append("           o.RECV_NAME, ");
@@ -70,7 +70,7 @@ public class AdminOrderDAO {
         sql.append("           (SELECT COUNT(*) FROM ORDER_ITEMS WHERE ORDER_NUM = o.ORDER_NUM) AS ITEM_CNT ");
         
         sql.append("    FROM ORDERS o ");
-        // 🌟 여기서도 USERS_DETAIL과 조인!
+        //여기서도 USERS_DETAIL과 조인!
         sql.append("    JOIN USERS_DETAIL ud ON o.USER_NUM = ud.USER_NUM ");
         sql.append("    LEFT JOIN PAYMENTS pay ON o.ORDER_NUM = pay.ORDER_NUM AND pay.PAY_STATUS = 1 ");
         sql.append("    WHERE 1=1 ");
@@ -114,7 +114,7 @@ public class AdminOrderDAO {
         return list;
     }
 
-    // ── 💡 동적 쿼리 조건 조립을 위한 헬퍼 메서드 ──
+    // 동적 쿼리 조건 조립을 위한 헬퍼 메서드
     private void appendSearchCondition(StringBuilder sql, Map<String, Object> map) {
         String sDate = (String) map.get("sDate");
         String eDate = (String) map.get("eDate");
@@ -132,7 +132,6 @@ public class AdminOrderDAO {
             if ("ordNum".equals(sKeywordType)) {
                 sql.append(" AND TO_CHAR(o.ORDER_NUM) LIKE ? ");
             } else if ("orderName".equals(sKeywordType)) {
-                // 🌟 검색 조건도 ud.USER_NAME 으로 수정 완!
                 sql.append(" AND ud.USER_NAME LIKE ? ");
             } else if ("recvName".equals(sKeywordType)) {
                 sql.append(" AND o.RECV_NAME LIKE ? ");
@@ -142,7 +141,7 @@ public class AdminOrderDAO {
         }
     }
 
-    // ── 💡 동적 쿼리 바인딩을 위한 헬퍼 메서드 ──
+    //동적 쿼리 바인딩을 위한 헬퍼 메서드
     private int setSearchCondition(PreparedStatement pstmt, Map<String, Object> map, int idx) throws Exception {
         String sDate = (String) map.get("sDate");
         String eDate = (String) map.get("eDate");
@@ -163,7 +162,7 @@ public class AdminOrderDAO {
         return idx;
     }
     
- // ── 3. 모달용: 주문 기본 정보 (수령인, 결제 정보 등) ──
+ //모달용: 주문 기본 정보 (수령인, 결제 정보 등)
     public Map<String, Object> getOrderMaster(int ordNum) throws Exception {
         Map<String, Object> map = new HashMap<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -194,7 +193,7 @@ public class AdminOrderDAO {
         return map;
     }
 
-    // ── 4. 모달용: 주문 상세 상품 목록 ──
+    //모달용: 주문 상세 상품 목록
     public List<Map<String, Object>> getOrderItems(int ordNum) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;

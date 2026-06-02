@@ -22,7 +22,7 @@ public class AdminProductDAO {
 	private AdminProductDAO() {
 	}
 
-	// [대시보드용 - adminMain.jsp] 당일 주문 건수 조회
+	//당일 주문 건수 조회
 	public int getTodayOrderCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -42,7 +42,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - 보류/추후사용] 결제 대기 상태(1) 건수 조회
+	//결제 대기 상태(1) 건수 조회
 	public int getPendingPaymentCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -62,7 +62,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - 보류/추후사용] 배송 준비 상태(2) 건수 조회
+	//배송 준비 상태(2) 건수 조회
 	public int getReadyForShippingCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -82,7 +82,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - adminMain.jsp] 취소/반품 요청 상태(5) 건수 조회
+	//취소/반품 요청 상태(5) 건수 조회
 	public int getCancelRequestCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -102,7 +102,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - adminMain.jsp] 재고 부족 (5개 미만) 상품 옵션 건수 조회
+	//재고 부족 (5개 미만) 상품 옵션 건수 조회
 	public int getLowStockCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -127,7 +127,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - 보류/추후사용] 입고 완료된 활성 상품의 총 개수 조회
+	//입고 완료된 활성 상품의 총 개수 조회
 	public int getDashboardProductTotalCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -153,7 +153,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - adminMain.jsp] 오늘 매출 금액 합계
+	//오늘 매출 금액 합계
 	public long getTodaySalesAmount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -172,7 +172,7 @@ public class AdminProductDAO {
 		return total;
 	}
 
-	// [대시보드용 - adminMain.jsp] 당일 가입한 신규 회원 수
+	//당일 가입한 신규 회원 수
 	public int getTodayNewUserCount() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -191,7 +191,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [대시보드용 - adminMain.jsp] 최근 4개월 월별 매출 통계 (차트용)
+	//최근 4개월 월별 매출 통계 (차트용)
 	public List<Map<String, Object>> getMonthlySales() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -216,7 +216,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [대시보드용 - adminMain.jsp] 인기 상품 TOP 4 통계 (차트용)
+	//인기 상품 TOP 4 통계 (차트용)
 	public List<Map<String, Object>> getTopProducts() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -241,7 +241,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [대시보드용 - adminMain.jsp] 최신 주문 목록 5건 조회
+	//최신 주문 목록 5건 조회
 	public List<Map<String, Object>> getRecentOrders() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -283,7 +283,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [상품관리용 - productList.jsp 등] 검색 조건에 맞는 상품 총 레코드 수 (페이징 처리용)
+	//검색 조건에 맞는 상품 총 레코드 수 (페이징 처리용)
 	public int getProductTotalCount(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -331,7 +331,7 @@ public class AdminProductDAO {
 		return count;
 	}
 
-	// [상품관리용 - productList.jsp 등] 조건에 맞는 전체 상품 목록 조회
+	//조건에 맞는 전체 상품 목록 조회
 	public List<AdminProductVO> getProductList(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -431,7 +431,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [상품관리용 - productDetail.jsp 등] 특정 상품의 옵션별 사이즈, 색상, 재고량 조회
+	//특정 상품의 옵션별 사이즈, 색상, 재고량 조회
 	public List<AdminProductVO> getProductStockDetails(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -460,7 +460,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [상품관리용 - productDetail.jsp / modifyForm.jsp] 특정 상품 단건 정보 조회
+	//특정 상품 단건 정보 조회
 	public AdminProductVO getProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -501,7 +501,7 @@ public class AdminProductDAO {
 		return product;
 	}
 
-	// [상품관리용 - Action 클래스 처리] 새 상품 및 옵션 등록 프로세스
+	//새 상품 및 옵션 등록 프로세스
 	public void insertProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -559,7 +559,7 @@ public class AdminProductDAO {
 		}
 	}
 
-	// [상품관리용 - Action 클래스 처리] 기존 상품 정보 수정 프로세스
+	//기존 상품 정보 수정 프로세스
 	public void updateProduct(AdminProductVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -588,7 +588,7 @@ public class AdminProductDAO {
 		}
 	}
 
-	// [상품관리용 - productDetail.jsp / modifyForm.jsp] 특정 상품의 옵션 목록 조회
+	//특정 상품의 옵션 목록 조회
 	public List<AdminProductVO> getProductOptions(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -616,7 +616,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [상품관리용 - Action 클래스 처리] 상품 삭제 프로세스 (옵션 먼저 삭제 후 상품 삭제)
+	//상품 삭제 프로세스 (옵션 먼저 삭제 후 상품 삭제)
 	public void deleteProduct(int prod_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt1 = null;
@@ -645,7 +645,7 @@ public class AdminProductDAO {
 		}
 	}
 
-	// [공통/상품관리 폼용] 셀렉트 박스 구성을 위한 브랜드 목록 조회
+	//셀렉트 박스 구성을 위한 브랜드 목록 조회
 	public List<AdminProductVO> getBrandList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -668,7 +668,7 @@ public class AdminProductDAO {
 		return list;
 	}
 
-	// [공통/상품관리 폼용] 셀렉트 박스 구성을 위한 카테고리 목록 조회
+	//셀렉트 박스 구성을 위한 카테고리 목록 조회
 	public List<AdminProductVO> getCategoryList() throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;

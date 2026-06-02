@@ -15,9 +15,9 @@ public class AdminProductStockAjaxAction implements Action {
 
 		List<AdminProductVO> stockList = dao.getProductStockDetails(prod_num);
 
-		// [동적 처리] 뷰(JSP)에서 사용할 기준값을 Action에서 정의 (추후 DB 연동 가능)
-		int lowStockThreshold = 10; // 재고 부족 기준 개수
-		int maxBarStock = 50; // 게이지 바 100% 기준 개수
+		//뷰(JSP)에서 사용할 기준값을 Action에서 정의
+		int lowStockThreshold = 10; 
+		int maxBarStock = 50; 
 
 		request.setAttribute("stockList", stockList);
 		request.setAttribute("lowStockThreshold", lowStockThreshold);

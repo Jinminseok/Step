@@ -221,7 +221,7 @@
                     <div class="guide-chip" onclick="setMsg('일상에서 신기 편한 운동화 추천해줘')">👟 편한 일상 운동화</div>
                     <div class="guide-chip" onclick="setMsg('편한 신발 추천해줘')">편한 샌들</div>
                     <div class="guide-chip" onclick="setMsg('슬리퍼 추천해줘')">슬리퍼</div>
-                    <div class="guide-chip" onclick="setMsg('10만원 이하 남녀공용 운동화 추천해줘')">💰 10만원 이하 남여공용</div>
+                    <div class="guide-chip" onclick="setMsg('10만원 이하 운동화 추천해줘')">💰 10만원 이하</div>
                 </div>
 
                 <%-- 입력창 --%>

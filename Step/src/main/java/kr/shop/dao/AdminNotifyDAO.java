@@ -15,9 +15,7 @@ public class AdminNotifyDAO {
     public static AdminNotifyDAO getInstance() { return instance; }
     private AdminNotifyDAO() {}
 
-    // ─────────────────────────────────────────
     // 1. 공지 일괄 발송 (전체 / 등급 / 특정회원)
-    // ─────────────────────────────────────────
     public int insertNoticeByCondition(UserNotifyVO vo, String targetType, String targetValue) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -64,9 +62,7 @@ public class AdminNotifyDAO {
         return insertedCount;
     }
 
-    // ─────────────────────────────────────────
     // 2. 알림 이력 총 개수
-    // ─────────────────────────────────────────
     public int getNotifyTotalCount(UserNotifyVO vo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -104,9 +100,7 @@ public class AdminNotifyDAO {
         return count;
     }
 
-    // ─────────────────────────────────────────
     // 3. 알림 이력 목록 조회 (페이징)
-    // ─────────────────────────────────────────
     public List<UserNotifyVO> getNotifyList(UserNotifyVO vo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -167,9 +161,7 @@ public class AdminNotifyDAO {
         return list;
     }
 
-    // ─────────────────────────────────────────
     // 4. 재입고: 해당 상품 찜한 유저 목록
-    // ─────────────────────────────────────────
     public List<Integer> getUserNumsByProdNum(int prod_num) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -188,9 +180,7 @@ public class AdminNotifyDAO {
         return userNums;
     }
 
-    // ─────────────────────────────────────────
     // 5. 상품명 조회
-    // ─────────────────────────────────────────
     public String getProdNameByNum(int prod_num) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;

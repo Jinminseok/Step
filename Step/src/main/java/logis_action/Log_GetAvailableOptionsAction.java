@@ -55,7 +55,7 @@ public class Log_GetAvailableOptionsAction implements Action {
             out.print(json.toString());
             
         } catch(Exception e) {
-            // 🚨 자바 콘솔에 에러가 나더라도 브라우저가 완전히 뻗지 않도록 에러 로깅 후 빈 배열 리턴 방어
+            //자바 콘솔에 에러가 나더라도 브라우저가 완전히 뻗지 않도록 에러 로깅 후 빈 배열 리턴 방어
             e.printStackTrace(); 
             out.print("[]");
         } finally {

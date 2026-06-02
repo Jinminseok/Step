@@ -10,7 +10,7 @@ public class Log_ReportDAO {
     public static Log_ReportDAO getInstance() { return instance; }
     private Log_ReportDAO() {}
 
-    // ① 기간 내 총 입고 수량
+    //기간 내 총 입고 수량
     public int getTotalInQty(String startDate, String endDate) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -24,7 +24,7 @@ public class Log_ReportDAO {
         return total;
     }
 
-    // ② 기간 내 총 출고 수량
+    //기간 내 총 출고 수량
     public int getTotalOutQty(String startDate, String endDate) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -38,7 +38,7 @@ public class Log_ReportDAO {
         return total;
     }
 
-    // ③ 전월 입고 수량 (전월 대비 계산용)
+    //전월 입고 수량 (전월 대비 계산용)
     public int getLastMonthInQty() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -52,7 +52,7 @@ public class Log_ReportDAO {
         return total;
     }
 
-    // ④ 전월 출고 수량
+    //전월 출고 수량
     public int getLastMonthOutQty() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -66,7 +66,7 @@ public class Log_ReportDAO {
         return total;
     }
 
-    // ⑤ 브랜드별 출고 현황
+    //브랜드별 출고 현황
     public List<Map<String, Object>> getBrandOutbound(String startDate, String endDate) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -91,7 +91,7 @@ public class Log_ReportDAO {
         return list;
     }
 
-    // ⑥ 인기 사이즈 TOP5
+    //인기 사이즈 TOP5
     public List<Map<String, Object>> getTopSizes(String startDate, String endDate) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -116,7 +116,7 @@ public class Log_ReportDAO {
         return list;
     }
 
-    // ⑦ 인기 카테고리 TOP5
+    //인기 카테고리 TOP5
     public List<Map<String, Object>> getTopCategories(String startDate, String endDate) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -143,12 +143,11 @@ public class Log_ReportDAO {
         return list;
     }
 
-    // ⑧ 월별 입출고 추이 (최근 6개월)
+    //월별 입출고 추이 (최근 6개월)
     public List<Map<String, Object>> getMonthlyTrend() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
 
-        // ↓ 'MM월' → 'MM"월"' 로 수정 (한글을 큰따옴표로 감싸야 함)
         String sql = "SELECT mon, NVL(in_qty, 0) AS in_qty, NVL(out_qty, 0) AS out_qty "
                    + "FROM ("
                    + "  SELECT TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE,'MM'), -LEVEL+1), 'MM\"월\"') AS mon, "
@@ -179,7 +178,7 @@ public class Log_ReportDAO {
         return list;
     }
 
-    // ⑨ 현재 전체 재고
+    //현재 전체 재고
     public int getTotalStock() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;

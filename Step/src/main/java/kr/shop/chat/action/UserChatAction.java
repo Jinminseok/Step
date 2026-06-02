@@ -28,7 +28,7 @@ public class UserChatAction implements Action {
             dao.markRead(roomNum, 2); // 관리자 메시지 읽음 처리
         }
 
-        request.setAttribute("roomNum", roomNum); // -1이면 아직 방 없음
+        request.setAttribute("roomNum", roomNum); 
         request.setAttribute("msgList", msgList);
         request.setAttribute("userNum", userNum.intValue());
         return "shop/chat/userChat.jsp";

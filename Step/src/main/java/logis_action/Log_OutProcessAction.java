@@ -43,7 +43,7 @@ public class Log_OutProcessAction implements Action {
                     vo.setOrderItemQty(Integer.parseInt(qtys[i]));
                     vo.setAdminNum(adminNum);
                     
-                    // 🌟 공백이나 null이 넘어올 경우를 완벽하게 방어!
+                 
                     String courier = (couriers != null && couriers.length > i && couriers[i] != null && !couriers[i].trim().isEmpty()) ? couriers[i].trim() : null;
                     String invoiceNo = (invoiceNos != null && invoiceNos.length > i && invoiceNos[i] != null && !invoiceNos[i].trim().isEmpty()) ? invoiceNos[i].trim() : null;
                     
@@ -60,7 +60,7 @@ public class Log_OutProcessAction implements Action {
                 dao.processBulkOutbound(list);
             }
         } catch (Exception e) {
-            // 🚨 만약 DB 저장 중 에러가 나면 여기서 범인을 잡아냅니다!
+         
             System.out.println("🚨🚨🚨 [출고 처리 중 에러 발생!] 🚨🚨🚨");
             e.printStackTrace();
             throw e;

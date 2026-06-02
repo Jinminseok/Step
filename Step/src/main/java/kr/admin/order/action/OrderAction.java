@@ -38,18 +38,18 @@ public class OrderAction implements Action{
         AdminOrderDAO dao = AdminOrderDAO.getInstance();
         int count = dao.getOrderCount(map);
 
-        // 🌟 addKey 조립 (날짜, 상태 등 추가 검색 조건을 URL에 붙이기 위함)
+        //addKey 조립 (날짜, 상태 등 추가 검색 조건을 URL에 붙이기 위함)
         StringBuilder addKey = new StringBuilder();
         if(sDate != null && !sDate.isEmpty()) addKey.append("&sDate=").append(sDate);
         if(eDate != null && !eDate.isEmpty()) addKey.append("&eDate=").append(eDate);
         if(sStatus != null && !sStatus.equals("ALL")) addKey.append("&sStatus=").append(sStatus);
 
-        // 🌟 PagingUtil 호출! (10개씩 목록, 10개씩 페이지 블록)
+        //PagingUtil 호출! (10개씩 목록, 10개씩 페이지 블록)
         PagingUtil page = new PagingUtil(
                 sKeywordType, sKeyword, currentPage, count, 10, 10, "adminorderForm.do", addKey.toString()
         );
         
-        // PagingUtil이 계산해준 시작행/끝행 번호를 map에 담기
+        //PagingUtil이 계산해준 시작행/끝행 번호를 map에 담기
         map.put("startRow", page.getStartRow());
         map.put("endRow", page.getEndRow());
 

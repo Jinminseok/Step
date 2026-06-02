@@ -16,7 +16,7 @@ public class AdminStoreDAO {
     public static AdminStoreDAO getInstance() { return instance; }
     private AdminStoreDAO() {}
     
- // ── [관리자: 새 매장 등록 (Create)] ──────────────────────────────
+ // 새 매장 등록 
     public void insertStore(UserStoreVO vo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -43,7 +43,7 @@ public class AdminStoreDAO {
             // 등록 시 폼에서 넘어온 사용 여부(Y/N) 세팅, 혹시 비어있으면 안전하게 'Y'로 기본값 세팅
             pstmt.setString(6, vo.getStoreUseYn() != null ? vo.getStoreUseYn() : "Y");
 
-            // 5. 쿼리 실행! (DB에 데이터 저장)
+            // 5. 쿼리 실행
             pstmt.executeUpdate();
 
         } finally {
@@ -52,14 +52,14 @@ public class AdminStoreDAO {
         }
     }
     
- // ── [관리자: 매장 목록 전체 조회 (Y/N 상관없이 모두 가져옴!)] ────────────────
+ //관리자: 매장 목록 전체 조회
     public List<UserStoreVO> getAdminStoreList() throws Exception {
         List<UserStoreVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        // 🌟 핵심: WHERE 조건에 STORE_USE_YN = 'Y'를 뺐습니다! 무조건 다 가져옵니다.
+      
         String sql = "SELECT S.STORE_NUM, S.BRAND_NUM, B.BRAND_NAME, "
                    + "S.STORE_NAME, S.STORE_ADDR, S.STORE_PHONE, S.OPEN_TIME, S.STORE_USE_YN "
                    + "FROM STORES S "
@@ -103,7 +103,7 @@ public class AdminStoreDAO {
             pstmt.setString(4, vo.getStorePhone());
             pstmt.setString(5, vo.getOpenTime());
             pstmt.setString(6, vo.getStoreUseYn());
-            pstmt.setInt(7, vo.getStoreNum()); // 🌟 어떤 매장을 수정할지 PK 지정!
+            pstmt.setInt(7, vo.getStoreNum()); 
             pstmt.executeUpdate();
         } finally {
             DBUtil.executeClose(null, pstmt, conn);

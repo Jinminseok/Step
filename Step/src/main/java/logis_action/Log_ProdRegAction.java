@@ -20,7 +20,6 @@ public class Log_ProdRegAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("UTF-8");
 
-        // [복구] 수업 때 쓰던 방식: 프로젝트 내부 webapp/upload 폴더 경로 찾기
         String savePath = request.getServletContext().getRealPath("/upload");
         File uploadDir = new File(savePath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -35,7 +34,6 @@ public class Log_ProdRegAction implements Action {
             String originName = getFileName(part);
             if (originName == null || originName.trim().isEmpty()) continue;
 
-            // [기능 유지] 형님 요청대로 원본 파일 이름을 그대로 사용
             String savedName = originName;
 
             File saveFile = new File(savePath, savedName);
@@ -52,7 +50,6 @@ public class Log_ProdRegAction implements Action {
             if (savedFileNames.size() >= 5) break;
         }
 
-        // --- 파라미터 수집 및 DAO 호출 (기존 동일) ---
         Log_ProdVO vo = new Log_ProdVO();
         vo.setCatNum(parseParam(request.getParameter("catNum"), 0));
         vo.setBrandNum(parseParam(request.getParameter("brandNum"), 0));

@@ -369,7 +369,7 @@ public class UserDAO {
 	    return list;
 	}
 	
-	// ── 🌟 [추가 1] 마이페이지 반품 콤보박스용: 배송완료(상태4)된 개별 상품 목록 조회 ──
+	//마이페이지 반품 콤보박스용: 배송완료(상태4)된 개별 상품 목록 조회
 	public List<AdminOrderVO> getDeliveredItemList(int userNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -416,7 +416,7 @@ public class UserDAO {
         return list;
     }
 
-    // ── 개별 상품 정보(주문, 상품, 옵션)가 포함된 반품/교환 데이터 생성 ──
+    //개별 상품 정보(주문, 상품, 옵션)가 포함된 반품/교환 데이터 생성
     public void insertReturnRequest(int userNum, int orderNum, int prodNum, int optNum, int tp, String reason, String retNote) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -424,7 +424,6 @@ public class UserDAO {
         try {
             conn = DBUtil.getConnection();
             
-            // 🚨 수정 완료: RET_SEQ -> RETURNS_SEQ 로 완벽 교체!
             String sql = "INSERT INTO RETURNS (RET_NUM, ORDER_NUM, USER_NUM, TP, REASON, PROD_NUM, OPT_NUM, RET_NOTE, RET_STATUS, RET_CREATED_AT) "
                        + "VALUES (RETURNS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, 1, SYSDATE)";
                        

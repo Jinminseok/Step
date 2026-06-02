@@ -35,7 +35,7 @@ public class MainAction implements Action {
 		}
 
 		AdminProductVO filter = new AdminProductVO();
-		filter.setGender(-1); // 기본값 세팅
+		filter.setGender(-1);
 		
 		// 피라미터 받기
 		String cat_num_param = request.getParameter("cat_num");

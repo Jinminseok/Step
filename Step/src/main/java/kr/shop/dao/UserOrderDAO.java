@@ -40,9 +40,9 @@ public class UserOrderDAO {
 			pstmt = conn.prepareStatement(sql1);
 			pstmt.setLong(1, orderNum);
 			pstmt.setLong(2, userNum);
-			pstmt.setInt(3, totalPrice); // 원가
-			pstmt.setInt(4, discPrice);  // 할인액
-			pstmt.setInt(5, payPrice);   // 실결제액
+			pstmt.setInt(3, totalPrice); 
+			pstmt.setInt(4, discPrice); 
+			pstmt.setInt(5, payPrice);   
 			pstmt.setString(6, recvName);
 			pstmt.setString(7, recvPhone);
 			pstmt.setString(8, recvZip);

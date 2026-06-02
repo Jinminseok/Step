@@ -7,7 +7,7 @@ import kr.util.DBUtil;
 
 public class Log_ProdDAO {
 
-    // ── 공통 SQL 조각 ──────────────────────────────────────────────────────
+    // 공통 SQL 조각
 	private static final String SELECT_BASE =
             "SELECT p.PROD_NUM, p.SKU, b.BRAND_NAME, p.PROD_NAME, p.PROD_CREATED_AT,"
           + "       c.CAT_NAME, p.PROD_PRICE, p.PROD_STATUS, p.PROD_TEXT, p.GENDER,"
@@ -40,8 +40,8 @@ public class Log_ProdDAO {
         vo.setSizeRange(rs.getString("SIZE_RANGE"));
         vo.setColorList(rs.getString("COLOR_LIST"));
         vo.setSizeList(rs.getString("SIZE_LIST"));
-        vo.setProdImgUrl(rs.getString("PROD_IMG_URL")); // 대표이미지
-        vo.setProdImgListStr(rs.getString("IMG_LIST")); // 다중이미지 문자열
+        vo.setProdImgUrl(rs.getString("PROD_IMG_URL"));
+        vo.setProdImgListStr(rs.getString("IMG_LIST")); 
         vo.setProdCreatedAt(rs.getDate("PROD_CREATED_AT"));
         vo.setMaxStock(100);
         return vo;
@@ -75,7 +75,7 @@ public class Log_ProdDAO {
         return list;
     }
 
-    // ── 상품 등록 ──────────────────────────────────────────────────────────
+    //상품 등록
     public int insertProd(Log_ProdVO vo) throws Exception {
         int result = 0;
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -89,7 +89,7 @@ public class Log_ProdDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            // ① PRODUCTS INSERT
+            //PRODUCTS INSERT
             String sql = "INSERT INTO PRODUCTS "
                        + "(PROD_NUM, CAT_NUM, BRAND_NUM, SKU, PROD_NAME, "
                        + " GENDER, PROD_PRICE, SALE_RATE, PROD_TEXT, PROD_STATUS, PROD_CREATED_AT) "
@@ -111,7 +111,7 @@ public class Log_ProdDAO {
             if (rs.next()) newProdNum = rs.getInt(1);
             rs.close(); pstmt.close();
 
-            // ② PROD_OPTIONS INSERT
+            //PROD_OPTIONS INSERT
             String optSql = "INSERT INTO PROD_OPTIONS "
                           + "(OPT_NUM, PROD_NUM, SIZE_VAL, COLOR, ADD_PRICE, PROD_USE_YN) "
                           + "VALUES (PROD_OPTIONS_SEQ.NEXTVAL, ?, ?, ?, 0, 'Y')";
@@ -132,7 +132,7 @@ public class Log_ProdDAO {
             }
             pstmt.close();
 
-            // ③ PRODUCTS.OPT_NUM 업데이트
+            //PRODUCTS.OPT_NUM 업데이트
             String updateOptSql = "UPDATE PRODUCTS SET OPT_NUM = ? WHERE PROD_NUM = ?";
             pstmt = conn.prepareStatement(updateOptSql);
             pstmt.setInt(1, firstOptNum);
@@ -140,7 +140,7 @@ public class Log_ProdDAO {
             pstmt.executeUpdate();
             pstmt.close();
 
-            // ④ 이미지 여러 장 INSERT
+            //이미지 여러 장 INSERT
             List<String> imgUrls = vo.getProdImgUrls();
             if (imgUrls != null && !imgUrls.isEmpty()) {
                 String maxImgSql = "SELECT NVL(MAX(PROD_IMG_NUM), 0) FROM PROD_IMGS";
@@ -184,7 +184,7 @@ public class Log_ProdDAO {
         return result;
     }
 
-    // ── 상품 수정 ──────────────────────────────────────────────────────────
+    //상품 수정 
     public int updateProd(Log_ProdVO vo) throws Exception {
         int result = 0;
         Connection conn = null; PreparedStatement pstmt = null;
@@ -204,7 +204,7 @@ public class Log_ProdDAO {
 
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // 👉 에러 방지용 안전장치 추가
+            conn.setAutoCommit(false);
 
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt   (1,  vo.getCatNum());
@@ -317,7 +317,7 @@ public class Log_ProdDAO {
         return result;
     }
 
-    // ── 상품 삭제 ──────────────────────────────────────────────────────────
+    //상품 삭제 
     public int deleteProd(int prodNum) throws Exception {
         int result = 0;
         Connection conn = null; PreparedStatement pstmt = null;
@@ -339,7 +339,6 @@ public class Log_ProdDAO {
             
             conn.commit();
         } catch (SQLIntegrityConstraintViolationException e) {
-            // 🚨 무결성 에러 발생 시 롤백 처리하고 -1 반환
             if (conn != null) conn.rollback();
             return -1; 
         } catch (Exception e) {
@@ -351,7 +350,7 @@ public class Log_ProdDAO {
         return result;
     }
 
-    // ── 브랜드 목록 조회 ──────────────────────────────────────────────────
+    //브랜드 목록 조회
     public List<Map<String, Object>> getBrandList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -368,7 +367,7 @@ public class Log_ProdDAO {
         return list;
     }
 
-    // ── 카테고리 목록 조회 ────────────────────────────────────────────────
+    // 카테고리 목록 조회
     public List<Map<String, Object>> getCatList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;

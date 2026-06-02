@@ -16,7 +16,7 @@ public class UserNotifyDAO {
 	public static UserNotifyDAO getInstance() { return instance; }
 	private UserNotifyDAO() {}
 
-	// 1. 알림 INSERT (회원가입/배송/재입고 공통)
+	//알림 INSERT (회원가입/배송/재입고 공통)
 	public void insertNotify(UserNotifyVO vo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -39,7 +39,7 @@ public class UserNotifyDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-	// 2. 미읽음 개수 조회
+	//미읽음 개수 조회
 	public int getUnreadCount(int user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -58,7 +58,7 @@ public class UserNotifyDAO {
 		return count;
 	}
 
-	// 3. 알림 목록 조회 (최대 20개)
+	//알림 목록 조회
 	public List<UserNotifyVO> getNotifyList(int user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -108,7 +108,7 @@ public class UserNotifyDAO {
 		return list;
 	}
 
-	// 4. 전체 읽음 처리
+	//전체 읽음 처리
 	public void markAllAsRead(int user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -123,7 +123,7 @@ public class UserNotifyDAO {
 		}
 	}
 
-	// 5. 단건 읽음 처리
+	//단건 읽음 처리
 	public void markAsRead(int notify_num, int user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -138,13 +138,13 @@ public class UserNotifyDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-	// 6. 알림 단건 삭제
+	//알림 단건 삭제
 	public void deleteNotify(int notify_num, int user_num) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = DBUtil.getConnection();
-			// user_num 조건 추가로 본인 알림만 삭제 가능
+		
 			String sql = "DELETE FROM NOTIFY WHERE NOTIFY_NUM = ? AND USER_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, notify_num);

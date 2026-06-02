@@ -17,7 +17,7 @@ public class AdminReturnDAO {
     public static AdminReturnDAO getInstance() { return instance; }
     private AdminReturnDAO() {}
 
-    // ── 🌟 1. 상단 대시보드용 현황판 카운트 조회 (통계) ──
+    //상단 대시보드용 현황판 카운트 조회 (통계)
     public Map<String, Integer> getReturnCounts() throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -33,7 +33,7 @@ public class AdminReturnDAO {
 
         try {
             conn = DBUtil.getConnection();
-            // 오라클 효율을 위해 한 번의 쿼리로 조건별 카운트를 싹 쓸어옵니다.
+            
             String sql = "SELECT "
                        + "  COUNT(CASE WHEN RET_STATUS = 1 THEN 1 END) as pending, "
                        + "  COUNT(CASE WHEN RET_STATUS = 2 THEN 1 END) as processing, "
@@ -60,7 +60,7 @@ public class AdminReturnDAO {
         return counts;
     }
 
-    // ── 🌟 2. 관리자 반품/교환 검색 및 필터링 리스트 조회 ──
+    //관리자 반품/교환 검색 및 필터링 리스트 조회
     public List<AdminOrderVO> getAdminReturnList(String sTp, String sStatus, String sKeywordType, String sKeyword) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -76,15 +76,15 @@ public class AdminReturnDAO {
                        + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
                        + "WHERE 1=1 ";
 
-            // [동적 필터 1] 유형 검색 (1: 반품, 2: 교환)
+            //유형 검색 (1: 반품, 2: 교환)
             if (sTp != null && !sTp.equals("ALL") && !sTp.trim().isEmpty()) {
                 sql += " AND r.TP = " + Integer.parseInt(sTp);
             }
-            // [동적 필터 2] 처리상태 검색 (1: 신청대기, 2: 수거진행, 3: 완료, 4: 반려)
+            //처리상태 검색 (1: 신청대기, 2: 수거진행, 3: 완료, 4: 반려)
             if (sStatus != null && !sStatus.equals("ALL") && !sStatus.trim().isEmpty()) {
                 sql += " AND r.RET_STATUS = " + Integer.parseInt(sStatus);
             }
-            // [동적 필터 3] 키워드 검색 (주문번호, 회원번호, 클레임 사유)
+            //키워드 검색 (주문번호, 회원번호, 클레임 사유)
             if (sKeyword != null && !sKeyword.trim().isEmpty()) {
                 if (sKeywordType.equals("orderNum")) {
                     sql += " AND r.ORDER_NUM = ? ";
@@ -135,7 +135,7 @@ public class AdminReturnDAO {
         return list;
     }
 
-    // ── 🌟 3. 모달창 비동기(Fetch) 호출용: 단건 상세조회 ──
+    //모달창 비동기(Fetch) 호출용: 단건 상세조회
     public AdminOrderVO getReturnDetail(int retNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -162,7 +162,7 @@ public class AdminReturnDAO {
                 item.setReason(rs.getString("REASON"));
                 item.setRet_status(rs.getInt("RET_STATUS"));
                 item.setIs_good(rs.getInt("IS_GOOD"));
-                item.setRet_note(rs.getString("RET_NOTE")); // 고객 비고 겸 관리자 메모로 활용
+                item.setRet_note(rs.getString("RET_NOTE")); 
                 item.setProd_name(rs.getString("PROD_NAME"));
             }
         } catch (Exception e) {
@@ -174,14 +174,14 @@ public class AdminReturnDAO {
         return item;
     }
 
-    // ── 🌟 4. 관리자 심사 결과 업데이트 처리 (확정 저장) ──
+    //관리자 심사 결과 업데이트 처리 (확정 저장) 
     public void updateReturnStatus(int retNum, int retStatus, int isGood, String retNote) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
             conn = DBUtil.getConnection();
-            // 관리자가 수정한 상태, 상품 상태(IS_GOOD), 처리 메모(RET_NOTE)를 업데이트 치고 수정일시를 박아줍니다.
+           
             String sql = "UPDATE RETURNS SET "
                        + "  RET_STATUS = ?, "
                        + "  IS_GOOD = ?, "
@@ -218,15 +218,15 @@ public class AdminReturnDAO {
                        + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
                        + "WHERE 1=1 ";
 
-            // [동적 필터 1] 유형 검색
+            //유형 검색
             if (sTp != null && !sTp.equals("ALL") && !sTp.trim().isEmpty()) {
                 sql += " AND r.TP = " + Integer.parseInt(sTp);
             }
-            // [동적 필터 2] 처리상태 검색
+            //처리상태 검색
             if (sStatus != null && !sStatus.equals("ALL") && !sStatus.trim().isEmpty()) {
                 sql += " AND r.RET_STATUS = " + Integer.parseInt(sStatus);
             }
-            // [동적 필터 3] 키워드 검색
+            //키워드 검색
             if (sKeyword != null && !sKeyword.trim().isEmpty()) {
                 if (sKeywordType.equals("orderNum")) {
                     sql += " AND r.ORDER_NUM = ? ";
@@ -236,7 +236,7 @@ public class AdminReturnDAO {
                     sql += " AND r.REASON LIKE ? ";
                 }
             }
-            // [동적 필터 4] 🌟 날짜 기간 필터 추가 (시작일~종료일 23시 59분 59초까지 안전하게 매핑)
+          
             if (startDate != null && !startDate.trim().isEmpty()) {
                 sql += " AND r.RET_CREATED_AT >= TO_DATE(?, 'YYYY-MM-DD') ";
             }
@@ -248,7 +248,7 @@ public class AdminReturnDAO {
 
             pstmt = conn.prepareStatement(sql);
             
-            // 🌟 동적 파라미터 세팅 처리용 인덱스 카운터
+            //동적 파라미터 세팅 처리용 인덱스 카운터
             int paramIdx = 1;
             
             if (sKeyword != null && !sKeyword.trim().isEmpty()) {
@@ -258,7 +258,7 @@ public class AdminReturnDAO {
                     pstmt.setString(paramIdx++, "%" + sKeyword + "%");
                 }
             }
-            // 날짜 파라미터 동적 바인딩
+            //날짜 파라미터 동적 바인딩
             if (startDate != null && !startDate.trim().isEmpty()) {
                 pstmt.setString(paramIdx++, startDate);
             }

@@ -11,18 +11,17 @@ public class Log_ReturnFormAction implements Action {
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // 1. 인코딩 필터 통과 및 인코딩 확정
+        //인코딩 필터 통과 및 인코딩 확정
         request.setCharacterEncoding("UTF-8");
         
         Log_ReturnDAO dao = Log_ReturnDAO.getInstance();
         
-        // 3. 오라클 DB에서 옵션 정보가 포함된 완벽한 대기 목록 긁어오기
+        //오라클 DB에서 옵션 정보가 포함된 완벽한 대기 목록 긁어오기
         List<Log_ReturnVO> claimList = dao.getClaimWaitList();
         
-        // 4. 완결된 상태의 최종 이력 목록 긁어오기
+        //완결된 상태의 최종 이력 목록 긁어오기
         List<Log_ReturnVO> historyList = dao.getClaimHistoryList();
         
-        // 🚀 [WMS 긴급 추적 로그] 이 코드가 돌아갈 때 이클립스/인텔리제이 콘솔창을 무조건 보셔야 합니다!
         System.out.println("====== 🔥 WMS 백엔드 데이터 추적 시작 ======");
         if(claimList != null && !claimList.isEmpty()) {
             System.out.println("▶ [성공] 대기 목록 개수: " + claimList.size() + "건 조회 완료!");
@@ -38,7 +37,6 @@ public class Log_ReturnFormAction implements Action {
         }
         System.out.println("=========================================");
         
-        // 5. 🎯 중요: JSP 화면에서 사용하는 상자 이름과 100% 일치시킵니다 ("claimList")
         request.setAttribute("claimList", claimList);
         request.setAttribute("historyList", historyList);
         

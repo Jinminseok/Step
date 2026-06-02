@@ -16,14 +16,13 @@ public class Log_ReturnDAO {
     public static Log_ReturnDAO getInstance() { return instance; }
     private Log_ReturnDAO() {}
 
- // ── [1] 쇼핑몰 관리자가 처리를 완료하여 '물류 창고'에 실물이 도착한 대기 목록 조회 ──
+ //쇼핑몰 관리자가 처리를 완료하여 '물류 창고'에 실물이 도착한 대기 목록 조회
     public List<Log_ReturnVO> getClaimWaitList() throws Exception {
         List<Log_ReturnVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         
-        // 🎯 핵심: po.SIZE_VAL, po.COLOR, r.IS_GOOD 데이터까지 싹 다 SELECT 해와야 합니다!
         String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.PROD_NUM, r.OPT_NUM, r.USER_NUM, r.TP, r.REASON, r.RET_NOTE, r.RET_STATUS, "
                 + "       DECODE(r.IS_GOOD, 1, '양품', 2, '불량', '상태미상') AS IS_GOOD_STR, "
                 + "       p.PROD_NAME AS PROD_NAME, po.SIZE_VAL AS SIZE_VAL, po.COLOR AS COLOR, "
@@ -64,14 +63,13 @@ public class Log_ReturnDAO {
      return list;
  }
 
-    // ── [2] 물류 관리자가 최종 완결 지은 이력 목록 조회 (양품/불량 텍스트 직접 매핑) ──
+    //물류 관리자가 최종 완결 지은 이력 목록 조회 (양품/불량 텍스트 직접 매핑)
     public List<Log_ReturnVO> getClaimHistoryList() throws Exception {
         List<Log_ReturnVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         
-        // 🎯 물류 완료 상태인 4(양품복구)와 5(불량폐기)만 깔끔하게 긁어옵니다.
         String sql = "SELECT r.RET_NUM, r.ORDER_NUM, r.TP, r.RET_NOTE, r.RET_STATUS, p.PROD_NAME, "
                    + "       DECODE(r.RET_STATUS, 4, '양품복구', 5, '불량폐기', '검수중') AS PROC_TYPE, "
                    + "       (SELECT d.COURIER || ' ' || d.INVOICE_NO FROM DELIVERY d WHERE d.ORDER_NUM = r.ORDER_NUM AND ROWNUM = 1) AS INVOICE_NO "
@@ -91,7 +89,7 @@ public class Log_ReturnDAO {
                 vo.setRet_note(rs.getString("RET_NOTE"));
                 vo.setRet_status(rs.getInt("RET_STATUS"));
                 vo.setProd_name(rs.getString("PROD_NAME"));
-                vo.setReason(rs.getString("PROC_TYPE")); // 매핑 바인딩용 컬럼 우회 활용
+                vo.setReason(rs.getString("PROC_TYPE")); 
                 vo.setInvoice_no(rs.getString("INVOICE_NO"));
                 list.add(vo);
             }
@@ -101,7 +99,7 @@ public class Log_ReturnDAO {
         return list;
     }
 
-    // ── [3] 반품/교환 최종 검수 처리 트랜잭션 ──
+    //[3] 반품/교환 최종 검수 처리 트랜잭션
     public void processClaimTransaction(int retNum, int orderNum, int tp, String processType, 
             String courier, String invoiceNo, String adminMemo, 
             String exColor, String exSize) throws Exception {
@@ -118,8 +116,6 @@ public class Log_ReturnDAO {
 			// 양품복구면 완결상태 4, 불량폐기면 완결상태 5
 			int nextStatus = "RECOVERY".equals(processType) ? 4 : 5;
 			
-			// 🎯 취소할 때 역추적할 수 있도록 
-			// 관리자가 작성한 메모 뒤에 규격화된 공백 없는 고유 토큰 [EX_OPT:COLOR=값:SIZE=값]을 강제로 결합합니다.
 			String systemMemo = adminMemo;
 			if (tp == 2 && exColor != null && exSize != null && !exColor.isEmpty() && !exSize.isEmpty()) {
 			String token = "[EX_OPT:COLOR=" + exColor.trim().toUpperCase() + ":SIZE=" + exSize.trim() + "]";
@@ -130,9 +126,7 @@ public class Log_ReturnDAO {
 			}
 			}
 			
-			// -----------------------------------------------------------------
 			// 1. RETURNS 테이블 상태 변경 및 메모 실시간 스왑
-			// -----------------------------------------------------------------
 			String updateRetSql = "UPDATE RETURNS SET RET_STATUS = ?, "
 			   + "       RET_NOTE = CASE WHEN ? IS NULL OR TRIM(?) = '' THEN "
 			   + "                     TRIM(TRAILING CHR(10) FROM CASE WHEN INSTR(RET_NOTE, CHR(10)) > 0 THEN SUBSTR(RET_NOTE, 1, INSTR(RET_NOTE, CHR(10)) - 1) ELSE RET_NOTE END) "
@@ -148,12 +142,10 @@ public class Log_ReturnDAO {
 			pstmtRet.setString(4, systemMemo); 
 			pstmtRet.setInt(5, retNum); 
 			pstmtRet.executeUpdate();
-			
-			// -----------------------------------------------------------------
-			// 2. [재고 관리 코어 로직] 회수 상품 및 발송 상품의 교차 재고 타격
-			// -----------------------------------------------------------------
+
+			//[재고 관리 코어 로직] 회수 상품 및 발송 상품의 교차 재고 타격
+
 			if (tp == 1) { 
-			// 🔹 [반품] 순수 반품은 들어온 실물 상태에 따라 기존 상품 재고만 +1 복구
 			int stockDelta = "RECOVERY".equals(processType) ? 1 : 0;
 			if (stockDelta != 0) {
 			String updateStockSql = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + ? "
@@ -165,7 +157,6 @@ public class Log_ReturnDAO {
 			}
 			} else if (tp == 2) { 
 			
-			// 2-A. 원래 주문했던 기존 상품(A상품) 검수 (양품일 때만 창고 재고 +1 원상복구)
 			if ("RECOVERY".equals(processType)) {
 			String sqlOrigStock = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + 1 "
 			            + "WHERE OPT_NUM = (SELECT OPT_NUM FROM RETURNS WHERE RET_NUM = ?)";
@@ -173,9 +164,8 @@ public class Log_ReturnDAO {
 			pstmtStockOrig.setInt(1, retNum);
 			pstmtStockOrig.executeUpdate();
 			}
-			// ※ 불량폐기(DISPOSAL)일 때는 기존 상품 재고 복구를 안 하므로 전산 패스 (+0 처리 ➡️ 7개 유지!)
 			
-			// 2-B. 모달창에서 물류 관리자가 '새로 선택한 옵션' 상품(B상품)의 창고 재고 차감 (-1)
+			//모달창에서 물류 관리자가 '새로 선택한 옵션' 상품(B상품)의 창고 재고 차감 (-1)
 			if (exColor != null && exSize != null && !exColor.isEmpty() && !exSize.isEmpty()) {
 			String sqlNewStock = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY - 1 "
 			           + "WHERE OPT_NUM = ( "
@@ -192,9 +182,7 @@ public class Log_ReturnDAO {
 			}
 			}
 			
-			// -----------------------------------------------------------------
 			// 3. DELIVERY 테이블에 가출고 배송 정보 업데이트
-			// -----------------------------------------------------------------
 			if (tp == 2 && courier != null && !courier.trim().isEmpty()) {
 			String updateDlvSql = "UPDATE DELIVERY SET COURIER = ?, INVOICE_NO = ?, DLV_STATUS = 1 WHERE ORDER_NUM = ?";
 			pstmtDlv = conn.prepareStatement(updateDlvSql);
@@ -218,7 +206,6 @@ public class Log_ReturnDAO {
 			}
 			}
     
- // ── [신규 1] 이력 건에 대한 물류 담당자 특이사항(메모)만 실시간 수정 ──
     public void updateClaimMemo(int retNum, String adminMemo) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -245,7 +232,7 @@ public class Log_ReturnDAO {
         }
     }
     
-    // ── [신규 2] 처리 완료 건 취소 및 재고 원상복구 트랜잭션 (핵심 정밀 수식) ──
+    //처리 완료 건 취소 및 재고 원상복구 트랜잭션 (핵심 정밀 수식) ──
     public void cancelClaimTransaction(int retNum, int orderNum, int tp, int currentStatus) throws Exception {
         Connection conn = null;
         PreparedStatement pstmtRet = null;
@@ -257,16 +244,12 @@ public class Log_ReturnDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false); // 락 발동 (원자성 트랜잭션 시작)
 
-            // 1. RETURNS 테이블 상태를 다시 '검수대기(3)'로 복구 (기존 낙인 토큰 메모 보존)
             String sqlRet = "UPDATE RETURNS SET RET_STATUS = 3 WHERE RET_NUM = ?";
             pstmtRet = conn.prepareStatement(sqlRet);
             pstmtRet.setInt(1, retNum);
             pstmtRet.executeUpdate();
 
-            // 2. 🎯 [재고 역산 코어 엔진] 완료 처리 시 일어났던 타격을 정확히 반대로 되감기
             if (tp == 1) { 
-                // 🔹 [반품 취소 시나리오]
-                // 양품복구(4)로 입고(+1) 시켰던 건 취소니까 다시 창고에서 -1 차감
                 int rollbackStockDelta = (currentStatus == 4) ? -1 : 0;
                 
                 if (rollbackStockDelta != 0) {
@@ -280,18 +263,14 @@ public class Log_ReturnDAO {
                 
             } else if (tp == 2) { 
                 
-                // -------------------------------------------------------------
-                // 2-A. 원래 고객이 주문했던 기존 반납 상품(A상품 - 원래 신발) 재고 되감기
-                // -------------------------------------------------------------
+                //원래 고객이 주문했던 기존 반납 상품(A상품 - 원래 신발) 재고 되감기
                 int origDelta = 0;
                 
                 if (currentStatus == 4) {
-                    // 💡 [Case 양품 취소] 완료 처리 시 양품 입고(+1) 시켜서 8개가 된 상태이므로, 
-                    // 취소할 때는 다시 장부에서 -1을 타격하여 원래 대기 상태인 7개로 정확히 롤백!
+                    //취소할 때는 다시 장부에서 -1을 타격하여 원래 대기 상태인 7개로 정확히 롤백
                     origDelta = -1;
                 } else if (currentStatus == 5) {
-                    // 💡 [Case 불량 취소] 완료 처리 시 불량 폐기(+0) 시켜서 7개 그대로 유지된 상태이므로, 
-                    // 취소할 때는 고객에게 실물을 쥐어 보내기 위해 장부에서 강력하게 -1을 깎아서 최종 6개로 롤백!
+                    // 취소할 때는 고객에게 실물을 쥐어 보내기 위해 장부에서 강력하게 -1을 깎아서 최종 6개로 롤백
                     origDelta = -1; 
                 }
                 
@@ -303,11 +282,7 @@ public class Log_ReturnDAO {
                 pstmtStockOrig.setInt(2, retNum);
                 pstmtStockOrig.executeUpdate();
 
-                // -------------------------------------------------------------
-                // 2-B. 새로 선택해서 출고시켰던 '새 교환 상품(B상품 - 바꾼 신발)' 재고 복구 (+1)
-                // -------------------------------------------------------------
-                // 양품 완결이었든 불량 완결이었든 새 신발(B상품)은 처음에 무조건 창고에서 1개 축이 났었으므로,
-                // 취소 시에는 공통적으로 무조건 창고 선반에 +1 채워 넣어서 18개에서 19개로 복구합니다!
+                //새로 선택해서 출고시켰던 '새 교환 상품(B상품 - 바꾼 신발)' 재고 복구 (+1)
                 String sqlStockNewClean = "UPDATE STOCK SET STOCK_QTY = STOCK_QTY + 1 "
                         + "WHERE OPT_NUM = ( "
                         + "    SELECT po.OPT_NUM FROM PROD_OPTIONS po "
@@ -324,9 +299,8 @@ public class Log_ReturnDAO {
                 System.out.println("🎯 [WMS 디버깅] 고유 토큰 추적 -> 새 교환 상품(B상품) 재고 +1 복구 완료 로우 수: " + resultRows + "건");
             }
 
-            // -----------------------------------------------------------------
+
             // 3. 교환용으로 가출고 잡아서 업데이트했던 운송장 장부 초기화 (NULL 패스)
-            // -----------------------------------------------------------------
             if (tp == 2) {
                 String sqlDlv = "UPDATE DELIVERY SET COURIER = NULL, INVOICE_NO = NULL, DLV_STATUS = 0 WHERE ORDER_NUM = ?";
                 pstmtDlv = conn.prepareStatement(sqlDlv);
@@ -354,15 +328,14 @@ public class Log_ReturnDAO {
         pstmt.setInt(idx, val);
     }
     
-    // 특정 상품의 가용 재고(STOCK_QTY > 0)가 존재하는 옵션 목록 실시간 조회 ──
-    // =========================================================================
+    // 특정 상품의 가용 재고(STOCK_QTY > 0)가 존재하는 옵션 목록 실시간 조회
     public List<Log_ReturnVO> getAvailableOptions(int prodNum) throws Exception {
         List<Log_ReturnVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         
-        // 🎯 핵심: 재고 수량(STOCK_QTY)이 최소 1개 이상 남아 있는 색상과 사이즈 조합만 실시간 추출!
+        //재고 수량(STOCK_QTY)이 최소 1개 이상 남아 있는 색상과 사이즈 조합만 실시간 추출
         String sql = "SELECT po.OPT_NUM, po.COLOR, po.SIZE_VAL, s.STOCK_QTY "
                    + "FROM PROD_OPTIONS po "
                    + "JOIN STOCK s ON po.OPT_NUM = s.OPT_NUM "
@@ -375,7 +348,7 @@ public class Log_ReturnDAO {
             rs = pstmt.executeQuery();
             while(rs.next()) {
                 Log_ReturnVO vo = new Log_ReturnVO();
-                // VO 객체를 재활용하여 컬러와 사이즈 데이터를 담아 넘깁니다.
+   
                 vo.setOpt_num(rs.getInt("OPT_NUM")); // 필요시 대비 옵션번호 확보
                 vo.setColor(rs.getString("COLOR"));
                 vo.setSize_val(rs.getString("SIZE_VAL"));

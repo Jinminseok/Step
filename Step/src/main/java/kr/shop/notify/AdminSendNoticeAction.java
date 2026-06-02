@@ -17,13 +17,11 @@ public class AdminSendNoticeAction implements Action {
         if (user_auth_obj == null || ((Number) user_auth_obj).intValue() != 9) {
             return "redirect:/shop/user/loginForm.do";
         }
-
-        // GET 요청 → 작성 폼 보여주기
+     
         if (request.getMethod().equalsIgnoreCase("GET")) {
             return "shop/notify/WriteNotice.jsp";
         }
 
-        // POST 요청 → 알림 발송 처리
         request.setCharacterEncoding("UTF-8");
 
         String targetType  = request.getParameter("target_type");

@@ -28,7 +28,7 @@ public class RestockAlertAction implements Action {
         request.setAttribute("result", result);
         request.setAttribute("prodNum", prodNum);
 
-        // 신청 결과를 restockList.jsp에서 보여줌
+    
         List<Map<String, Object>> restockList = 
             RestockAlertDAO.getInstance().getAlertListByUser(userNum);
         request.setAttribute("restockList", restockList);

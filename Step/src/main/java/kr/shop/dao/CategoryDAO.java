@@ -159,7 +159,7 @@ public class CategoryDAO {
             if (rs.next()) targetNum = rs.getInt("CAT_NUM");
             rs.close(); pstmt.close();
 
-            if (targetNum == 0) { conn.commit(); return; } // 교환 대상 없음
+            if (targetNum == 0) { conn.commit(); return; } 
 
             // 순서 스왑
             String swapSql = "UPDATE CATEGORIES SET CAT_SORT_NO = ? WHERE CAT_NUM = ?";

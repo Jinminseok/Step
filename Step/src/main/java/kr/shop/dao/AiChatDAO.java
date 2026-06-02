@@ -58,7 +58,7 @@ public class AiChatDAO {
                 String colors     = rs.getString("COLORS");
                 String sizes      = rs.getString("SIZES");
 
-                // CLOB 안전하게 읽기
+               
                 String text = "";
                 try {
                     java.sql.Clob clob = rs.getClob("PROD_TEXT");
@@ -89,7 +89,7 @@ public class AiChatDAO {
                 sb.append(", 색상: ").append(colors != null ? colors : "정보없음");
                 sb.append(", 사이즈: ").append(sizes != null ? sizes : "정보없음");
 
-                // 설명 추가 (CLOB 줄바꿈/탭을 공백으로 치환해 JSON 오염 방지)
+                
                 if (text != null && !text.trim().isEmpty()) {
                     String safeText = text.replaceAll("[\\r\\n\\t]+", " ").trim();
                     if (safeText.length() > 200) {

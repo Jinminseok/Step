@@ -10,7 +10,7 @@ public class RestockAlertDAO {
     public static RestockAlertDAO getInstance() { return instance; }
     private RestockAlertDAO() {}
 
-    // ① 재입고 신청 등록 (중복 체크 포함)
+    //재입고 신청 등록 (중복 체크 포함)
     public String insertAlert(int userNum, int optNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -39,7 +39,7 @@ public class RestockAlertDAO {
         }
     }
 
-    // ② 마이페이지 - 사용자의 재입고 알림 목록 조회
+    //마이페이지 - 사용자의 재입고 알림 목록 조회
     public List<Map<String, Object>> getAlertListByUser(int userNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -80,7 +80,7 @@ public class RestockAlertDAO {
         return list;
     }
 
-    // ③ 재고 입고 시 알림 발송 처리 (prodNum 기준으로 매칭)
+    //재고 입고 시 알림 발송 처리 (prodNum 기준으로 매칭)
     public void sendRestockNotify(int optNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -106,7 +106,7 @@ public class RestockAlertDAO {
                 return;
             }
 
-            // 2. 상품명 조회
+            //상품명 조회
             String nameSql = "SELECT PROD_NAME FROM PRODUCTS WHERE PROD_NUM = ?";
             pstmt = conn.prepareStatement(nameSql);
             pstmt.setInt(1, prodNum);
@@ -159,7 +159,7 @@ public class RestockAlertDAO {
             notifyPstmt.close();
             DBUtil.executeClose(rs, pstmt, null);
 
-            // 4. SENT_YN = 'Y' 처리
+            //SENT_YN = 'Y' 처리
             if (!alertNums.isEmpty()) {
                 String updateSql = "UPDATE RESTOCK_ALERT SET SENT_YN = 'Y' WHERE ALERT_NUM = ?";
                 pstmt = conn.prepareStatement(updateSql);
@@ -184,7 +184,7 @@ public class RestockAlertDAO {
         }
     }
 
-    // ④ 알림 취소
+    //알림 취소
     public void deleteAlert(int alertNum, int userNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;

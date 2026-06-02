@@ -10,7 +10,7 @@ public class Log_DashDAO {
     public static Log_DashDAO getInstance() { return instance; }
     private Log_DashDAO() {}
 
-    // ① 오늘 입고 총 수량
+    //오늘 입고 총 수량
     public int getTodayInQty() throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -29,7 +29,7 @@ public class Log_DashDAO {
         return total;
     }
 
-    // ② 전체 재고 총 수량
+    //전체 재고 총 수량
     public int getTotalStock() throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -47,7 +47,7 @@ public class Log_DashDAO {
         return total;
     }
 
-    // ③ 재고 부족 상품 수 (STOCK_QTY < STOCK_MIN_QTY)
+    //재고 부족 상품 수 (STOCK_QTY < STOCK_MIN_QTY)
     public int getLowStockCount() throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -66,7 +66,7 @@ public class Log_DashDAO {
         return count;
     }
 
-    // ④ 최근 입고 내역 4건
+    //최근 입고 내역 4건
     public List<Map<String, Object>> getRecentInboundList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null;
@@ -104,7 +104,7 @@ public class Log_DashDAO {
         return list;
     }
 
-    // ⑤ 재고 부족 TOP 5
+    //재고 부족 TOP 5
     public List<Map<String, Object>> getLowStockTop5() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null;
@@ -134,7 +134,7 @@ public class Log_DashDAO {
         }
         return list;
     }
- // ① 오늘 출고 수량
+ //오늘 출고 수량
     public int getTodayOutQty() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -148,7 +148,7 @@ public class Log_DashDAO {
         return total;
     }
 
-    // ② 어제 입고 수량
+    //어제 입고 수량
     public int getYesterdayInQty() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -162,7 +162,7 @@ public class Log_DashDAO {
         return total;
     }
 
-    // ③ 어제 출고 수량
+    //어제 출고 수량
     public int getYesterdayOutQty() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int total = 0;
@@ -176,7 +176,7 @@ public class Log_DashDAO {
         return total;
     }
 
-    // ④ 주간 입고 현황 (이번 주 월~오늘)
+    //주간 입고 현황 (이번 주 월~오늘)
     public List<Map<String, Object>> getWeeklyInbound() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -200,7 +200,7 @@ public class Log_DashDAO {
         return list;
     }
 
-    // ⑤ 주간 출고 현황 (이번 주 월~오늘)
+    //주간 출고 현황 (이번 주 월~오늘)
     public List<Map<String, Object>> getWeeklyOutbound() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -224,7 +224,7 @@ public class Log_DashDAO {
         return list;
     }
 
-    // ⑥ 출고 대기 주문 TOP 5 (ORDER_STATUS = 1)
+    //출고 대기 주문 TOP 5 (ORDER_STATUS = 1)
     public List<Map<String, Object>> getPendingOutboundList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;

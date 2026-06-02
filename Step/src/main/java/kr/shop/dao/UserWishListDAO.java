@@ -15,7 +15,6 @@ public class UserWishListDAO {
 	public static UserWishListDAO getInstance() { return instance; }
 	private UserWishListDAO() {}
 
-	// 찜(즐겨찾기)에 추가
 	public void insertWish(UserWishListVO wish) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;

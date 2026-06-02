@@ -27,7 +27,7 @@ public class ChatDAO {
             rs = pstmt.executeQuery();
             if (rs.next()) return rs.getInt("ROOM_NUM");
         } finally { DBUtil.executeClose(rs, pstmt, conn); }
-        return -1; // 채팅방 없음
+        return -1;
     }
 
     // 채팅방 생성 (첫 메시지 보낼 때만 호출)
@@ -97,7 +97,7 @@ public class ChatDAO {
                 pstmt.setInt(1, userNum);
                 rs = pstmt.executeQuery();
                 if (rs.next()) {
-                    roomNum = rs.getInt("ROOM_NUM"); // 기존 방 재사용
+                    roomNum = rs.getInt("ROOM_NUM"); 
                 }
                 rs.close();
                 pstmt.close();
@@ -143,7 +143,7 @@ public class ChatDAO {
                 pstmt.executeUpdate();
             }
 
-            conn.commit(); // ← 한번에 커밋
+            conn.commit();
         } catch (Exception e) {
             if (conn != null) conn.rollback();
             throw e;

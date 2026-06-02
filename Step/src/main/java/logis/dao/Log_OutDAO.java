@@ -11,7 +11,7 @@ import logis_vo.Log_OutVO;
 
 public class Log_OutDAO {
 
-    // ── 1. 출고 대기 목록 ─────────────────────────────────────────────────
+    //출고 대기 목록
 	public List<Log_OutVO> getPendingOutboundList(String keyword, String startDate, String endDate) throws Exception {
         List<Log_OutVO> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -70,7 +70,7 @@ public class Log_OutDAO {
         return list;
     }
 
-    // ── 2. 단건 출고 처리 (OUTBOUND INSERT → 트리거가 STOCK 자동 차감) ──────
+    //단건 출고 처리 (OUTBOUND INSERT → 트리거가 STOCK 자동 차감)
     public void processOutbound(Log_OutVO vo) throws Exception {
         Connection conn = null; 
         PreparedStatement pstmt = null;
@@ -81,7 +81,7 @@ public class Log_OutDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false); // 🚨 트랜잭션 가동
 
-            // [A] OUTBOUND INSERT (개별 상품 단위이므로 몇 번을 실행해도 유니크 에러가 안 납니다)
+            //OUTBOUND INSERT (개별 상품 단위이므로 몇 번을 실행해도 유니크 에러가 안 납니다)
             String outSql = "INSERT INTO OUTBOUND (OUT_NUM, ORDER_NUM, OPT_NUM, OUT_QTY, ADMIN_NUM, OUT_MEMO) "
                           + "VALUES (OUTBOUND_SEQ.NEXTVAL, ?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(outSql);
@@ -93,7 +93,7 @@ public class Log_OutDAO {
             pstmt.executeUpdate();
             pstmt.close();
 
-            // 🎯 [B] DELIVERY 중복 검사 (해당 주문의 운송장이 이미 발행되었는지 테이블 실시간 카운트)
+            //DELIVERY 중복 검사 (해당 주문의 운송장이 이미 발행되었는지 테이블 실시간 카운트)
             String checkDlvSql = "SELECT COUNT(*) FROM DELIVERY WHERE ORDER_NUM = ?";
             pstmtCheck = conn.prepareStatement(checkDlvSql);
             pstmtCheck.setInt(1, vo.getOrderNum());
@@ -101,12 +101,11 @@ public class Log_OutDAO {
             
             boolean hasDelivery = false;
             if (rsCheck.next() && rsCheck.getInt(1) > 0) {
-                hasDelivery = true; // 첫 번째 상품 나갈 때 이미 만들어졌음을 감지!
+                hasDelivery = true;
             }
             rsCheck.close();
             pstmtCheck.close();
 
-            // 🎯 [B-2] 해당 주문서로 등록된 운송장이 '없을 때만' 최초 1번 생성해서 ORA-00001을 완벽 방어합니다!
             if (!hasDelivery) {
                 String dlvSql = "INSERT INTO DELIVERY (DLV_NUM, ORDER_NUM, COURIER, INVOICE_NO, DLV_STATUS) "
                               + "VALUES (DELIVERY_SEQ.NEXTVAL, ?, ?, ?, 1)";
@@ -118,7 +117,7 @@ public class Log_OutDAO {
                 pstmt.close();
             }
 
-            // [C] ORDERS 상태 변경 (묶음 상품 중 마지막 남은 상품까지 창고에서 다 완전히 나갔을 때만 1 -> 2로 변환)
+            //ORDERS 상태 변경 (묶음 상품 중 마지막 남은 상품까지 창고에서 다 완전히 나갔을 때만 1 -> 2로 변환)
             String orderSql = "UPDATE ORDERS o SET o.ORDER_STATUS = 2 "
                             + "WHERE o.ORDER_NUM = ? "
                             + "  AND NOT EXISTS ( "
@@ -133,9 +132,9 @@ public class Log_OutDAO {
             pstmt.executeUpdate();
             pstmt.close();
 
-            conn.commit(); // 모든 작업 통과 시 최종 확정 커밋
+            conn.commit();
         } catch (Exception e) {
-            if (conn != null) conn.rollback(); // 하나라도 삐끗하면 전체 취소(롤백)
+            if (conn != null) conn.rollback(); 
             throw e;
         } finally {
             if (rsCheck != null) try { rsCheck.close(); } catch(Exception e) {}
@@ -144,7 +143,7 @@ public class Log_OutDAO {
         }
     }
 
-    // ── 3. 출고 이력 조회 ──────────────────────────────────────────────────
+    //출고 이력 조회
     public List<Log_OutVO> getOutboundHistoryList(String histKeyword, String histStartDate, String histEndDate) throws Exception {
         List<Log_OutVO> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -197,7 +196,7 @@ public class Log_OutDAO {
         return list;
     }
 
-    // ── 4. 일괄 출고 처리 (OUTBOUND INSERT → 트리거가 STOCK 자동 차감) ──────
+    //일괄 출고 처리 (OUTBOUND INSERT → 트리거가 STOCK 자동 차감)
     public void processBulkOutbound(List<Log_OutVO> list) throws Exception {
         Connection conn = null;
         PreparedStatement pstmtOut = null;
@@ -208,17 +207,14 @@ public class Log_OutDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false); 
 
-            // [A] OUTBOUND는 개별 상품이므로 무조건 INSERT
+            //OUTBOUND는 개별 상품이므로 무조건 INSERT
             String outSql   = "INSERT INTO OUTBOUND (OUT_NUM, ORDER_NUM, OPT_NUM, OUT_QTY, ADMIN_NUM, OUT_MEMO) "
                             + "VALUES (OUTBOUND_SEQ.NEXTVAL, ?, ?, ?, ?, ?)";
                             
-            // 🎯 [B] DELIVERY (오라클 DUAL과 NOT EXISTS를 이용한 무적의 중복 INSERT 방지 쿼리!)
-            // 설명: 이미 DELIVERY 테이블에 해당 ORDER_NUM이 존재하면 INSERT 자체를 조용히 무시(Skip)합니다. ORA-00001 절대 안 터짐!
             String dlvSql   = "INSERT INTO DELIVERY (DLV_NUM, ORDER_NUM, COURIER, INVOICE_NO, DLV_STATUS) "
                             + "SELECT DELIVERY_SEQ.NEXTVAL, ?, ?, ?, 1 FROM DUAL "
                             + "WHERE NOT EXISTS (SELECT 1 FROM DELIVERY WHERE ORDER_NUM = ?)";
-                            
-            // [C] ORDERS
+
             String orderSql = "UPDATE ORDERS o SET o.ORDER_STATUS = 2 "
                             + "WHERE o.ORDER_NUM = ? "
                             + "  AND NOT EXISTS ( "
@@ -233,7 +229,6 @@ public class Log_OutDAO {
             pstmtDlv = conn.prepareStatement(dlvSql);
             pstmtOrd = conn.prepareStatement(orderSql);
 
-            // 같은 루프 내 중복 방지 바구니
             java.util.Set<Integer> processedOrders = new java.util.HashSet<>();
             java.util.Random random = new java.util.Random();
             String[] courierPool = {"CJ대한통운", "롯데택배", "한진택배", "우체국택배"};
@@ -260,11 +255,10 @@ public class Log_OutDAO {
                     String dateStr = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
                     String invoiceNo = (vo.getInvoiceNo() != null && !vo.getInvoiceNo().trim().isEmpty()) ? vo.getInvoiceNo() : prefix + "-" + dateStr + "-" + (random.nextInt(9000)+1000);
 
-                    // 🚨 DUAL 쿼리문에 맞게 파라미터 4개 세팅 (마지막이 WHERE 조건의 주문번호)
                     pstmtDlv.setInt(1, vo.getOrderNum());
                     pstmtDlv.setString(2, courier);
                     pstmtDlv.setString(3, invoiceNo);
-                    pstmtDlv.setInt(4, vo.getOrderNum()); // NOT EXISTS 체크용 ORDER_NUM
+                    pstmtDlv.setInt(4, vo.getOrderNum()); 
                     pstmtDlv.addBatch();
 
                     pstmtOrd.setInt(1, vo.getOrderNum());
@@ -290,7 +284,7 @@ public class Log_OutDAO {
         }
     }
 
-    // ── 5. 출고 취소 (OUTBOUND DELETE → 트리거가 STOCK 자동 복원) ───────────
+    //(OUTBOUND DELETE → 트리거가 STOCK 자동 복원)
     public void cancelOutbound(int outNum, int orderNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt1 = null;
@@ -301,15 +295,11 @@ public class Log_OutDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false); // 트랜잭션 가동
 
-            // 1. 딱 내가 취소 버튼을 누른 그 '출고 번호(OUT_NUM)' 한 건만 OUTBOUND 테이블에서 제거!
-            // (트리거 TRG_OUTBOUND_DELETE가 해당 옵션의 STOCK 재고를 자동으로 +1 복원해줍니다.)
             String sql1 = "DELETE FROM OUTBOUND WHERE OUT_NUM = ?";
             pstmt1 = conn.prepareStatement(sql1);
             pstmt1.setInt(1, outNum);
             pstmt1.executeUpdate();
 
-            // 2. 🎯 [방어막 1] 무조건 DELIVERY를 지우지 않고, 
-            // 현재 주문(ORDER_NUM)에 해당하는 출고 건수가 OUTBOUND 테이블에 '단 1개도 남아있지 않을 때만' 배송 정보를 완전히 삭제합니다!
             String sql2 = "DELETE FROM DELIVERY WHERE ORDER_NUM = ? "
                         + "  AND NOT EXISTS (SELECT 1 FROM OUTBOUND WHERE ORDER_NUM = ?)";
             pstmt2 = conn.prepareStatement(sql2);
@@ -317,8 +307,6 @@ public class Log_OutDAO {
             pstmt2.setInt(2, orderNum);
             pstmt2.executeUpdate();
 
-            // 3. 🎯 [방어막 2] 주문 상태도 마찬가지로, 
-            // 현재 주문(ORDER_NUM)으로 나간 출고 상품이 창고에 단 1개도 안 남아있을 때만 주문 상태를 다시 1(출고대기)로 되돌립니다.
             String sql3 = "UPDATE ORDERS SET ORDER_STATUS = 1 WHERE ORDER_NUM = ? "
                         + "  AND NOT EXISTS (SELECT 1 FROM OUTBOUND WHERE ORDER_NUM = ?)";
             pstmt3 = conn.prepareStatement(sql3);
@@ -326,7 +314,7 @@ public class Log_OutDAO {
             pstmt3.setInt(2, orderNum);
             pstmt3.executeUpdate();
 
-            conn.commit(); // 성공 확정
+            conn.commit(); 
             System.out.println("✅ [개별 취소 완료] 출고번호: " + outNum + "번 단건 취소 및 주문 상태 동적 방어 성공!");
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -338,14 +326,13 @@ public class Log_OutDAO {
         }
     }
     
- // ── 6. 상태별 주문 건수 카운트 (KPI 배송중/배송완료 실시간 연동용) ──
+ //상태별 주문 건수 카운트 (KPI 배송중/배송완료 실시간 연동용)
     public int getDeliveryStatusCount(int dlvStatus) throws Exception {
         int count = 0;
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
-        // 🌟 ORDERS가 아닌 DELIVERY 테이블의 DLV_STATUS를 카운트합니다!
+       
         String sql = "SELECT COUNT(*) FROM DELIVERY WHERE DLV_STATUS = ?";
         try {
             conn = DBUtil.getConnection();

@@ -125,7 +125,7 @@ public class UserProductDAO {
 		return list;
 	}
 
-	// *** 상품 총 재고량 계산 (물리 재고 - 배송 대기 중인 재고) ***
+	//상품 총 재고량 계산 (물리 재고 - 배송 대기 중인 재고)
 	public int getProductTotalStock(int prod_num) throws Exception {
 		int total = 0;
 		Connection conn = null;
@@ -134,7 +134,7 @@ public class UserProductDAO {
 		String sql = null;
 		try {
 			conn = DBUtil.getConnection();
-			// DUAL 테이블을 이용하여 (실제 재고) - (결제완료 상태인 총 주문량)을 뺌
+			
 			sql = """
 					SELECT 
 					    (SELECT NVL(SUM(stock_qty), 0) FROM stock WHERE prod_num = ?) - 

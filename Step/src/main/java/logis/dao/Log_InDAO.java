@@ -15,7 +15,7 @@ public class Log_InDAO {
     public static Log_InDAO getInstance() { return instance; }
     private Log_InDAO() {}
 
-    // 1. 입고 내역 저장 (INBOUND INSERT → 트리거가 STOCK 자동 증가)
+    //입고 내역 저장 (INBOUND INSERT → 트리거가 STOCK 자동 증가)
     public void insertInbound(int optNum, int prodNum, int inQty, int adminNum,
                               String inMemo, String inDate, String supplier) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null;
@@ -32,7 +32,7 @@ public class Log_InDAO {
             pstmt.setString(6, inDate);
             pstmt.setString(7, supplier);
             pstmt.executeUpdate();
-            // ← STOCK 처리 불필요: TRG_INBOUND_INSERT 트리거가 자동 처리
+            //STOCK 처리 불필요: TRG_INBOUND_INSERT 트리거가 자동 처리
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("입고 내역 저장 중 오류 발생", e);
@@ -41,12 +41,12 @@ public class Log_InDAO {
         }
     }
 
-    // 2. 재고 수량 업데이트 - 트리거 적용 후 호출 불필요 (하위 호환성 유지용)
+    //재고 수량 업데이트 - 트리거 적용 후 호출 불필요 (하위 호환성 유지용)
     public void updateStock(int optNum, int prodNum, int inQty) throws Exception {
-        // TRG_INBOUND_INSERT 트리거가 자동 처리하므로 이 메서드는 비워둠
+        
     }
 
-    // 3. 상품번호 + 사이즈 + 컬러로 기존 옵션번호(OPT_NUM) 찾기
+    //상품번호 + 사이즈 + 컬러로 기존 옵션번호(OPT_NUM) 찾기
     public int getOptNum(int prodNum, int sizeVal, String color) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         int optNum = 0;
@@ -68,7 +68,7 @@ public class Log_InDAO {
         return optNum;
     }
 
-    // 4. 새로운 옵션 생성 후 옵션번호(OPT_NUM) 반환
+    //새로운 옵션 생성 후 옵션번호(OPT_NUM) 반환
     public int insertOptionAndGetNum(int prodNum, int sizeVal, String color) throws Exception {
         int optNum = 0;
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -111,7 +111,7 @@ public class Log_InDAO {
         return optNum;
     }
 
-    // 5. 입고 목록 조회
+    //입고 목록 조회
     public List<Log_InVO> getInboundList() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         List<Log_InVO> list = new ArrayList<>();
@@ -155,7 +155,7 @@ public class Log_InDAO {
         return list;
     }
 
-    // 6. 상품 검색 목록
+    //상품 검색 목록
     public List<Log_InVO> getProductListForSearch() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         List<Log_InVO> list = new ArrayList<>();
@@ -179,7 +179,7 @@ public class Log_InDAO {
         return list;
     }
 
-    // 7. 입고 수정 (INBOUND UPDATE → 트리거가 STOCK 자동 보정)
+    //입고 수정 (INBOUND UPDATE → 트리거가 STOCK 자동 보정)
     public void updateInbound(Log_InVO vo) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null;
         try {
@@ -226,7 +226,7 @@ public class Log_InDAO {
             pstmt.setInt   (6, newOptNum);
             pstmt.setInt   (7, vo.getInNum());
             pstmt.executeUpdate();
-            // ← STOCK 처리 불필요: TRG_INBOUND_UPDATE 트리거가 자동 처리
+            //STOCK 처리 불필요: TRG_INBOUND_UPDATE 트리거가 자동 처리
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -236,7 +236,7 @@ public class Log_InDAO {
         }
     }
 
-    // 8. 입고 삭제 (INBOUND DELETE → 트리거가 STOCK 자동 차감)
+    //입고 삭제 (INBOUND DELETE → 트리거가 STOCK 자동 차감)
     public void deleteInbound(int inNum) throws Exception {
         Connection conn = null; PreparedStatement pstmt = null;
         try {
@@ -254,7 +254,7 @@ public class Log_InDAO {
         }
     }
 
-    // 9. 입고 대기 상품 목록
+    //입고 대기 상품 목록
     public List<Log_InVO> getPendingMasterList() throws Exception {
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
         List<Log_InVO> list = new ArrayList<>();
@@ -282,7 +282,7 @@ public class Log_InDAO {
         }
         return list;
     }
-  // 10. 입고번호로 prodNum 조회 (재입고 알림 발송용)
+  //입고번호로 prodNum 조회 (재입고 알림 발송용)
     public int getProdNumByInNum(int inNum) throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;

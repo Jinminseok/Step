@@ -41,7 +41,7 @@ public class BannerUpdateAction implements Action{
         }
 
         BannerVO vo = new BannerVO();
-        vo.setBanner_num(Integer.parseInt(request.getParameter("banner_num"))); // 수정할 PK
+        vo.setBanner_num(Integer.parseInt(request.getParameter("banner_num")));
         vo.setBanner_title(request.getParameter("banner_title"));
         vo.setBanner_img_url(bannerImgUrl); // 비어있으면 DAO에서 알아서 무시함
         vo.setProd_num(Integer.parseInt(request.getParameter("prod_num")));

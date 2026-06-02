@@ -15,7 +15,6 @@ public class Log_ReportFormAction implements Action {
         String startDate = request.getParameter("startDate");
         String endDate   = request.getParameter("endDate");
 
-        // 기본값: 이번 달 1일 ~ 오늘
         if (startDate == null || startDate.isEmpty()) {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -32,7 +31,6 @@ public class Log_ReportFormAction implements Action {
         int lastIn    = dao.getLastMonthInQty();
         int lastOut   = dao.getLastMonthOutQty();
 
-        // 전월 대비 % 계산
         int inPct  = lastIn  > 0 ? (int)((thisIn  - lastIn)  * 100.0 / lastIn)  : 0;
         int outPct = lastOut > 0 ? (int)((thisOut - lastOut) * 100.0 / lastOut) : 0;
 

@@ -12,21 +12,21 @@ import kr.util.DBUtil;
 
 	public class UserStoreDAO {
     
-    // ── 싱글톤 패턴 ──
+    //싱글톤 패턴
     private static UserStoreDAO instance = new UserStoreDAO();
     public static UserStoreDAO getInstance() {
         return instance;
     }
     private UserStoreDAO() {}
 
-    // ── [매장 목록 조회] 카카오맵에 뿌릴 데이터 ──────────────────────────────
+    //카카오맵에 뿌릴 데이터
     public List<UserStoreVO> getStoreList() throws Exception {
         List<UserStoreVO> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        // 사용 중인(Y) 매장만 최신순으로 가져옵니다
+       
         String sql = "SELECT S.STORE_NUM, S.BRAND_NUM, B.BRAND_NAME, "
                 + "S.STORE_NAME, S.STORE_ADDR, S.STORE_PHONE, S.OPEN_TIME, S.STORE_USE_YN "
                 + "FROM STORES S "
@@ -42,7 +42,7 @@ import kr.util.DBUtil;
             while (rs.next()) {
                 UserStoreVO vo = new UserStoreVO();
                 
-                // DB에서 꺼내서 UserStoreVO 그릇에 예쁘게 담습니다
+               
                 vo.setStoreNum(rs.getInt("STORE_NUM"));
                 vo.setBrandNum(rs.getInt("BRAND_NUM"));
                 vo.setBrandName(rs.getString("BRAND_NAME"));

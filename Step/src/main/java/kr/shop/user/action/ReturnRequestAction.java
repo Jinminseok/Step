@@ -10,10 +10,10 @@ public class ReturnRequestAction implements Action {
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // 1. 한글 인코딩 세팅
+        //한글 인코딩 세팅
         request.setCharacterEncoding("UTF-8");
         
-        // 2. 로그인 및 세션 검증
+        //로그인 및 세션 검증
         HttpSession session = request.getSession();
         String user_id = (String) session.getAttribute("user_id");
         

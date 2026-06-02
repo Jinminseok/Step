@@ -47,7 +47,7 @@ public class UpdateReviewAction implements Action{
 				}
 			}
 
-			// DAO 호출 시 filename 전달 (새 사진이 없으면 null 전달)
+			
 			ReviewDAO.getInstance().updateReview(reviewNum, rating, content, filenames);
 			session.setAttribute("reviewMsg", "리뷰가 성공적으로 수정되었습니다.");
 

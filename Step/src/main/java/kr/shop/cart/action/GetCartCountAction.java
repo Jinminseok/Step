@@ -27,7 +27,6 @@ public class GetCartCountAction implements Action{
 			UserCartDAO dao = UserCartDAO.getInstance();
 			int count = dao.getCartCount(user_num);
 			
-			// int를 String으로 바꿔서 담기
 			mapAjax.put("count", String.valueOf(count));
 		}
 		

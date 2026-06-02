@@ -17,7 +17,6 @@ import kr.shop.dao.AiChatDAO;
 
 public class AiChatSendAction implements Action {
 
-    // 폴백 순서: 2.5-flash → 2.0-flash → 2.0-flash-lite
     private static final String[] FALLBACK_MODELS = {
         "gemini-2.5-flash",
         "gemini-2.0-flash",

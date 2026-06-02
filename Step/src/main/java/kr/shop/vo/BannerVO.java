@@ -10,7 +10,7 @@ public class BannerVO {
     private String banner_start_day;  // 시작일
     private String banner_end_day;    // 종료일
     private String banner_use_yn;     // 노출 여부 (Y/N)
-    private int prod_num;             // [추가하신 컬럼] 연결 상품 번호
+    private int prod_num;             // 연결 상품 번호
     
     private String prod_name;         // 조인해서 가져올 상품명
 

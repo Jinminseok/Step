@@ -149,7 +149,7 @@ public class Log_StkDAO {
         return list;
     }
 
-    // ⑦ 재고 부족 옵션 목록 (사이즈별, qty 0 초과 10 미만)
+    //재고 부족 옵션 목록 (사이즈별, qty 0 초과 10 미만)
     public List<Map<String, Object>> getLowStockList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -178,7 +178,7 @@ public class Log_StkDAO {
         return list;
     }
 
-    // ⑧ 품절 옵션 목록 (qty = 0)
+    //품절 옵션 목록 (qty = 0)
     public List<Map<String, Object>> getZeroStockList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -210,7 +210,7 @@ public class Log_StkDAO {
         return list;
     }
 
-    // ⑨ 사이즈별 상세 재고 (모달용)
+    //사이즈별 상세 재고 (모달용)
     public List<Map<String, Object>> getSizeStockDetail(int prodNum) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -234,7 +234,7 @@ public class Log_StkDAO {
         return list;
     }
 
-    // ⑩ 브랜드 목록 (필터용)
+    //브랜드 목록 (필터용)
     public List<Map<String, Object>> getBrandList() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
@@ -256,8 +256,7 @@ public class Log_StkDAO {
     public List<Map<String, Object>> getProductOptionStock(int prodNum) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Connection conn = null; PreparedStatement pstmt = null; ResultSet rs = null;
-        
-        // 사용 중인 옵션(PROD_USE_YN='Y')만 컬러, 사이즈 순으로 정렬해서 가져옵니다.
+
         String sql = "SELECT po.COLOR, po.SIZE_VAL, NVL(s.STOCK_QTY, 0) AS QTY " +
                      "FROM PROD_OPTIONS po " +
                      "LEFT JOIN STOCK s ON po.OPT_NUM = s.OPT_NUM " +

@@ -67,7 +67,7 @@ public class AdminMainAction implements Action {
 		request.setAttribute("topProducts", topProducts);
 		request.setAttribute("recentOrders", recentOrders);
 
-		// 0으로 나누기 방지용 1 세팅
+		
 		request.setAttribute("maxSales", maxSales == 0 ? 1 : maxSales);
 		request.setAttribute("maxTopCount", maxTopCount == 0 ? 1 : maxTopCount);
 

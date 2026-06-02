@@ -14,7 +14,6 @@ public class LogoutAction implements Action{
 		// 현재 연결된 세션 객체를 가져옴
 		HttpSession session = request.getSession();
 		
-		
 		// 세션의 모든 정보를 삭제 (로그아웃 처리)
 		session.invalidate();
 		

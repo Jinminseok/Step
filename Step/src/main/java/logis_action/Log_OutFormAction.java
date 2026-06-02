@@ -50,7 +50,6 @@ public class Log_OutFormAction implements Action {
         Log_OutDAO dao = new Log_OutDAO();
         List<Log_OutVO> pendingList = dao.getPendingOutboundList(keyword, startDate, endDate);
         
-        // 🚨 DAO 호출 시 이력 파라미터 던지기
         List<Log_OutVO> historyList = dao.getOutboundHistoryList(histKeyword, histStartDate, histEndDate);        
         
         // JSP로 데이터 넘기기

@@ -13,7 +13,7 @@ public class BrandInsertAction implements Action {
         String brandName  = request.getParameter("brandName");
         String brandUseYn = request.getParameter("brandUseYn");
 
-        // 중복 체크
+      
         boolean isDuplicate = BrandDAO.getInstance().isBrandNameDuplicate(brandName);
         if (isDuplicate) {
             return "redirect:/shop/brand/brandForm.do?msg=duplicate";

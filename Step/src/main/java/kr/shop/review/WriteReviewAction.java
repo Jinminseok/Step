@@ -50,19 +50,19 @@ public class WriteReviewAction implements Action {
             
             ReviewDAO reviewDAO = ReviewDAO.getInstance();
             
-            // 1. 중복 리뷰 확인
+            //중복 리뷰 확인
             if (reviewDAO.isDuplicateReview(user_num, orderNum, prodNum)) {
                 session.setAttribute("reviewMsg", "이미 리뷰를 작성하신 상품입니다.");
                 return "redirect:/shop/user/myPageForm.do";
             }
 
-            // 2. 유효성 검사
+            //유효성 검사
             if (rating < 1 || rating > 5 || content.length() < 10) {
                 session.setAttribute("reviewMsg", "입력값을 다시 확인해주세요.");
                 return "redirect:/shop/user/myPageForm.do";
             }
 
-            // 3. 리뷰 및 파일명 DB 저장 (DAO 파라미터에 filename 추가 필요)
+            //리뷰 및 파일명 DB 저장
             reviewDAO.insertReview(user_num, orderNum, prodNum, rating, content, filenames);
             session.setAttribute("reviewMsg", "리뷰가 등록되었습니다. 감사합니다! 😊");
 

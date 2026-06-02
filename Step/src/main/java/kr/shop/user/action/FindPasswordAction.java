@@ -27,19 +27,19 @@ public class FindPasswordAction implements Action {
         if(user != null && user.getAuth() > 1 && user.getEmail() != null && user.getEmail().equals(email)) {
             check = true;
             
-            // 1. 임시 비밀번호 10자리 랜덤 생성
+            //임시 비밀번호 10자리 랜덤 생성
             String passwd = StringUtil.randomPassword(10);
             
-            // 2. 임시 비밀번호를 BCrypt로 암호화하여 DB에 저장
+            //임시 비밀번호를 BCrypt로 암호화하여 DB에 저장
             dao.updatePassword(BCrypt.hashpw(passwd, BCrypt.gensalt()), user.getUser_num());
             
-            // 3. 이메일 발송 객체 세팅
+            //이메일 발송 객체 세팅
             EmailVO emailVO = new EmailVO();
             emailVO.setContent("요청하신 ShoeMall 임시 비밀번호는 [ " + passwd + " ] 입니다.\n로그인 후 마이페이지에서 반드시 비밀번호를 변경해 주세요.");
             emailVO.setReceiver(user.getEmail());
             emailVO.setSubject("[ShoeMall] " + user.getUser_id() + "님, 비밀번호 찾기 안내 메일입니다.");
             
-            // 4. 이메일 전송 유틸 호출
+            //이메일 전송 유틸 호출
             EmailSenderUtil.sendEmail(emailVO);
         }
         

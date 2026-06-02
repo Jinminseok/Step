@@ -32,8 +32,7 @@ public class LoginAction implements Action{
 				return "redirect:/logistics/log_login/log_loginForm.do";
 			}
 		} else {
-			// 🚨 [수정된 부분] 로그인 실패 시
-			// 얼럿 뷰로 화면을 넘기지 않고, 에러 메시지를 담아서 곧바로 로그인 폼 JSP를 다시 띄워줍니다!
+			//로그인 실패 시
 			request.setAttribute("loginError", "아이디 또는 비밀번호가 일치하지 않습니다.");
 			return "logistics/log_login/log_loginForm.jsp";
 		}

@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 // -상품등록시 사진을 올리기 위해 필요한 코드 작성-규민-
 import jakarta.servlet.annotation.MultipartConfig; 
 
-// -상품등록시 사진을 올리기 위해 필요한 코드 작성-규민-
+//상품등록시 사진을 올리기 위해 필요한 코드 작성
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,  // 1MB
     maxFileSize = 1024 * 1024 * 10,       // 10MB
