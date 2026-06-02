@@ -47,7 +47,6 @@ public class Log_ReturnModifyAction implements Action {
         request.setAttribute("claimList", claimList);
         request.setAttribute("historyList", historyList);
         
-        // 3. 형님 프레임워크 포워딩 규칙에 맞게 파일 확장자까지 명시하여 리턴!
         return "logistics/log_return/log_returnForm.jsp";
     }
 }

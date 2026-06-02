@@ -14,7 +14,6 @@ public class Log_ReturnFormAction implements Action {
         // 1. 인코딩 필터 통과 및 인코딩 확정
         request.setCharacterEncoding("UTF-8");
         
-        // 2. 🚨 [싱글톤 연동] 형님이 만드신 싱글톤 인스턴스로 정확하게 교체!
         Log_ReturnDAO dao = Log_ReturnDAO.getInstance();
         
         // 3. 오라클 DB에서 옵션 정보가 포함된 완벽한 대기 목록 긁어오기
@@ -43,7 +42,6 @@ public class Log_ReturnFormAction implements Action {
         request.setAttribute("claimList", claimList);
         request.setAttribute("historyList", historyList);
         
-        // 6. 형님 프로젝트의 최종 뷰(JSP) 경로로 토스
         return "logistics/log_return/log_returnForm.jsp";
     }
 }

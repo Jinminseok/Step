@@ -44,7 +44,6 @@ public class Log_ProdVO {
     private String       prodImgUrl;                          // 대표 이미지 URL
     private List<String> prodImgUrls = new ArrayList<>();     // 등록/수정 시 사용할 이미지 리스트
 
-    // --- Getter & Setter (형님의 기존 로직 100% 유지) ---
 
     public String getProdImgListStr() { return prodImgListStr; }
     public void setProdImgListStr(String prodImgListStr) { this.prodImgListStr = prodImgListStr; }

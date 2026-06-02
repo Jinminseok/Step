@@ -437,7 +437,7 @@ function openReturnModal(retNum) {
         .then(res => res.text()) // 텍스트로 안전하게 받기
         .then(text => {
             
-            console.log("▼ 형님! 서버가 보낸 원본 데이터 확인용 콘솔입니다 ▼");
+            console.log("▼ 서버가 보낸 원본 데이터 확인용 콘솔입니다 ▼");
             console.log(text);
             
             

@@ -21,7 +21,6 @@ public class StockListAction implements Action {
         request.setAttribute("brandList", brandList);
         
         // 2. 메인 데이터: 전체 재고 목록 가져오기
-        // (형님이 만드신 DAO 메서드 활용! 화면단 자바스크립트가 검색/필터링을 하므로 일단 전체(null)를 다 넘겨줍니다)
         Log_StkDAO stockDao = Log_StkDAO.getInstance();
         List<Map<String, Object>> stockList = stockDao.getStockList(null, null, null);
         request.setAttribute("stockList", stockList);

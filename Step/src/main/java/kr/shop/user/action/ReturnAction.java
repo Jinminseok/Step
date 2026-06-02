@@ -15,7 +15,6 @@ public class ReturnAction implements Action {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         
-        // 🌟 형님 시스템의 세션에 든 user_num(Long)을 안전하게 Object로 먼저 꺼냅니다.
         Object sessionUserNum = session.getAttribute("user_num"); 
 
         if (sessionUserNum == null) {
@@ -37,7 +36,7 @@ public class ReturnAction implements Action {
         if (orderNumStr == null || orderNumStr.trim().isEmpty()) {
             request.setAttribute("notice_msg", "반품/교환할 주문을 선택해주세요.");
             request.setAttribute("notice_url", request.getContextPath() + "/shop/mypage/myPage.do");
-            return "/WEB-INF/views/common/alert_view.jsp"; // 형님 프로젝트의 알럿 JSP 경로
+            return "/WEB-INF/views/common/alert_view.jsp"; 
         }
 
         try {

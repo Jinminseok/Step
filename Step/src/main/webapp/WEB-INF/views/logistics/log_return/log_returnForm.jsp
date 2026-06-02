@@ -716,7 +716,6 @@ let liveAvailableOptions = [];
 
 // 🎯 [신규] 교환 가능한 옵션 세트를 셀렉트 박스에 동적으로 빌드하는 함수
 function setupExchangeOptions(prodNum, currentColor, currentSize) {
-	console.log("🚀 현재 모달창이 요청한 상품 일련번호(prodNum) ->", prodNum);
     const colorSel = document.getElementById('m-excolor-sel');
     const sizeSel = document.getElementById('m-exsize-sel');
     if(!colorSel || !sizeSel) return;
@@ -776,7 +775,6 @@ function setupExchangeOptions(prodNum, currentColor, currentSize) {
             };
         })
         .catch(err => {
-            console.error("🚨 실시간 재고 파이프라인 통신 에러 발생:", err);
             colorSel.innerHTML = '<option value="">데이터 통신 실패</option>';
             sizeSel.innerHTML = '<option value="">데이터 통신 실패</option>';
         });
@@ -838,7 +836,7 @@ function submitProcess(type) {
         const courier = document.getElementById('m-courier-sel').value;
         const invoice = document.getElementById('m-invoice-input').value;
         if(!courier || !invoice) {
-            alert('형님, 교환 상품 배송 보낼 택배사와 운송장 번호를 완성해 주셔야 합니다!');
+            alert('교환 상품 배송 보낼 택배사와 운송장 번호를 완성해 주셔야 합니다!');
             return;
         }
         document.getElementById('f-courier').value = courier;
@@ -865,7 +863,7 @@ function renderHistTable() {
     const pageData = filteredHistList.slice(start, end); 
     
     if(!pageData.length) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:50px; color:var(--gray4);">📭 조건에 부합하는 완료된 클레임 이력이 없습니다 형님.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:50px; color:var(--gray4);">📭 조건에 부합하는 완료된 클레임 이력이 없습니다.</td></tr>';
         document.getElementById('histPageInfo').textContent = "0 / 0 페이지";
         document.getElementById('histPageBtns').innerHTML = "";
         return;

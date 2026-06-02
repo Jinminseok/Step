@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.controller.Action;
 import kr.shop.dao.AdminReturnDAO;
 import kr.shop.vo.AdminOrderVO;
-import kr.util.StringUtil; // 🌟 형님이 만드신 StringUtil 임포트
+import kr.util.StringUtil; 
 
 public class AdminReturnDetailAction implements Action {
 

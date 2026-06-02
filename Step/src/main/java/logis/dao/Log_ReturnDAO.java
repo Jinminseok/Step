@@ -32,7 +32,7 @@ public class Log_ReturnDAO {
                 + "JOIN ORDERS o ON r.ORDER_NUM = o.ORDER_NUM "
                 + "JOIN PRODUCTS p ON r.PROD_NUM = p.PROD_NUM "
                 + "JOIN PROD_OPTIONS po ON r.OPT_NUM = po.OPT_NUM "
-                + "WHERE r.RET_STATUS = 3 " // 🚨 DB의 상태값과 형님의 데이터가 일치하는지 꼭 확인하셔야 합니다!
+                + "WHERE r.RET_STATUS = 3 " 
                 + "ORDER BY r.RET_NUM DESC";
      try {
          conn = DBUtil.getConnection();
@@ -49,7 +49,7 @@ public class Log_ReturnDAO {
              vo.setIs_good_str(rs.getString("IS_GOOD_STR")); 
              vo.setProd_name(rs.getString("PROD_NAME"));
              
-             // 🚨 형님의 Log_ReturnVO 멤버 변수가 소문자 size_val, color 인지 철저하게 매칭 검증
+             
              vo.setSize_val(rs.getString("SIZE_VAL"));       
              vo.setColor(rs.getString("COLOR"));             
              
@@ -164,7 +164,6 @@ public class Log_ReturnDAO {
 			pstmtStockOrig.executeUpdate();
 			}
 			} else if (tp == 2) { 
-			// 🔹 [교환] 형님의 실물 기반 알고리즘 가동
 			
 			// 2-A. 원래 주문했던 기존 상품(A상품) 검수 (양품일 때만 창고 재고 +1 원상복구)
 			if ("RECOVERY".equals(processType)) {
@@ -280,7 +279,6 @@ public class Log_ReturnDAO {
                 }
                 
             } else if (tp == 2) { 
-                // 🔹 [교환 취소 시나리오] 형님이 정립해주신 상황별 맞춤 자산 롤백 가동
                 
                 // -------------------------------------------------------------
                 // 2-A. 원래 고객이 주문했던 기존 반납 상품(A상품 - 원래 신발) 재고 되감기
