@@ -136,9 +136,6 @@
     <div class="th-right">
         
         
-        <button class="th-noti-btn">
-            <i class="fa-regular fa-bell"></i>
-            <span class="noti-dot"></span>
-        </button>
+      
     </div>
 </header>
