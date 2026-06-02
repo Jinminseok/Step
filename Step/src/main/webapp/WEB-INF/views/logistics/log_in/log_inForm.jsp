@@ -350,15 +350,6 @@ td:first-child{border-left:3px solid transparent;padding-left:14px}
         </form>
 
         <div style="display:flex;flex-direction:column;gap:14px">
-
-          <div class="alert alert-blue">
-            <span class="alert-ico">🔔</span>
-            <div>
-              <strong>재입고 알림 대기 5건(알림 기능 구현 시 수정 필요)</strong><br>
-              재입고 신청 사용자가 있는 옵션에 입고 처리 시 자동으로 알림이 발송됩니다.
-            </div>
-          </div>
-
           <div class="card">
             <div class="card-hdr">
               <div class="card-title">
