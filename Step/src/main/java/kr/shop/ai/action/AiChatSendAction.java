@@ -134,6 +134,8 @@ public class AiChatSendAction implements Action {
             String model = FALLBACK_MODELS[i];
             String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/"
                             + model + ":generateContent?key=" + apiKey;
+          //String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + apiKey;
+        	//String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
 
             // 첫 번째 시도 제외, 재시도 전 1.5초 대기
             if (i > 0) {

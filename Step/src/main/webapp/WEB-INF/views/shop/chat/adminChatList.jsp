@@ -271,7 +271,7 @@ body {
         </div>
       </c:if>
 
-      <%-- 🌟 PAGINATION HTML (새로 추가됨) 🌟 --%>
+   
       <div class="pagination-wrap" id="chatPagination" style="display:none;">
         <div class="page-info" id="chatPageInfo">총 <strong>0</strong>건</div>
         <div class="page-btns" id="chatPageBtns"></div>
