@@ -10,9 +10,7 @@ target/
 *.class
 
 # 이클립스 IDE 설정
-.classpath
-.project
-.settings/
+
 
 # OS 파일
 .DS_Store
