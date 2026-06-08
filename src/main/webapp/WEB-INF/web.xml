@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd" id="WebApp_ID" version="6.0">
+  <display-name>Step</display-name>
+  <!-- MVC패턴을 수행하기 위한 Controller 지정 시작 -->
+  <servlet>
+  	<servlet-name>DispatcherServlet</servlet-name>
+  	<servlet-class>kr.controller.DispatcherServlet</servlet-class>
+  	<init-param>
+  		<param-name>propertiesPath</param-name>
+  		<param-value>/WEB-INF/KM.properties,/WEB-INF/KR.properties,/WEB-INF/MS.properties,/WEB-INF/YH.properties,/WEB-INF/user.properties</param-value>
+  	</init-param>
+  	<!-- 기본 뷰 경로 지정 시작 -->
+  	<init-param>
+  		<param-name>viewPath</param-name>
+  		<param-value>/WEB-INF/views/</param-value>
+  	</init-param>
+  	<!-- 기본 뷰 경로 지정 끝 -->
+  	<!-- 파일 업로드를 하기 위한 파일 최대 업로드 사이즈 지정 시작 -->
+  	<multipart-config>
+  		<max-file-size>5242880</max-file-size><!-- 5M -->
+  		<max-request-size>52428800</max-request-size><!-- 50M -->
+  	</multipart-config>
+  	<!-- 파일 업로드를 하기 위한 파일 최대 업로드 사이즈 지정 끝 -->
+  </servlet> 	
+  <servlet-mapping>
+  	<servlet-name>DispatcherServlet</servlet-name>
+  	<url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  <!-- MVC패턴을 수행하기 위한 Controller 지정 끝 -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.xhtml</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.xhtml</welcome-file>
+  </welcome-file-list>
+  <!-- Gemini API Key — 실제 키는 로컬에서 직접 입력하세요 -->
+    <context-param>
+        <param-name>GEMINI_API_KEY</param-name>
+        <param-value>YOUR_GEMINI_API_KEY</param-value>
+    </context-param>
+</web-app>
