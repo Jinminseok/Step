@@ -68,7 +68,7 @@ public class OrderCancelAction implements Action {
 				
 				// 시크릿 키 및 헤더 셋팅
 				httpConn.setRequestMethod("POST");
-				httpConn.setRequestProperty("Authorization", "SECRET_KEY DEV3B7BAEEAC1BA84DAA6215DAF85C205B97F13D"); 
+				httpConn.setRequestProperty("Authorization", "카카오 API 키"); 
 				httpConn.setRequestProperty("Content-Type", "application/json");
 				httpConn.setDoOutput(true);
 				
