@@ -48,7 +48,7 @@ public class KakaoSuccessAction implements Action {
 		
 		// 시크릿키 세팅
 		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Authorization", "SECRET_KEY DEV3B7BAEEAC1BA84DAA6215DAF85C205B97F13D"); 
+		conn.setRequestProperty("Authorization", "카카오 API 키"); 
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setDoOutput(true);
 
