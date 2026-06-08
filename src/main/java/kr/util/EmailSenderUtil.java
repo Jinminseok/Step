@@ -36,8 +36,8 @@ public class EmailSenderUtil{
 		prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		   
 		//구글 메뉴 : Google 계정관리>보안및로그인>2단계 인증>앱 비밀번호 에서 설정
-                                                  //이메일 발송 주소            비밀번호
-		Authenticator auth = new MyAuthentication("dragonyxit@gmail.com","ubruicbyxubdfdlq");
+                                                             
+		Authenticator auth = new MyAuthentication("//이메일 발송 주소"," 비밀번호");
 		Session session = Session.getInstance(prop, auth);
 		MimeMessage msg = new MimeMessage(session);
 
