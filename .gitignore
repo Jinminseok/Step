@@ -19,5 +19,5 @@ Thumbs.db
 *.bak
 
 # 재배포 금지 jar
-src/main/webapp/WEB-INF/lib/ojdbc8.jar
+
 
